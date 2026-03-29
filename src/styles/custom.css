@@ -1,0 +1,54 @@
+/* toke site custom styles */
+
+:root {
+	--sl-color-accent-low: #1a1a2e;
+	--sl-color-accent: #4a47a3;
+	--sl-color-accent-high: #c4c3ff;
+	--sl-font-system-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
+}
+
+:root[data-theme='dark'] {
+	--sl-color-accent-low: #1a1a3e;
+	--sl-color-accent: #7b78d0;
+	--sl-color-accent-high: #e0e0ff;
+}
+
+/* Hero section on landing page */
+.hero-comparison {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1.5rem;
+	margin: 2rem 0;
+}
+
+.hero-comparison pre {
+	padding: 1rem;
+	border-radius: 0.5rem;
+	font-size: 0.85rem;
+	overflow-x: auto;
+}
+
+.token-badge {
+	display: inline-block;
+	padding: 0.25rem 0.75rem;
+	border-radius: 1rem;
+	font-size: 0.8rem;
+	font-weight: 600;
+	margin-top: 0.5rem;
+}
+
+.token-badge.toke {
+	background: #1a3a1a;
+	color: #4ade80;
+}
+
+.token-badge.other {
+	background: #3a1a1a;
+	color: #f87171;
+}
+
+@media (max-width: 600px) {
+	.hero-comparison {
+		grid-template-columns: 1fr;
+	}
+}

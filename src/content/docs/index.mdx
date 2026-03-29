@@ -1,0 +1,111 @@
+---
+title: toke — A Language Built for AI
+description: A programming language purpose-built for LLM code generation. Fewer tokens. Faster inference. Lower cost.
+template: splash
+hero:
+  tagline: A programming language purpose-built for LLM code generation. Fewer tokens. Faster inference. Lower cost.
+  actions:
+    - text: Get Started
+      link: /getting-started/install/
+      icon: right-arrow
+      variant: primary
+    - text: Why toke?
+      link: /about/why/
+      variant: minimal
+    - text: GitHub
+      link: https://github.com/karwalski
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## The Problem
+
+LLMs generate code token by token. Every token costs time and money. Languages like Python use **3-5x more tokens** than necessary to express the same logic — verbose keywords, deep indentation, boilerplate imports.
+
+**toke** is designed from first principles to minimise token count while remaining human-readable and writable. The same program that takes 156 tokens in Python takes 47 in toke.
+
+<div class="hero-comparison">
+<div>
+
+**toke** — 47 tokens
+```
+M=fib;
+F=fib(n:i64):i64{
+  ?n<2{<n};
+  <fib(n-1)+fib(n-2);
+};
+```
+<span class="token-badge toke">47 tokens (cl100k)</span>
+
+</div>
+<div>
+
+**Python** — 156 tokens
+```python
+def fib(n: int) -> int:
+    if n < 2:
+        return n
+    return fib(n - 1) + fib(n - 2)
+```
+<span class="token-badge other">156 tokens (cl100k)</span>
+
+</div>
+</div>
+
+## Why This Matters
+
+<CardGrid stagger>
+	<Card title="3-5x fewer tokens" icon="rocket">
+		LLMs generate toke programs using a fraction of the tokens needed for Python, JavaScript, or Go. That means faster inference and lower API costs.
+	</Card>
+	<Card title="Deterministic compilation" icon="puzzle">
+		LL(1) grammar, 12 keywords, 80-character set. No ambiguity. No surprises. The compiler is a single-pass pipeline with full type checking.
+	</Card>
+	<Card title="Human-writable" icon="pencil">
+		toke is not just for machines. The syntax is concise but readable. Modules, functions, error handling, and a full standard library.
+	</Card>
+	<Card title="Open source" icon="open-book">
+		MIT licensed. Built in public. Every component — compiler, spec, corpus, tokenizer, benchmarks — is open for contribution and enterprise use.
+	</Card>
+</CardGrid>
+
+## Quick Example
+
+```
+M=hello;
+I=io:std.io;
+
+F=main():i64{
+  io.println("Hello, world!");
+  <0;
+};
+```
+
+This is a complete toke program. `M=` declares the module. `F=` declares a function. `<` returns a value. `?` branches. `;` terminates everything.
+
+## Ready to Start?
+
+<CardGrid>
+	<Card title="Install the compiler" icon="setting">
+		Build `tkc` from source and run your first program in under 5 minutes.
+
+		[Installation guide](/getting-started/install/)
+	</Card>
+	<Card title="Learn the language" icon="open-book">
+		A structured 10-lesson course that takes you from zero to proficient.
+
+		[Start learning](/learn/overview/)
+	</Card>
+	<Card title="API Reference" icon="document">
+		Searchable docs for every type, function, and error code.
+
+		[Browse the API](/reference/types/)
+	</Card>
+	<Card title="Contribute" icon="github">
+		Find good first issues, understand the architecture, and start contributing.
+
+		[Community](/community/contributing/)
+	</Card>
+</CardGrid>
