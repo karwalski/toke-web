@@ -7,9 +7,9 @@ dist/
 # Astro
 .astro/
 
-# Environment
+# Environment (keep .env.example, ignore actual secrets)
 .env
-.env.*
+!.env.example
 
 # OS
 .DS_Store
