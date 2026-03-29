@@ -3,7 +3,7 @@ title: Project Repositories
 description: The toke project's multi-repo structure, with descriptions, status, and links for each repository.
 ---
 
-The toke project is split across multiple repositories under the [karwalski](https://github.com/karwalski) GitHub organisation. Each repository has independent licensing and versioning. Changes that cross repository boundaries require coordinated pull requests.
+The toke project is split across multiple repositories under the [karwalski](https://github.com/karwalski/toke) GitHub organisation. Each repository has independent licensing and versioning. Changes that cross repository boundaries require coordinated pull requests.
 
 ## toke
 
@@ -61,21 +61,21 @@ The toke project is split across multiple repositories under the [karwalski](htt
 - **License:** Apache 2.0
 - **Link:** [github.com/karwalski/toke-benchmark](https://github.com/karwalski/toke-benchmark)
 
-## toke-model
+## toke-model (planned)
 
 **Model training infrastructure.** QLoRA fine-tuning scripts, training data preparation pipeline, and model evaluation harness. Handles base model selection, training configuration, and checkpoint management.
 
-- **Status:** Not started -- depends on corpus and tokenizer completion
+- **Status:** Planned -- depends on corpus and tokenizer completion
 - **License:** Apache 2.0
-- **Link:** [github.com/karwalski/toke-model](https://github.com/karwalski/toke-model)
+- **Link:** github.com/karwalski/toke-model (not yet available)
 
-## toke-eval
+## toke-eval (planned)
 
 **Evaluation pipeline.** Pass@1 and token-efficiency evaluation scripts that run generated toke programs against the benchmark suite and measure gate criteria.
 
-- **Status:** Active -- evaluation harness defined
+- **Status:** Planned -- repository not yet created
 - **License:** Apache 2.0
-- **Link:** [github.com/karwalski/toke-eval](https://github.com/karwalski/toke-eval)
+- **Link:** github.com/karwalski/toke-eval (not yet available)
 
 ## toke-web
 

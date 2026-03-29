@@ -34,7 +34,7 @@ After importing, you access the module's exports through the alias:
 
 ```
 let req=http.Req{method:"GET";path:"/users"};
-let u=user.get_by_id(42);
+let u=user.getById(42);
 ```
 
 ### Import rules
@@ -76,9 +76,9 @@ M=app.user;
 T=User{id:u64;name:Str;email:Str};
 T=UserErr{NotFound:u64;DbError:Str};
 
-F=get_by_id(id:u64):User!UserErr;
+F=getById(id:u64):User!UserErr;
 F=create(name:Str;email:Str):User!UserErr;
-F=delete(id:u64):void!UserErr;
+F=del(id:u64):void!UserErr;
 ```
 
 Notice that function declarations in `.tki` files have no body -- just the signature followed by `;`.
@@ -150,14 +150,14 @@ I=db:myapp.db;
 T=User{id:u64;name:Str;email:Str};
 T=UserErr{NotFound:u64;DbError:Str};
 
-F=get_by_id(id:u64):User!UserErr{
-  let row=db.query_one("SELECT * FROM users WHERE id=?",[id])!UserErr.DbError;
+F=getById(id:u64):User!UserErr{
+  let row=db.queryOne("SELECT * FROM users WHERE id=?";[id])!UserErr;
   <User{id:row.u64("id");name:row.str("name");email:row.str("email")};
 };
 
 F=create(name:Str;email:Str):User!UserErr{
-  let row=db.exec("INSERT INTO users (name,email) VALUES (?,?)",[name;email])!UserErr.DbError;
-  <User{id:row.last_id;name:name;email:email};
+  let row=db.exec("INSERT INTO users (name,email) VALUES (?,?)";[name;email])!UserErr;
+  <User{id:row.lastId;name:name;email:email};
 };
 ```
 
@@ -174,8 +174,8 @@ T=Config{host:Str;port:i64;debug:bool};
 T=ConfigErr{FileErr:Str;ParseErr:Str};
 
 F=load(path:Str):Config!ConfigErr{
-  let content=file.read(path)!ConfigErr.FileErr;
-  let cfg=json.dec(content)!ConfigErr.ParseErr;
+  let content=file.read(path)!ConfigErr;
+  let cfg=json.dec(content)!ConfigErr;
   <cfg;
 };
 ```
@@ -214,7 +214,7 @@ tkc --link -o myapp    # links all compiled objects
 ### Exercise 1: Split a program
 
 Take the word counter from Lesson 6 and split it into two files:
-- `wc/counter.tk` (module `wc.counter`) -- exports `F=count_words(text:Str):[Str:i64]`
+- `wc/counter.tk` (module `wc.counter`) -- exports `F=countWords(text:Str):[Str:i64]`
 - `wc/main.tk` (module `wc.main`) -- imports `wc.counter`, reads the file, and prints results
 
 ### Exercise 2: Write an interface

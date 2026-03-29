@@ -45,23 +45,23 @@ I=str:std.str;
 | `len` | `(s:Str):u64` | String length in bytes |
 | `slice` | `(s:Str;start:u64;length:u64):Str` | Extract substring |
 | `contains` | `(s:Str;sub:Str):bool` | Check if substring exists |
-| `index_of` | `(s:Str;sub:Str):i64` | Find substring position (-1 if not found) |
+| `indexOf` | `(s:Str;sub:Str):i64` | Find substring position (-1 if not found) |
 | `replace` | `(s:Str;old:Str;new:Str):Str` | Replace all occurrences |
 | `split` | `(s:Str;delim:Str):[Str]` | Split into array |
 | `join` | `(parts:[Str];delim:Str):Str` | Join array into string |
 | `upper` | `(s:Str):Str` | Convert to uppercase |
 | `lower` | `(s:Str):Str` | Convert to lowercase |
 | `trim` | `(s:Str):Str` | Remove leading/trailing whitespace |
-| `starts_with` | `(s:Str;prefix:Str):bool` | Check prefix |
-| `ends_with` | `(s:Str;suffix:Str):bool` | Check suffix |
+| `startsWith` | `(s:Str;prefix:Str):bool` | Check prefix |
+| `endsWith` | `(s:Str;suffix:Str):bool` | Check suffix |
 | `repeat` | `(s:Str;n:u64):Str` | Repeat string n times |
-| `from_int` | `(n:i64):Str` | Convert integer to string |
-| `to_int` | `(s:Str):i64!StrErr` | Parse string to integer |
+| `fromInt` | `(n:i64):Str` | Convert integer to string |
+| `toInt` | `(s:Str):i64!StrErr` | Parse string to integer |
 
 **Example: parse a key=value config line**
 
 ```
-F=parse_line(line:Str):[Str]{
+F=parseLine(line:Str):[Str]{
   let parts=str.split(line;"=");
   <[str.trim(parts[0]);str.trim(parts[1])];
 };
@@ -80,16 +80,16 @@ I=file:std.file;
 | `append` | `(path:Str;content:Str):void!FileErr` | Append string to file |
 | `exists` | `(path:Str):bool` | Check if file exists |
 | `delete` | `(path:Str):void!FileErr` | Delete a file |
-| `read_bytes` | `(path:Str):[u8]!FileErr` | Read file as byte array |
-| `write_bytes` | `(path:Str;data:[u8]):void!FileErr` | Write byte array to file |
-| `list_dir` | `(path:Str):[Str]!FileErr` | List directory entries |
+| `readBytes` | `(path:Str):[u8]!FileErr` | Read file as byte array |
+| `writeBytes` | `(path:Str;data:[u8]):void!FileErr` | Write byte array to file |
+| `listDir` | `(path:Str):[Str]!FileErr` | List directory entries |
 
 **Example: copy a file**
 
 ```
-F=copy_file(src:Str;dst:Str):void!FileErr{
-  let content=file.read(src)!FileErr.ReadFailed;
-  file.write(dst;content)!FileErr.WriteFailed;
+F=copyFile(src:Str;dst:Str):void!FileErr{
+  let content=file.read(src)!FileErr;
+  file.write(dst;content)!FileErr;
 };
 ```
 
@@ -113,12 +113,12 @@ T=Config{host:Str;port:i64;debug:bool};
 
 F=save(c:Config;path:Str):void!AppErr{
   let data=json.enc(c);
-  file.write(path;data)!AppErr.FileErr;
+  file.write(path;data)!AppErr;
 };
 
 F=load(path:Str):Config!AppErr{
-  let data=file.read(path)!AppErr.FileErr;
-  let cfg=json.dec(data)!AppErr.ParseErr;
+  let data=file.read(path)!AppErr;
+  let cfg=json.dec(data)!AppErr;
   <cfg;
 };
 ```
@@ -216,17 +216,17 @@ T=Todo{id:u64;title:Str;done:bool};
 T=TodoErr{DbErr:Str;NotFound:u64};
 
 F=init(conn:db.Conn):void!TodoErr{
-  db.exec(conn;"CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY, title TEXT, done INTEGER)";[])!TodoErr.DbErr;
+  db.exec(conn;"CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY, title TEXT, done INTEGER)";[])!TodoErr;
 };
 
 F=add(conn:db.Conn;title:Str):Todo!TodoErr{
-  let r=db.exec(conn;"INSERT INTO todos (title,done) VALUES (?,0)";[title])!TodoErr.DbErr;
-  <Todo{id:r.last_id;title:title;done:false};
+  let r=db.exec(conn;"INSERT INTO todos (title,done) VALUES (?,0)";[title])!TodoErr;
+  <Todo{id:r.lastId;title:title;done:false};
 };
 
 F=list(conn:db.Conn):[Todo]!TodoErr{
-  let rows=db.query(conn;"SELECT id,title,done FROM todos";[])!TodoErr.DbErr;
-  let result=mut.[Todo][];
+  let rows=db.query(conn;"SELECT id,title,done FROM todos";[])!TodoErr;
+  let result=mut.[];
   lp(let i=0;i<rows.len;i=i+1){
     let r=rows[i];
     result=result.push(Todo{
@@ -250,13 +250,13 @@ I=crypto:std.crypto;
 | `sha256` | `(data:Str):Str` | SHA-256 hash (hex string) |
 | `sha512` | `(data:Str):Str` | SHA-512 hash (hex string) |
 | `hmac` | `(key:Str;data:Str;algo:Str):Str` | HMAC signature |
-| `random_bytes` | `(n:u64):[u8]` | Cryptographic random bytes |
+| `randomBytes` | `(n:u64):[u8]` | Cryptographic random bytes |
 | `uuid` | `():Str` | Generate UUID v4 |
 
 **Example: hash a password**
 
 ```
-F=hash_password(password:Str;salt:Str):Str{
+F=hashPassword(password:Str;salt:Str):Str{
   <crypto.sha256(salt+password);
 };
 ```
@@ -298,7 +298,7 @@ I=time:std.time;
 | Function | Signature | Purpose |
 |----------|-----------|---------|
 | `now` | `():u64` | Unix timestamp in seconds |
-| `now_ms` | `():u64` | Unix timestamp in milliseconds |
+| `nowMs` | `():u64` | Unix timestamp in milliseconds |
 | `format` | `(ts:u64;fmt:Str):Str` | Format timestamp |
 | `sleep` | `(ms:u64):void` | Sleep for milliseconds |
 
@@ -359,21 +359,18 @@ I=net:std.net;
 M=echo;
 I=net:std.net;
 
-F=main():i64{
-  let listener=net.listen("0.0.0.0";9000)|{
-    Ok:l   l;
-    Err:e  <1;
-  };
-  lp(let _=0;true;_=0){
+F=main():i64!net.NetErr{
+  let listener=net.listen("0.0.0.0";9000)!net.NetErr;
+  lp(let x=0;true;x=0){
     net.accept(listener)|{
       Ok:conn  {
         net.recv(conn)|{
-          Ok:data  net.send(conn;data)|{Ok:_  {};Err:_  {};};
-          Err:_    {};
+          Ok:data  net.send(conn;data)|{Ok:v {};Err:e {}};
+          Err:e    {}
         };
         net.close(conn);
       };
-      Err:_  {};
+      Err:e  {}
     };
   };
   <0;

@@ -42,7 +42,7 @@ When a function can fail, its return type includes the error type after `!`:
 ```
 F=divide(a:f64;b:f64):f64!MathErr{
   if(b=0.0){
-    <MathErr.DivByZero(true);
+    <MathErr{DivByZero:true};
   };
   <a/b;
 };
@@ -57,13 +57,13 @@ A function without `!` in its return type is **total** -- it cannot fail and can
 To return an error, construct the error variant:
 
 ```
-F=parse_age(s:Str):i64!ParseErr{
-  let n=str.to_int(s)!ParseErr.InvalidInput;
+F=parseAge(s:Str):i64!ParseErr{
+  let n=str.toInt(s)!ParseErr;
   if(n<0){
-    <ParseErr.NegativeAge(s);
+    <ParseErr{NegativeAge:s};
   };
   if(n>150){
-    <ParseErr.UnreasonableAge(s);
+    <ParseErr{UnreasonableAge:s};
   };
   <n;
 };
@@ -74,29 +74,19 @@ F=parse_age(s:Str):i64!ParseErr{
 The `!` operator is the primary way to handle errors from callees. It propagates errors upward automatically:
 
 ```
-F=get_user(id:u64):User!ApiErr{
-  let row=db.one("SELECT * FROM users WHERE id=?",[id])!ApiErr.DbError;
+F=getUser(id:u64):User!ApiErr{
+  let row=db.one("SELECT * FROM users WHERE id=?";[id])!ApiErr;
   <User{id:row.u64("id");name:row.str("name")};
 };
 ```
 
-Here is what `!ApiErr.DbError` does:
+Here is what `!ApiErr` does:
 
 1. Call `db.one(...)` which returns `Result<Row, DbErr>`
 2. If the result is `Ok(row)`: unwrap and continue, `row` gets the value
-3. If the result is `Err(e)`: wrap the error as `ApiErr.DbError(e)` and return it from `get_user`
+3. If the result is `Err(e)`: return the error from `getUser`
 
-This is equivalent to writing:
-
-```
-let result=db.one("SELECT * FROM users WHERE id=?",[id]);
-result|{
-  Ok:row  row;
-  Err:e   <ApiErr.DbError(e);
-};
-```
-
-But the `!` version is one line instead of four. In a function with many fallible calls, this compression is significant.
+The `!` operator makes error propagation concise. Without it, you would need a match expression to handle each fallible call. With `!`, one line handles the unwrap-or-propagate pattern.
 
 ### Chaining propagation
 
@@ -104,9 +94,9 @@ Multiple fallible calls can be chained, each with their own error mapping:
 
 ```
 F=handle(req:http.Req):http.Res!ApiErr{
-  let body=json.dec(req.body)!ApiErr.BadRequest;
-  let user=db.get_user(body.id)!ApiErr.DbError;
-  let updated=db.save(user)!ApiErr.DbError;
+  let body=json.dec(req.body)!ApiErr;
+  let user=db.getUser(body.id)!ApiErr;
+  let updated=db.save(user)!ApiErr;
   <http.Res.ok(json.enc(updated));
 };
 ```
@@ -118,10 +108,10 @@ Each `!` is a potential early return. If any call fails, the function returns im
 When you need to handle errors instead of propagating them, use a match expression:
 
 ```
-F=get_or_default(id:u64):User{
-  db.get_user(id)|{
-    Ok:user  <user;
-    Err:e    <User{id:0;name:"anonymous"};
+F=getOrDefault(id:u64):User{
+  <db.getUser(id)|{
+    Ok:user  user;
+    Err:e    User{id:0;name:"anonymous"}
   };
 };
 ```
@@ -133,14 +123,14 @@ This function is total (no `!` in its return type) because it handles all errors
 You can match on the error type's variants to handle different failures differently:
 
 ```
-F=resilient_get(id:u64):http.Res{
-  db.get_user(id)|{
-    Ok:user  <http.Res.ok(json.enc(user));
+F=resilientGet(id:u64):http.Res{
+  <db.getUser(id)|{
+    Ok:user  http.Res.ok(json.enc(user));
     Err:e    e|{
-      NotFound:_   <http.Res.status(404;"User not found");
-      Timeout:_    <http.Res.status(503;"Service temporarily unavailable");
-      DbError:msg  <http.Res.status(500;"Internal error: \(msg)");
-    };
+      NotFound:x   http.Res.status(404;"User not found");
+      Timeout:x    http.Res.status(503;"Service temporarily unavailable");
+      DbError:msg  http.Res.status(500;msg)
+    }
   };
 };
 ```
@@ -160,7 +150,7 @@ T=CalcErr{
 
 F=divide(a:f64;b:f64):f64!CalcErr{
   if(b=0.0){
-    <CalcErr.DivByZero(true);
+    <CalcErr{DivByZero:true};
   };
   <a/b;
 };
@@ -170,19 +160,19 @@ F=calc(a:f64;op:Str;b:f64):f64!CalcErr{
   if(op="-"){<a-b};
   if(op="*"){<a*b};
   if(op="/"){
-    let result=divide(a;b)!CalcErr.DivByZero;
+    let result=divide(a;b)!CalcErr;
     <result;
   };
-  <CalcErr.InvalidOp(op);
+  <CalcErr{InvalidOp:op};
 };
 
 F=main():i64{
-  calc(10.0;"/"  ;3.0)|{
-    Ok:v   io.println("Result: \(v as Str)");
+  calc(10.0;"/";3.0)|{
+    Ok:v   io.println(v as Str);
     Err:e  e|{
-      DivByZero:_  io.println("Error: division by zero");
-      InvalidOp:op io.println("Error: unknown operator \(op)");
-    };
+      DivByZero:x  io.println("Error: division by zero");
+      InvalidOp:op io.println("Error: unknown operator")
+    }
   };
   <0;
 };
@@ -192,7 +182,7 @@ F=main():i64{
 
 ### Exercise 1: Safe division
 
-Write a function `F=safe_div(a:i64;b:i64):i64!MathErr` that returns a `DivByZero` error when `b` is zero. Write a `main` function that calls it and prints either the result or an error message using match.
+Write a function `F=safeDiv(a:i64;b:i64):i64!MathErr` that returns a `DivByZero` error when `b` is zero. Write a `main` function that calls it and prints either the result or an error message using match.
 
 ### Exercise 2: Lookup with error
 
@@ -204,8 +194,8 @@ Define an error type `T=LookupErr{NotFound:Str;EmptyMap:bool}`. Write a function
 ### Exercise 3: Error chain
 
 Write two functions:
-- `F=parse_int(s:Str):i64!ParseErr` that wraps `str.to_int`
-- `F=parse_and_double(s:Str):i64!CalcErr` that calls `parse_int` and propagates the error as `CalcErr.BadInput`, then doubles the result
+- `F=parseInt(s:Str):i64!ParseErr` that wraps `str.toInt`
+- `F=parseAndDouble(s:Str):i64!CalcErr` that calls `parseInt` and propagates the error as `CalcErr`, then doubles the result
 
 This exercises the `!` propagation with error type mapping.
 
@@ -214,8 +204,8 @@ This exercises the `!` propagation with error type mapping.
 - toke has no exceptions -- errors are values in the type system
 - Error types are sum types: `T=MyErr{Variant1:Type1;Variant2:Type2}`
 - `:T!E` in a return type means the function can return either `T` (success) or `E` (error)
-- `expr!ErrVariant` propagates errors upward, mapping to the current function's error type
-- `expr|{Ok:v handle_success; Err:e handle_error}` matches on results for recovery
+- `expr!ErrType` propagates errors upward to the current function's error type
+- `expr|{Ok:v handleSuccess; Err:e handleError}` matches on results for recovery
 - Match is exhaustive -- every variant must be handled
 - Functions without `!` are total and cannot propagate errors
 

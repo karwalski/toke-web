@@ -51,7 +51,7 @@ I=str:std.str;
 
 ```
 let s="Hello";
-let n=str.len(s);  // 5
+let n=str.len(s);
 ```
 
 ### Slicing
@@ -60,42 +60,41 @@ Extract a substring by start index and length:
 
 ```
 let s="Hello, world!";
-let hello=str.slice(s;0;5);     // "Hello"
-let world=str.slice(s;7;5);     // "world"
+let hello=str.slice(s;0;5);
+let world=str.slice(s;7;5);
 ```
 
 ### Search
 
 ```
-let found=str.contains(s;"world");  // true
-let idx=str.index_of(s;"world");    // 7
+let found=str.contains(s;"world");
+let idx=str.indexOf(s;"world");
 ```
 
 ### Replace
 
 ```
 let result=str.replace("Hello, world!";"world";"toke");
-// "Hello, toke!"
 ```
 
 ### Split and join
 
 ```
-let parts=str.split("a,b,c";",");    // ["a";"b";"c"]
-let joined=str.join(parts;"-");        // "a-b-c"
+let parts=str.split("a,b,c";",");
+let joined=str.join(parts;"-");
 ```
 
 ### Case conversion
 
 ```
-let upper=str.upper("hello");  // "HELLO"
-let lower=str.lower("HELLO");  // "hello"
+let upper=str.upper("hello");
+let lower=str.lower("HELLO");
 ```
 
 ### Trim
 
 ```
-let trimmed=str.trim("  hello  ");  // "hello"
+let trimmed=str.trim("  hello  ");
 ```
 
 ## Console I/O with std.io
@@ -107,14 +106,14 @@ I=io:std.io;
 ### Printing
 
 ```
-io.println("Hello, world!");          // prints with newline
-io.print("Enter your name: ");       // prints without newline
+io.println("Hello, world!");
+io.print("Enter your name: ");
 ```
 
 ### Reading input
 
 ```
-let line=io.readline();  // reads one line from stdin
+let line=io.readline();
 ```
 
 ## File I/O with std.file
@@ -131,8 +130,8 @@ T=FileErr{
   ReadFailed:Str
 };
 
-F=read_config(path:Str):Str!FileErr{
-  let content=file.read(path)!FileErr.ReadFailed;
+F=readConfig(path:Str):Str!FileErr{
+  let content=file.read(path)!FileErr;
   <content;
 };
 ```
@@ -142,8 +141,8 @@ F=read_config(path:Str):Str!FileErr{
 ### Writing a file
 
 ```
-F=save_data(path:Str;data:Str):void!FileErr{
-  file.write(path;data)!FileErr.WriteFailed;
+F=saveData(path:Str;data:Str):void!FileErr{
+  file.write(path;data)!FileErr;
 };
 ```
 
@@ -153,14 +152,14 @@ F=save_data(path:Str;data:Str):void!FileErr{
 
 ```
 F=log(path:Str;msg:Str):void!FileErr{
-  file.append(path;msg)!FileErr.WriteFailed;
+  file.append(path;msg)!FileErr;
 };
 ```
 
 ### Checking if a file exists
 
 ```
-let exists=file.exists("config.json");  // bool
+let exists=file.exists("config.json");
 ```
 
 ## JSON with std.json
@@ -174,10 +173,9 @@ I=json:std.json;
 ```
 T=User{id:u64;name:Str;email:Str};
 
-F=user_to_json(u:User):Str{
+F=userToJson(u:User):Str{
   <json.enc(u);
 };
-// produces: {"id":42,"name":"Alice","email":"alice@example.com"}
 ```
 
 ### Decoding (JSON string to struct)
@@ -188,8 +186,8 @@ T=JsonErr{
   MissingField:Str
 };
 
-F=json_to_user(s:Str):User!JsonErr{
-  let u=json.dec(s)!JsonErr.ParseFailed;
+F=jsonToUser(s:Str):User!JsonErr{
+  let u=json.dec(s)!JsonErr;
   <u;
 };
 ```
@@ -199,9 +197,9 @@ F=json_to_user(s:Str):User!JsonErr{
 For JSON whose structure you do not know at compile time, use `json.get` to extract fields:
 
 ```
-F=get_name(raw:Str):Str!JsonErr{
-  let obj=json.dec(raw)!JsonErr.ParseFailed;
-  let name=json.get(obj;"name")!JsonErr.MissingField;
+F=getName(raw:Str):Str!JsonErr{
+  let obj=json.dec(raw)!JsonErr;
+  let name=json.get(obj;"name")!JsonErr;
   <name as Str;
 };
 ```
@@ -220,9 +218,9 @@ T=WcErr{
   FileErr:Str
 };
 
-F=count_words(text:Str):[Str:i64]{
+F=countWords(text:Str):[Str:i64]{
   let words=str.split(text;" ");
-  let freq=mut.[Str:i64][];
+  let freq=mut.[];
   lp(let i=0;i<words.len;i=i+1){
     let w=str.lower(str.trim(words[i]));
     if(str.len(w)>0){
@@ -239,7 +237,7 @@ F=count_words(text:Str):[Str:i64]{
 F=main():i64{
   file.read("input.txt")|{
     Ok:content  {
-      let freq=count_words(content);
+      let freq=countWords(content);
       let keys=freq.keys;
       lp(let i=0;i<keys.len;i=i+1){
         let k=keys[i];
@@ -260,19 +258,19 @@ Write a program that reads a file and prints the number of lines. Use `str.split
 
 ### Exercise 2: CSV parser
 
-Write a function `F=parse_csv(content:Str):[[Str]]` that splits a CSV string into a 2D array. Split on `"\n"` for rows and `","` for columns.
+Write a function `F=parseCsv(content:Str):[[Str]]` that splits a CSV string into a 2D array. Split on `"\n"` for rows and `","` for columns.
 
 ### Exercise 3: JSON round-trip
 
 Define a `T=Config{host:Str;port:i64;debug:bool}` type. Write:
-- `F=save_config(path:Str;c:Config):void!FileErr` that encodes to JSON and writes to a file
-- `F=load_config(path:Str):Config!ConfigErr` that reads a file and decodes from JSON
+- `F=saveConfig(path:Str;c:Config):void!FileErr` that encodes to JSON and writes to a file
+- `F=loadConfig(path:Str):Config!ConfigErr` that reads a file and decodes from JSON
 
 ## Key takeaways
 
 - `Str` is UTF-8, heap-allocated, and the only string type
 - String interpolation: `"text \(expr) more text"`
-- `std.str` provides `len`, `slice`, `contains`, `replace`, `split`, `join`, `upper`, `lower`, `trim`
+- `std.str` provides `len`, `slice`, `contains`, `indexOf`, `replace`, `split`, `join`, `upper`, `lower`, `trim`
 - `std.io` provides `println`, `print`, `readline`
 - `std.file` provides `read`, `write`, `append`, `exists`
 - `std.json` provides `enc` (encode) and `dec` (decode)

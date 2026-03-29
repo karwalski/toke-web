@@ -110,9 +110,9 @@ I=http:std.http;
 I=db:std.db;
 I=json:std.json;
 
-F=get_user(req:http.Req):http.Res!ApiErr{
+F=getUser(req:http.Req):http.Res!ApiErr{
   let id=req.param("id") as u64;
-  let user=db.one("SELECT * FROM users WHERE id=?",[id])!ApiErr.NotFound;
+  let user=db.one("SELECT * FROM users WHERE id=?";[id])!ApiErr;
   <http.Res.ok(json.enc(user));
 };
 ```

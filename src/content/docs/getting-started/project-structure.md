@@ -45,9 +45,9 @@ After importing, access the module's exports through the alias:
 
 ```
 F=handle(req:http.Req):http.Res!ApiErr{
-  let body = json.dec(req.body)!ApiErr.BadInput;
-  let user = auth.verify(req.token)!ApiErr.Unauthorized;
-  let data = db.get(user.id)!ApiErr.DbErr;
+  let body = json.dec(req.body)!ApiErr;
+  let user = auth.verify(req.token)!ApiErr;
+  let data = db.get(user.id)!ApiErr;
   <http.Res.ok(json.enc(data));
 };
 ```

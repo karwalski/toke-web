@@ -40,9 +40,9 @@ The toke project spans seven repositories, each with a focused role:
 | [karwalski/tkc](https://github.com/karwalski/tkc) | Reference compiler (C), standard library, conformance test suite |
 | [karwalski/toke-spec](https://github.com/karwalski/toke-spec) | Language specification: grammar, character set, keyword table |
 | [karwalski/toke-corpus](https://github.com/karwalski/toke-corpus) | Corpus generation pipeline, sandbox execution harness |
-| [karwalski/toke-model](https://github.com/karwalski/toke-model) | Fine-tuning scripts and model evaluation harness |
+| karwalski/toke-model (planned) | Fine-tuning scripts and model evaluation harness |
 | [karwalski/toke-benchmark](https://github.com/karwalski/toke-benchmark) | Held-out benchmark task set, gate measurement scripts |
-| [karwalski/toke-eval](https://github.com/karwalski/toke-eval) | Pass@1 and token-efficiency evaluation pipeline |
+| karwalski/toke-eval (planned) | Pass@1 and token-efficiency evaluation pipeline |
 
 Most contributors start with **tkc** (the compiler) or **toke-spec** (the language specification).
 

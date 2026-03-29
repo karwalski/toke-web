@@ -16,38 +16,38 @@ test.assert(str.len("hi") == 2; "length should be 2");
 test.assert(file.exists("/tmp/data.txt"); "file should exist");
 ```
 
-### test.assert_eq(a: Str; b: Str; msg: Str): bool
+### test.assertEq(a: Str; b: Str; msg: Str): bool
 
 Passes if strings `a` and `b` are equal. On failure, emits a diagnostic showing both values and `msg` to stderr and returns `false`.
 
 ```toke
-test.assert_eq(str.upper("hello"); "HELLO"; "upper should produce HELLO");
-test.assert_eq(""; ""; "empty strings are equal");
+test.assertEq(str.upper("hello"); "HELLO"; "upper should produce HELLO");
+test.assertEq(""; ""; "empty strings are equal");
 ```
 
-### test.assert_ne(a: Str; b: Str; msg: Str): bool
+### test.assertNe(a: Str; b: Str; msg: Str): bool
 
 Passes if strings `a` and `b` are not equal. On failure, emits a diagnostic showing both values and `msg` to stderr and returns `false`.
 
 ```toke
-test.assert_ne("foo"; "bar"; "foo and bar should differ");
-test.assert_ne(""; "x"; "empty and non-empty differ");
+test.assertNe("foo"; "bar"; "foo and bar should differ");
+test.assertNe(""; "x"; "empty and non-empty differ");
 ```
 
 ## Usage Examples
 
 ```toke
 (* Test string operations *)
-test.assert_eq(str.trim("  hi  "); "hi"; "trim removes whitespace");
+test.assertEq(str.trim("  hi  "); "hi"; "trim removes whitespace");
 test.assert(str.contains("foobar"; "oba"); "contains finds substring");
 
 (* Test with computed values *)
 let parts = str.split("a,b,c"; ",");
-test.assert_eq(str.from_int(str.len(parts)); "3"; "split produces 3 parts");
+test.assertEq(str.fromInt(str.len(parts)); "3"; "split produces 3 parts");
 
 (* Test error cases *)
-let result = str.to_int("not a number");
-test.assert(result.err?; "to_int rejects non-numeric input");
+let result = str.toInt("not a number");
+test.assert(result.err?; "toInt rejects non-numeric input");
 ```
 
 ## Diagnostic Output

@@ -34,39 +34,39 @@ let r = str.slice("hello"; 1; 3);  (* r = ok("el") *)
 let e = str.slice("hello"; 3; 10); (* e = err(SliceErr{...}) *)
 ```
 
-### str.from_int(n: i64): Str
+### str.fromInt(n: i64): Str
 
 Converts a signed 64-bit integer to its decimal string representation.
 
 ```toke
-let s = str.from_int(42);   (* s = "42" *)
-let t = str.from_int(-7);   (* t = "-7" *)
+let s = str.fromInt(42);   (* s = "42" *)
+let t = str.fromInt(-7);   (* t = "-7" *)
 ```
 
-### str.from_float(n: f64): Str
+### str.fromFloat(n: f64): Str
 
 Converts a 64-bit float to its string representation.
 
 ```toke
-let s = str.from_float(3.14);  (* s = "3.14" *)
+let s = str.fromFloat(3.14);  (* s = "3.14" *)
 ```
 
-### str.to_int(s: Str): i64!ParseErr
+### str.toInt(s: Str): i64!ParseErr
 
 Parses a decimal integer from the string `s`. Returns `ParseErr` if the string is not a valid integer or is empty.
 
 ```toke
-let n = str.to_int("123");  (* n = ok(123) *)
-let e = str.to_int("abc");  (* e = err(ParseErr{...}) *)
+let n = str.toInt("123");  (* n = ok(123) *)
+let e = str.toInt("abc");  (* e = err(ParseErr{...}) *)
 ```
 
-### str.to_float(s: Str): f64!ParseErr
+### str.toFloat(s: Str): f64!ParseErr
 
 Parses a floating-point number from the string `s`. Returns `ParseErr` if the string is not a valid number.
 
 ```toke
-let f = str.to_float("2.5");  (* f = ok(2.5) *)
-let e = str.to_float("xyz");  (* e = err(ParseErr{...}) *)
+let f = str.toFloat("2.5");  (* f = ok(2.5) *)
+let e = str.toFloat("xyz");  (* e = err(ParseErr{...}) *)
 ```
 
 ### str.contains(s: Str; sub: Str): bool
@@ -119,20 +119,20 @@ Returns the raw UTF-8 byte array of the string.
 let b = str.bytes("abc");  (* b = [97; 98; 99] *)
 ```
 
-### str.from_bytes(b: [Byte]): Str!EncodingErr
+### str.fromBytes(b: [Byte]): Str!EncodingErr
 
 Converts a byte array to a string. Returns `EncodingErr` if the bytes are not valid UTF-8.
 
 ```toke
-let s = str.from_bytes([104; 105]);  (* s = ok("hi") *)
+let s = str.fromBytes([104; 105]);  (* s = ok("hi") *)
 ```
 
 ## Usage Examples
 
 ```toke
 (* Parse a number from user input, with fallback *)
-let input = str.trim(raw_input);
-let val = str.to_int(input) |{ 0 };
+let input = str.trim(rawInput);
+let val = str.toInt(input) |{ 0 };
 
 (* Build a greeting *)
 let name = str.upper(str.slice("alice"; 0; 1) |{ "" });
@@ -155,7 +155,7 @@ Returned by `str.slice` when indices are out of bounds.
 
 ### ParseErr
 
-Returned by `str.to_int` and `str.to_float` when the input string cannot be parsed as the target numeric type.
+Returned by `str.toInt` and `str.toFloat` when the input string cannot be parsed as the target numeric type.
 
 | Field | Type | Meaning |
 |-------|------|---------|
@@ -163,7 +163,7 @@ Returned by `str.to_int` and `str.to_float` when the input string cannot be pars
 
 ### EncodingErr
 
-Returned by `str.from_bytes` when the byte array is not valid UTF-8.
+Returned by `str.fromBytes` when the byte array is not valid UTF-8.
 
 | Field | Type | Meaning |
 |-------|------|---------|

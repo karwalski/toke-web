@@ -68,12 +68,12 @@ let elapsed = time.since(start);
 
 if result.ok? =
   log.info("query succeeded"; [
-    ["elapsed_ms"; str.from_int(elapsed)];
+    ["elapsed_ms"; str.fromInt(elapsed)];
     ["table"; "users"]
   ])
 el =
   log.error("query failed"; [
-    ["elapsed_ms"; str.from_int(elapsed)];
+    ["elapsed_ms"; str.fromInt(elapsed)];
     ["table"; "users"]
   ]);
 ```

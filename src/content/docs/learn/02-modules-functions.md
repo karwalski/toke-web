@@ -79,7 +79,7 @@ Here is a function with more parameters:
 ```
 M=geometry;
 
-F=rect_area(width:f64;height:f64):f64{
+F=rectArea(width:f64;height:f64):f64{
   <width*height;
 };
 ```
@@ -92,7 +92,7 @@ Use the `void` return type for functions that perform side effects but return no
 M=greet;
 I=io:std.io;
 
-F=say_hello(name:Str):void{
+F=sayHello(name:Str):void{
   io.println("Hello, \(name)!");
 };
 ```
@@ -110,12 +110,12 @@ F=square(x:i64):i64{
   <x*x;
 };
 
-F=sum_of_squares(a:i64;b:i64):i64{
+F=sumOfSquares(a:i64;b:i64):i64{
   <square(a)+square(b);
 };
 
 F=main():i64{
-  let result=sum_of_squares(3;4);
+  let result=sumOfSquares(3;4);
   <0;
 };
 ```
@@ -123,7 +123,7 @@ F=main():i64{
 Notice that function arguments in a call are also separated by `;`:
 
 ```
-sum_of_squares(3;4)
+sumOfSquares(3;4)
 ```
 
 This is consistent with parameter declarations. Semicolons are the universal separator in toke.
@@ -167,7 +167,7 @@ F=abs(n:i64):i64{
 
 F=main():i64{
   let val=abs(0-42);
-  io.println("Absolute value: \(val as Str)");
+  io.println(val as Str);
   <0;
 };
 ```
@@ -197,7 +197,7 @@ Declarations must appear in this order. You cannot put an import after a functio
 
 ### Exercise 1: Temperature converter
 
-Write a function `F=c_to_f(c:f64):f64` that converts Celsius to Fahrenheit using the formula `F = C * 9/5 + 32`. Write a `main` function that converts 100 degrees and prints the result.
+Write a function `F=cToF(c:f64):f64` that converts Celsius to Fahrenheit using the formula `F = C * 9/5 + 32`. Write a `main` function that converts 100 degrees and prints the result.
 
 ### Exercise 2: Distance formula
 

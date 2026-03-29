@@ -16,15 +16,15 @@ let path = env.get("PATH");  (* path = ok("/usr/bin:...") *)
 let e = env.get("UNSET_VAR"); (* e = err(EnvErr.NotFound{...}) *)
 ```
 
-### env.get_or(key: Str; default: Str): Str
+### env.getOr(key: Str; default: Str): Str
 
 Looks up the environment variable `key`. Returns the value if it exists, or `default` if the variable is not set or the key is invalid. This function is infallible.
 
 ```toke
-let port = env.get_or("PORT"; "8080");
+let port = env.getOr("PORT"; "8080");
 (* port = "8080" if PORT is not set *)
 
-let home = env.get_or("HOME"; "/tmp");
+let home = env.getOr("HOME"; "/tmp");
 (* home = "/Users/alice" if HOME is set *)
 ```
 
@@ -44,7 +44,7 @@ env.set("BAD=KEY"; ""); (* returns false -- key contains '=' *)
 
 ```toke
 (* Configure server port with fallback *)
-let port = env.get_or("PORT"; "3000");
+let port = env.getOr("PORT"; "3000");
 log.info("starting server"; [["port"; port]]);
 
 (* Require a variable or exit *)

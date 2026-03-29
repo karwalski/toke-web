@@ -21,7 +21,7 @@ Spawns a child process. The first element of `cmd` is the executable path or nam
 let h = process.spawn(["echo"; "hello toke"]);
 (* h = ok(Handle{...}) *)
 
-let e = process.spawn(["/nonexistent_binary"]);
+let e = process.spawn(["/nonexistentbinary"]);
 (* e = err(ProcessErr.NotFound{...}) *)
 ```
 
@@ -65,7 +65,7 @@ let code = process.wait(h) |{ -1 };
 if code == 0 =
   log.info("ls succeeded"; [["output"; output]])
 el =
-  log.error("ls failed"; [["code"; str.from_int(code)]]);
+  log.error("ls failed"; [["code"; str.fromInt(code)]]);
 ```
 
 ## Error Types

@@ -14,7 +14,7 @@ export default defineConfig({
 				replacesTitle: true,
 			},
 			social: [
-				{ icon: 'github', label: 'GitHub', href: 'https://github.com/karwalski' },
+				{ icon: 'github', label: 'GitHub', href: 'https://github.com/karwalski/toke' },
 			],
 			customCss: ['./src/styles/custom.css'],
 			sidebar: [
@@ -52,7 +52,7 @@ export default defineConfig({
 					],
 				},
 				{
-					label: 'API Reference',
+					label: 'API Reference (Phase 1)',
 					items: [
 						{ label: 'Type System', slug: 'reference/types' },
 						{ label: 'Grammar', slug: 'reference/grammar' },
@@ -61,6 +61,14 @@ export default defineConfig({
 							label: 'Standard Library',
 							autogenerate: { directory: 'reference/stdlib' },
 						},
+					],
+				},
+				{
+					label: 'API Reference (Phase 2)',
+					items: [
+						{ label: 'Phase 2 Overview', slug: 'reference/phase2/overview' },
+						{ label: 'Type System', slug: 'reference/phase2/types' },
+						{ label: 'Grammar', slug: 'reference/phase2/grammar' },
 					],
 				},
 				{

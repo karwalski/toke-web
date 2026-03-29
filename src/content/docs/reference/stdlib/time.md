@@ -44,7 +44,7 @@ Formats a millisecond Unix timestamp using strftime-compatible format codes. If 
 ```toke
 let ts = 1705322096000;  (* 2024-01-15 12:34:56 UTC *)
 let date = time.format(ts; "%Y-%m-%d");    (* date = "2024-01-15" *)
-let time_ = time.format(ts; "%H:%M:%S");   (* time_ = "12:34:56" *)
+let tm = time.format(ts; "%H:%M:%S");   (* tm = "12:34:56" *)
 let custom = time.format(ts; "year=%Y");    (* custom = "year=2024" *)
 ```
 
@@ -55,7 +55,7 @@ let custom = time.format(ts; "year=%Y");    (* custom = "year=2024" *)
 let start = time.now();
 let rows = db.many("SELECT * FROM big_table"; []);
 let ms = time.since(start);
-log.info("query complete"; [["elapsed_ms"; str.from_int(ms)]]);
+log.info("query complete"; [["elapsed_ms"; str.fromInt(ms)]]);
 
 (* Log with a formatted timestamp *)
 let now = time.now();

@@ -3,7 +3,11 @@ title: Type System
 description: Complete reference for toke's type system — primitives, composites, type inference, casts, and compatibility rules.
 ---
 
-toke uses a static type system with no implicit coercions. Every value has a single concrete type known at compile time. This page documents all types, inference rules, and compatibility semantics defined in Profile 1.
+toke uses a static type system with no implicit coercions. Every value has a single concrete type known at compile time. This page documents all types, inference rules, and compatibility semantics defined in Profile 1 (the current default).
+
+:::note[Looking for Phase 2?]
+Phase 2 uses `$`-prefixed type names and `@` array syntax for higher token density. See the [Phase 2 Type System](/reference/phase2/types/) reference.
+:::
 
 ## Primitive Types
 
@@ -22,7 +26,7 @@ A type is *numeric* if it is `i64`, `u64`, or `f64`. Arithmetic operators requir
 
 ```toke
 let x: i64 = 42;
-let y: f64 = x as f64;    // explicit cast required
+let y: f64 = x as f64;
 let z: u64 = 100 as u64;
 ```
 
@@ -46,9 +50,9 @@ let greeting: Str = str.concat("hello, ", name);
 An ordered, homogeneous sequence of elements of type `T`.
 
 ```toke
-let nums: [i64] = [1; 2; 3];       // array of i64
-let empty: [i64] = [];              // empty array (type from annotation)
-let inferred = [1; 2; 3];           // element type inferred as i64
+let nums: [i64] = [1; 2; 3];
+let empty: [i64] = [];
+let inferred = [1; 2; 3];
 ```
 
 - Element type is determined by the first element, or by annotation.
@@ -72,8 +76,8 @@ let ages: [Str:i64] = ["alice": 30; "bob": 25];
 A sum type representing either a success value of type `T` or an error.
 
 ```toke
-F=read_file(path: Str): Str!Err {
-    let content = file.read(path)!;   // propagate error with !
+F=readFile(path: Str): Str!Err {
+    let content = file.read(path)!Err;
     < content
 };
 ```
@@ -106,8 +110,8 @@ F=main(): i64 {
 Raw pointer types for foreign function interface declarations.
 
 ```toke
-F=malloc(size: u64): *u8;           // extern declaration (no body)
-F=free(ptr: *u8): void;             // extern declaration (no body)
+F=malloc(size: u64): *u8;
+F=free(ptr: *u8): void;
 ```
 
 - Pointer types are **only** valid in extern (bodyless) function signatures.
@@ -160,9 +164,9 @@ toke infers types for `let` and `mut` bindings when no annotation is provided.
 ### Binding inference
 
 ```toke
-let x = 42;              // x : i64 (inferred from literal)
-let y: f64 = 3.14;       // y : f64 (explicit annotation)
-mut z = "hello";          // z : Str (inferred, mutable)
+let x = 42;
+let y: f64 = 3.14;
+let z = mut."hello";
 ```
 
 When both annotation and initializer are present, their types must match. A mismatch produces error [E4031](/reference/errors/#e4031).

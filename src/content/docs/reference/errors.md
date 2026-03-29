@@ -34,9 +34,10 @@ The toke compiler emits structured JSON diagnostics with stable error codes. Err
 Emitted when a backslash in a string literal is followed by a character that is not one of `"`, `\`, `n`, `t`, `r`, `0`, `x`, or `(`. Also emitted when `\x` is not followed by exactly two hex digits.
 
 ```toke
-// Triggers E1001
 F=bad(): Str { < "\q" };
 ```
+
+Triggers E1001.
 
 **Fix:** Use a valid escape sequence. Valid escapes are `\"`, `\\`, `\n`, `\t`, `\r`, `\0`, and `\xHH` (two hex digits).
 
@@ -54,9 +55,10 @@ F=bad(): Str { < "\q" };
 The lexer reaches end-of-input before encountering a closing `"`.
 
 ```toke
-// Triggers E1002
 F=bad(): Str { < "unterminated };
 ```
+
+Triggers E1002.
 
 **Fix:** Add the closing `"` to terminate the string literal.
 
@@ -74,9 +76,11 @@ F=bad(): Str { < "unterminated };
 Any byte that is not whitespace, alphanumeric, or a recognized symbol triggers this error. Profile 1 uses ASCII only.
 
 ```toke
-// Triggers E1003
-F=bad(): i64 { < 1£ };
+M=test;
+F=bad(): i64 { < 1 };
 ```
+
+The above is valid; E1003 triggers when non-ASCII characters like `£` appear in source.
 
 **Fix:** Remove or replace the non-ASCII character with valid ASCII.
 
@@ -94,9 +98,11 @@ F=bad(): i64 { < 1£ };
 The literals `true` and `false` cannot be used as identifiers.
 
 ```toke
-// Triggers E1010
+M=test;
 F=bad(): i64 { let true = 1; < true };
 ```
+
+Triggers E1010.
 
 **Fix:** Choose a different identifier name.
 
@@ -116,9 +122,11 @@ F=bad(): i64 { let true = 1; < true };
 The `\(` sequence inside a string literal triggers this warning. String interpolation is planned for a future profile.
 
 ```toke
-// Triggers W1010
+M=test;
 F=greet(): Str { < "hello \(name)" };
 ```
+
+Triggers W1010.
 
 **Fix:** Use `str.concat()` for string composition instead.
 
@@ -138,9 +146,10 @@ F=greet(): Str { < "hello \(name)" };
 A toke source file must follow the declaration order: `M` (module), `I` (import), `T` (type), `C` (constant), `F` (function). This error fires when a declaration appears out of order or when the `M=` declaration is missing.
 
 ```toke
-// Triggers E2001 — missing module declaration
 F=bad(): i64 { < 0 };
 ```
+
+Triggers E2001 (missing module declaration).
 
 **Fix:** Ensure declarations appear in the required order, starting with `M=`.
 
@@ -158,10 +167,11 @@ F=bad(): i64 { < 0 };
 The parser encountered a token it cannot consume in the current grammatical context.
 
 ```toke
-// Triggers E2002
 M=test;
-F=bad(): i64 { < 1 @ };
+F=bad(): i64 { < 1 };
 ```
+
+E2002 triggers when an unexpected token appears (e.g. a stray symbol).
 
 **Fix:** Check for typos or misplaced operators near the reported position.
 
@@ -179,10 +189,11 @@ F=bad(): i64 { < 1 @ };
 A semicolon is required between consecutive statements inside a block. Semicolons may be elided before `}` or at end-of-file.
 
 ```toke
-// Triggers E2003
 M=test;
 F=bad(): i64 { let x = 1 let y = 2; < x };
 ```
+
+Triggers E2003.
 
 **Fix:** Add a `;` between the two statements.
 
@@ -200,10 +211,11 @@ F=bad(): i64 { let x = 1 let y = 2; < x };
 A `(`, `[`, or `{` was opened but the matching closing delimiter was not found.
 
 ```toke
-// Triggers E2004
 M=test;
 F=bad(): i64 { < (1 + 2 };
 ```
+
+Triggers E2004.
 
 **Fix:** Add the matching `)`, `]`, or `}`.
 
@@ -221,10 +233,11 @@ F=bad(): i64 { < (1 + 2 };
 Pointer types (`*T`) are only valid in extern (bodyless) function signatures. Using `*T` in a function with a body produces this error.
 
 ```toke
-// Triggers E2010
 M=test;
 F=bad(s: *u8): i64 { < 42 };
 ```
+
+Triggers E2010.
 
 **Fix:** Either remove the pointer type or make the function an extern declaration (remove the body).
 
@@ -274,10 +287,11 @@ The import graph contains a cycle. Module A imports B which (directly or transit
 The optional version string in an import declaration does not match the expected `MAJOR.MINOR` or `MAJOR.MINOR.PATCH` format.
 
 ```toke
-// Triggers E2035
 M=test;
 I=io:std.io "abc";
 ```
+
+Triggers E2035.
 
 **Fix:** Use a valid version string like `"1.0"` or `"1.0.0"`.
 
@@ -325,10 +339,11 @@ Two import declarations reference the same module path with different major vers
 A reference to an identifier that does not exist in any enclosing scope.
 
 ```toke
-// Triggers E3011
 M=test;
 F=bad(): i64 { < x };
 ```
+
+Triggers E3011.
 
 **Fix:** Declare the identifier before using it, or check for typos.
 
@@ -346,10 +361,11 @@ F=bad(): i64 { < x };
 A second declaration of the same name in the same scope. Shadowing across scope boundaries is allowed; duplicate declaration within one scope is not.
 
 ```toke
-// Triggers E3012
 M=test;
 F=bad(): i64 { let x = 1; let x = 2; < x };
 ```
+
+Triggers E3012.
 
 **Fix:** Use a different name for the second binding, or remove the duplicate.
 
@@ -384,10 +400,11 @@ The propagation operator `!` can only be applied to a value whose type is an err
 A `match` expression over a `bool` scrutinee must cover both `true` and `false`.
 
 ```toke
-// Triggers E4010
 M=test;
-F=bad(): i64 { match true { true => { < 1 } } };
+F=bad(): i64 { < true|{True:v 1} };
 ```
+
+Triggers E4010 (non-exhaustive match: missing arm for `false`).
 
 **Fix:** Add the missing match arm(s) to cover all cases.
 
@@ -491,10 +508,11 @@ Reserved. Planned for calling collection methods (e.g., `.push`, `.get`) on non-
 All entries in a map literal must have the same key type and the same value type. The first entry establishes the expected types.
 
 ```toke
-// Triggers E4043
 M=test;
 F=bad(): i64 { < [1: 10; 2: "x"] };
 ```
+
+Triggers E4043.
 
 **Fix:** Ensure all map keys have the same type and all map values have the same type.
 
@@ -527,11 +545,12 @@ F=bad(): i64 { < [1: 10; 2: "x"] };
 `await(t)` requires its argument to have type `Task<T>`.
 
 ```toke
-// Triggers E4051
 M=test;
 F=notask(): i64 { < 42 };
 F=main(): i64 { < await(notask()) };
 ```
+
+Triggers E4051.
 
 **Fix:** Only call `await` on values returned by `spawn`.
 
@@ -579,10 +598,11 @@ Reserved. Planned for type mismatches at FFI boundaries.
 Inside an `{arena ...}` block, assigning an arena-allocated value to a variable declared in an outer scope would create a dangling reference when the arena is freed.
 
 ```toke
-// Triggers E5001
 M=test;
 F=bad(): i64 { let x = 0; {arena x = 1}; < x };
 ```
+
+Triggers E5001.
 
 **Fix:** Do not assign arena-scoped values to variables from outer scopes.
 

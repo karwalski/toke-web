@@ -3,7 +3,11 @@ title: Grammar
 description: Formal grammar reference for the toke language — EBNF production rules, key productions, and operator precedence.
 ---
 
-This page defines the formal grammar of toke Profile 1. The grammar is LL(1)-compatible, meaning it can be parsed with a single token of lookahead and no backtracking.
+This page defines the formal grammar of toke Profile 1 (the current default). The grammar is LL(1)-compatible, meaning it can be parsed with a single token of lookahead and no backtracking.
+
+:::note[Looking for Phase 2?]
+Phase 2 replaces `[` `]` with `$` and `@` sigils for type and array syntax. See the [Phase 2 Grammar](/reference/phase2/grammar/) reference.
+:::
 
 ## EBNF Notation
 
@@ -181,9 +185,9 @@ StructLit   = Ident , "{" , FieldInit , { ";" , FieldInit } , [ ";" ] , "}" ;
 
 FieldInit   = Ident , ":" , Expr ;
 
-Ident       = Letter , { Letter | Digit | "_" } ;
+Ident       = Letter , { Letter | Digit } ;
 
-Letter      = "a" .. "z" | "A" .. "Z" | "_" ;
+Letter      = "a" .. "z" | "A" .. "Z" ;
 
 Digit       = "0" .. "9" ;
 
@@ -209,7 +213,7 @@ Functions are declared with `F=name(params):ReturnType { body }`. A function wit
 
 ```toke
 F=add(a: i64; b: i64): i64 { < a + b };
-F=puts(s: *u8): void;    // extern FFI declaration
+F=puts(s: *u8): void;
 ```
 
 ### TypeExpr
@@ -258,9 +262,9 @@ Operators are listed from highest to lowest precedence:
 ### Precedence examples
 
 ```toke
-a + b * c        // parsed as a + (b * c)
-x.len + 1        // parsed as (x.len) + 1
-value! + 1       // parsed as (value!) + 1
-x as f64 + 1.0   // parsed as (x as f64) + 1.0
-a > 0 && b > 0   // parsed as (a > 0) && (b > 0)
+a + b * c
+x.len + 1
+value!Err + 1
+x as f64 + 1.0
+a > 0
 ```

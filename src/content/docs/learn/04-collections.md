@@ -16,10 +16,10 @@ Array literals use square brackets with semicolons separating elements:
 ```
 let nums=[1;2;3;4;5];
 let names=["Alice";"Bob";"Charlie"];
-let empty=[i64][];
+let empty=[];
 ```
 
-Note the last line -- an empty array requires a type annotation because the compiler cannot infer the element type from zero elements.
+Note the last line -- an empty array literal `[]` has element type `unknown` until constrained by context such as a type annotation or assignment.
 
 ### Array types
 
@@ -31,7 +31,7 @@ The parameter type `[Str]` denotes an array of strings. The return type `[i64]` 
 F=process(items:[Str]):void{
 };
 
-F=make_numbers():[i64]{
+F=makeNumbers():[i64]{
   <[10;20;30];
 };
 ```
@@ -63,7 +63,7 @@ Out-of-bounds access is a runtime trap (RT001) -- the program terminates with a 
 Use `lp` with an index variable:
 
 ```
-F=print_all(arr:[Str]):void{
+F=printAll(arr:[Str]):void{
   lp(let i=0;i<arr.len;i=i+1){
     io.println(arr[i]);
   };
@@ -78,7 +78,7 @@ To build an array dynamically, start with an empty array and use append operatio
 
 ```
 F=range(n:i64):[i64]{
-  let result=mut.[i64][];
+  let result=mut.[];
   lp(let i=0;i<n;i=i+1){
     result=result.push(i);
   };
@@ -97,7 +97,7 @@ Map literals use square brackets with `key:value` pairs separated by semicolons:
 ```
 let ages=["Alice":30;"Bob":25;"Charlie":35];
 let config=["host":"localhost";"port":"8080"];
-let empty=[Str:i64][];
+let empty=[];
 ```
 
 ### Map types
@@ -155,7 +155,7 @@ let count=ages.len;
 To iterate over a map, retrieve its keys and iterate over that array:
 
 ```
-F=print_map(m:[Str:i64]):void{
+F=printMap(m:[Str:i64]):void{
   let keys=m.keys;
   lp(let i=0;i<keys.len;i=i+1){
     let k=keys[i];
@@ -175,8 +175,8 @@ Count how many times each word appears:
 M=freq;
 I=io:std.io;
 
-F=count_freq(words:[Str]):[Str:i64]{
-  let freq=mut.[Str:i64][];
+F=countFreq(words:[Str]):[Str:i64]{
+  let freq=mut.[];
   lp(let i=0;i<words.len;i=i+1){
     let w=words[i];
     if(freq.contains(w)){
@@ -209,9 +209,9 @@ Note: equality comparison in toke uses `=` (single equals) in expression context
 
 ```
 F=reverse(arr:[i64]):[i64]{
-  let result=mut.[i64][];
+  let result=mut.[];
   let i=mut.arr.len;
-  lp(let _=0;i>0;_=0){
+  lp(let x=0;i>0;x=0){
     i=i-1;
     result=result.push(arr[i]);
   };

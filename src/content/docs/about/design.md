@@ -18,7 +18,9 @@ toke Phase 1 uses exactly 80 structural ASCII characters. No character outside t
 | Lowercase | `a-z` | 26 |
 | Uppercase | `A-Z` | 26 |
 | Digits | `0-9` | 10 |
-| Symbols | `( ) { } [ ] = : . ; + - * / < > ! \| "` | 18-19 |
+| Symbols | `( ) { } [ ] = : . ; + - * / < > ! \|` | 18 |
+
+The double-quote `"` appears in source as the string literal delimiter but is not counted among the 18 structural symbols -- it is consumed during lexing and never produces a token, similar to how whitespace separates tokens but carries no structural meaning.
 
 **What is excluded:** whitespace is structurally meaningless (the semicolon is the universal separator). There is no comment syntax -- documentation lives outside source files. The characters `@`, `#`, `$`, `%`, `^`, `&`, `~`, backtick, backslash, single-quote, comma, and question-mark do not appear in structural positions.
 

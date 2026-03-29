@@ -122,8 +122,8 @@ If you need a "while" loop, use `lp` with a no-op init and step:
 
 ```
 let done=mut.false;
-lp(let _=0;!done;_=0){
-  if(some_condition){
+lp(let x=0;!done;x=0){
+  if(someCondition){
     done=true;
   };
 };
@@ -134,7 +134,7 @@ lp(let _=0;!done;_=0){
 The `br` keyword exits the innermost loop immediately:
 
 ```
-F=find_first_negative(arr:[i64]):i64{
+F=findFirstNeg(arr:[i64]):i64{
   let result=mut.0-1;
   lp(let i=0;i<arr.len;i=i+1){
     if(arr[i]<0){
@@ -154,8 +154,8 @@ The match expression destructures sum types (tagged unions). It uses the `|{...}
 
 ```
 result|{
-  Ok:val  <val;
-  Err:e   <0;
+  Ok:val  val;
+  Err:e   0
 };
 ```
 
@@ -187,10 +187,10 @@ T=Shape{
 };
 
 F=describe(s:Shape):Str{
-  s|{
-    Circle:r  <"Circle with radius \(r as Str)";
-    Square:side  <"Square with side \(side as Str)";
-    Rect:w  <"Rectangle with width \(w as Str)";
+  <s|{
+    Circle:r "Circle";
+    Square:side "Square";
+    Rect:w "Rectangle"
   };
 };
 ```
@@ -200,10 +200,10 @@ F=describe(s:Shape):Str{
 Match is the primary way to handle errors when you cannot propagate them:
 
 ```
-F=safe_get(arr:[i64];idx:u64):Str{
-  get_element(arr;idx)|{
-    Ok:val  <"Found: \(val as Str)";
-    Err:e   <"Error: not found";
+F=safeGet(arr:[i64];idx:u64):Str{
+  <getElement(arr;idx)|{
+    Ok:val "Found";
+    Err:e "Error: not found"
   };
 };
 ```
@@ -262,7 +262,7 @@ Write a function that prints the elements of an array in reverse order. Use `lp`
 
 ### Exercise 4: Count matches
 
-Write `F=count_greater(arr:[i64];threshold:i64):i64` that returns how many elements in the array are greater than `threshold`.
+Write `F=countGreater(arr:[i64];threshold:i64):i64` that returns how many elements in the array are greater than `threshold`.
 
 ## Key takeaways
 

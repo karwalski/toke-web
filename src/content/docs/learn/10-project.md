@@ -48,7 +48,7 @@ T=Bookmark{
 
 T=BookmarkDb{
   bookmarks:[Bookmark];
-  next_id:u64
+  nextId:u64
 };
 
 T=BmErr{
@@ -68,7 +68,7 @@ The interface file for this module would be:
 M=bm.model;
 
 T=Bookmark{id:u64;url:Str;title:Str;tags:[Str]};
-T=BookmarkDb{bookmarks:[Bookmark];next_id:u64};
+T=BookmarkDb{bookmarks:[Bookmark];nextId:u64};
 T=BmErr{FileErr:Str;ParseErr:Str;NotFound:u64};
 ```
 
@@ -85,41 +85,41 @@ I=json:std.json;
 I=str:std.str;
 I=m:bm.model;
 
-F=db_path():Str{
+F=dbPath():Str{
   <"bookmarks.json";
 };
 
 F=load():m.BookmarkDb!m.BmErr{
-  if(!file.exists(db_path())){
-    <m.BookmarkDb{bookmarks:[m.Bookmark][];next_id:1};
+  if(!file.exists(dbPath())){
+    <m.BookmarkDb{bookmarks:[];nextId:1};
   };
-  let content=file.read(db_path())!m.BmErr.FileErr;
-  let db=json.dec(content)!m.BmErr.ParseErr;
+  let content=file.read(dbPath())!m.BmErr;
+  let db=json.dec(content)!m.BmErr;
   <db;
 };
 
 F=save(db:m.BookmarkDb):void!m.BmErr{
   let data=json.pretty(db);
-  file.write(db_path();data)!m.BmErr.FileErr;
+  file.write(dbPath();data)!m.BmErr;
 };
 
 F=add(db:m.BookmarkDb;url:Str;title:Str;tags:[Str]):m.BookmarkDb{
   let bm=m.Bookmark{
-    id:db.next_id;
+    id:db.nextId;
     url:url;
     title:title;
     tags:tags
   };
-  let new_bookmarks=db.bookmarks.push(bm);
+  let newBookmarks=db.bookmarks.push(bm);
   <m.BookmarkDb{
-    bookmarks:new_bookmarks;
-    next_id:db.next_id+1
+    bookmarks:newBookmarks;
+    nextId:db.nextId+1
   };
 };
 
 F=delete(db:m.BookmarkDb;id:u64):m.BookmarkDb!m.BmErr{
   let found=mut.false;
-  let result=mut.[m.Bookmark][];
+  let result=mut.[];
   lp(let i=0;i<db.bookmarks.len;i=i+1){
     if(db.bookmarks[i].id=id){
       found=true;
@@ -128,17 +128,17 @@ F=delete(db:m.BookmarkDb;id:u64):m.BookmarkDb!m.BmErr{
     };
   };
   if(!found){
-    <m.BmErr.NotFound(id);
+    <m.BmErr{NotFound:id};
   };
   <m.BookmarkDb{
     bookmarks:result;
-    next_id:db.next_id
+    nextId:db.nextId
   };
 };
 
 F=search(db:m.BookmarkDb;query:Str):[m.Bookmark]{
   let q=str.lower(query);
-  let result=mut.[m.Bookmark][];
+  let result=mut.[];
   lp(let i=0;i<db.bookmarks.len;i=i+1){
     let bm=db.bookmarks[i];
     let matched=mut.false;
@@ -163,7 +163,7 @@ F=search(db:m.BookmarkDb;query:Str):[m.Bookmark]{
 
 Let's walk through the key functions:
 
-- **`load`** checks if the file exists. If not, it returns an empty database with `next_id` starting at 1. Otherwise, it reads and parses the JSON file.
+- **`load`** checks if the file exists. If not, it returns an empty database with `nextId` starting at 1. Otherwise, it reads and parses the JSON file.
 - **`save`** encodes the database as pretty-printed JSON and writes it to disk.
 - **`add`** creates a new `Bookmark` with the next available ID, appends it to the array, and increments the counter. Note that this returns a new `BookmarkDb` -- data structures are not mutated in place.
 - **`delete`** iterates through bookmarks, skipping the one to delete. If not found, it returns a `NotFound` error.
@@ -182,83 +182,83 @@ I=str:std.str;
 I=store:bm.store;
 I=m:bm.model;
 
-F=print_bookmark(bm:m.Bookmark):void{
-  let tags_str=str.join(bm.tags;", ");
+F=printBookmark(bm:m.Bookmark):void{
+  let tagsStr=str.join(bm.tags;", ");
   io.println("  [\(bm.id as Str)] \(bm.title)");
   io.println("      \(bm.url)");
   if(bm.tags.len>0){
-    io.println("      tags: \(tags_str)");
+    io.println("      tags: \(tagsStr)");
   };
 };
 
-F=print_bookmarks(bms:[m.Bookmark]):void{
+F=printBookmarks(bms:[m.Bookmark]):void{
   if(bms.len=0){
     io.println("  (no bookmarks)");
   }el{
     lp(let i=0;i<bms.len;i=i+1){
-      print_bookmark(bms[i]);
+      printBookmark(bms[i]);
     };
   };
 };
 
-F=cmd_add(url:Str;title:Str;tag_str:Str):void{
+F=cmdAdd(url:Str;title:Str;tagStr:Str):void{
   store.load()|{
     Ok:db  {
-      let tags=str.split(tag_str;",");
-      let clean_tags=mut.[Str][];
+      let tags=str.split(tagStr;",");
+      let cleanTags=mut.[];
       lp(let i=0;i<tags.len;i=i+1){
         let t=str.trim(tags[i]);
         if(str.len(t)>0){
-          clean_tags=clean_tags.push(t);
+          cleanTags=cleanTags.push(t);
         };
       };
-      let updated=store.add(db;url;title;clean_tags);
+      let updated=store.add(db;url;title;cleanTags);
       store.save(updated)|{
-        Ok:_   io.println("Added bookmark [\(updated.next_id-1 as Str)]: \(title)");
-        Err:e  io.println("Error saving: \(e as Str)");
+        Ok:v   io.println("Added bookmark");
+        Err:e  io.println("Error saving")
       };
     };
     Err:e  io.println("Error loading database: \(e as Str)");
   };
 };
 
-F=cmd_list():void{
+F=cmdList():void{
   store.load()|{
     Ok:db  {
       io.println("Bookmarks (\(db.bookmarks.len as Str) total):");
-      print_bookmarks(db.bookmarks);
+      printBookmarks(db.bookmarks);
     };
     Err:e  io.println("Error: \(e as Str)");
   };
 };
 
-F=cmd_search(query:Str):void{
+F=cmdSearch(query:Str):void{
   store.load()|{
     Ok:db  {
       let results=store.search(db;query);
       io.println("Search results for \"\(query)\" (\(results.len as Str) found):");
-      print_bookmarks(results);
+      printBookmarks(results);
     };
     Err:e  io.println("Error: \(e as Str)");
   };
 };
 
-F=cmd_delete(id_str:Str):void{
+F=cmdDelete(idStr:Str):void{
   store.load()|{
     Ok:db  {
-      let id=str.to_int(id_str) as u64;
+      let id=str.toInt(idStr) as u64;
       store.delete(db;id)|{
         Ok:updated  {
           store.save(updated)|{
-            Ok:_   io.println("Deleted bookmark [\(id_str)]");
-            Err:e  io.println("Error saving: \(e as Str)");
+            Ok:v   io.println("Deleted bookmark");
+            Err:e  io.println("Error saving")
           };
         };
         Err:e  e|{
-          NotFound:_   io.println("Bookmark [\(id_str)] not found");
-          FileErr:msg  io.println("File error: \(msg)");
-          ParseErr:msg io.println("Parse error: \(msg)");
-        };
+          NotFound:n   io.println("Bookmark not found");
+          FileErr:msg  io.println("File error");
+          ParseErr:msg io.println("Parse error")
+        }
       };
     };
     Err:e  io.println("Error: \(e as Str)");
@@ -284,7 +284,7 @@ F=main():i64{
     io.print("bm> ");
     let input=str.trim(io.readline());
 
-    if(str.starts_with(input;"add ")){
+    if(str.startsWith(input;"add ")){
       let rest=str.slice(input;4;str.len(input)-4);
       let parts=str.split(rest;" ");
       if(parts.len<2){
@@ -296,19 +296,19 @@ F=main():i64{
         if(parts.len>2){
           tags=parts[2];
         };
-        cmd_add(url;title;tags);
+        cmdAdd(url;title;tags);
       };
     }el{
       if(input="list"){
-        cmd_list();
+        cmdList();
       }el{
-        if(str.starts_with(input;"search ")){
+        if(str.startsWith(input;"search ")){
           let query=str.slice(input;7;str.len(input)-7);
-          cmd_search(query);
+          cmdSearch(query);
         }el{
-          if(str.starts_with(input;"delete ")){
-            let id_str=str.slice(input;7;str.len(input)-7);
-            cmd_delete(id_str);
+          if(str.startsWith(input;"delete ")){
+            let idStr=str.slice(input;7;str.len(input)-7);
+            cmdDelete(idStr);
           }el{
             if(input="quit"){
               run=false;
@@ -343,7 +343,7 @@ Commands: add, list, search, delete, quit
 
 bm> add https://toke.dev toke-website language,docs
 Added bookmark [1]: toke-website
-bm> add https://github.com/karwalski github code,repos
+bm> add https://github.com/karwalski/toke github code,repos
 Added bookmark [2]: github
 bm> list
 Bookmarks (2 total):
@@ -351,7 +351,7 @@ Bookmarks (2 total):
       https://toke.dev
       tags: language, docs
   [2] github
-      https://github.com/karwalski
+      https://github.com/karwalski/toke
       tags: code, repos
 bm> search toke
 Search results for "toke" (1 found):
@@ -363,7 +363,7 @@ Deleted bookmark [1]
 bm> list
 Bookmarks (1 total):
   [2] github
-      https://github.com/karwalski
+      https://github.com/karwalski/toke
       tags: code, repos
 bm> quit
 Goodbye!
@@ -380,7 +380,7 @@ Goodbye!
 | Error handling | `T!E` returns, match recovery, error variant construction |
 | Collections | Arrays of bookmarks, tag arrays |
 | Maps | Could extend to use maps for tag-based indexing |
-| String operations | Split, join, trim, contains, starts_with, lower |
+| String operations | Split, join, trim, contains, startsWith, lower |
 | File I/O | JSON persistence |
 | JSON | Encode/decode for the bookmark database |
 | Loops | Iteration over bookmarks and tags |
@@ -413,7 +413,7 @@ You have completed the toke training course. You now know:
 - **[API Reference](/reference/types/)** -- detailed documentation for every type, function, and error code
 - **[Standard Library Reference](/reference/stdlib/)** -- complete stdlib signatures and examples
 - **[Contributing](/community/contributing/)** -- find good first issues and start contributing to toke
-- **[GitHub](https://github.com/karwalski)** -- browse the source for the compiler, spec, and tools
+- **[GitHub](https://github.com/karwalski/toke)** -- browse the source for the compiler, spec, and tools
 
 ### The bigger picture
 

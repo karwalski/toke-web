@@ -109,9 +109,9 @@ F=classify(n:i64):Str{
 toke has exactly one loop construct: `lp`. It takes an initialiser, a condition, and a step:
 
 ```
-F=sum_to(n:i64):i64{
+F=sumTo(n:i64):i64{
   let total=mut.0;
-  lp(i=0;i<n;i=i+1){
+  lp(let i=0;i<n;i=i+1){
     total=total+i;
   };
   <total;
@@ -121,9 +121,9 @@ F=sum_to(n:i64):i64{
 Use `br;` to break out of a loop early:
 
 ```
-F=find_first_negative(arr:[i64]):i64{
+F=findFirstNeg(arr:[i64]):i64{
   let result=mut.0-1;
-  lp(i=0;i<arr.len;i=i+1){
+  lp(let i=0;i<arr.len;i=i+1){
     if(arr[i]<0){
       result=i;
       br;
@@ -147,12 +147,12 @@ T=Color{
   Custom:Str
 };
 
-F=to_hex(c:Color):Str{
-  c|{
-    Red:r <"#FF0000";
-    Green:g <"#00FF00";
-    Blue:b <"#0000FF";
-    Custom:s <s
+F=toHex(c:Color):Str{
+  <c|{
+    Red:r "#FF0000";
+    Green:g "#00FF00";
+    Blue:b "#0000FF";
+    Custom:s s
   };
 };
 ```
@@ -201,20 +201,20 @@ T=FileErr{
   PermDenied:Str
 };
 
-F=read_file(path:Str):Str!FileErr{
-  let f=io.open(path)!FileErr.NotFound;
-  let content=io.read_all(f)!FileErr.PermDenied;
+F=readFile(path:Str):Str!FileErr{
+  let f=io.open(path)!FileErr;
+  let content=io.readAll(f)!FileErr;
   <content;
 };
 ```
 
-The `!` operator after a call propagates errors. If the call returns an error, the current function immediately returns that error wrapped in the specified variant. If the call succeeds, execution continues with the unwrapped value.
+The `!` operator after a call propagates errors. If the call returns an error, the current function immediately returns that error. If the call succeeds, execution continues with the unwrapped value.
 
 Use `|{}` to match on the result and handle each case:
 
 ```
 F=main():i64{
-  let result=read_file("config.tk");
+  let result=readFile("config.tk");
   result|{
     Ok:content io.println(content);
     Err:e io.println("Failed to read file")
@@ -253,7 +253,7 @@ I=io:std.io;
 
 F=sum(arr:[i64]):i64{
   let total=mut.0;
-  lp(i=0;i<arr.len;i=i+1){
+  lp(let i=0;i<arr.len;i=i+1){
     total=total+arr[i];
   };
   <total;
@@ -262,7 +262,7 @@ F=sum(arr:[i64]):i64{
 F=main():i64{
   let args=io.args();
   let result=sum(args);
-  io.println("Sum: \(result)");
+  io.println(result as Str);
   <0;
 };
 ```

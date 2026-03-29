@@ -14,7 +14,7 @@ toke compiles to native binaries, which means it can call C functions directly. 
 An extern function is declared with `F=` but has no body:
 
 ```
-F=c_strlen(s:*u8):u64;
+F=cstrlen(s:*u8):u64;
 ```
 
 The missing body tells the compiler this function is defined externally (in C or another language) and will be provided at link time.
@@ -24,14 +24,14 @@ The missing body tells the compiler this function is defined externally (in C or
 Once declared, extern functions are called like any other function:
 
 ```
-M=ffi_demo;
+M=ffidemo;
 
-F=c_strlen(s:*u8):u64;
-F=c_puts(s:*u8):i32;
+F=cstrlen(s:*u8):u64;
+F=cputs(s:*u8):i32;
 
 F=main():i64{
   let msg="Hello from C\0";
-  c_puts(msg as *u8);
+  cputs(msg as *u8);
   <0;
 };
 ```
@@ -43,7 +43,7 @@ Note the `\0` at the end of the string -- C functions expect null-terminated str
 When using FFI, you tell the compiler which libraries to link:
 
 ```bash
-tkc ffi_demo.tk -lc -o ffi_demo
+tkc ffidemo.tk -lc -o ffidemo
 ```
 
 The `-lc` flag links the C standard library.
@@ -72,9 +72,9 @@ The `as` keyword performs explicit type conversion:
 
 ```
 let x=42;
-let y=x as f64;          // integer to float
-let z=3.14 as i64;       // float to integer (truncates)
-let wide=narrow as i64;   // widening cast
+let y=x as f64;
+let z=3.14 as i64;
+let wide=narrow as i64;
 ```
 
 ### Cast rules
@@ -94,25 +94,25 @@ toke supports concurrent execution through spawning tasks.
 
 ### Spawning a task
 
-The `spawn` keyword starts a function call as a concurrent task:
+The `spawn` function starts a function as a concurrent task:
 
 ```
-let task=spawn fetch_data(url);
+let task=spawn(fetchData);
 ```
 
 This returns a `Task` value immediately. The spawned function runs concurrently.
 
 ### Awaiting a task
 
-The `await` keyword blocks until a task completes and returns its result:
+The `await` function blocks until a task completes and returns its result:
 
 ```
-let result=await task;
+let result=await(task);
 ```
 
 ### The Task type
 
-A `Task` is parameterised by the return type of the spawned function. If `fetch_data` returns `Str!HttpErr`, then `spawn fetch_data(url)` returns `Task<Str!HttpErr>`, and `await` produces the `Str!HttpErr` result.
+A `Task` is parameterised by the return type of the spawned function. If `fetchData` returns `Str!HttpErr`, then `spawn(fetchData)` returns `Task<Str!HttpErr>`, and `await(task)` produces the `Str!HttpErr` result.
 
 ### Concurrent HTTP requests
 
@@ -122,18 +122,18 @@ I=http:std.http;
 I=io:std.io;
 
 F=fetch(url:Str):Str!http.Err{
-  let res=http.get(url)!http.Err.RequestFailed;
+  let res=http.get(url)!http.Err;
   <res.body;
 };
 
 F=main():i64{
-  let t1=spawn fetch("https://api.example.com/users");
-  let t2=spawn fetch("https://api.example.com/posts");
-  let t3=spawn fetch("https://api.example.com/comments");
+  let t1=spawn(fetch);
+  let t2=spawn(fetch);
+  let t3=spawn(fetch);
 
-  let users=await t1;
-  let posts=await t2;
-  let comments=await t3;
+  let users=await(t1);
+  let posts=await(t2);
+  let comments=await(t3);
 
   users|{
     Ok:data  io.println("Users: \(data)");
@@ -158,18 +158,21 @@ Full concurrency semantics (channels, select, structured concurrency) are deferr
 
 ## Arena blocks
 
+:::note
+Arena blocks (`{arena ...}`) are a planned Phase 2 feature. The syntax is supported by the parser but arena-based allocation is not yet implemented in the compiler backend.
+:::
+
 By default, all allocations within a function are freed when the function returns. Arena blocks create shorter-lived allocation regions:
 
 ```
-F=process_large_data(items:[Str]):Str{
+F=processLargeData(items:[Str]):Str{
   let result=mut."";
   lp(let i=0;i<items.len;i=i+1){
     {arena
       let temp=str.upper(items[i]);
-      let processed=str.replace(temp;" ";"_");
+      let processed=str.replace(temp;" ";"-");
       result=result+processed+"\n";
     };
-    // temp and processed are freed here, but result survives
   };
   <result;
 };
@@ -188,7 +191,7 @@ Returning a reference to an arena-allocated value across the arena boundary is a
 ```
 {arena
   let temp=[1;2;3];
-  result=temp;  // E5001: value escapes arena
+  result=temp;
 };
 ```
 
@@ -199,7 +202,7 @@ The compiler prevents use-after-free at the arena boundary.
 Import declarations will support version strings in a future specification:
 
 ```
-I=http:std.http@1.2;
+I=http:std.http "1.2";
 ```
 
 This pins the import to a specific version of the module. Version resolution and package registry semantics are deferred to a later version of the spec.
@@ -226,7 +229,7 @@ Write a function that processes an array of 1000 strings. Use an arena block ins
 - Extern functions (`F=` with no body) declare C functions for FFI
 - Pointer types (`*T`) are for FFI only -- not used in pure toke code
 - `as` performs explicit type casts -- no implicit conversions exist
-- `spawn` starts concurrent tasks; `await` retrieves their results
+- `spawn(func)` starts concurrent tasks; `await(task)` retrieves their results
 - `Task` is the type of a spawned computation
 - `{arena ... }` creates a sub-arena for temporary allocations
 - Arena-allocated values cannot escape their arena (compile-time check)

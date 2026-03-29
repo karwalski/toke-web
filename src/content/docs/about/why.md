@@ -29,7 +29,9 @@ This is treated as an empirical hypothesis, not an article of faith. The project
 
 toke achieves token efficiency through deliberate constraint at every level of the language design:
 
-**80-character set.** The source language uses exactly 80 ASCII characters -- 26 lowercase, 26 uppercase, 10 digits, and 18-19 symbols. No comments. No decorators. No character outside this set appears in a structural position. Every character earns its place.
+**80-character set.** The source language uses exactly 80 ASCII characters -- 26 lowercase, 26 uppercase, 10 digits, and 18 symbols. No comments. No decorators. No character outside this set appears in a structural position. Every character earns its place.
+
+The double-quote `"` appears in source as the string literal delimiter but is not a structural symbol -- it is consumed during lexing and never produces a token, similar to how whitespace separates tokens but carries no structural meaning.
 
 **12 keywords.** Where Python has 35 keywords and JavaScript has 64 reserved words, toke has 12: `M` (module), `F` (function), `T` (type), `I` (import), `if`, `el`, `lp` (loop), `br` (break), `let`, `mut`, `as`, `rt` (return). Single-character keywords for declarations. Two-character keywords for control flow.
 
