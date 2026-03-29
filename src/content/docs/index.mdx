@@ -33,7 +33,7 @@ LLMs generate code token by token. Every token costs time and money. Languages l
 ```
 M=fib;
 F=fib(n:i64):i64{
-  ?n<2{<n};
+  if(n<2){<n};
   <fib(n-1)+fib(n-2);
 };
 ```
@@ -83,7 +83,7 @@ F=main():i64{
 };
 ```
 
-This is a complete toke program. `M=` declares the module. `F=` declares a function. `<` returns a value. `?` branches. `;` terminates everything.
+This is a complete toke program. `M=` declares the module. `F=` declares a function. `<` returns a value. `if(){}` branches. `;` terminates everything.
 
 ## Ready to Start?
 

@@ -1,159 +1,79 @@
 ---
-title: std.log
-description: Structured logging — emit log messages at different severity levels.
+title: "std.log"
+description: "Structured logging -- NDJSON log output to stderr with level filtering."
 ---
 
-The `std.log` module provides structured logging functions at multiple severity levels. Log output is written to stderr in a structured format.
+The `std.log` module provides structured logging functions that emit NDJSON (newline-delimited JSON) to stderr. Each log line includes a timestamp, level, message, and optional key-value fields.
 
-## Import
+Log output is filtered by level. The threshold is controlled by the `TK_LOG_LEVEL` environment variable or programmatically. Levels in ascending order: `DEBUG`, `INFO`, `WARN`, `ERROR`. The default level when `TK_LOG_LEVEL` is unset is `INFO`.
 
-```toke
-I=log:std.log;
-```
+All functions return `bool` -- `true` if the log line was emitted, `false` if it was filtered by the current level.
 
 ## Functions
 
-### log.debug
+### log.info(msg: Str; fields: [[Str]]): bool
 
-Emits a debug-level log message.
+Emits an INFO-level log line. The `fields` parameter is an array of key-value string pairs providing structured context.
 
 ```toke
-F=debug(msg: Str): void;
+log.info("request received"; [["request_id"; "abc123"]; ["user"; "alice"]]);
+(* stderr: {"level":"info","msg":"request received","request_id":"abc123","user":"alice","ts":...} *)
 ```
 
-**Parameters:**
+### log.warn(msg: Str; fields: [[Str]]): bool
 
-| Name  | Type  | Description          |
-|-------|-------|----------------------|
-| `msg` | `Str` | The message to log   |
-
-**Returns:** `void`
-
-**Example:**
+Emits a WARN-level log line. Same signature and semantics as `log.info`.
 
 ```toke
-log.debug("entering request handler");
+log.warn("rate limit exceeded"; [["code"; "429"]]);
 ```
 
----
+### log.error(msg: Str; fields: [[Str]]): bool
 
-### log.info
-
-Emits an info-level log message.
+Emits an ERROR-level log line. Same signature and semantics as `log.info`.
 
 ```toke
-F=info(msg: Str): void;
+log.error("file not found"; [["errno"; "ENOENT"]]);
 ```
 
-**Parameters:**
+## Level Filtering
 
-| Name  | Type  | Description          |
-|-------|-------|----------------------|
-| `msg` | `Str` | The message to log   |
+| TK_LOG_LEVEL | log.info | log.warn | log.error |
+|--------------|----------|----------|-----------|
+| DEBUG | emitted | emitted | emitted |
+| INFO (default) | emitted | emitted | emitted |
+| WARN | filtered | emitted | emitted |
+| ERROR | filtered | filtered | emitted |
 
-**Returns:** `void`
+When a log call is filtered, it returns `false` and no output is written to stderr.
 
-**Example:**
+## Output Format
 
-```toke
-log.info("server started on port 8080");
-```
+Each log line is a single JSON object on one line (NDJSON), written to stderr. Fields include:
 
----
+| Key | Type | Description |
+|-----|------|-------------|
+| level | Str | `"info"`, `"warn"`, or `"error"` |
+| msg | Str | The log message (JSON-escaped) |
+| ts | u64 | Unix timestamp in milliseconds |
+| *(custom)* | Str | Any additional fields from the `fields` parameter |
 
-### log.warn
-
-Emits a warning-level log message.
-
-```toke
-F=warn(msg: Str): void;
-```
-
-**Parameters:**
-
-| Name  | Type  | Description          |
-|-------|-------|----------------------|
-| `msg` | `Str` | The message to log   |
-
-**Returns:** `void`
-
-**Example:**
+## Usage Examples
 
 ```toke
-log.warn("connection pool running low");
-```
+(* Log with structured context *)
+let start = time.now();
+let result = db.one("SELECT * FROM users WHERE id=1"; []);
+let elapsed = time.since(start);
 
----
-
-### log.error
-
-Emits an error-level log message.
-
-```toke
-F=error(msg: Str): void;
-```
-
-**Parameters:**
-
-| Name  | Type  | Description          |
-|-------|-------|----------------------|
-| `msg` | `Str` | The message to log   |
-
-**Returns:** `void`
-
-**Example:**
-
-```toke
-log.error("failed to connect to database");
-```
-
----
-
-### log.with_field
-
-Emits a log message with a key-value field attached.
-
-```toke
-F=with_field(level: Str; msg: Str; key: Str; value: Str): void;
-```
-
-**Parameters:**
-
-| Name    | Type  | Description                                        |
-|---------|-------|----------------------------------------------------|
-| `level` | `Str` | Log level (`"debug"`, `"info"`, `"warn"`, `"error"`) |
-| `msg`   | `Str` | The message to log                                 |
-| `key`   | `Str` | The field name                                     |
-| `value` | `Str` | The field value                                    |
-
-**Returns:** `void`
-
-**Example:**
-
-```toke
-log.with_field("info", "request handled", "status", "200");
-```
-
----
-
-### log.set_level
-
-Sets the minimum log level. Messages below this level are suppressed.
-
-```toke
-F=set_level(level: Str): void;
-```
-
-**Parameters:**
-
-| Name    | Type  | Description                                          |
-|---------|-------|------------------------------------------------------|
-| `level` | `Str` | Minimum level: `"debug"`, `"info"`, `"warn"`, `"error"` |
-
-**Returns:** `void`
-
-**Example:**
-
-```toke
-log.set_level("warn");  // only warn and error messages will appear
+if result.ok? =
+  log.info("query succeeded"; [
+    ["elapsed_ms"; str.from_int(elapsed)];
+    ["table"; "users"]
+  ])
+el =
+  log.error("query failed"; [
+    ["elapsed_ms"; str.from_int(elapsed)];
+    ["table"; "users"]
+  ]);
 ```

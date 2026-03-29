@@ -53,38 +53,38 @@ T=Shape{
 
 ## Let bindings and mutability
 
-Use `let` for immutable bindings and `mut` for mutable ones:
+Use `let` for immutable bindings and `let x=mut.` for mutable ones:
 
 ```
 F=example():i64{
-  let x = 10;
-  mut y = 20;
-  y = y + x;
+  let x=10;
+  let y=mut.20;
+  y=y+x;
   <y;
 };
 ```
 
-Immutable bindings cannot be reassigned. Attempting to write `x = 5;` after a `let` binding is a compile error.
+Immutable bindings cannot be reassigned. Attempting to write `x=5;` after a `let` binding is a compile error.
 
 ## If / else
 
-Conditionals use `?` for if and `%` for else:
+Conditionals use `if()` and `el{}`:
 
 ```
 F=abs(n:i64):i64{
-  ?n<0{
+  if(n<0){
     <0-n;
-  }%{
+  }el{
     <n;
   };
 };
 ```
 
-The condition follows `?` directly -- no parentheses needed. The else branch `%{...}` is optional. You can also write single-line conditionals:
+The condition goes inside parentheses after `if`. The else branch `el{...}` is optional. You can also write single-line conditionals:
 
 ```
 F=max(a:i64;b:i64):i64{
-  ?a>b{<a}%{<b};
+  if(a>b){<a;}el{<b;};
 };
 ```
 
@@ -92,12 +92,12 @@ For chained conditions, nest inside the else branch:
 
 ```
 F=classify(n:i64):Str{
-  ?n<0{
+  if(n<0){
     <"negative";
-  }%{
-    ?n=0{
+  }el{
+    if(n=0){
       <"zero";
-    }%{
+    }el{
       <"positive";
     };
   };
@@ -110,9 +110,9 @@ toke has exactly one loop construct: `lp`. It takes an initialiser, a condition,
 
 ```
 F=sum_to(n:i64):i64{
-  mut total = 0;
-  lp i=0;i<n;i=i+1{
-    total = total + i;
+  let total=mut.0;
+  lp(i=0;i<n;i=i+1){
+    total=total+i;
   };
   <total;
 };
@@ -122,10 +122,10 @@ Use `br;` to break out of a loop early:
 
 ```
 F=find_first_negative(arr:[i64]):i64{
-  mut result = 0-1;
-  lp i=0;i<arr.len;i=i+1{
-    ?arr[i]<0{
-      result = i;
+  let result=mut.0-1;
+  lp(i=0;i<arr.len;i=i+1){
+    if(arr[i]<0){
+      result=i;
       br;
     };
   };
@@ -137,7 +137,7 @@ There is no `while`, `for-each`, or `do-while`. The `lp` construct covers all lo
 
 ## Match expressions
 
-`match` is used for pattern matching on sum types and error results:
+The `|{}` operator is used for pattern matching on sum types and error results:
 
 ```
 T=Color{
@@ -148,11 +148,11 @@ T=Color{
 };
 
 F=to_hex(c:Color):Str{
-  match c{
-    |Red => <"#FF0000";
-    |Green => <"#00FF00";
-    |Blue => <"#0000FF";
-    |Custom:s => <s;
+  c|{
+    Red:r <"#FF0000";
+    Green:g <"#00FF00";
+    Blue:b <"#0000FF";
+    Custom:s <s
   };
 };
 ```
@@ -165,7 +165,7 @@ Arrays use square brackets with semicolons as separators:
 
 ```
 F=example():[i64]{
-  let nums = [1;2;3;4;5];
+  let nums=[1;2;3;4;5];
   <nums;
 };
 ```
@@ -174,7 +174,7 @@ Maps use key-value pairs:
 
 ```
 F=example():[Str:i64]{
-  let ages = ["alice":30;"bob":25;"carol":28];
+  let ages=["alice":30;"bob":25;"carol":28];
   <ages;
 };
 ```
@@ -183,8 +183,8 @@ Access array elements by index and map elements by key:
 
 ```
 F=example():i64{
-  let nums = [10;20;30];
-  let first = nums[0];
+  let nums=[10;20;30];
+  let first=nums[0];
   <first;
 };
 ```
@@ -202,28 +202,28 @@ T=FileErr{
 };
 
 F=read_file(path:Str):Str!FileErr{
-  let f = io.open(path)!FileErr.NotFound;
-  let content = io.read_all(f)!FileErr.PermDenied;
+  let f=io.open(path)!FileErr.NotFound;
+  let content=io.read_all(f)!FileErr.PermDenied;
   <content;
 };
 ```
 
 The `!` operator after a call propagates errors. If the call returns an error, the current function immediately returns that error wrapped in the specified variant. If the call succeeds, execution continues with the unwrapped value.
 
-Use `try` to attempt an operation and `match` to handle the result:
+Use `|{}` to match on the result and handle each case:
 
 ```
 F=main():i64{
-  let result = try read_file("config.tk");
-  match result{
-    |Ok:content => io.println(content);
-    |Err:e => io.println("Failed to read file");
+  let result=read_file("config.tk");
+  result|{
+    Ok:content io.println(content);
+    Err:e io.println("Failed to read file")
   };
   <0;
 };
 ```
 
-Error handling is explicit and checked by the compiler. You cannot ignore an error from a fallible function -- you must either propagate it with `!` or handle it with `match`.
+Error handling is explicit and checked by the compiler. You cannot ignore an error from a fallible function -- you must either propagate it with `!` or handle it with `|{}`.
 
 ## Imports
 
@@ -252,16 +252,16 @@ M=sum;
 I=io:std.io;
 
 F=sum(arr:[i64]):i64{
-  mut total = 0;
-  lp i=0;i<arr.len;i=i+1{
-    total = total + arr[i];
+  let total=mut.0;
+  lp(i=0;i<arr.len;i=i+1){
+    total=total+arr[i];
   };
   <total;
 };
 
 F=main():i64{
-  let args = io.args();
-  let result = sum(args);
+  let args=io.args();
+  let result=sum(args);
   io.println("Sum: \(result)");
   <0;
 };

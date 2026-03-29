@@ -1,158 +1,93 @@
 ---
-title: std.file
-description: File I/O — read, write, append, and manage files on the filesystem.
+title: "std.file"
+description: "File system operations -- read, write, append, delete, and list files and directories."
 ---
 
-The `std.file` module provides functions for reading and writing files. All file operations return error unions to handle I/O failures.
-
-## Import
-
-```toke
-I=file:std.file;
-```
+The `std.file` module provides functions for reading, writing, and managing files on the local file system. All paths are UTF-8 strings. Operations that can fail return a result type with `FileErr`.
 
 ## Functions
 
-### file.read
+### file.read(path: Str): Str!FileErr
 
-Reads the entire contents of a file as a string.
-
-```toke
-F=read(path: Str): Str!Err;
-```
-
-**Parameters:**
-
-| Name   | Type  | Description          |
-|--------|-------|----------------------|
-| `path` | `Str` | Path to the file     |
-
-**Returns:** `Str!Err` — the file contents, or an error if the file cannot be read.
-
-**Errors:** Returns an error if the file does not exist, is not readable, or an I/O error occurs.
-
-**Example:**
+Reads the entire contents of the file at `path` and returns it as a string. Returns `FileErr.NotFound` if the file does not exist, `FileErr.Permission` if access is denied, or `FileErr.IO` on other I/O failures.
 
 ```toke
-let content = file.read("config.txt")!;
+let content = file.read("/tmp/data.txt");
+(* content = ok("hello world") *)
 ```
 
----
+### file.write(path: Str; content: Str): bool!FileErr
 
-### file.write
-
-Writes a string to a file, creating it if it does not exist or truncating it if it does.
+Writes `content` to the file at `path`, creating the file if it does not exist and truncating it if it does. Returns `true` on success.
 
 ```toke
-F=write(path: Str; content: Str): void!Err;
+let ok = file.write("/tmp/data.txt"; "hello world");
+(* ok = ok(true) *)
 ```
 
-**Parameters:**
+### file.append(path: Str; content: Str): bool!FileErr
 
-| Name      | Type  | Description           |
-|-----------|-------|-----------------------|
-| `path`    | `Str` | Path to the file      |
-| `content` | `Str` | Content to write      |
-
-**Returns:** `void!Err` — void on success, or an error if the write fails.
-
-**Errors:** Returns an error if the file cannot be opened for writing or an I/O error occurs.
-
-**Example:**
+Appends `content` to the end of the file at `path`, creating the file if it does not exist. Returns `true` on success.
 
 ```toke
-file.write("output.txt", "hello world")!;
+file.write("/tmp/log.txt"; "line 1\n");
+file.append("/tmp/log.txt"; "line 2\n");
+let content = file.read("/tmp/log.txt");
+(* content = ok("line 1\nline 2\n") *)
 ```
 
----
+### file.exists(path: Str): bool
 
-### file.append
-
-Appends a string to the end of a file, creating it if it does not exist.
+Returns `true` if a file exists at `path`, `false` otherwise. This function is infallible.
 
 ```toke
-F=append(path: Str; content: Str): void!Err;
+let y = file.exists("/tmp/data.txt");  (* y = true *)
+let n = file.exists("/tmp/nope.txt");  (* n = false *)
 ```
 
-**Parameters:**
+### file.delete(path: Str): bool!FileErr
 
-| Name      | Type  | Description           |
-|-----------|-------|-----------------------|
-| `path`    | `Str` | Path to the file      |
-| `content` | `Str` | Content to append     |
-
-**Returns:** `void!Err` — void on success, or an error if the append fails.
-
-**Errors:** Returns an error if the file cannot be opened for appending or an I/O error occurs.
-
----
-
-### file.exists
-
-Checks whether a file exists at the given path.
+Deletes the file at `path`. Returns `true` on success. Returns `FileErr` if the file cannot be deleted.
 
 ```toke
-F=exists(path: Str): bool;
+file.write("/tmp/temp.txt"; "data");
+let ok = file.delete("/tmp/temp.txt");
+(* ok = ok(true) *)
 ```
 
-**Parameters:**
+### file.list(dir: Str): [Str]!FileErr
 
-| Name   | Type  | Description      |
-|--------|-------|------------------|
-| `path` | `Str` | Path to check    |
-
-**Returns:** `bool` — `true` if the file exists.
-
-**Example:**
+Returns an array of filenames in the directory `dir`. Returns `FileErr.NotFound` if the directory does not exist.
 
 ```toke
-?(file.exists("config.txt")) {
-    let cfg = file.read("config.txt")!
-} : {
-    file.write("config.txt", "defaults")!
-};
+let entries = file.list("/tmp");
+(* entries = ok(["file1.txt"; "file2.txt"; ...]) *)
 ```
 
----
-
-### file.remove
-
-Deletes a file from the filesystem.
+## Usage Examples
 
 ```toke
-F=remove(path: Str): void!Err;
+(* Read a config file with fallback *)
+let cfg = file.read("/etc/app.conf") |{ "default=true" };
+
+(* Write only if file does not exist *)
+if file.exists("/tmp/lock") =
+  log.warn("lock file exists"; [])
+el =
+  file.write("/tmp/lock"; "locked");
+
+(* List and process files *)
+let files = file.list("/tmp/data") |{ [] };
 ```
 
-**Parameters:**
+## Error Types
 
-| Name   | Type  | Description          |
-|--------|-------|----------------------|
-| `path` | `Str` | Path to the file     |
+### FileErr
 
-**Returns:** `void!Err` — void on success, or an error if the file cannot be deleted.
+A sum type representing file operation failures.
 
-**Errors:** Returns an error if the file does not exist or cannot be removed.
-
----
-
-### file.read_lines
-
-Reads a file and returns its contents as an array of lines.
-
-```toke
-F=read_lines(path: Str): [Str]!Err;
-```
-
-**Parameters:**
-
-| Name   | Type  | Description          |
-|--------|-------|----------------------|
-| `path` | `Str` | Path to the file     |
-
-**Returns:** `[Str]!Err` — an array of lines, or an error if the file cannot be read.
-
-**Example:**
-
-```toke
-let lines = file.read_lines("data.csv")!;
-```
+| Variant | Field Type | Meaning |
+|---------|------------|---------|
+| NotFound | Str | The file or directory does not exist |
+| Permission | Str | The process lacks permission to perform the operation |
+| IO | Str | A general I/O error occurred |

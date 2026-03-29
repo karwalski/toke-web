@@ -1,124 +1,64 @@
 ---
-title: std.time
-description: Time operations — get the current time, measure durations, and sleep.
+title: "std.time"
+description: "Time functions -- current time, elapsed measurement, and timestamp formatting."
 ---
 
-The `std.time` module provides functions for getting the current time, measuring durations, formatting timestamps, and pausing execution.
-
-## Import
-
-```toke
-I=time:std.time;
-```
+The `std.time` module provides functions for getting the current time, measuring elapsed time, and formatting timestamps. All timestamps are Unix timestamps in milliseconds (u64). All functions are infallible.
 
 ## Functions
 
-### time.now
-
-Returns the current Unix timestamp in seconds.
-
-```toke
-F=now(): i64;
-```
-
-**Returns:** `i64` — seconds since the Unix epoch (1970-01-01 00:00:00 UTC).
-
-**Example:**
-
-```toke
-let ts = time.now();
-```
-
----
-
-### time.now_ms
+### time.now(): u64
 
 Returns the current Unix timestamp in milliseconds.
 
 ```toke
-F=now_ms(): i64;
+let t = time.now();  (* e.g., 1705322096000 *)
 ```
 
-**Returns:** `i64` — milliseconds since the Unix epoch.
+### time.since(ts: u64): u64
 
-**Example:**
+Returns the number of milliseconds elapsed since the given timestamp `ts`. If `ts` is in the future, returns 0 (clamped).
 
 ```toke
-let start = time.now_ms();
-// ... do work ...
-let elapsed = time.now_ms() - start;
+let start = time.now();
+(* ... do some work ... *)
+let elapsed = time.since(start);
+(* elapsed = number of ms since start *)
 ```
 
----
+### time.format(ts: u64; fmt: Str): Str
 
-### time.sleep
+Formats a millisecond Unix timestamp using strftime-compatible format codes. If `fmt` is null, falls back to an ISO-8601 style format.
 
-Pauses execution for the specified number of milliseconds.
+**Common format codes:**
+
+| Code | Meaning | Example |
+|------|---------|---------|
+| %Y | Four-digit year | 2024 |
+| %m | Month (01-12) | 01 |
+| %d | Day of month (01-31) | 15 |
+| %H | Hour (00-23) | 12 |
+| %M | Minute (00-59) | 34 |
+| %S | Second (00-59) | 56 |
 
 ```toke
-F=sleep(ms: i64): void;
+let ts = 1705322096000;  (* 2024-01-15 12:34:56 UTC *)
+let date = time.format(ts; "%Y-%m-%d");    (* date = "2024-01-15" *)
+let time_ = time.format(ts; "%H:%M:%S");   (* time_ = "12:34:56" *)
+let custom = time.format(ts; "year=%Y");    (* custom = "year=2024" *)
 ```
 
-**Parameters:**
-
-| Name | Type  | Description                        |
-|------|-------|------------------------------------|
-| `ms` | `i64` | Duration to sleep in milliseconds  |
-
-**Returns:** `void`
-
-**Example:**
+## Usage Examples
 
 ```toke
-time.sleep(1000);  // sleep for 1 second
-```
+(* Measure how long an operation takes *)
+let start = time.now();
+let rows = db.many("SELECT * FROM big_table"; []);
+let ms = time.since(start);
+log.info("query complete"; [["elapsed_ms"; str.from_int(ms)]]);
 
----
-
-### time.format
-
-Formats a Unix timestamp as an ISO 8601 string.
-
-```toke
-F=format(timestamp: i64): Str;
-```
-
-**Parameters:**
-
-| Name        | Type  | Description                |
-|-------------|-------|----------------------------|
-| `timestamp` | `i64` | Unix timestamp in seconds  |
-
-**Returns:** `Str` — ISO 8601 formatted string (e.g., `"2025-01-15T09:30:00Z"`).
-
-**Example:**
-
-```toke
-let formatted = time.format(time.now());
-```
-
----
-
-### time.parse
-
-Parses an ISO 8601 string into a Unix timestamp.
-
-```toke
-F=parse(s: Str): i64!Err;
-```
-
-**Parameters:**
-
-| Name | Type  | Description                      |
-|------|-------|----------------------------------|
-| `s`  | `Str` | ISO 8601 formatted time string   |
-
-**Returns:** `i64!Err` — Unix timestamp in seconds, or an error if the string is not valid.
-
-**Errors:** Returns an error if the input string is not a valid ISO 8601 timestamp.
-
-**Example:**
-
-```toke
-let ts = time.parse("2025-01-15T09:30:00Z")!;
+(* Log with a formatted timestamp *)
+let now = time.now();
+let stamp = time.format(now; "%Y-%m-%d %H:%M:%S");
+log.info("event occurred"; [["timestamp"; stamp]]);
 ```

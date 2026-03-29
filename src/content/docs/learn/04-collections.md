@@ -25,9 +25,10 @@ Note the last line -- an empty array requires a type annotation because the comp
 
 The type of an array is written `[T]` where `T` is the element type:
 
+The parameter type `[Str]` denotes an array of strings. The return type `[i64]` denotes an array of integers.
+
 ```
 F=process(items:[Str]):void{
-  // items is an array of strings
 };
 
 F=make_numbers():[i64]{
@@ -41,7 +42,7 @@ Every array has a `.len` member that returns the number of elements as `u64`:
 
 ```
 let arr=[1;2;3];
-let size=arr.len;  // 3
+let size=arr.len;
 ```
 
 ### Indexing
@@ -50,9 +51,9 @@ Access elements by index using square brackets. Indices are zero-based:
 
 ```
 let arr=[10;20;30];
-let first=arr[0];   // 10
-let second=arr[1];   // 20
-let third=arr[2];    // 30
+let first=arr[0];
+let second=arr[1];
+let third=arr[2];
 ```
 
 Out-of-bounds access is a runtime trap (RT001) -- the program terminates with a structured error. There is no silent undefined behaviour.
@@ -105,7 +106,6 @@ The type of a map is written `[K:V]` where `K` is the key type and `V` is the va
 
 ```
 F=process(lookup:[Str:i64]):void{
-  // lookup is a map from strings to integers
 };
 ```
 
@@ -117,7 +117,7 @@ Maps support these core operations:
 
 ```
 let ages=["Alice":30;"Bob":25];
-let age=ages.get("Alice");  // returns 30
+let age=ages.get("Alice");
 ```
 
 Accessing a key that does not exist is a runtime trap. Use `.contains` to check first.
@@ -147,7 +147,7 @@ ages=ages.delete("Bob");
 #### Get the size
 
 ```
-let count=ages.len;  // number of key-value pairs
+let count=ages.len;
 ```
 
 ### Iterating over maps

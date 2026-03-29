@@ -1,148 +1,157 @@
 ---
-title: std.http
-description: HTTP server — create HTTP servers, define routes, and handle requests.
+title: "std.http"
+description: "HTTP server and response helpers -- declarative route registration and response constructors."
 ---
 
-The `std.http` module provides functions for building HTTP servers and handling requests.
+The `std.http` module provides a declarative HTTP server framework. Routes are registered using verb macros (`http.GET`, `http.POST`, etc.) that bind URL patterns to handler functions. Handlers receive a `Req` and return a `Res`. Response constructor functions simplify building common response shapes.
 
-## Import
+## Types
 
-```toke
-I=http:std.http;
-```
+### Req
 
-## Functions
+Represents an incoming HTTP request.
 
-### http.listen
+| Field | Type | Meaning |
+|-------|------|---------|
+| method | Str | HTTP method (e.g., `"GET"`, `"POST"`) |
+| path | Str | Request path (e.g., `"/items/42"`) |
+| headers | [[Str]] | Key-value pairs of request headers |
+| body | Str | Request body (empty string if none) |
+| params | [[Str]] | URL parameters extracted from the route pattern |
 
-Starts an HTTP server listening on the specified port.
+### Res
 
-```toke
-F=listen(port: i64): void!Err;
-```
+Represents an outgoing HTTP response.
 
-**Parameters:**
+| Field | Type | Meaning |
+|-------|------|---------|
+| status | u16 | HTTP status code |
+| headers | [[Str]] | Key-value pairs of response headers |
+| body | Str | Response body |
 
-| Name   | Type  | Description                 |
-|--------|-------|-----------------------------|
-| `port` | `i64` | The port number to bind to  |
+## Route Registration
 
-**Returns:** `void!Err` — blocks while serving; returns an error if the server cannot start.
+Routes are registered using verb macros. Each takes a URL pattern string and a handler function. Patterns may include named parameters prefixed with `:` (e.g., `"/items/:id"`).
 
-**Errors:** Returns an error if the port is already in use or cannot be bound.
+### http.GET(pattern: Str; handler: fn(Req): Res)
 
-**Example:**
+Registers a handler for GET requests matching `pattern`.
 
-```toke
-http.listen(8080)!;
-```
+### http.POST(pattern: Str; handler: fn(Req): Res)
 
----
+Registers a handler for POST requests matching `pattern`.
 
-### http.route
+### http.PUT(pattern: Str; handler: fn(Req): Res)
 
-Registers a handler function for an HTTP route.
+Registers a handler for PUT requests matching `pattern`.
 
-```toke
-F=route(method: Str; path: Str; handler: func): void;
-```
+### http.DELETE(pattern: Str; handler: fn(Req): Res)
 
-**Parameters:**
+Registers a handler for DELETE requests matching `pattern`.
 
-| Name      | Type   | Description                              |
-|-----------|--------|------------------------------------------|
-| `method`  | `Str`  | HTTP method (`"GET"`, `"POST"`, etc.)    |
-| `path`    | `Str`  | URL path pattern                         |
-| `handler` | `func` | Handler function to call for this route  |
+### http.PATCH(pattern: Str; handler: fn(Req): Res)
 
-**Returns:** `void`
-
-**Example:**
+Registers a handler for PATCH requests matching `pattern`.
 
 ```toke
-F=handle_index(): Str {
-    < "hello from toke"
-};
+http.GET("/"; fn(req: Req): Res =
+  http.Res.ok("hello world")
+);
 
-http.route("GET", "/", handle_index);
-http.listen(8080)!;
+http.GET("/items/:id"; fn(req: Req): Res =
+  let id = http.param(req; "id");
+  http.Res.json(200; "{\"id\":" ++ id ++ "}")
+);
 ```
 
----
+## Accessor Functions
 
-### http.status
+### http.param(req: Req; name: Str): Str!HttpErr
 
-Sets the HTTP response status code for the current request.
+Extracts a named URL parameter from the request. Returns `HttpErr.NotFound` if the parameter does not exist.
 
 ```toke
-F=status(code: i64): void;
+let id = http.param(req; "id");  (* id = ok("42") *)
 ```
 
-**Parameters:**
+### http.header(req: Req; name: Str): Str!HttpErr
 
-| Name   | Type  | Description           |
-|--------|-------|-----------------------|
-| `code` | `i64` | HTTP status code      |
-
-**Returns:** `void`
-
----
-
-### http.header
-
-Sets an HTTP response header for the current request.
+Extracts a header value by name (case-insensitive lookup). Returns `HttpErr.NotFound` if the header is not present.
 
 ```toke
-F=header(key: Str; value: Str): void;
+let ct = http.header(req; "content-type");
+(* ct = ok("application/json") *)
 ```
 
-**Parameters:**
+## Response Constructors
 
-| Name    | Type  | Description        |
-|---------|-------|--------------------|
-| `key`   | `Str` | Header name        |
-| `value` | `Str` | Header value       |
+### http.Res.ok(body: Str): Res
 
-**Returns:** `void`
-
-**Example:**
+Creates a 200 OK response with the given body.
 
 ```toke
-http.header("Content-Type", "application/json");
+let r = http.Res.ok("hello");
+(* r.status = 200; r.body = "hello" *)
 ```
 
----
+### http.Res.json(status: u16; body: Str): Res
 
-### http.body
-
-Returns the request body as a string.
+Creates a response with the given status code and a JSON body. Sets the `Content-Type` header to `application/json`.
 
 ```toke
-F=body(): Str;
+let r = http.Res.json(201; "{\"created\":true}");
+(* r.status = 201 *)
 ```
 
-**Returns:** `Str` — the raw request body.
+### http.Res.bad(msg: Str): Res
 
----
-
-### http.method
-
-Returns the HTTP method of the current request.
+Creates a 400 Bad Request response with the given message as the body.
 
 ```toke
-F=method(): Str;
+let r = http.Res.bad("invalid input");
+(* r.status = 400; r.body = "invalid input" *)
 ```
 
-**Returns:** `Str` — the HTTP method (e.g., `"GET"`, `"POST"`).
+### http.Res.err(msg: Str): Res
 
----
-
-### http.path
-
-Returns the path of the current request.
+Creates a 500 Internal Server Error response with the given message as the body.
 
 ```toke
-F=path(): Str;
+let r = http.Res.err("something broke");
+(* r.status = 500; r.body = "something broke" *)
 ```
 
-**Returns:** `Str` — the request path.
+## Usage Examples
+
+```toke
+(* A simple CRUD API *)
+http.GET("/users/:id"; fn(req: Req): Res =
+  let id = http.param(req; "id") |{ http.Res.bad("missing id") };
+  let row = db.one("SELECT * FROM users WHERE id=?"; [id]);
+  if row.ok? =
+    let name = row.str(row!; "name") |{ "unknown" };
+    http.Res.json(200; "{\"name\":\"" ++ name ++ "\"}")
+  el =
+    http.Res.json(404; "{\"error\":\"not found\"}")
+);
+
+http.POST("/users"; fn(req: Req): Res =
+  let body = json.dec(req.body) |{ http.Res.bad("invalid json") };
+  let name = json.str(body; "name") |{ http.Res.bad("missing name") };
+  db.exec("INSERT INTO users(name) VALUES(?)"; [name]);
+  http.Res.json(201; "{\"ok\":true}")
+);
+```
+
+## Error Types
+
+### HttpErr
+
+A sum type representing HTTP operation failures.
+
+| Variant | Field Type | Meaning |
+|---------|------------|---------|
+| BadRequest | Str | The request is malformed |
+| NotFound | Str | The requested parameter or header was not found |
+| Internal | Str | An internal server error occurred |
+| Timeout | u32 | The operation timed out (value is timeout in milliseconds) |

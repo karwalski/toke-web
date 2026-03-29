@@ -16,10 +16,12 @@ M=hello;
 The `M=` keyword declares the module name. The name is a dot-separated path of lowercase identifiers. The semicolon terminates the declaration.
 
 ```
-M=hello;          // single-segment module
-M=api.user;       // multi-segment module path
-M=app.util.math;  // deeper nesting
+M=hello;
+M=api.user;
+M=app.util.math;
 ```
+
+These are single-segment, multi-segment, and deeper-nested module paths respectively.
 
 The module name identifies the file within the project. Two files with the same module path are part of the same module and must not export conflicting names.
 

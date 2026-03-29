@@ -123,7 +123,6 @@ If you need a "while" loop, use `lp` with a no-op init and step:
 ```
 let done=mut.false;
 lp(let _=0;!done;_=0){
-  // do work
   if(some_condition){
     done=true;
   };

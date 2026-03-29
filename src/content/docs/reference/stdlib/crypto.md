@@ -1,130 +1,59 @@
 ---
-title: std.crypto
-description: Cryptographic functions — hashing, HMAC, and random byte generation.
+title: "std.crypto"
+description: "Cryptographic hash functions -- SHA-256, HMAC-SHA-256, and hex encoding."
 ---
 
-The `std.crypto` module provides cryptographic hashing, HMAC computation, and secure random number generation.
-
-## Import
-
-```toke
-I=crypto:std.crypto;
-```
+The `std.crypto` module provides cryptographic hash and HMAC functions. The implementation is self-contained with no external dependencies beyond libc. All functions are infallible.
 
 ## Functions
 
-### crypto.sha256
+### crypto.sha256(data: [Byte]): [Byte]
 
-Computes the SHA-256 hash of a string.
+Computes the SHA-256 digest of `data`. Returns a 32-byte array containing the hash.
 
 ```toke
-F=sha256(input: Str): Str;
+let hash = crypto.sha256(str.bytes("abc"));
+let hex = crypto.to_hex(hash);
+(* hex = "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad" *)
 ```
 
-**Parameters:**
+### crypto.hmac_sha256(key: [Byte]; data: [Byte]): [Byte]
 
-| Name    | Type  | Description            |
-|---------|-------|------------------------|
-| `input` | `Str` | The string to hash     |
-
-**Returns:** `Str` — the hex-encoded SHA-256 digest.
-
-**Example:**
+Computes the HMAC-SHA-256 message authentication code using the given `key` and `data`. Returns a 32-byte array containing the tag.
 
 ```toke
-let hash = crypto.sha256("hello");
-// hash = "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"
+let key = str.bytes("key");
+let msg = str.bytes("The quick brown fox jumps over the lazy dog");
+let tag = crypto.hmac_sha256(key; msg);
+let hex = crypto.to_hex(tag);
+(* hex = "f7bc83f430538424b13298e6aa6fb143ef4d59a14946175997479dbc2d1a3cd8" *)
 ```
 
----
+### crypto.to_hex(data: [Byte]): Str
 
-### crypto.sha512
-
-Computes the SHA-512 hash of a string.
+Converts a byte array to a lowercase hexadecimal string (2 characters per byte).
 
 ```toke
-F=sha512(input: Str): Str;
+let hash = crypto.sha256(str.bytes("abc"));
+let hex = crypto.to_hex(hash);
+(* hex is a 64-character lowercase hex string *)
+
+let single = crypto.to_hex([0xde]);
+(* single = "de" *)
+
+let empty = crypto.to_hex([]);
+(* empty = "" *)
 ```
 
-**Parameters:**
-
-| Name    | Type  | Description            |
-|---------|-------|------------------------|
-| `input` | `Str` | The string to hash     |
-
-**Returns:** `Str` — the hex-encoded SHA-512 digest.
-
----
-
-### crypto.hmac_sha256
-
-Computes an HMAC-SHA256 message authentication code.
+## Usage Examples
 
 ```toke
-F=hmac_sha256(key: Str; message: Str): Str;
-```
+(* Hash a password *)
+let pw_hash = crypto.to_hex(crypto.sha256(str.bytes("s3cret")));
 
-**Parameters:**
-
-| Name      | Type  | Description         |
-|-----------|-------|---------------------|
-| `key`     | `Str` | The HMAC key        |
-| `message` | `Str` | The message to sign |
-
-**Returns:** `Str` — the hex-encoded HMAC-SHA256 value.
-
-**Example:**
-
-```toke
-let mac = crypto.hmac_sha256("secret", "payload");
-```
-
----
-
-### crypto.random_bytes
-
-Generates cryptographically secure random bytes, returned as a hex string.
-
-```toke
-F=random_bytes(n: u64): Str;
-```
-
-**Parameters:**
-
-| Name | Type  | Description                   |
-|------|-------|-------------------------------|
-| `n`  | `u64` | Number of random bytes        |
-
-**Returns:** `Str` — hex-encoded random bytes (length = `2 * n`).
-
-**Example:**
-
-```toke
-let token = crypto.random_bytes(32 as u64);
-// token is a 64-character hex string
-```
-
----
-
-### crypto.hash_eq
-
-Compares two hash strings in constant time to prevent timing attacks.
-
-```toke
-F=hash_eq(a: Str; b: Str): bool;
-```
-
-**Parameters:**
-
-| Name | Type  | Description          |
-|------|-------|----------------------|
-| `a`  | `Str` | First hash string    |
-| `b`  | `Str` | Second hash string   |
-
-**Returns:** `bool` — `true` if the strings are equal.
-
-**Example:**
-
-```toke
-let valid = crypto.hash_eq(expected_hash, computed_hash);
+(* Sign an API request with HMAC *)
+let secret = str.bytes(env.get("HMAC_SECRET") |{ "default" });
+let payload = str.bytes("amount=100&currency=usd");
+let sig = crypto.to_hex(crypto.hmac_sha256(secret; payload));
+log.info("signed request"; [["signature"; sig]]);
 ```

@@ -113,7 +113,7 @@ Here is a program that computes the 10th Fibonacci number:
 M=fib;
 
 F=fib(n:i64):i64{
-  ?n<2{<n};
+  if(n<2){<n;};
   <fib(n-1)+fib(n-2);
 };
 
@@ -130,7 +130,7 @@ Compile and run:
 # 55
 ```
 
-The `?n<2{<n};` line is an if-expression: if `n` is less than 2, return `n`. The `?` keyword begins a conditional and the body is enclosed in braces. No parentheses are needed around the condition.
+The `if(n<2){<n;};` line is a conditional: if `n` is less than 2, return `n`. The `if` keyword begins a conditional with the condition in parentheses and the body enclosed in braces.
 
 ## Next steps
 

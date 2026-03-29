@@ -1,114 +1,67 @@
 ---
-title: std.env
-description: Environment variables — read and write environment variables.
+title: "std.env"
+description: "Environment variables -- read, write, and provide defaults for process environment variables."
 ---
 
-The `std.env` module provides functions for reading and setting environment variables.
-
-## Import
-
-```toke
-I=env:std.env;
-```
+The `std.env` module provides functions for reading and writing process environment variables. Keys and values are UTF-8 strings. Keys must not be empty or contain `=` or NUL characters.
 
 ## Functions
 
-### env.get
+### env.get(key: Str): Str!EnvErr
 
-Reads the value of an environment variable.
-
-```toke
-F=get(key: Str): Str!Err;
-```
-
-**Parameters:**
-
-| Name  | Type  | Description                    |
-|-------|-------|--------------------------------|
-| `key` | `Str` | The environment variable name  |
-
-**Returns:** `Str!Err` — the value of the environment variable, or an error if it is not set.
-
-**Errors:** Returns an error if the environment variable is not defined.
-
-**Example:**
+Looks up the environment variable `key`. Returns the value on success. Returns `EnvErr.NotFound` if the variable is not set, or `EnvErr.Invalid` if the key is empty or contains invalid characters.
 
 ```toke
-let home = env.get("HOME")!;
+let path = env.get("PATH");  (* path = ok("/usr/bin:...") *)
+let e = env.get("UNSET_VAR"); (* e = err(EnvErr.NotFound{...}) *)
 ```
 
----
+### env.get_or(key: Str; default: Str): Str
 
-### env.set
-
-Sets the value of an environment variable for the current process.
+Looks up the environment variable `key`. Returns the value if it exists, or `default` if the variable is not set or the key is invalid. This function is infallible.
 
 ```toke
-F=set(key: Str; value: Str): void;
+let port = env.get_or("PORT"; "8080");
+(* port = "8080" if PORT is not set *)
+
+let home = env.get_or("HOME"; "/tmp");
+(* home = "/Users/alice" if HOME is set *)
 ```
 
-**Parameters:**
+### env.set(key: Str; val: Str): bool
 
-| Name    | Type  | Description                    |
-|---------|-------|--------------------------------|
-| `key`   | `Str` | The environment variable name  |
-| `value` | `Str` | The value to set               |
-
-**Returns:** `void`
-
-**Example:**
+Sets the environment variable `key` to `val` in the current process. Overwrites any existing value. Returns `true` on success, `false` if the key is empty or contains invalid characters.
 
 ```toke
-env.set("APP_MODE", "production");
+env.set("APP_MODE"; "production");  (* returns true *)
+let mode = env.get("APP_MODE");     (* mode = ok("production") *)
+
+env.set(""; "val");     (* returns false -- empty key *)
+env.set("BAD=KEY"; ""); (* returns false -- key contains '=' *)
 ```
 
----
-
-### env.has
-
-Tests whether an environment variable is set.
+## Usage Examples
 
 ```toke
-F=has(key: Str): bool;
+(* Configure server port with fallback *)
+let port = env.get_or("PORT"; "3000");
+log.info("starting server"; [["port"; port]]);
+
+(* Require a variable or exit *)
+let secret = env.get("API_SECRET");
+if secret.ok? =
+  log.info("secret loaded"; [])
+el =
+  log.error("API_SECRET is required"; []);
 ```
 
-**Parameters:**
+## Error Types
 
-| Name  | Type  | Description                    |
-|-------|-------|--------------------------------|
-| `key` | `Str` | The environment variable name  |
+### EnvErr
 
-**Returns:** `bool` — `true` if the variable is set.
+A sum type representing environment variable lookup failures.
 
-**Example:**
-
-```toke
-?(env.has("DEBUG")) {
-    log.info("debug mode enabled")
-};
-```
-
----
-
-### env.get_or
-
-Reads the value of an environment variable, returning a default if not set.
-
-```toke
-F=get_or(key: Str; default: Str): Str;
-```
-
-**Parameters:**
-
-| Name      | Type  | Description                    |
-|-----------|-------|--------------------------------|
-| `key`     | `Str` | The environment variable name  |
-| `default` | `Str` | The fallback value             |
-
-**Returns:** `Str` — the environment variable value, or `default` if not set.
-
-**Example:**
-
-```toke
-let port = env.get_or("PORT", "8080");
-```
+| Variant | Meaning |
+|---------|---------|
+| NotFound | The environment variable is not set |
+| Invalid | The key is empty or contains invalid characters (`=`, NUL) |

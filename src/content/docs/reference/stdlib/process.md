@@ -1,112 +1,81 @@
 ---
-title: std.process
-description: Process management — execute external commands, exit the program, and access command-line arguments.
+title: "std.process"
+description: "Process management -- spawn child processes, read output, wait for completion, and send signals."
 ---
 
-The `std.process` module provides functions for running external processes, exiting the current program, and reading command-line arguments.
+The `std.process` module provides functions for spawning child processes, reading their output, waiting for completion, and sending signals. Process handles are opaque values obtained from `process.spawn`.
 
-## Import
+## Types
 
-```toke
-I=proc:std.process;
-```
+### Handle
+
+An opaque handle representing a running child process. Obtained from `process.spawn` and passed to `process.wait`, `process.stdout`, and `process.kill`.
 
 ## Functions
 
-### process.exec
+### process.spawn(cmd: [Str]): Handle!ProcessErr
 
-Executes an external command and returns its stdout output.
-
-```toke
-F=exec(cmd: Str): Str!Err;
-```
-
-**Parameters:**
-
-| Name  | Type  | Description                        |
-|-------|-------|------------------------------------|
-| `cmd` | `Str` | The command string to execute      |
-
-**Returns:** `Str!Err` — the command's stdout output, or an error if execution fails.
-
-**Errors:** Returns an error if the command cannot be found, cannot be executed, or exits with a non-zero status.
-
-**Example:**
+Spawns a child process. The first element of `cmd` is the executable path or name; subsequent elements are arguments. Returns a `Handle` on success, or `ProcessErr.NotFound` if the executable cannot be found, `ProcessErr.Permission` if execution is denied.
 
 ```toke
-let output = proc.exec("ls -la")!;
+let h = process.spawn(["echo"; "hello toke"]);
+(* h = ok(Handle{...}) *)
+
+let e = process.spawn(["/nonexistent_binary"]);
+(* e = err(ProcessErr.NotFound{...}) *)
 ```
 
----
+### process.wait(h: Handle): i32!ProcessErr
 
-### process.exec_status
-
-Executes an external command and returns its exit code.
+Blocks until the child process exits and returns its exit code. Safe to call multiple times on the same handle (returns the cached exit code on subsequent calls). Returns `ProcessErr.IO` if waiting fails.
 
 ```toke
-F=exec_status(cmd: Str): i64!Err;
+let code = process.wait(h);  (* code = ok(0) *)
 ```
 
-**Parameters:**
+### process.stdout(h: Handle): Str!ProcessErr
 
-| Name  | Type  | Description                        |
-|-------|-------|------------------------------------|
-| `cmd` | `Str` | The command string to execute      |
-
-**Returns:** `i64!Err` — the exit code, or an error if the command cannot be started.
-
-**Errors:** Returns an error if the command cannot be found or cannot be executed.
-
----
-
-### process.exit
-
-Terminates the current process with the given exit code.
+Reads all stdout output from the child process. Drains the pipe on the first call; subsequent calls return an empty string. Returns `ProcessErr.IO` if the read fails.
 
 ```toke
-F=exit(code: i64): void;
+let h = process.spawn(["echo"; "hello toke"]);
+let out = process.stdout(h);  (* out = ok("hello toke\n") *)
 ```
 
-**Parameters:**
+### process.kill(h: Handle): bool
 
-| Name   | Type  | Description    |
-|--------|-------|----------------|
-| `code` | `i64` | Exit code      |
-
-**Returns:** Does not return.
-
-**Example:**
+Sends SIGTERM to the child process. Returns `true` if the signal was sent successfully, `false` if the process could not be signalled (e.g., already exited or null handle). This function is infallible.
 
 ```toke
-proc.exit(1);
+let h = process.spawn(["sleep"; "60"]);
+let ok = process.kill(h);   (* ok = true *)
+process.wait(h);             (* reap the process *)
 ```
 
----
-
-### process.args
-
-Returns the command-line arguments as an array of strings.
+## Usage Examples
 
 ```toke
-F=args(): [Str];
+(* Run a command and capture its output *)
+let h = process.spawn(["ls"; "-la"; "/tmp"]) |{
+  log.error("failed to spawn ls"; []);
+};
+let output = process.stdout(h) |{ "" };
+let code = process.wait(h) |{ -1 };
+
+if code == 0 =
+  log.info("ls succeeded"; [["output"; output]])
+el =
+  log.error("ls failed"; [["code"; str.from_int(code)]]);
 ```
 
-**Returns:** `[Str]` — array of command-line arguments. The first element is the program name.
+## Error Types
 
-**Example:**
+### ProcessErr
 
-```toke
-let argv = proc.args();
-```
+A sum type representing process operation failures.
 
----
-
-### process.pid
-
-Returns the process ID of the current process.
-
-```toke
-F=pid(): i64;
-```
-
-**Returns:** `i64` — the current process ID.
+| Variant | Meaning |
+|---------|---------|
+| NotFound | The executable was not found |
+| Permission | Permission denied when attempting to execute |
+| IO | An I/O error occurred during pipe read, write, or wait |

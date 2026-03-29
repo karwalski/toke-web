@@ -34,8 +34,9 @@ Three files, each with a clear responsibility.
 
 The model module defines the core types:
 
+`bm/model.tk`:
+
 ```
-// bm/model.tk
 M=bm.model;
 
 T=Bookmark{
@@ -61,8 +62,9 @@ T=BmErr{
 
 The interface file for this module would be:
 
+`bm/model.tki`:
+
 ```
-// bm/model.tki
 M=bm.model;
 
 T=Bookmark{id:u64;url:Str;title:Str;tags:[Str]};
@@ -74,8 +76,9 @@ T=BmErr{FileErr:Str;ParseErr:Str;NotFound:u64};
 
 The store module handles persistence and CRUD operations:
 
+`bm/store.tk`:
+
 ```
-// bm/store.tk
 M=bm.store;
 I=file:std.file;
 I=json:std.json;
@@ -170,8 +173,9 @@ Let's walk through the key functions:
 
 The main module handles argument parsing and dispatches to the store:
 
+`bm/main.tk`:
+
 ```
-// bm/main.tk
 M=bm.main;
 I=io:std.io;
 I=str:std.str;
@@ -190,10 +194,10 @@ F=print_bookmark(bm:m.Bookmark):void{
 F=print_bookmarks(bms:[m.Bookmark]):void{
   if(bms.len=0){
     io.println("  (no bookmarks)");
-    <;
-  };
-  lp(let i=0;i<bms.len;i=i+1){
-    print_bookmark(bms[i]);
+  }el{
+    lp(let i=0;i<bms.len;i=i+1){
+      print_bookmark(bms[i]);
+    };
   };
 };
 

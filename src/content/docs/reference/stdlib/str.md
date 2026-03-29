@@ -1,308 +1,170 @@
 ---
-title: std.str
-description: String operations — concatenation, searching, splitting, and transformation functions.
+title: "std.str"
+description: "String operations -- UTF-8 string manipulation, conversion, slicing, and transformation functions."
 ---
 
-The `std.str` module provides functions for working with immutable `Str` values. Since toke strings are immutable, all operations return new strings rather than modifying in place.
-
-## Import
-
-```toke
-I=str:std.str;
-```
+The `std.str` module provides string manipulation functions for UTF-8 encoded strings. All strings in toke are immutable, null-terminated UTF-8 byte sequences. Functions that transform strings return new allocations.
 
 ## Functions
 
-### str.concat
+### str.len(s: Str): u64
 
-Concatenates two strings.
-
-```toke
-F=concat(a: Str; b: Str): Str;
-```
-
-**Parameters:**
-
-| Name | Type  | Description         |
-|------|-------|---------------------|
-| `a`  | `Str` | The first string    |
-| `b`  | `Str` | The second string   |
-
-**Returns:** `Str` — a new string containing `a` followed by `b`.
-
-**Example:**
+Returns the byte length of the string `s`.
 
 ```toke
-let greeting = str.concat("hello, ", "world");
-// greeting = "hello, world"
+let n = str.len("hello");  (* n = 5 *)
+let z = str.len("");        (* z = 0 *)
 ```
 
----
+### str.concat(a: Str; b: Str): Str
 
-### str.len
-
-Returns the byte length of a string.
+Returns a new string formed by appending `b` to `a`.
 
 ```toke
-F=len(s: Str): u64;
+let s = str.concat("foo"; "bar");  (* s = "foobar" *)
+let t = str.concat(""; "x");       (* t = "x" *)
 ```
 
-**Parameters:**
+### str.slice(s: Str; start: u64; end: u64): Str!SliceErr
 
-| Name | Type  | Description      |
-|------|-------|------------------|
-| `s`  | `Str` | The input string |
-
-**Returns:** `u64` — the number of bytes in the string.
-
-**Example:**
+Returns the substring of `s` from byte index `start` (inclusive) to `end` (exclusive). Returns `SliceErr` if either index exceeds the string length or if `start > end`.
 
 ```toke
-let n = str.len("hello");
-// n = 5
+let r = str.slice("hello"; 1; 3);  (* r = ok("el") *)
+let e = str.slice("hello"; 3; 10); (* e = err(SliceErr{...}) *)
 ```
 
----
+### str.from_int(n: i64): Str
 
-### str.contains
-
-Tests whether a string contains a substring.
+Converts a signed 64-bit integer to its decimal string representation.
 
 ```toke
-F=contains(haystack: Str; needle: Str): bool;
+let s = str.from_int(42);   (* s = "42" *)
+let t = str.from_int(-7);   (* t = "-7" *)
 ```
 
-**Parameters:**
+### str.from_float(n: f64): Str
 
-| Name       | Type  | Description              |
-|------------|-------|--------------------------|
-| `haystack` | `Str` | The string to search in  |
-| `needle`   | `Str` | The substring to find    |
-
-**Returns:** `bool` — `true` if `needle` is found within `haystack`.
-
-**Example:**
+Converts a 64-bit float to its string representation.
 
 ```toke
-let found = str.contains("hello world", "world");
-// found = true
+let s = str.from_float(3.14);  (* s = "3.14" *)
 ```
 
----
+### str.to_int(s: Str): i64!ParseErr
 
-### str.starts_with
-
-Tests whether a string starts with a prefix.
+Parses a decimal integer from the string `s`. Returns `ParseErr` if the string is not a valid integer or is empty.
 
 ```toke
-F=starts_with(s: Str; prefix: Str): bool;
+let n = str.to_int("123");  (* n = ok(123) *)
+let e = str.to_int("abc");  (* e = err(ParseErr{...}) *)
 ```
 
-**Parameters:**
+### str.to_float(s: Str): f64!ParseErr
 
-| Name     | Type  | Description          |
-|----------|-------|----------------------|
-| `s`      | `Str` | The string to check  |
-| `prefix` | `Str` | The prefix to test   |
-
-**Returns:** `bool` — `true` if `s` begins with `prefix`.
-
-**Example:**
+Parses a floating-point number from the string `s`. Returns `ParseErr` if the string is not a valid number.
 
 ```toke
-let yes = str.starts_with("/api/users", "/api");
-// yes = true
+let f = str.to_float("2.5");  (* f = ok(2.5) *)
+let e = str.to_float("xyz");  (* e = err(ParseErr{...}) *)
 ```
 
----
+### str.contains(s: Str; sub: Str): bool
 
-### str.ends_with
-
-Tests whether a string ends with a suffix.
+Returns `true` if `s` contains the substring `sub`, `false` otherwise.
 
 ```toke
-F=ends_with(s: Str; suffix: Str): bool;
+let y = str.contains("foobar"; "oba");  (* y = true *)
+let n = str.contains("foobar"; "xyz");  (* n = false *)
 ```
 
-**Parameters:**
+### str.split(s: Str; sep: Str): [Str]
 
-| Name     | Type  | Description          |
-|----------|-------|----------------------|
-| `s`      | `Str` | The string to check  |
-| `suffix` | `Str` | The suffix to test   |
-
-**Returns:** `bool` — `true` if `s` ends with `suffix`.
-
-**Example:**
+Splits the string `s` on each occurrence of the separator `sep` and returns an array of substrings.
 
 ```toke
-let yes = str.ends_with("file.toke", ".toke");
-// yes = true
+let parts = str.split("a,b,c"; ",");
+(* parts = ["a"; "b"; "c"] *)
 ```
 
----
+### str.trim(s: Str): Str
 
-### str.split
-
-Splits a string by a delimiter into an array of substrings.
+Returns a new string with leading and trailing whitespace removed.
 
 ```toke
-F=split(s: Str; delim: Str): [Str];
+let t = str.trim("  hi  ");  (* t = "hi" *)
 ```
 
-**Parameters:**
+### str.upper(s: Str): Str
 
-| Name    | Type  | Description           |
-|---------|-------|-----------------------|
-| `s`     | `Str` | The string to split   |
-| `delim` | `Str` | The delimiter string  |
-
-**Returns:** `[Str]` — an array of substrings.
-
-**Example:**
+Returns a new string with all ASCII characters converted to uppercase.
 
 ```toke
-let parts = str.split("a,b,c", ",");
-// parts = ["a"; "b"; "c"]
+let u = str.upper("hello");  (* u = "HELLO" *)
 ```
 
----
+### str.lower(s: Str): Str
 
-### str.trim
-
-Removes leading and trailing whitespace from a string.
+Returns a new string with all ASCII characters converted to lowercase.
 
 ```toke
-F=trim(s: Str): Str;
+let l = str.lower("WORLD");  (* l = "world" *)
 ```
 
-**Parameters:**
+### str.bytes(s: Str): [Byte]
 
-| Name | Type  | Description            |
-|------|-------|------------------------|
-| `s`  | `Str` | The string to trim     |
-
-**Returns:** `Str` — the trimmed string.
-
-**Example:**
+Returns the raw UTF-8 byte array of the string.
 
 ```toke
-let clean = str.trim("  hello  ");
-// clean = "hello"
+let b = str.bytes("abc");  (* b = [97; 98; 99] *)
 ```
 
----
+### str.from_bytes(b: [Byte]): Str!EncodingErr
 
-### str.to_upper
-
-Converts a string to uppercase.
+Converts a byte array to a string. Returns `EncodingErr` if the bytes are not valid UTF-8.
 
 ```toke
-F=to_upper(s: Str): Str;
+let s = str.from_bytes([104; 105]);  (* s = ok("hi") *)
 ```
 
-**Parameters:**
-
-| Name | Type  | Description              |
-|------|-------|--------------------------|
-| `s`  | `Str` | The string to convert    |
-
-**Returns:** `Str` — the uppercase string.
-
----
-
-### str.to_lower
-
-Converts a string to lowercase.
+## Usage Examples
 
 ```toke
-F=to_lower(s: Str): Str;
+(* Parse a number from user input, with fallback *)
+let input = str.trim(raw_input);
+let val = str.to_int(input) |{ 0 };
+
+(* Build a greeting *)
+let name = str.upper(str.slice("alice"; 0; 1) |{ "" });
+let rest = str.slice("alice"; 1; 5) |{ "" };
+let greeting = str.concat("Hello "; str.concat(name; rest));
+
+(* Split CSV and process each field *)
+let fields = str.split("name,age,city"; ",");
 ```
 
-**Parameters:**
+## Error Types
 
-| Name | Type  | Description              |
-|------|-------|--------------------------|
-| `s`  | `Str` | The string to convert    |
+### SliceErr
 
-**Returns:** `Str` — the lowercase string.
+Returned by `str.slice` when indices are out of bounds.
 
----
+| Field | Type | Meaning |
+|-------|------|---------|
+| msg | Str | Human-readable description of the error |
 
-### str.replace
+### ParseErr
 
-Replaces all occurrences of a substring.
+Returned by `str.to_int` and `str.to_float` when the input string cannot be parsed as the target numeric type.
 
-```toke
-F=replace(s: Str; old: Str; new: Str): Str;
-```
+| Field | Type | Meaning |
+|-------|------|---------|
+| msg | Str | Human-readable description of the parse failure |
 
-**Parameters:**
+### EncodingErr
 
-| Name  | Type  | Description                 |
-|-------|-------|-----------------------------|
-| `s`   | `Str` | The input string            |
-| `old` | `Str` | The substring to replace    |
-| `new` | `Str` | The replacement string      |
+Returned by `str.from_bytes` when the byte array is not valid UTF-8.
 
-**Returns:** `Str` — a new string with all occurrences replaced.
-
-**Example:**
-
-```toke
-let result = str.replace("foo bar foo", "foo", "baz");
-// result = "baz bar baz"
-```
-
----
-
-### str.substr
-
-Extracts a substring by byte offset and length.
-
-```toke
-F=substr(s: Str; start: u64; length: u64): Str;
-```
-
-**Parameters:**
-
-| Name     | Type  | Description                    |
-|----------|-------|--------------------------------|
-| `s`      | `Str` | The input string               |
-| `start`  | `u64` | Starting byte offset (0-based) |
-| `length` | `u64` | Number of bytes to extract     |
-
-**Returns:** `Str` — the extracted substring.
-
-**Example:**
-
-```toke
-let sub = str.substr("hello world", 6 as u64, 5 as u64);
-// sub = "world"
-```
-
----
-
-### str.index_of
-
-Finds the byte offset of the first occurrence of a substring.
-
-```toke
-F=index_of(haystack: Str; needle: Str): i64;
-```
-
-**Parameters:**
-
-| Name       | Type  | Description              |
-|------------|-------|--------------------------|
-| `haystack` | `Str` | The string to search in  |
-| `needle`   | `Str` | The substring to find    |
-
-**Returns:** `i64` — the byte offset of the first occurrence, or `-1` if not found.
-
-**Example:**
-
-```toke
-let pos = str.index_of("hello world", "world");
-// pos = 6
-```
+| Field | Type | Meaning |
+|-------|------|---------|
+| msg | Str | Human-readable description of the encoding error |

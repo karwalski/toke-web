@@ -1,181 +1,114 @@
 ---
-title: std.json
-description: JSON parsing and serialization — encode and decode toke values to and from JSON strings.
+title: "std.json"
+description: "JSON encoding and decoding -- parse JSON strings and extract typed fields by key."
 ---
 
-The `std.json` module provides functions for encoding toke values to JSON strings and decoding JSON strings back into toke values.
+The `std.json` module provides functions for parsing JSON strings into an opaque `Json` value and extracting typed fields by key. It also provides a simple encoding function for producing JSON string literals.
 
-## Import
+## Types
 
-```toke
-I=json:std.json;
-```
+### Json
+
+An opaque wrapper around a raw JSON string. Obtained by calling `json.dec` on a valid JSON input. Field access is performed via the typed accessor functions (`json.str`, `json.u64`, etc.).
+
+| Field | Type | Meaning |
+|-------|------|---------|
+| raw | Str | The underlying JSON string |
 
 ## Functions
 
-### json.encode
+### json.enc(v: Str): Str
 
-Serializes a value to a JSON string.
-
-```toke
-F=encode(value: Str): Str;
-```
-
-**Parameters:**
-
-| Name    | Type  | Description                   |
-|---------|-------|-------------------------------|
-| `value` | `Str` | The value to encode as JSON   |
-
-**Returns:** `Str` — the JSON-encoded string.
-
-**Example:**
+Encodes a string value as a JSON string literal (with surrounding double quotes and escaping).
 
 ```toke
-let j = json.encode("hello");
-// j = "\"hello\""
+let j = json.enc("hello");  (* j = "\"hello\"" *)
 ```
 
----
+### json.dec(s: Str): Json!JsonErr
 
-### json.encode_i64
-
-Serializes an integer to a JSON number string.
+Parses a JSON string into a `Json` value. Returns `JsonErr.Parse` if the input is not valid JSON.
 
 ```toke
-F=encode_i64(value: i64): Str;
+let j = json.dec("{\"name\":\"alice\";\"age\":30}");
+(* j = ok(Json{...}) *)
+
+let e = json.dec("not json");
+(* e = err(JsonErr.Parse{...}) *)
 ```
 
-**Parameters:**
+### json.str(j: Json; key: Str): Str!JsonErr
 
-| Name    | Type  | Description           |
-|---------|-------|-----------------------|
-| `value` | `i64` | The integer to encode |
-
-**Returns:** `Str` — the JSON number string.
-
-**Example:**
+Extracts a string value from the JSON object by key. Returns `JsonErr.Missing` if the key does not exist, or `JsonErr.Type` if the value is not a string.
 
 ```toke
-let j = json.encode_i64(42);
-// j = "42"
+let name = json.str(j; "name");  (* name = ok("alice") *)
 ```
 
----
+### json.u64(j: Json; key: Str): u64!JsonErr
 
-### json.encode_f64
-
-Serializes a float to a JSON number string.
+Extracts an unsigned 64-bit integer from the JSON object by key. Returns `JsonErr.Missing` if the key does not exist, or `JsonErr.Type` if the value is not a number.
 
 ```toke
-F=encode_f64(value: f64): Str;
+let age = json.u64(j; "age");  (* age = ok(30) *)
 ```
 
-**Parameters:**
+### json.i64(j: Json; key: Str): i64!JsonErr
 
-| Name    | Type  | Description         |
-|---------|-------|---------------------|
-| `value` | `f64` | The float to encode |
-
-**Returns:** `Str` — the JSON number string.
-
----
-
-### json.encode_bool
-
-Serializes a boolean to a JSON boolean string.
+Extracts a signed 64-bit integer from the JSON object by key. Returns `JsonErr.Missing` if the key does not exist, or `JsonErr.Type` if the value is not a number.
 
 ```toke
-F=encode_bool(value: bool): Str;
+let temp = json.i64(j; "temp");  (* temp = ok(-42) *)
 ```
 
-**Parameters:**
+### json.f64(j: Json; key: Str): f64!JsonErr
 
-| Name    | Type   | Description           |
-|---------|--------|-----------------------|
-| `value` | `bool` | The boolean to encode |
-
-**Returns:** `Str` — `"true"` or `"false"`.
-
----
-
-### json.decode_str
-
-Parses a JSON string value.
+Extracts a 64-bit float from the JSON object by key. Returns `JsonErr.Missing` if the key does not exist, or `JsonErr.Type` if the value is not a number.
 
 ```toke
-F=decode_str(input: Str): Str!Err;
+let pi = json.f64(j; "pi");  (* pi = ok(3.14) *)
 ```
 
-**Parameters:**
+### json.bool(j: Json; key: Str): bool!JsonErr
 
-| Name    | Type  | Description           |
-|---------|-------|-----------------------|
-| `input` | `Str` | The JSON string to parse |
-
-**Returns:** `Str!Err` — the decoded string value, or an error if the input is not valid JSON.
-
-**Errors:** Returns an error if the input is not a valid JSON string.
-
-**Example:**
+Extracts a boolean value from the JSON object by key. Returns `JsonErr.Missing` if the key does not exist, or `JsonErr.Type` if the value is not a boolean.
 
 ```toke
-let name = json.decode_str("\"alice\"")!;
-// name = "alice"
+let flag = json.bool(j; "flag");  (* flag = ok(true) *)
 ```
 
----
+### json.arr(j: Json; key: Str): [Json]!JsonErr
 
-### json.decode_i64
-
-Parses a JSON number as an integer.
+Extracts a JSON array from the object by key, returning each element as a `Json` value. Returns `JsonErr.Missing` if the key does not exist, or `JsonErr.Type` if the value is not an array.
 
 ```toke
-F=decode_i64(input: Str): i64!Err;
+let items = json.arr(j; "items");  (* items = ok([Json; Json; Json]) *)
 ```
 
-**Parameters:**
-
-| Name    | Type  | Description              |
-|---------|-------|--------------------------|
-| `input` | `Str` | The JSON number to parse |
-
-**Returns:** `i64!Err` — the decoded integer, or an error if the input is not a valid JSON integer.
-
-**Errors:** Returns an error if the input is not a valid JSON number or cannot be represented as `i64`.
-
----
-
-### json.decode_f64
-
-Parses a JSON number as a float.
+## Usage Examples
 
 ```toke
-F=decode_f64(input: Str): f64!Err;
+(* Parse a JSON payload and extract fields *)
+let body = json.dec(req.body) |{ http.Res.bad("invalid json") };
+let name = json.str(body; "name") |{ "unknown" };
+let age = json.u64(body; "age") |{ 0 };
+
+(* Handle missing vs wrong type separately *)
+let val = json.str(body; "email");
+if val.ok? =
+  log.info("email found"; [["email"; val!]])
+el =
+  log.warn("email missing"; []);
 ```
 
-**Parameters:**
+## Error Types
 
-| Name    | Type  | Description              |
-|---------|-------|--------------------------|
-| `input` | `Str` | The JSON number to parse |
+### JsonErr
 
-**Returns:** `f64!Err` — the decoded float, or an error if the input is not a valid JSON number.
+A sum type representing JSON operation failures.
 
----
-
-### json.decode_bool
-
-Parses a JSON boolean.
-
-```toke
-F=decode_bool(input: Str): bool!Err;
-```
-
-**Parameters:**
-
-| Name    | Type  | Description                |
-|---------|-------|----------------------------|
-| `input` | `Str` | The JSON boolean to parse  |
-
-**Returns:** `bool!Err` — the decoded boolean, or an error if the input is not `"true"` or `"false"`.
+| Variant | Field Type | Meaning |
+|---------|------------|---------|
+| Parse | Str | The input string is not valid JSON |
+| Type | Str | The value exists but is not the expected type |
+| Missing | Str | The requested key does not exist in the object |
