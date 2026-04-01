@@ -9,24 +9,22 @@ toke's design follows a single rule: where any implementation decision conflicts
 
 The language defines exactly one canonical syntactic form for each construct. Synonym constructs, optional delimiters, and style-variant spellings are prohibited. There is one way to declare a function, one way to return a value, one way to define a type. The model never chooses between equivalent forms.
 
-## The 80-Character Profile
+## The 56-Character Set
 
-toke Phase 1 uses exactly 80 structural ASCII characters. No character outside this set may appear in a structural position. Arbitrary UTF-8 is permitted inside string literal content.
+toke Phase 2 uses exactly 56 structural ASCII characters. No character outside this set may appear in a structural position. Arbitrary UTF-8 is permitted inside string literal content.
 
 | Class | Characters | Count |
 |---|---|---|
 | Lowercase | `a-z` | 26 |
-| Uppercase | `A-Z` | 26 |
 | Digits | `0-9` | 10 |
-| Symbols | `( ) { } [ ] = : . ; + - * / < > ! \|` | 18 |
+| Symbols | `( ) { } = : . ; + - * / < > ! \| $ @` | 18 |
+| Keywords | `M`, `F`, `T`, `I`, `C` | 2 uppercase chars (single-char keyword positions only) |
 
 The double-quote `"` appears in source as the string literal delimiter but is not counted among the 18 structural symbols -- it is consumed during lexing and never produces a token, similar to how whitespace separates tokens but carries no structural meaning.
 
-**What is excluded:** whitespace is structurally meaningless (the semicolon is the universal separator). There is no comment syntax -- documentation lives outside source files. The characters `@`, `#`, `$`, `%`, `^`, `&`, `~`, backtick, backslash, single-quote, comma, and question-mark do not appear in structural positions.
+**What is excluded:** whitespace is structurally meaningless (the semicolon is the universal separator). There is no comment syntax -- documentation lives outside source files. Uppercase letters (except in declaration keywords `M`, `F`, `T`, `I`, `C`), `[`, `]`, `#`, `%`, `^`, `&`, `~`, backtick, backslash, single-quote, comma, and question-mark do not appear in structural positions.
 
-**Why restricted:** every character in the set must be necessary. Every token in generated output must carry semantic information. A smaller, predictable character set means fewer token boundary splits in BPE tokenizers and a tighter generation space for the model.
-
-Phase 2 reduces the set further to 56 characters by replacing uppercase letters with sigil prefixes (`$user` instead of `User`) that BPE training absorbs into single merged tokens.
+**Why restricted:** every character in the set must be necessary. Every token in generated output must carry semantic information. A smaller, predictable character set means fewer token boundary splits in BPE tokenizers and a tighter generation space for the model. The `$` and `@` sigils replace uppercase type names (`$user` instead of `User`) and bracket-based array syntax (`@(T)` instead of `[T]`), producing forms that BPE training absorbs into single merged tokens.
 
 ## LL(1) Grammar
 
@@ -44,8 +42,8 @@ toke reserves exactly 12 identifiers as keywords. For comparison, Python has 35 
 | Keyword | Role | Why it exists |
 |---|---|---|
 | `M` | Module declaration | Every source file begins with `M=module.path;`. Identifies the compilation unit. |
-| `F` | Function definition | `F=name(args):ReturnType{body};` -- the only way to define a function. |
-| `T` | Type definition | `T=Name{fields};` -- the only way to define a struct type. |
+| `F` | Function definition | `F=name(args):$returntype{body};` -- the only way to define a function. |
+| `T` | Type definition | `T=$name{fields};` -- the only way to define a struct type. |
 | `I` | Import declaration | `I=alias:module.path;` -- explicit aliased imports, no wildcards. |
 | `if` | Conditional branch | `if condition{body}` -- standard conditional. |
 | `el` | Else branch | Follows the closing `}` of an `if` block. Two characters instead of four. |
@@ -71,7 +69,7 @@ toke prohibits implicit behaviour at every level:
 
 ## Strong Explicit Typing
 
-All values, interfaces, and function signatures have explicitly stated types. There is no type inference in Phase 1. The model always knows what type it is working with, and the compiler always has enough information to validate without cross-file analysis beyond declared imports.
+All values, interfaces, and function signatures have explicitly stated types. There is no type inference. The model always knows what type it is working with, and the compiler always has enough information to validate without cross-file analysis beyond declared imports.
 
 ## Structured Error Handling
 

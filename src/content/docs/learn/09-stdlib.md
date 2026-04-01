@@ -1,13 +1,17 @@
 ---
 title: "Lesson 9: Standard Library Deep Dive"
-description: "A practical tour of all 11 standard library modules with working examples for each."
+description: "A practical tour of the standard library modules with working examples for each."
 ---
 
 **Estimated time: ~25 minutes**
 
-The toke standard library provides 11 modules covering the most common programming tasks. Each module is imported with `I=alias:std.module;` and accessed through the alias.
+The toke standard library provides modules covering the most common programming tasks. Each module is imported with `I=alias:std.module;` and accessed through the alias.
+
+> **Note:** Of the modules documented below, 11 have C runtime implementations today (str, file, json, http, db, crypto, env, process, log, time, test). Three modules (io, math, net) are planned but not yet implemented -- they are included here as part of the design vision.
 
 ## std.io -- Console I/O
+
+> **Status: Planned** -- not yet implemented. The API below is part of the design vision but has no compiler or runtime backing today.
 
 ```
 I=io:std.io;
@@ -15,10 +19,10 @@ I=io:std.io;
 
 | Function | Signature | Purpose |
 |----------|-----------|---------|
-| `println` | `(s:Str):void` | Print string with newline |
-| `print` | `(s:Str):void` | Print string without newline |
-| `readline` | `():Str` | Read one line from stdin |
-| `eprintln` | `(s:Str):void` | Print to stderr with newline |
+| `println` | `(s:$str):void` | Print string with newline |
+| `print` | `(s:$str):void` | Print string without newline |
+| `readline` | `():$str` | Read one line from stdin |
+| `eprintln` | `(s:$str):void` | Print to stderr with newline |
 
 **Example: interactive prompt**
 
@@ -42,28 +46,28 @@ I=str:std.str;
 
 | Function | Signature | Purpose |
 |----------|-----------|---------|
-| `len` | `(s:Str):u64` | String length in bytes |
-| `slice` | `(s:Str;start:u64;length:u64):Str` | Extract substring |
-| `contains` | `(s:Str;sub:Str):bool` | Check if substring exists |
-| `indexOf` | `(s:Str;sub:Str):i64` | Find substring position (-1 if not found) |
-| `replace` | `(s:Str;old:Str;new:Str):Str` | Replace all occurrences |
-| `split` | `(s:Str;delim:Str):[Str]` | Split into array |
-| `join` | `(parts:[Str];delim:Str):Str` | Join array into string |
-| `upper` | `(s:Str):Str` | Convert to uppercase |
-| `lower` | `(s:Str):Str` | Convert to lowercase |
-| `trim` | `(s:Str):Str` | Remove leading/trailing whitespace |
-| `startsWith` | `(s:Str;prefix:Str):bool` | Check prefix |
-| `endsWith` | `(s:Str;suffix:Str):bool` | Check suffix |
-| `repeat` | `(s:Str;n:u64):Str` | Repeat string n times |
-| `fromInt` | `(n:i64):Str` | Convert integer to string |
-| `toInt` | `(s:Str):i64!StrErr` | Parse string to integer |
+| `len` | `(s:$str):u64` | String length in bytes |
+| `slice` | `(s:$str;start:u64;length:u64):$str` | Extract substring |
+| `contains` | `(s:$str;sub:$str):bool` | Check if substring exists |
+| `indexOf` | `(s:$str;sub:$str):i64` | Find substring position (-1 if not found) |
+| `replace` | `(s:$str;old:$str;new:$str):$str` | Replace all occurrences |
+| `split` | `(s:$str;delim:$str):@($str)` | Split into array |
+| `join` | `(parts:@($str);delim:$str):$str` | Join array into string |
+| `upper` | `(s:$str):$str` | Convert to uppercase |
+| `lower` | `(s:$str):$str` | Convert to lowercase |
+| `trim` | `(s:$str):$str` | Remove leading/trailing whitespace |
+| `startsWith` | `(s:$str;prefix:$str):bool` | Check prefix |
+| `endsWith` | `(s:$str;suffix:$str):bool` | Check suffix |
+| `repeat` | `(s:$str;n:u64):$str` | Repeat string n times |
+| `fromInt` | `(n:i64):$str` | Convert integer to string |
+| `toInt` | `(s:$str):i64!$strerr` | Parse string to integer |
 
 **Example: parse a key=value config line**
 
 ```
-F=parseLine(line:Str):[Str]{
+F=parseLine(line:$str):@($str){
   let parts=str.split(line;"=");
-  <[str.trim(parts[0]);str.trim(parts[1])];
+  <@(str.trim(parts.0);str.trim(parts.1));
 };
 ```
 
@@ -75,21 +79,21 @@ I=file:std.file;
 
 | Function | Signature | Purpose |
 |----------|-----------|---------|
-| `read` | `(path:Str):Str!FileErr` | Read entire file as string |
-| `write` | `(path:Str;content:Str):void!FileErr` | Write string to file (overwrite) |
-| `append` | `(path:Str;content:Str):void!FileErr` | Append string to file |
-| `exists` | `(path:Str):bool` | Check if file exists |
-| `delete` | `(path:Str):void!FileErr` | Delete a file |
-| `readBytes` | `(path:Str):[u8]!FileErr` | Read file as byte array |
-| `writeBytes` | `(path:Str;data:[u8]):void!FileErr` | Write byte array to file |
-| `listDir` | `(path:Str):[Str]!FileErr` | List directory entries |
+| `read` | `(path:$str):$str!$fileerr` | Read entire file as string |
+| `write` | `(path:$str;content:$str):void!$fileerr` | Write string to file (overwrite) |
+| `append` | `(path:$str;content:$str):void!$fileerr` | Append string to file |
+| `exists` | `(path:$str):bool` | Check if file exists |
+| `delete` | `(path:$str):void!$fileerr` | Delete a file |
+| `readBytes` | `(path:$str):@(u8)!$fileerr` | Read file as byte array |
+| `writeBytes` | `(path:$str;data:@(u8)):void!$fileerr` | Write byte array to file |
+| `listDir` | `(path:$str):@($str)!$fileerr` | List directory entries |
 
 **Example: copy a file**
 
 ```
-F=copyFile(src:Str;dst:Str):void!FileErr{
-  let content=file.read(src)!FileErr;
-  file.write(dst;content)!FileErr;
+F=copyFile(src:$str;dst:$str):void!$fileerr{
+  let content=file.read(src)!$fileerr;
+  file.write(dst;content)!$fileerr;
 };
 ```
 
@@ -101,24 +105,24 @@ I=json:std.json;
 
 | Function | Signature | Purpose |
 |----------|-----------|---------|
-| `enc` | `(val:T):Str` | Encode any type to JSON string |
-| `dec` | `(s:Str):T!JsonErr` | Decode JSON string to typed value |
-| `get` | `(obj:T;key:Str):T!JsonErr` | Extract a field from decoded JSON |
-| `pretty` | `(val:T):Str` | Encode with indentation |
+| `enc` | `(val:T):$str` | Encode any type to JSON string |
+| `dec` | `(s:$str):T!$jsonerr` | Decode JSON string to typed value |
+| `get` | `(obj:T;key:$str):T!$jsonerr` | Extract a field from decoded JSON |
+| `pretty` | `(val:T):$str` | Encode with indentation |
 
 **Example: JSON round-trip**
 
 ```
-T=Config{host:Str;port:i64;debug:bool};
+T=$config{host:$str;port:i64;debug:bool};
 
-F=save(c:Config;path:Str):void!AppErr{
+F=save(c:$config;path:$str):void!$apperr{
   let data=json.enc(c);
-  file.write(path;data)!AppErr;
+  file.write(path;data)!$apperr;
 };
 
-F=load(path:Str):Config!AppErr{
-  let data=file.read(path)!AppErr;
-  let cfg=json.dec(data)!AppErr;
+F=load(path:$str):$config!$apperr{
+  let data=file.read(path)!$apperr;
+  let cfg=json.dec(data)!$apperr;
   <cfg;
 };
 ```
@@ -133,19 +137,19 @@ I=http:std.http;
 
 | Function | Signature | Purpose |
 |----------|-----------|---------|
-| `get` | `(url:Str):http.Res!http.Err` | HTTP GET request |
-| `post` | `(url:Str;body:Str):http.Res!http.Err` | HTTP POST request |
-| `put` | `(url:Str;body:Str):http.Res!http.Err` | HTTP PUT request |
-| `delete` | `(url:Str):http.Res!http.Err` | HTTP DELETE request |
+| `get` | `(url:$str):http.$res!http.$err` | HTTP GET request |
+| `post` | `(url:$str;body:$str):http.$res!http.$err` | HTTP POST request |
+| `put` | `(url:$str;body:$str):http.$res!http.$err` | HTTP PUT request |
+| `delete` | `(url:$str):http.$res!http.$err` | HTTP DELETE request |
 
 ### Server types and functions
 
 | Type/Function | Purpose |
 |---------------|---------|
-| `http.Req` | Incoming request (method, path, body, headers) |
-| `http.Res` | Response (status, body, headers) |
-| `http.Res.ok(body:Str)` | Create 200 response |
-| `http.Res.status(code:i32;body:Str)` | Create response with status |
+| `http.$req` | Incoming request (method, path, body, headers) |
+| `http.$res` | Response (status, body, headers) |
+| `http.$res.ok(body:$str)` | Create 200 response |
+| `http.$res.status(code:i32;body:$str)` | Create response with status |
 | `http.serve(port:i32;handler:F)` | Start HTTP server |
 
 **Example: simple HTTP server**
@@ -155,19 +159,19 @@ M=server;
 I=http:std.http;
 I=json:std.json;
 
-T=ApiErr{
-  NotFound:Str;
-  BadRequest:Str
+T=$apierr{
+  $notfound:$str;
+  $badrequest:$str
 };
 
-F=handle(req:http.Req):http.Res{
+F=handle(req:http.$req):http.$res{
   if(req.path="/health"){
-    <http.Res.ok("ok");
+    <http.$res.ok("ok");
   };
   if(req.path="/echo"){
-    <http.Res.ok(req.body);
+    <http.$res.ok(req.body);
   };
-  <http.Res.status(404;"not found");
+  <http.$res.status(404;"not found");
 };
 
 F=main():i64{
@@ -185,7 +189,7 @@ I=io:std.io;
 
 F=main():i64{
   http.get("https://api.example.com/data")|{
-    Ok:res  io.println("Status: \(res.status as Str)\nBody: \(res.body)");
+    Ok:res  io.println("Status: \(res.status as $str)\nBody: \(res.body)");
     Err:e   io.println("Request failed");
   };
   <0;
@@ -200,11 +204,11 @@ I=db:std.db;
 
 | Function | Signature | Purpose |
 |----------|-----------|---------|
-| `open` | `(path:Str):db.Conn!db.Err` | Open SQLite database |
-| `exec` | `(conn:db.Conn;sql:Str;params:[Str]):db.Result!db.Err` | Execute statement |
-| `query` | `(conn:db.Conn;sql:Str;params:[Str]):[db.Row]!db.Err` | Query rows |
-| `one` | `(conn:db.Conn;sql:Str;params:[Str]):db.Row!db.Err` | Query single row |
-| `close` | `(conn:db.Conn):void` | Close connection |
+| `open` | `(path:$str):db.$conn!db.$err` | Open SQLite database |
+| `exec` | `(conn:db.$conn;sql:$str;params:@($str)):db.$result!db.$err` | Execute statement |
+| `query` | `(conn:db.$conn;sql:$str;params:@($str)):@(db.$row)!db.$err` | Query rows |
+| `one` | `(conn:db.$conn;sql:$str;params:@($str)):db.$row!db.$err` | Query single row |
+| `close` | `(conn:db.$conn):void` | Close connection |
 
 **Example: SQLite CRUD**
 
@@ -212,24 +216,24 @@ I=db:std.db;
 M=todos;
 I=db:std.db;
 
-T=Todo{id:u64;title:Str;done:bool};
-T=TodoErr{DbErr:Str;NotFound:u64};
+T=$todo{id:u64;title:$str;done:bool};
+T=$todoerr{$dberr:$str;$notfound:u64};
 
-F=init(conn:db.Conn):void!TodoErr{
-  db.exec(conn;"CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY, title TEXT, done INTEGER)";[])!TodoErr;
+F=init(conn:db.$conn):void!$todoerr{
+  db.exec(conn;"CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY, title TEXT, done INTEGER)";@())!$todoerr;
 };
 
-F=add(conn:db.Conn;title:Str):Todo!TodoErr{
-  let r=db.exec(conn;"INSERT INTO todos (title,done) VALUES (?,0)";[title])!TodoErr;
-  <Todo{id:r.lastId;title:title;done:false};
+F=add(conn:db.$conn;title:$str):$todo!$todoerr{
+  let r=db.exec(conn;"INSERT INTO todos (title,done) VALUES (?,0)";@(title))!$todoerr;
+  <$todo{id:r.lastId;title:title;done:false};
 };
 
-F=list(conn:db.Conn):[Todo]!TodoErr{
-  let rows=db.query(conn;"SELECT id,title,done FROM todos";[])!TodoErr;
-  let result=mut.[];
+F=list(conn:db.$conn):@($todo)!$todoerr{
+  let rows=db.query(conn;"SELECT id,title,done FROM todos";@())!$todoerr;
+  let result=mut.@();
   lp(let i=0;i<rows.len;i=i+1){
-    let r=rows[i];
-    result=result.push(Todo{
+    let r=rows.get(i);
+    result=result.push($todo{
       id:r.u64("id");
       title:r.str("title");
       done:r.i64("done")=1
@@ -247,16 +251,16 @@ I=crypto:std.crypto;
 
 | Function | Signature | Purpose |
 |----------|-----------|---------|
-| `sha256` | `(data:Str):Str` | SHA-256 hash (hex string) |
-| `sha512` | `(data:Str):Str` | SHA-512 hash (hex string) |
-| `hmac` | `(key:Str;data:Str;algo:Str):Str` | HMAC signature |
-| `randomBytes` | `(n:u64):[u8]` | Cryptographic random bytes |
-| `uuid` | `():Str` | Generate UUID v4 |
+| `sha256` | `(data:$str):$str` | SHA-256 hash (hex string) |
+| `sha512` | `(data:$str):$str` | SHA-512 hash (hex string) |
+| `hmac` | `(key:$str;data:$str;algo:$str):$str` | HMAC signature |
+| `randomBytes` | `(n:u64):@(u8)` | Cryptographic random bytes |
+| `uuid` | `():$str` | Generate UUID v4 |
 
 **Example: hash a password**
 
 ```
-F=hashPassword(password:Str;salt:Str):Str{
+F=hashPassword(password:$str;salt:$str):$str{
   <crypto.sha256(salt+password);
 };
 ```
@@ -269,9 +273,9 @@ I=proc:std.process;
 
 | Function | Signature | Purpose |
 |----------|-----------|---------|
-| `run` | `(cmd:Str;args:[Str]):proc.Output!proc.Err` | Run command and capture output |
-| `exec` | `(cmd:Str;args:[Str]):i32!proc.Err` | Run command and return exit code |
-| `env` | `(key:Str):Str` | Get environment variable |
+| `run` | `(cmd:$str;args:@($str)):proc.$output!proc.$err` | Run command and capture output |
+| `exec` | `(cmd:$str;args:@($str)):i32!proc.$err` | Run command and return exit code |
+| `env` | `(key:$str):$str` | Get environment variable |
 
 **Example: run a shell command**
 
@@ -281,7 +285,7 @@ I=proc:std.process;
 I=io:std.io;
 
 F=main():i64{
-  proc.run("ls";["-la";"./src"])|{
+  proc.run("ls";@("-la";"./src"))|{
     Ok:out  io.println(out.stdout);
     Err:e   io.println("Command failed");
   };
@@ -299,19 +303,21 @@ I=time:std.time;
 |----------|-----------|---------|
 | `now` | `():u64` | Unix timestamp in seconds |
 | `nowMs` | `():u64` | Unix timestamp in milliseconds |
-| `format` | `(ts:u64;fmt:Str):Str` | Format timestamp |
+| `format` | `(ts:u64;fmt:$str):$str` | Format timestamp |
 | `sleep` | `(ms:u64):void` | Sleep for milliseconds |
 
 **Example: timestamp a log entry**
 
 ```
-F=log(msg:Str):void{
+F=log(msg:$str):void{
   let ts=time.format(time.now();"%Y-%m-%d %H:%M:%S");
   io.println("[\(ts)] \(msg)");
 };
 ```
 
 ## std.math -- Mathematical functions
+
+> **Status: Planned** -- not yet implemented. The API below is part of the design vision but has no compiler or runtime backing today.
 
 ```
 I=math:std.math;
@@ -340,18 +346,20 @@ F=distance(x1:f64;y1:f64;x2:f64;y2:f64):f64{
 
 ## std.net -- TCP sockets
 
+> **Status: Planned** -- not yet implemented. The API below is part of the design vision but has no compiler or runtime backing today.
+
 ```
 I=net:std.net;
 ```
 
 | Function | Signature | Purpose |
 |----------|-----------|---------|
-| `listen` | `(addr:Str;port:i32):net.Listener!net.Err` | Start TCP listener |
-| `accept` | `(l:net.Listener):net.Conn!net.Err` | Accept connection |
-| `connect` | `(addr:Str;port:i32):net.Conn!net.Err` | Connect to TCP server |
-| `send` | `(c:net.Conn;data:Str):void!net.Err` | Send data |
-| `recv` | `(c:net.Conn):Str!net.Err` | Receive data |
-| `close` | `(c:net.Conn):void` | Close connection |
+| `listen` | `(addr:$str;port:i32):net.$listener!net.$err` | Start TCP listener |
+| `accept` | `(l:net.$listener):net.$conn!net.$err` | Accept connection |
+| `connect` | `(addr:$str;port:i32):net.$conn!net.$err` | Connect to TCP server |
+| `send` | `(c:net.$conn;data:$str):void!net.$err` | Send data |
+| `recv` | `(c:net.$conn):$str!net.$err` | Receive data |
+| `close` | `(c:net.$conn):void` | Close connection |
 
 **Example: TCP echo server**
 
@@ -359,8 +367,8 @@ I=net:std.net;
 M=echo;
 I=net:std.net;
 
-F=main():i64!net.NetErr{
-  let listener=net.listen("0.0.0.0";9000)!net.NetErr;
+F=main():i64!net.$neterr{
+  let listener=net.listen("0.0.0.0";9000)!net.$neterr;
   lp(let x=0;true;x=0){
     net.accept(listener)|{
       Ok:conn  {
@@ -405,9 +413,9 @@ Write a program that:
 
 ## Key takeaways
 
-- 11 standard library modules cover I/O, strings, files, JSON, HTTP, database, crypto, process, time, math, and networking
+- 11 standard library modules with C runtime implementations cover strings, files, JSON, HTTP, database, crypto, environment, process, logging, time, and testing -- with io, math, and net planned for future releases
 - All modules follow the same import pattern: `I=alias:std.module;`
-- Fallible stdlib functions return `T!Err` types -- always handle the error
+- Fallible stdlib functions return `T!$err` types -- always handle the error
 - The stdlib is designed for practical server-side and CLI applications
 - Each module is self-contained with a small, focused API
 

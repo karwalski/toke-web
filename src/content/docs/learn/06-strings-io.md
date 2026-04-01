@@ -1,13 +1,13 @@
 ---
 title: "Lesson 6: Strings and I/O"
-description: "Work with the Str type, string operations from std.str, file I/O with std.file, and JSON with std.json."
+description: "Work with the $str type, string operations from std.str, file I/O with std.file, and JSON with std.json."
 ---
 
 **Estimated time: ~20 minutes**
 
-## The Str type
+## The $str type
 
-Strings in toke are UTF-8 encoded, heap-allocated values of type `Str`. String literals are delimited by double quotes:
+Strings in toke are UTF-8 encoded, heap-allocated values of type `$str`. String literals are delimited by double quotes:
 
 ```
 let greeting="Hello, world!";
@@ -34,10 +34,10 @@ Insert expressions into strings with `\(expr)`:
 ```
 let name="Alice";
 let age=30;
-let msg="Name: \(name), Age: \(age as Str)";
+let msg="Name: \(name), Age: \(age as $str)";
 ```
 
-The expression inside `\(...)` must resolve to a `Str`-compatible type. Use `as Str` to convert numbers.
+The expression inside `\(...)` must resolve to a `$str`-compatible type. Use `as $str` to convert numbers.
 
 ## String operations with std.str
 
@@ -125,24 +125,24 @@ I=file:std.file;
 ### Reading a file
 
 ```
-T=FileErr{
-  NotFound:Str;
-  ReadFailed:Str
+T=$fileerr{
+  $notfound:$str;
+  $readfailed:$str
 };
 
-F=readConfig(path:Str):Str!FileErr{
-  let content=file.read(path)!FileErr;
+F=readConfig(path:$str):$str!$fileerr{
+  let content=file.read(path)!$fileerr;
   <content;
 };
 ```
 
-`file.read` returns the entire file content as a `Str`. It is a fallible operation -- the file might not exist or might not be readable.
+`file.read` returns the entire file content as a `$str`. It is a fallible operation -- the file might not exist or might not be readable.
 
 ### Writing a file
 
 ```
-F=saveData(path:Str;data:Str):void!FileErr{
-  file.write(path;data)!FileErr;
+F=saveData(path:$str;data:$str):void!$fileerr{
+  file.write(path;data)!$fileerr;
 };
 ```
 
@@ -151,8 +151,8 @@ F=saveData(path:Str;data:Str):void!FileErr{
 ### Appending to a file
 
 ```
-F=log(path:Str;msg:Str):void!FileErr{
-  file.append(path;msg)!FileErr;
+F=log(path:$str;msg:$str):void!$fileerr{
+  file.append(path;msg)!$fileerr;
 };
 ```
 
@@ -171,9 +171,9 @@ I=json:std.json;
 ### Encoding (struct to JSON string)
 
 ```
-T=User{id:u64;name:Str;email:Str};
+T=$user{id:u64;name:$str;email:$str};
 
-F=userToJson(u:User):Str{
+F=userToJson(u:$user):$str{
   <json.enc(u);
 };
 ```
@@ -181,13 +181,13 @@ F=userToJson(u:User):Str{
 ### Decoding (JSON string to struct)
 
 ```
-T=JsonErr{
-  ParseFailed:Str;
-  MissingField:Str
+T=$jsonerr{
+  $parsefailed:$str;
+  $missingfield:$str
 };
 
-F=jsonToUser(s:Str):User!JsonErr{
-  let u=json.dec(s)!JsonErr;
+F=jsonToUser(s:$str):$user!$jsonerr{
+  let u=json.dec(s)!$jsonerr;
   <u;
 };
 ```
@@ -197,10 +197,10 @@ F=jsonToUser(s:Str):User!JsonErr{
 For JSON whose structure you do not know at compile time, use `json.get` to extract fields:
 
 ```
-F=getName(raw:Str):Str!JsonErr{
-  let obj=json.dec(raw)!JsonErr;
-  let name=json.get(obj;"name")!JsonErr;
-  <name as Str;
+F=getName(raw:$str):$str!$jsonerr{
+  let obj=json.dec(raw)!$jsonerr;
+  let name=json.get(obj;"name")!$jsonerr;
+  <name as $str;
 };
 ```
 
@@ -214,15 +214,15 @@ I=io:std.io;
 I=file:std.file;
 I=str:std.str;
 
-T=WcErr{
-  FileErr:Str
+T=$wcerr{
+  $fileerr:$str
 };
 
-F=countWords(text:Str):[Str:i64]{
+F=countWords(text:$str):$($str:i64){
   let words=str.split(text;" ");
-  let freq=mut.[];
+  let freq=mut.$($str:i64)();
   lp(let i=0;i<words.len;i=i+1){
-    let w=str.lower(str.trim(words[i]));
+    let w=str.lower(str.trim(words.get(i)));
     if(str.len(w)>0){
       if(freq.contains(w)){
         freq=freq.put(w;freq.get(w)+1);
@@ -240,11 +240,11 @@ F=main():i64{
       let freq=countWords(content);
       let keys=freq.keys;
       lp(let i=0;i<keys.len;i=i+1){
-        let k=keys[i];
-        io.println("\(k): \(freq.get(k) as Str)");
+        let k=keys.get(i);
+        io.println("\(k): \(freq.get(k) as $str)");
       };
     };
-    Err:e  io.println("Error reading file: \(e as Str)");
+    Err:e  io.println("Error reading file: \(e as $str)");
   };
   <0;
 };
@@ -258,17 +258,17 @@ Write a program that reads a file and prints the number of lines. Use `str.split
 
 ### Exercise 2: CSV parser
 
-Write a function `F=parseCsv(content:Str):[[Str]]` that splits a CSV string into a 2D array. Split on `"\n"` for rows and `","` for columns.
+Write a function `F=parseCsv(content:$str):@(@($str))` that splits a CSV string into a 2D array. Split on `"\n"` for rows and `","` for columns.
 
 ### Exercise 3: JSON round-trip
 
-Define a `T=Config{host:Str;port:i64;debug:bool}` type. Write:
-- `F=saveConfig(path:Str;c:Config):void!FileErr` that encodes to JSON and writes to a file
-- `F=loadConfig(path:Str):Config!ConfigErr` that reads a file and decodes from JSON
+Define a `T=$config{host:$str;port:i64;debug:bool}` type. Write:
+- `F=saveConfig(path:$str;c:$config):void!$fileerr` that encodes to JSON and writes to a file
+- `F=loadConfig(path:$str):$config!$configerr` that reads a file and decodes from JSON
 
 ## Key takeaways
 
-- `Str` is UTF-8, heap-allocated, and the only string type
+- `$str` is UTF-8, heap-allocated, and the only string type
 - String interpolation: `"text \(expr) more text"`
 - `std.str` provides `len`, `slice`, `contains`, `indexOf`, `replace`, `split`, `join`, `upper`, `lower`, `trim`
 - `std.io` provides `println`, `print`, `readline`

@@ -13,6 +13,34 @@
 	--sl-color-accent-high: #e0e0ff;
 }
 
+/* Explainer callouts — accessible definitions */
+.explainer {
+	background: var(--sl-color-gray-6, #f6f6f7);
+	border-left: 3px solid var(--sl-color-accent, #4a47a3);
+	padding: 0.75rem 1rem;
+	margin: 1rem 0;
+	font-size: 0.9rem;
+	border-radius: 0 0.25rem 0.25rem 0;
+}
+:root[data-theme='dark'] .explainer {
+	background: var(--sl-color-gray-6, #1a1a2e);
+}
+.explainer p { margin: 0; }
+
+/* Phase notes inside token tabs */
+.phase-note {
+	font-size: 0.85rem;
+	color: var(--sl-color-gray-2, #aaa);
+	margin-top: 0.75rem;
+	line-height: 1.4;
+}
+
+/* Token badge for Phase 2 toke */
+.token-badge.toke-p2 {
+	background: #1a2a3a;
+	color: #60a5fa;
+}
+
 /* Hero section on landing page */
 .hero-comparison {
 	display: grid;
@@ -51,4 +79,372 @@
 	.hero-comparison {
 		grid-template-columns: 1fr;
 	}
+}
+
+/* Prompt box */
+.prompt-box {
+	background: var(--sl-color-gray-6, #f6f6f7);
+	border: 1px solid var(--sl-color-gray-5, #e0e0e0);
+	border-radius: 0.5rem;
+	padding: 1rem 1.25rem;
+	margin: 1.5rem 0 1rem;
+	position: relative;
+}
+
+:root[data-theme='dark'] .prompt-box {
+	background: var(--sl-color-gray-6, #1a1a2e);
+	border-color: var(--sl-color-gray-5, #2a2a3e);
+}
+
+.prompt-label {
+	display: inline-block;
+	font-size: 0.7rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--sl-color-accent, #4a47a3);
+	margin-bottom: 0.25rem;
+}
+
+.prompt-box p {
+	margin: 0;
+	font-style: italic;
+	font-size: 0.95rem;
+	color: var(--sl-color-text, inherit);
+}
+
+/* Token count rows */
+.token-counts {
+	display: flex;
+	gap: 0.5rem;
+	flex-wrap: wrap;
+}
+
+/* Comparison note */
+.comparison-note {
+	background: var(--sl-color-gray-6, #f6f6f7);
+	border-left: 3px solid var(--sl-color-accent, #4a47a3);
+	padding: 0.75rem 1rem;
+	margin: 1rem 0 2rem;
+	font-size: 0.9rem;
+	border-radius: 0 0.25rem 0.25rem 0;
+}
+
+:root[data-theme='dark'] .comparison-note {
+	background: var(--sl-color-gray-6, #1a1a2e);
+}
+
+.comparison-note p {
+	margin: 0;
+}
+
+/* Development Timeline */
+.dev-timeline {
+	display: flex;
+	flex-direction: column;
+	gap: 2rem;
+	margin: 1.5rem 0;
+}
+
+/* Phase group — wraps a phase header + milestones + gate */
+.timeline-phase-group {
+	border: 1px solid var(--sl-color-gray-5, #e0e0e0);
+	border-radius: 0.75rem;
+	padding: 1.25rem;
+	background: var(--sl-color-gray-6, #f6f6f7);
+}
+
+:root[data-theme='dark'] .timeline-phase-group {
+	background: var(--sl-color-gray-6, #1a1a2e);
+	border-color: var(--sl-color-gray-5, #2a2a3e);
+}
+
+.phase-group-header {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	flex-wrap: wrap;
+	margin-bottom: 1rem;
+	padding-bottom: 0.75rem;
+	border-bottom: 1px solid var(--sl-color-gray-5, #e0e0e0);
+}
+
+:root[data-theme='dark'] .phase-group-header {
+	border-color: var(--sl-color-gray-5, #2a2a3e);
+}
+
+.phase-group-label {
+	font-size: 0.7rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--sl-color-accent, #4a47a3);
+	background: var(--sl-color-accent-low, #1a1a2e);
+	padding: 0.2rem 0.6rem;
+	border-radius: 0.25rem;
+}
+
+.phase-group-title {
+	font-weight: 700;
+	font-size: 1.1rem;
+}
+
+.phase-group-period {
+	margin-left: auto;
+	font-size: 0.8rem;
+	color: var(--sl-color-gray-3, #888);
+}
+
+/* Individual milestones */
+.timeline-milestone {
+	display: flex;
+	gap: 0.75rem;
+	padding: 0.75rem 0;
+	position: relative;
+}
+
+.timeline-milestone + .timeline-milestone {
+	border-top: 1px solid var(--sl-color-gray-5, #e0e0e0);
+}
+
+:root[data-theme='dark'] .timeline-milestone + .timeline-milestone {
+	border-color: var(--sl-color-gray-5, #2a2a3e);
+}
+
+.milestone-marker {
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	flex-shrink: 0;
+	margin-top: 0.35rem;
+	background: var(--sl-color-gray-4, #ccc);
+}
+
+.timeline-milestone.complete .milestone-marker {
+	background: #4ade80;
+}
+
+.timeline-milestone.in-progress .milestone-marker {
+	background: #60a5fa;
+	box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+}
+
+.timeline-milestone.planned .milestone-marker {
+	background: var(--sl-color-gray-4, #555);
+}
+
+.milestone-content {
+	flex: 1;
+	min-width: 0;
+}
+
+.milestone-header {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	flex-wrap: wrap;
+	margin-bottom: 0.25rem;
+}
+
+.milestone-id {
+	font-size: 0.7rem;
+	font-weight: 700;
+	color: var(--sl-color-gray-3, #888);
+	font-family: var(--sl-font-system-mono);
+}
+
+.milestone-title {
+	font-weight: 600;
+	font-size: 0.95rem;
+}
+
+.milestone-desc {
+	font-size: 0.85rem;
+	color: var(--sl-color-gray-2, #aaa);
+	margin: 0.25rem 0 0;
+	line-height: 1.4;
+}
+
+/* Status badges */
+.phase-status {
+	margin-left: auto;
+	font-size: 0.7rem;
+	font-weight: 600;
+	padding: 0.15rem 0.5rem;
+	border-radius: 1rem;
+}
+
+.phase-status.complete {
+	background: #1a3a1a;
+	color: #4ade80;
+}
+
+.phase-status.in-progress {
+	background: #1a2a3a;
+	color: #60a5fa;
+}
+
+.phase-status.planned {
+	background: #2a2a1a;
+	color: #facc15;
+}
+
+/* Corpus stages (nested inside milestone 1.5) */
+.corpus-stage {
+	background: var(--sl-color-gray-7, #fff);
+	border: 1px solid var(--sl-color-gray-5, #e0e0e0);
+	border-radius: 0.5rem;
+	padding: 0.75rem 1rem;
+	margin-top: 0.75rem;
+}
+
+:root[data-theme='dark'] .corpus-stage {
+	background: rgba(255, 255, 255, 0.03);
+	border-color: var(--sl-color-gray-5, #2a2a3e);
+}
+
+.stage-header {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+	margin-bottom: 0.5rem;
+}
+
+.stage-label {
+	font-size: 0.65rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--sl-color-accent, #4a47a3);
+}
+
+.stage-title {
+	font-weight: 600;
+	font-size: 0.85rem;
+}
+
+/* Stats row */
+.phase-details {
+	display: flex;
+	gap: 1.5rem;
+	flex-wrap: wrap;
+	margin-bottom: 0.75rem;
+}
+
+.phase-stat {
+	display: flex;
+	flex-direction: column;
+	gap: 0.1rem;
+}
+
+.stat-label {
+	font-size: 0.65rem;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--sl-color-gray-3, #888);
+}
+
+.stat-value {
+	font-size: 0.9rem;
+	font-weight: 600;
+}
+
+.stat-pct {
+	font-size: 0.8rem;
+	color: var(--sl-color-gray-3, #888);
+}
+
+/* Progress bars */
+.phase-bar {
+	height: 6px;
+	background: var(--sl-color-gray-5, #e0e0e0);
+	border-radius: 3px;
+	overflow: hidden;
+}
+
+:root[data-theme='dark'] .phase-bar {
+	background: var(--sl-color-gray-5, #2a2a3e);
+}
+
+.phase-bar-fill {
+	height: 100%;
+	background: var(--sl-color-accent, #4a47a3);
+	border-radius: 3px;
+	transition: width 0.5s ease;
+}
+
+/* Gate markers */
+.gate-marker {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	margin-top: 1rem;
+	padding-top: 0.75rem;
+}
+
+.gate-line {
+	flex: 1;
+	height: 1px;
+	background: linear-gradient(to right, transparent, var(--sl-color-accent, #4a47a3), transparent);
+}
+
+.gate-content {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.15rem;
+	flex-shrink: 0;
+}
+
+.gate-label {
+	font-size: 0.7rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	color: var(--sl-color-accent-high, #c4c3ff);
+}
+
+.gate-criteria {
+	font-size: 0.75rem;
+	color: var(--sl-color-gray-3, #888);
+	text-align: center;
+	max-width: 300px;
+}
+
+/* Dual-level descriptions */
+.phase-summary {
+	font-size: 0.95rem;
+	line-height: 1.5;
+	margin: 0 0 0.5rem;
+	color: var(--sl-color-text, inherit);
+}
+
+.phase-technical {
+	font-size: 0.8rem;
+	color: var(--sl-color-gray-3, #888);
+	margin: 0 0 1rem;
+	line-height: 1.4;
+}
+.phase-technical a {
+	color: var(--sl-color-accent, #4a47a3);
+}
+
+.milestone-technical {
+	font-size: 0.8rem;
+	color: var(--sl-color-gray-3, #888);
+	margin: 0.25rem 0 0;
+	line-height: 1.4;
+}
+.milestone-technical a {
+	color: var(--sl-color-accent, #4a47a3);
+}
+.milestone-technical code {
+	font-size: 0.75rem;
+}
+
+.stage-desc {
+	font-size: 0.8rem;
+	color: var(--sl-color-gray-3, #888);
+	margin: 0 0 0.5rem;
+	line-height: 1.4;
 }

@@ -1,0 +1,441 @@
+---
+// Development Timeline — all project phases, milestones, gates, and progress
+// Static data reflecting actual corpus and training status
+---
+
+<div class="dev-timeline">
+
+  <!-- ================================================================== -->
+  <!-- PHASE 1: FALSIFICATION -->
+  <!-- ================================================================== -->
+  <div class="timeline-phase-group">
+    <div class="phase-group-header">
+      <span class="phase-group-label">Phase 1</span>
+      <span class="phase-group-title">Can AI write toke?</span>
+    </div>
+    <p class="phase-summary">The first phase answers a simple question: can existing AI models write valid toke programs, and does toke actually use fewer tokens than conventional languages? Everything built here is designed to prove — or disprove — the core thesis before investing further.</p>
+    <p class="phase-technical">Epics 1.1–1.10. Gate 1 criteria: &gt;10% token reduction vs Python/C/Java (cl100k_base) AND Pass@1 &ge; 60% on held-out benchmark. Corpus built using the 80-character Phase 1 profile, then mechanically transformed to the production Phase 2 (56-character) encoding.</p>
+
+    <div class="timeline-milestone complete">
+      <div class="milestone-marker"></div>
+      <div class="milestone-content">
+        <div class="milestone-header">
+          <span class="milestone-id">1.1</span>
+          <span class="milestone-title">Language Specification</span>
+          <span class="phase-status complete">Complete</span>
+        </div>
+        <p class="milestone-desc">Defined the complete toke language — grammar, keywords, types, operators, and the character sets for both the corpus-building profile (80 chars) and the production profile (56 chars).</p>
+        <p class="milestone-technical">LL(1) grammar, 12 keywords. Phase 1 (80 chars) used for corpus generation with existing LLM tokenizers. Phase 2 (56 chars) is the production encoding with <code>$</code> type sigils and <code>@()</code> arrays. Formal EBNF, RFC draft, mechanical transformation rules. <a href="https://github.com/karwalski/toke-spec">toke-spec</a></p>
+      </div>
+    </div>
+
+    <div class="timeline-milestone complete">
+      <div class="milestone-marker"></div>
+      <div class="milestone-content">
+        <div class="milestone-header">
+          <span class="milestone-id">1.2</span>
+          <span class="milestone-title">Reference Compiler</span>
+          <span class="phase-status complete">Complete</span>
+        </div>
+        <p class="milestone-desc">Built the compiler that checks every toke program for correctness — type safety, syntax validity, and character set compliance.</p>
+        <p class="milestone-technical">Single-pass C99 compiler: lexer, LL(1) parser, name resolution, type inference, LLVM IR codegen (x86-64, ARM64). <code>--check</code> mode for corpus validation. Structured JSON diagnostics. 600+ conformance tests. <a href="https://github.com/karwalski/tkc">tkc</a></p>
+      </div>
+    </div>
+
+    <div class="timeline-milestone complete">
+      <div class="milestone-marker"></div>
+      <div class="milestone-content">
+        <div class="milestone-header">
+          <span class="milestone-id">1.3</span>
+          <span class="milestone-title">Standard Library Core</span>
+          <span class="phase-status complete">Complete</span>
+        </div>
+        <p class="milestone-desc">Created the foundational libraries — string operations, I/O, HTTP, database access, JSON, and file handling — so AI-generated programs can do useful work.</p>
+        <p class="milestone-technical">6 modules: <code>std.str</code>, <code>std.http</code>, <code>std.db</code>, <code>std.json</code>, <code>std.file</code>, <code>std.net</code>. Error types with exhaustive matching. <a href="https://github.com/karwalski/toke-stdlib">toke-stdlib</a> · <a href="/reference/types/">API Reference</a></p>
+      </div>
+    </div>
+
+    <div class="timeline-milestone complete">
+      <div class="milestone-marker"></div>
+      <div class="milestone-content">
+        <div class="milestone-header">
+          <span class="milestone-id">1.7–1.9</span>
+          <span class="milestone-title">Security, Threat Model &amp; Dashboard</span>
+          <span class="phase-status complete">Complete</span>
+        </div>
+        <p class="milestone-desc">Secured the compiler against malformed input, documented the threat model for AI-generated code, and built monitoring for the corpus pipeline.</p>
+        <p class="milestone-technical">SAST analysis, threat model document, responsible disclosure policy. Monitoring dashboard tracking acceptance rates, model performance, category health, and costs.</p>
+      </div>
+    </div>
+
+    <div class="timeline-milestone complete">
+      <div class="milestone-marker"></div>
+      <div class="milestone-content">
+        <div class="milestone-header">
+          <span class="milestone-id">1.5</span>
+          <span class="milestone-title">Training Corpus</span>
+          <span class="phase-status complete">Complete</span>
+        </div>
+        <p class="milestone-desc">Built a library of ~47,000 verified toke programs across four stages. Three AI models generate programs in parallel, each independently validated by the compiler and cross-checked against reference implementations in Python, C, and Java.</p>
+        <p class="milestone-technical">Multi-model pipeline (Haiku 4.5, GPT-4.1-mini, Grok-3-mini). Differential testing: &ge;2 of 3 reference languages must agree. Auto-fixer rescues common syntax mistakes (zero API cost). 6 categories: arithmetic, conditional, string, array, sort/search, error handling. <a href="https://github.com/karwalski/toke-corpus">toke-corpus</a></p>
+
+        <!-- Stage A -->
+        <div class="corpus-stage">
+          <div class="stage-header">
+            <span class="stage-label">Stage A</span>
+            <span class="stage-title">Single-Function Programs</span>
+          </div>
+          <div class="phase-details">
+            <div class="phase-stat">
+              <span class="stat-label">Target</span>
+              <span class="stat-value">25,000</span>
+            </div>
+            <div class="phase-stat">
+              <span class="stat-label">Complete</span>
+              <span class="stat-value">26,978</span>
+              <span class="stat-pct">(108%)</span>
+            </div>
+            <div class="phase-stat">
+              <span class="stat-label">Pass@1</span>
+              <span class="stat-value">62%</span>
+            </div>
+            <div class="phase-stat">
+              <span class="stat-label">Auto-fix rescue</span>
+              <span class="stat-value">~15%</span>
+            </div>
+          </div>
+          <div class="phase-bar">
+            <div class="phase-bar-fill" style="width: 100%"></div>
+          </div>
+        </div>
+
+        <!-- Stage B -->
+        <div class="corpus-stage">
+          <div class="stage-header">
+            <span class="stage-label">Stage B</span>
+            <span class="stage-title">Multi-Function Composition</span>
+          </div>
+          <p class="stage-desc">Mechanically combines pairs of Stage A functions into more complex programs — testing that functions work together, not just in isolation.</p>
+          <div class="phase-details">
+            <div class="phase-stat">
+              <span class="stat-label">Target</span>
+              <span class="stat-value">10,000</span>
+            </div>
+            <div class="phase-stat">
+              <span class="stat-label">Complete</span>
+              <span class="stat-value">9,776</span>
+              <span class="stat-pct">(98%)</span>
+            </div>
+            <div class="phase-stat">
+              <span class="stat-label">Validation rate</span>
+              <span class="stat-value">74.8%</span>
+            </div>
+          </div>
+          <div class="phase-bar">
+            <div class="phase-bar-fill" style="width: 98%"></div>
+          </div>
+        </div>
+
+        <!-- Stage C -->
+        <div class="corpus-stage">
+          <div class="stage-header">
+            <span class="stage-label">Stage C</span>
+            <span class="stage-title">Edge Cases &amp; Error Handling</span>
+          </div>
+          <p class="stage-desc">Programs that test boundary conditions, error propagation, and recovery patterns — the hardest cases for AI to get right.</p>
+          <div class="phase-details">
+            <div class="phase-stat">
+              <span class="stat-label">Target</span>
+              <span class="stat-value">5,000</span>
+            </div>
+            <div class="phase-stat">
+              <span class="stat-label">Complete</span>
+              <span class="stat-value">5,000</span>
+              <span class="stat-pct">(100%)</span>
+            </div>
+          </div>
+          <div class="phase-bar">
+            <div class="phase-bar-fill" style="width: 100%"></div>
+          </div>
+        </div>
+
+        <!-- Stage D -->
+        <div class="corpus-stage">
+          <div class="stage-header">
+            <span class="stage-label">Stage D</span>
+            <span class="stage-title">Application-Level Programs</span>
+          </div>
+          <p class="stage-desc">Multi-function programs that solve real-world problems — combining control flow, data structures, and error handling into complete applications.</p>
+          <div class="phase-details">
+            <div class="phase-stat">
+              <span class="stat-label">Target</span>
+              <span class="stat-value">5,000</span>
+            </div>
+            <div class="phase-stat">
+              <span class="stat-label">Complete</span>
+              <span class="stat-value">5,000</span>
+              <span class="stat-pct">(100%)</span>
+            </div>
+          </div>
+          <div class="phase-bar">
+            <div class="phase-bar-fill" style="width: 100%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="timeline-milestone in-progress">
+      <div class="milestone-marker"></div>
+      <div class="milestone-content">
+        <div class="milestone-header">
+          <span class="milestone-id">1.6</span>
+          <span class="milestone-title">Gate 1 Evaluation</span>
+          <span class="phase-status in-progress">In Progress</span>
+        </div>
+        <p class="milestone-desc">Run the final benchmark: measure token efficiency and AI accuracy on 500 held-out tasks that were never part of training. This determines whether to proceed.</p>
+        <p class="milestone-technical">Held-out benchmark set (500 tasks). Token measurement via cl100k_base. Pass@1 via Claude Haiku 4.5 (10 attempts per task). Token reduction criterion met: 12.5% (target was &gt;10%). Pass@1 pending model training completion. <a href="https://github.com/karwalski/toke-benchmark">toke-benchmark</a></p>
+      </div>
+    </div>
+
+    <div class="gate-marker">
+      <div class="gate-line"></div>
+      <div class="gate-content">
+        <span class="gate-label">Gate 1</span>
+        <span class="gate-criteria">&gt;10% token reduction AND Pass@1 &ge; 60%</span>
+      </div>
+      <div class="gate-line"></div>
+    </div>
+  </div>
+
+  <!-- ================================================================== -->
+  <!-- PHASE 2: SCALING -->
+  <!-- ================================================================== -->
+  <div class="timeline-phase-group">
+    <div class="phase-group-header">
+      <span class="phase-group-label">Phase 2</span>
+      <span class="phase-group-title">Custom tokenizer &amp; first AI model</span>
+    </div>
+    <p class="phase-summary">With the thesis validated, Phase 2 builds a tokenizer purpose-built for toke (squeezing even more efficiency) and trains the first AI model that specialises in writing toke code.</p>
+    <p class="phase-technical">Epics 2.1–2.5. Profile 2 (56-char) BPE tokenizer. QLoRA fine-tuning of Qwen 2.5 Coder 7B. Extended corpus (Phases B+C). Gate 2 criteria: 7B model outperforms baseline.</p>
+
+    <div class="timeline-milestone planned">
+      <div class="milestone-marker"></div>
+      <div class="milestone-content">
+        <div class="milestone-header">
+          <span class="milestone-id">2.1</span>
+          <span class="milestone-title">Language Extensions</span>
+          <span class="phase-status planned">Planned</span>
+        </div>
+        <p class="milestone-desc">Add features informed by what the AI struggled with in Phase 1 — generics, async tasks, C interop, and module versioning.</p>
+        <p class="milestone-technical">Generic collection types (<code>@(T)</code>, <code>$(K:V)</code>), async task model (spawn/await), minimal C FFI (extern declarations), module versioning (<code>@1.2</code> syntax). <a href="https://github.com/karwalski/toke-spec">toke-spec</a> · <a href="https://github.com/karwalski/tkc">tkc</a></p>
+      </div>
+    </div>
+
+    <div class="timeline-milestone in-progress">
+      <div class="milestone-marker"></div>
+      <div class="milestone-content">
+        <div class="milestone-header">
+          <span class="milestone-id">2.2</span>
+          <span class="milestone-title">Purpose-Built Tokenizer</span>
+          <span class="phase-status in-progress">In Progress</span>
+        </div>
+        <p class="milestone-desc">Train a custom tokenizer on toke programs. Instead of using a general-purpose tokenizer, this one learns that toke-specific patterns (like <code>lp(let</code> or <code>arr.len</code>) should be single tokens.</p>
+        <p class="milestone-technical">SentencePiece BPE tokenizer (8K vocabulary) trained on Phase 1 corpus (46,730 programs). Achieved 12.5% token reduction vs cl100k_base, 100% round-trip fidelity. Phase 2 corpus transformation and retrain pending. <a href="https://github.com/karwalski/toke-tokenizer">toke-tokenizer</a></p>
+      </div>
+    </div>
+
+    <div class="timeline-milestone in-progress">
+      <div class="milestone-marker"></div>
+      <div class="milestone-content">
+        <div class="milestone-header">
+          <span class="milestone-id">2.3</span>
+          <span class="milestone-title">First Fine-Tuned Model</span>
+          <span class="phase-status in-progress">In Progress</span>
+        </div>
+        <p class="milestone-desc">Take an existing 7-billion parameter AI model and specialise it on toke. The model learns from ~47,000 verified programs, becoming significantly better at writing correct toke code.</p>
+        <p class="milestone-technical">QLoRA fine-tune of Qwen 2.5 Coder 7B. 73,000 training examples (direct generation + multi-language comparison). Training on AWS EC2 (A10G GPU). ChatML instruction format. <a href="https://github.com/karwalski/toke-models">toke-models</a></p>
+      </div>
+    </div>
+
+    <div class="timeline-milestone planned">
+      <div class="milestone-marker"></div>
+      <div class="milestone-content">
+        <div class="milestone-header">
+          <span class="milestone-id">2.4</span>
+          <span class="milestone-title">Extended Corpus — Phases B &amp; C</span>
+          <span class="phase-status planned">Planned</span>
+        </div>
+        <p class="milestone-desc">Expand the training library with 30,000 data-structure programs (multi-file, using types and collections) and 20,000 system-interaction programs (HTTP servers, database queries, file I/O).</p>
+        <p class="milestone-technical">Phase B: 30K multi-file programs (2-4 files each, type definitions + implementations). Phase C: 20K stdlib-dependent programs (HTTP, DB, file I/O). Uses Phase 2 tokenizer. <a href="https://github.com/karwalski/toke-corpus">toke-corpus</a></p>
+      </div>
+    </div>
+
+    <div class="gate-marker">
+      <div class="gate-line"></div>
+      <div class="gate-content">
+        <span class="gate-label">Gate 2</span>
+        <span class="gate-criteria">7B fine-tuned model outperforms baseline on toke generation</span>
+      </div>
+      <div class="gate-line"></div>
+    </div>
+  </div>
+
+  <!-- ================================================================== -->
+  <!-- PHASE 3: VALIDATION -->
+  <!-- ================================================================== -->
+  <div class="timeline-phase-group">
+    <div class="phase-group-header">
+      <span class="phase-group-label">Phase 3</span>
+      <span class="phase-group-title">Multiple models &amp; self-improvement</span>
+    </div>
+    <p class="phase-summary">Phase 3 proves the approach works across different AI architectures — not just one model family. It also builds a self-improvement loop where AI models generate new training data, which trains better models, which generate even better data.</p>
+    <p class="phase-technical">Epics 3.1–3.6. 7B + 32B models on full Phase A–D corpus. Llama 3.1 family evaluation. Agent-reviewed Phase D/E corpus (Claude Sonnet). Self-improvement: 500 programs/day autonomous generation. ~400 compute-hours total.</p>
+
+    <div class="timeline-milestone planned">
+      <div class="milestone-marker"></div>
+      <div class="milestone-content">
+        <div class="milestone-header">
+          <span class="milestone-id">3.1</span>
+          <span class="milestone-title">Production Compiler</span>
+          <span class="phase-status planned">Planned</span>
+        </div>
+        <p class="milestone-desc">Harden the compiler for production use — faster compilation, incremental builds, and a tooling protocol for editor integration.</p>
+        <p class="milestone-technical">Incremental compilation, performance hardening, JSON-based tooling protocol server (Section 20.2). <a href="https://github.com/karwalski/tkc">tkc</a></p>
+      </div>
+    </div>
+
+    <div class="timeline-milestone planned">
+      <div class="milestone-marker"></div>
+      <div class="milestone-content">
+        <div class="milestone-header">
+          <span class="milestone-id">3.2</span>
+          <span class="milestone-title">Advanced Corpus — Phases D &amp; E</span>
+          <span class="phase-status planned">Planned</span>
+        </div>
+        <p class="milestone-desc">Build the most challenging programs: 5,000 multi-module applications (5-8 files) reviewed by AI architects, plus 500 complex systems with human architectural review.</p>
+        <p class="milestone-technical">Phase D: 5K application programs, Agent 3 (Claude Sonnet) architectural review on 20%. Phase E: 500 complex systems, 80 person-hours human review. Qwen judge agent validates all entries (50+ evals/hour). <a href="https://github.com/karwalski/toke-corpus">toke-corpus</a></p>
+      </div>
+    </div>
+
+    <div class="timeline-milestone planned">
+      <div class="milestone-marker"></div>
+      <div class="milestone-content">
+        <div class="milestone-header">
+          <span class="milestone-id">3.4</span>
+          <span class="milestone-title">Model Training at Scale</span>
+          <span class="phase-status planned">Planned</span>
+        </div>
+        <p class="milestone-desc">Train both a 7B and a 32B parameter model on the full corpus. The 32B model targets 75%+ accuracy on standard benchmarks.</p>
+        <p class="milestone-technical">7B: Pass@1 &ge; 70% on D2C benchmark. 32B: Pass@1 &ge; 75% (D2C), 55% (Phase C). QLoRA training. 7B: ~24 compute-hours/run. 32B: ~72 compute-hours/run (cloud burst if &gt;96h). <a href="https://github.com/karwalski/toke-models">toke-models</a></p>
+      </div>
+    </div>
+
+    <div class="timeline-milestone planned">
+      <div class="milestone-marker"></div>
+      <div class="milestone-content">
+        <div class="milestone-header">
+          <span class="milestone-id">3.5</span>
+          <span class="milestone-title">Self-Improvement Loop</span>
+          <span class="phase-status planned">Planned</span>
+        </div>
+        <p class="milestone-desc">The trained models begin generating new verified toke programs autonomously — 500 per day — creating a flywheel where better data produces better models.</p>
+        <p class="milestone-technical">Error pattern analysis pipeline (weekly, top 10 patterns). Autonomous corpus growth: 500 programs/day validated without human initiation. Quality gate: only programs passing compiler + differential tests enter training set.</p>
+      </div>
+    </div>
+
+    <div class="timeline-milestone planned">
+      <div class="milestone-marker"></div>
+      <div class="milestone-content">
+        <div class="milestone-header">
+          <span class="milestone-id">3.6</span>
+          <span class="milestone-title">Multi-Model Evaluation</span>
+          <span class="phase-status planned">Planned</span>
+        </div>
+        <p class="milestone-desc">Test the approach on completely different AI model families (Llama, etc.) to prove the benefits aren't specific to one architecture.</p>
+        <p class="milestone-technical">Llama 3.1 family evaluation (8B, 70B). Cross-family Pass@1 comparison. ~48 compute-hours for evaluation runs. <a href="https://github.com/karwalski/toke-benchmark">toke-benchmark</a></p>
+      </div>
+    </div>
+
+    <div class="gate-marker">
+      <div class="gate-line"></div>
+      <div class="gate-content">
+        <span class="gate-label">Gate 3</span>
+        <span class="gate-criteria">&ge;70% Pass@1 on 2+ model families, self-improvement loop running</span>
+      </div>
+      <div class="gate-line"></div>
+    </div>
+  </div>
+
+  <!-- ================================================================== -->
+  <!-- PHASE 4: PRODUCTION -->
+  <!-- ================================================================== -->
+  <div class="timeline-phase-group">
+    <div class="phase-group-header">
+      <span class="phase-group-label">Phase 4</span>
+      <span class="phase-group-title">Standardisation &amp; ecosystem</span>
+    </div>
+    <p class="phase-summary">The final phase formalises toke into a publishable standard with a full conformance suite, package ecosystem, and governance structure — ready for enterprise adoption and third-party implementations.</p>
+    <p class="phase-technical">Epics 4.1–4.5. Complete EBNF + formal semantics. 900+ conformance tests. LSP stub, package registry. Self-redesign pilot (AI proposes language improvements). Consortium proposal.</p>
+
+    <div class="timeline-milestone planned">
+      <div class="milestone-marker"></div>
+      <div class="milestone-content">
+        <div class="milestone-header">
+          <span class="milestone-id">4.1</span>
+          <span class="milestone-title">Complete Language Specification</span>
+          <span class="phase-status planned">Planned</span>
+        </div>
+        <p class="milestone-desc">Publish the full formal specification — every grammar rule, type rule, and error code — ready for independent implementations.</p>
+        <p class="milestone-technical">Complete EBNF grammar, formal static semantics (inference rules), error code registry. <a href="https://github.com/karwalski/toke-spec">toke-spec</a></p>
+      </div>
+    </div>
+
+    <div class="timeline-milestone planned">
+      <div class="milestone-marker"></div>
+      <div class="milestone-content">
+        <div class="milestone-header">
+          <span class="milestone-id">4.2</span>
+          <span class="milestone-title">Conformance Suite</span>
+          <span class="phase-status planned">Planned</span>
+        </div>
+        <p class="milestone-desc">A comprehensive test suite that any toke compiler implementation can run to verify it correctly implements the specification.</p>
+        <p class="milestone-technical">200 lexical (L-series), 300 grammar (G-series), 400 type/semantic (T-series), diagnostic schema (D-series) conformance tests. <a href="https://github.com/karwalski/tkc">tkc</a></p>
+      </div>
+    </div>
+
+    <div class="timeline-milestone planned">
+      <div class="milestone-marker"></div>
+      <div class="milestone-content">
+        <div class="milestone-header">
+          <span class="milestone-id">4.3–4.4</span>
+          <span class="milestone-title">Tooling &amp; Self-Redesign</span>
+          <span class="phase-status planned">Planned</span>
+        </div>
+        <p class="milestone-desc">Build editor integration (LSP), a package registry, and a self-redesign pilot where AI analyses 12 months of error patterns and proposes language improvements — evaluated empirically on 10,000 programs.</p>
+        <p class="milestone-technical">LSP stub for editor integration, package registry prototype. Self-redesign: AI generates 5+ language revision proposals, evaluated on 10K corpus subset. <a href="https://github.com/karwalski/tkc">tkc</a></p>
+      </div>
+    </div>
+
+    <div class="timeline-milestone planned">
+      <div class="milestone-marker"></div>
+      <div class="milestone-content">
+        <div class="milestone-header">
+          <span class="milestone-id">4.5</span>
+          <span class="milestone-title">Consortium &amp; Adoption</span>
+          <span class="phase-status planned">Planned</span>
+        </div>
+        <p class="milestone-desc">Propose toke to an industry consortium — with governance, versioning, and a change process — for standardisation and enterprise adoption.</p>
+        <p class="milestone-technical">Governance document (versioning, change process, membership). Consortium proposal submission. <a href="https://github.com/karwalski/toke">toke</a></p>
+      </div>
+    </div>
+
+    <div class="gate-marker">
+      <div class="gate-line"></div>
+      <div class="gate-content">
+        <span class="gate-label">Gate 4</span>
+        <span class="gate-criteria">All benchmarks met, spec complete, consortium proposal ready</span>
+      </div>
+      <div class="gate-line"></div>
+    </div>
+  </div>
+</div>

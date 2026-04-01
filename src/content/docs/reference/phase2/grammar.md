@@ -6,7 +6,7 @@ description: "Grammar reference for toke Phase 2 — production rule changes fro
 This page documents the grammar differences between Phase 2 and [Phase 1](/reference/grammar/). Only changed productions are listed — all other rules are identical.
 
 :::tip
-If you are new to toke, start with the [Phase 1 Grammar](/reference/grammar/). Phase 1 is the current default.
+If you are new to toke, start with the [Grammar reference](/reference/grammar/) which now uses Phase 2 notation.
 :::
 
 ## Changed Productions

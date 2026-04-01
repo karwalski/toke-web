@@ -29,7 +29,7 @@ This is treated as an empirical hypothesis, not an article of faith. The project
 
 toke achieves token efficiency through deliberate constraint at every level of the language design:
 
-**80-character set.** The source language uses exactly 80 ASCII characters -- 26 lowercase, 26 uppercase, 10 digits, and 18 symbols. No comments. No decorators. No character outside this set appears in a structural position. Every character earns its place.
+**56-character set.** The source language uses exactly 56 ASCII characters -- 26 lowercase letters, 10 digits, and 20 symbols (including `$` for type sigils and `@` for arrays). No uppercase letters, no comments, no decorators. No character outside this set appears in a structural position. Every character earns its place.
 
 The double-quote `"` appears in source as the string literal delimiter but is not a structural symbol -- it is consumed during lexing and never produces a token, similar to how whitespace separates tokens but carries no structural meaning.
 
@@ -49,8 +49,8 @@ Estimated token counts for equivalent HTTP handler logic across languages and to
 
 | Configuration | Estimated Tokens |
 |---|---|
-| toke Phase 1, cl100k_base | ~38 |
-| toke Phase 2, purpose-built tokenizer | ~22 |
+| toke, purpose-built tokenizer | ~22 |
+| toke with cl100k_base (corpus build profile) | ~38 |
 | Python (baseline) | ~85 |
 | TypeScript (baseline) | ~92 |
 

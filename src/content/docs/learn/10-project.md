@@ -39,26 +39,26 @@ The model module defines the core types:
 ```
 M=bm.model;
 
-T=Bookmark{
+T=$bookmark{
   id:u64;
-  url:Str;
-  title:Str;
-  tags:[Str]
+  url:$str;
+  title:$str;
+  tags:@($str)
 };
 
-T=BookmarkDb{
-  bookmarks:[Bookmark];
+T=$bookmarkdb{
+  bookmarks:@($bookmark);
   nextId:u64
 };
 
-T=BmErr{
-  FileErr:Str;
-  ParseErr:Str;
-  NotFound:u64
+T=$bmerr{
+  $fileerr:$str;
+  $parseerr:$str;
+  $notfound:u64
 };
 ```
 
-`Bookmark` is a single entry. `BookmarkDb` holds the array of bookmarks and a counter for generating unique IDs. `BmErr` covers all failure modes.
+`$bookmark` is a single entry. `$bookmarkdb` holds the array of bookmarks and a counter for generating unique IDs. `$bmerr` covers all failure modes.
 
 The interface file for this module would be:
 
@@ -67,9 +67,9 @@ The interface file for this module would be:
 ```
 M=bm.model;
 
-T=Bookmark{id:u64;url:Str;title:Str;tags:[Str]};
-T=BookmarkDb{bookmarks:[Bookmark];nextId:u64};
-T=BmErr{FileErr:Str;ParseErr:Str;NotFound:u64};
+T=$bookmark{id:u64;url:$str;title:$str;tags:@($str)};
+T=$bookmarkdb{bookmarks:@($bookmark);nextId:u64};
+T=$bmerr{$fileerr:$str;$parseerr:$str;$notfound:u64};
 ```
 
 ## Step 2: Build the store
@@ -85,62 +85,62 @@ I=json:std.json;
 I=str:std.str;
 I=m:bm.model;
 
-F=dbPath():Str{
+F=dbPath():$str{
   <"bookmarks.json";
 };
 
-F=load():m.BookmarkDb!m.BmErr{
+F=load():m.$bookmarkdb!m.$bmerr{
   if(!file.exists(dbPath())){
-    <m.BookmarkDb{bookmarks:[];nextId:1};
+    <m.$bookmarkdb{bookmarks:@();nextId:1};
   };
-  let content=file.read(dbPath())!m.BmErr;
-  let db=json.dec(content)!m.BmErr;
+  let content=file.read(dbPath())!m.$bmerr;
+  let db=json.dec(content)!m.$bmerr;
   <db;
 };
 
-F=save(db:m.BookmarkDb):void!m.BmErr{
+F=save(db:m.$bookmarkdb):void!m.$bmerr{
   let data=json.pretty(db);
-  file.write(dbPath();data)!m.BmErr;
+  file.write(dbPath();data)!m.$bmerr;
 };
 
-F=add(db:m.BookmarkDb;url:Str;title:Str;tags:[Str]):m.BookmarkDb{
-  let bm=m.Bookmark{
+F=add(db:m.$bookmarkdb;url:$str;title:$str;tags:@($str)):m.$bookmarkdb{
+  let bm=m.$bookmark{
     id:db.nextId;
     url:url;
     title:title;
     tags:tags
   };
   let newBookmarks=db.bookmarks.push(bm);
-  <m.BookmarkDb{
+  <m.$bookmarkdb{
     bookmarks:newBookmarks;
     nextId:db.nextId+1
   };
 };
 
-F=delete(db:m.BookmarkDb;id:u64):m.BookmarkDb!m.BmErr{
+F=delete(db:m.$bookmarkdb;id:u64):m.$bookmarkdb!m.$bmerr{
   let found=mut.false;
-  let result=mut.[];
+  let result=mut.@();
   lp(let i=0;i<db.bookmarks.len;i=i+1){
-    if(db.bookmarks[i].id=id){
+    if(db.bookmarks.get(i).id=id){
       found=true;
     }el{
-      result=result.push(db.bookmarks[i]);
+      result=result.push(db.bookmarks.get(i));
     };
   };
   if(!found){
-    <m.BmErr{NotFound:id};
+    <m.$bmerr{$notfound:id};
   };
-  <m.BookmarkDb{
+  <m.$bookmarkdb{
     bookmarks:result;
     nextId:db.nextId
   };
 };
 
-F=search(db:m.BookmarkDb;query:Str):[m.Bookmark]{
+F=search(db:m.$bookmarkdb;query:$str):@(m.$bookmark){
   let q=str.lower(query);
-  let result=mut.[];
+  let result=mut.@();
   lp(let i=0;i<db.bookmarks.len;i=i+1){
-    let bm=db.bookmarks[i];
+    let bm=db.bookmarks.get(i);
     let matched=mut.false;
     if(str.contains(str.lower(bm.url);q)){
       matched=true;
@@ -149,7 +149,7 @@ F=search(db:m.BookmarkDb;query:Str):[m.Bookmark]{
       matched=true;
     };
     lp(let j=0;j<bm.tags.len;j=j+1){
-      if(str.contains(str.lower(bm.tags[j]);q)){
+      if(str.contains(str.lower(bm.tags.get(j));q)){
         matched=true;
       };
     };
@@ -165,8 +165,8 @@ Let's walk through the key functions:
 
 - **`load`** checks if the file exists. If not, it returns an empty database with `nextId` starting at 1. Otherwise, it reads and parses the JSON file.
 - **`save`** encodes the database as pretty-printed JSON and writes it to disk.
-- **`add`** creates a new `Bookmark` with the next available ID, appends it to the array, and increments the counter. Note that this returns a new `BookmarkDb` -- data structures are not mutated in place.
-- **`delete`** iterates through bookmarks, skipping the one to delete. If not found, it returns a `NotFound` error.
+- **`add`** creates a new `$bookmark` with the next available ID, appends it to the array, and increments the counter. Note that this returns a new `$bookmarkdb` -- data structures are not mutated in place.
+- **`delete`** iterates through bookmarks, skipping the one to delete. If not found, it returns a `$notfound` error.
 - **`search`** does a case-insensitive search across URL, title, and tags.
 
 ## Step 3: Wire up the CLI
@@ -182,32 +182,32 @@ I=str:std.str;
 I=store:bm.store;
 I=m:bm.model;
 
-F=printBookmark(bm:m.Bookmark):void{
+F=printBookmark(bm:m.$bookmark):void{
   let tagsStr=str.join(bm.tags;", ");
-  io.println("  [\(bm.id as Str)] \(bm.title)");
+  io.println("  [\(bm.id as $str)] \(bm.title)");
   io.println("      \(bm.url)");
   if(bm.tags.len>0){
     io.println("      tags: \(tagsStr)");
   };
 };
 
-F=printBookmarks(bms:[m.Bookmark]):void{
+F=printBookmarks(bms:@(m.$bookmark)):void{
   if(bms.len=0){
     io.println("  (no bookmarks)");
   }el{
     lp(let i=0;i<bms.len;i=i+1){
-      printBookmark(bms[i]);
+      printBookmark(bms.get(i));
     };
   };
 };
 
-F=cmdAdd(url:Str;title:Str;tagStr:Str):void{
+F=cmdAdd(url:$str;title:$str;tagStr:$str):void{
   store.load()|{
     Ok:db  {
       let tags=str.split(tagStr;",");
-      let cleanTags=mut.[];
+      let cleanTags=mut.@();
       lp(let i=0;i<tags.len;i=i+1){
-        let t=str.trim(tags[i]);
+        let t=str.trim(tags.get(i));
         if(str.len(t)>0){
           cleanTags=cleanTags.push(t);
         };
@@ -218,32 +218,32 @@ F=cmdAdd(url:Str;title:Str;tagStr:Str):void{
         Err:e  io.println("Error saving")
       };
     };
-    Err:e  io.println("Error loading database: \(e as Str)");
+    Err:e  io.println("Error loading database: \(e as $str)");
   };
 };
 
 F=cmdList():void{
   store.load()|{
     Ok:db  {
-      io.println("Bookmarks (\(db.bookmarks.len as Str) total):");
+      io.println("Bookmarks (\(db.bookmarks.len as $str) total):");
       printBookmarks(db.bookmarks);
     };
-    Err:e  io.println("Error: \(e as Str)");
+    Err:e  io.println("Error: \(e as $str)");
   };
 };
 
-F=cmdSearch(query:Str):void{
+F=cmdSearch(query:$str):void{
   store.load()|{
     Ok:db  {
       let results=store.search(db;query);
-      io.println("Search results for \"\(query)\" (\(results.len as Str) found):");
+      io.println("Search results for \"\(query)\" (\(results.len as $str) found):");
       printBookmarks(results);
     };
-    Err:e  io.println("Error: \(e as Str)");
+    Err:e  io.println("Error: \(e as $str)");
   };
 };
 
-F=cmdDelete(idStr:Str):void{
+F=cmdDelete(idStr:$str):void{
   store.load()|{
     Ok:db  {
       let id=str.toInt(idStr) as u64;
@@ -255,13 +255,13 @@ F=cmdDelete(idStr:Str):void{
           };
         };
         Err:e  e|{
-          NotFound:n   io.println("Bookmark not found");
-          FileErr:msg  io.println("File error");
-          ParseErr:msg io.println("Parse error")
+          $notfound:n   io.println("Bookmark not found");
+          $fileerr:msg  io.println("File error");
+          $parseerr:msg io.println("Parse error")
         }
       };
     };
-    Err:e  io.println("Error: \(e as Str)");
+    Err:e  io.println("Error: \(e as $str)");
   };
 };
 
@@ -290,11 +290,11 @@ F=main():i64{
       if(parts.len<2){
         io.println("Usage: add <url> <title> [tags]");
       }el{
-        let url=parts[0];
-        let title=parts[1];
+        let url=parts.0;
+        let title=parts.1;
         let tags="";
         if(parts.len>2){
-          tags=parts[2];
+          tags=parts.2;
         };
         cmdAdd(url;title;tags);
       };
@@ -375,7 +375,7 @@ Goodbye!
 |---------|-----------------|
 | Module declarations | All three files |
 | Imports | `std.file`, `std.json`, `std.str`, `std.io`, cross-module imports |
-| Type declarations | `Bookmark`, `BookmarkDb`, `BmErr` |
+| Type declarations | `$bookmark`, `$bookmarkdb`, `$bmerr` |
 | Functions | 12 functions across 3 modules |
 | Error handling | `T!E` returns, match recovery, error variant construction |
 | Collections | Arrays of bookmarks, tag arrays |

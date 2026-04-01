@@ -78,10 +78,10 @@ func sum(arr []int) int {
 
 **toke (approx. 38 tokens):**
 ```
-F=sum(arr:[i64]):i64{
+F=sum(arr:@(i64)):i64{
   let acc=mut.0;
   lp(let i=0;i<arr.len;i=i+1){
-    acc=acc+arr[i];
+    acc=acc+arr.get(i);
   };
   <acc;
 };
@@ -110,10 +110,10 @@ I=http:std.http;
 I=db:std.db;
 I=json:std.json;
 
-F=getUser(req:http.Req):http.Res!ApiErr{
+F=getUser(req:http.$req):http.$res!$apierr{
   let id=req.param("id") as u64;
-  let user=db.one("SELECT * FROM users WHERE id=?";[id])!ApiErr;
-  <http.Res.ok(json.enc(user));
+  let user=db.one("SELECT * FROM users WHERE id=?";@(id))!$apierr;
+  <http.$res.ok(json.enc(user));
 };
 ```
 
@@ -137,7 +137,7 @@ Humans can read and write toke -- it is designed to be learnable -- but its prim
 
 toke achieves token efficiency through deliberate constraints:
 
-- **80-character set** -- no `@`, `#`, `$`, `%`, `^`, `&`, `~` in structural positions
+- **56-character set** -- lowercase letters, digits, and 18 symbols. No uppercase, no `#`, `%`, `^`, `&`, `~`
 - **12 keywords** -- `F`, `T`, `I`, `M`, `if`, `el`, `lp`, `br`, `let`, `mut`, `as`, `rt`
 - **One way to do everything** -- no synonym constructs, no optional syntax
 - **LL(1) grammar** -- deterministic parsing with one token of lookahead
@@ -172,7 +172,7 @@ Do not worry about getting the syntax perfectly right yet -- the next lesson cov
 - toke achieves 3-5x token reduction through deliberate syntactic compression.
 - toke is a compilation target for LLM workflows, not a general-purpose replacement.
 - Fewer tokens means lower cost, faster generation, and fewer errors.
-- The language has 12 keywords, 80 characters, and one canonical form for every construct.
+- The language has 12 keywords, 56 characters, and one canonical form for every construct.
 
 ## Next
 

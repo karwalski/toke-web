@@ -3,11 +3,13 @@ title: "std.test"
 description: "Test assertions -- assert conditions and string equality for writing tests."
 ---
 
+**Status: Implemented** -- C runtime backing, available in Phase 2.
+
 The `std.test` module provides assertion functions for writing tests. All functions return `bool` -- `true` (1) on pass, `false` (0) on fail. Failed assertions emit a structured diagnostic to stderr. These functions do not halt execution; the test continues after a failed assertion.
 
 ## Functions
 
-### test.assert(cond: bool; msg: Str): bool
+### test.assert(cond: bool; msg: $str): bool
 
 Passes if `cond` is `true`. On failure, emits a diagnostic containing `msg` to stderr and returns `false`.
 
@@ -16,7 +18,7 @@ test.assert(str.len("hi") == 2; "length should be 2");
 test.assert(file.exists("/tmp/data.txt"); "file should exist");
 ```
 
-### test.assertEq(a: Str; b: Str; msg: Str): bool
+### test.assertEq(a: $str; b: $str; msg: $str): bool
 
 Passes if strings `a` and `b` are equal. On failure, emits a diagnostic showing both values and `msg` to stderr and returns `false`.
 
@@ -25,7 +27,7 @@ test.assertEq(str.upper("hello"); "HELLO"; "upper should produce HELLO");
 test.assertEq(""; ""; "empty strings are equal");
 ```
 
-### test.assertNe(a: Str; b: Str; msg: Str): bool
+### test.assertNe(a: $str; b: $str; msg: $str): bool
 
 Passes if strings `a` and `b` are not equal. On failure, emits a diagnostic showing both values and `msg` to stderr and returns `false`.
 
@@ -42,7 +44,7 @@ test.assertEq(str.trim("  hi  "); "hi"; "trim removes whitespace");
 test.assert(str.contains("foobar"; "oba"); "contains finds substring");
 
 (* Test with computed values *)
-let parts = str.split("a,b,c"; ",");
+let parts = str.split("a:b:c"; ":");
 test.assertEq(str.fromInt(str.len(parts)); "3"; "split produces 3 parts");
 
 (* Test error cases *)

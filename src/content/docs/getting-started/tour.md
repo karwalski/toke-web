@@ -33,21 +33,21 @@ toke has a small set of built-in types:
 | `u8`, `u16`, `u32`, `u64` | Unsigned integers |
 | `f32`, `f64` | IEEE 754 floating point |
 | `bool` | Boolean (`true` or `false`) |
-| `Str` | UTF-8 string |
+| `$str` | UTF-8 string |
 | `void` | No value (for functions with no meaningful return) |
 
 You can also define struct types with `T=`:
 
 ```
-T=Point{x:f64;y:f64};
+T=$point{x:f64;y:f64};
 ```
 
 And sum types (tagged unions) for error variants and enumerations:
 
 ```
-T=Shape{
+T=$shape{
   Circle:f64;
-  Rect:Point
+  Rect:$point
 };
 ```
 
@@ -91,7 +91,7 @@ F=max(a:i64;b:i64):i64{
 For chained conditions, nest inside the else branch:
 
 ```
-F=classify(n:i64):Str{
+F=classify(n:i64):$str{
   if(n<0){
     <"negative";
   }el{
@@ -121,10 +121,10 @@ F=sumTo(n:i64):i64{
 Use `br;` to break out of a loop early:
 
 ```
-F=findFirstNeg(arr:[i64]):i64{
+F=findFirstNeg(arr:@(i64)):i64{
   let result=mut.0-1;
   lp(let i=0;i<arr.len;i=i+1){
-    if(arr[i]<0){
+    if(arr.get(i)<0){
       result=i;
       br;
     };
@@ -140,14 +140,14 @@ There is no `while`, `for-each`, or `do-while`. The `lp` construct covers all lo
 The `|{}` operator is used for pattern matching on sum types and error results:
 
 ```
-T=Color{
+T=$color{
   Red:bool;
   Green:bool;
   Blue:bool;
-  Custom:Str
+  Custom:$str
 };
 
-F=toHex(c:Color):Str{
+F=toHex(c:$color):$str{
   <c|{
     Red:r "#FF0000";
     Green:g "#00FF00";
@@ -161,11 +161,11 @@ Match is exhaustive -- the compiler rejects any match that does not cover all va
 
 ## Arrays and maps
 
-Arrays use square brackets with semicolons as separators:
+Arrays use `@()` with semicolons as separators:
 
 ```
-F=example():[i64]{
-  let nums=[1;2;3;4;5];
+F=example():@(i64){
+  let nums=@(1;2;3;4;5);
   <nums;
 };
 ```
@@ -173,8 +173,8 @@ F=example():[i64]{
 Maps use key-value pairs:
 
 ```
-F=example():[Str:i64]{
-  let ages=["alice":30;"bob":25;"carol":28];
+F=example():$($str:i64){
+  let ages=$("alice":30;"bob":25;"carol":28);
   <ages;
 };
 ```
@@ -183,27 +183,27 @@ Access array elements by index and map elements by key:
 
 ```
 F=example():i64{
-  let nums=[10;20;30];
-  let first=nums[0];
+  let nums=@(10;20;30);
+  let first=nums.0;
   <first;
 };
 ```
 
-Array types are written as `[ElementType]` and map types as `[KeyType:ValueType]`.
+Array types are written as `@(ElementType)` and map types as `$(KeyType:ValueType)`.
 
 ## Error handling
 
 Functions that can fail declare an error type after `!`:
 
 ```
-T=FileErr{
-  NotFound:Str;
-  PermDenied:Str
+T=$fileerr{
+  NotFound:$str;
+  PermDenied:$str
 };
 
-F=readFile(path:Str):Str!FileErr{
-  let f=io.open(path)!FileErr;
-  let content=io.readAll(f)!FileErr;
+F=readFile(path:$str):$str!$fileerr{
+  let f=io.open(path)!$fileerr;
+  let content=io.readAll(f)!$fileerr;
   <content;
 };
 ```
@@ -251,10 +251,10 @@ Here is a complete program that reads numbers from the command line and prints t
 M=sum;
 I=io:std.io;
 
-F=sum(arr:[i64]):i64{
+F=sum(arr:@(i64)):i64{
   let total=mut.0;
   lp(let i=0;i<arr.len;i=i+1){
-    total=total+arr[i];
+    total=total+arr.get(i);
   };
   <total;
 };
@@ -262,7 +262,7 @@ F=sum(arr:[i64]):i64{
 F=main():i64{
   let args=io.args();
   let result=sum(args);
-  io.println(result as Str);
+  io.println(result as $str);
   <0;
 };
 ```

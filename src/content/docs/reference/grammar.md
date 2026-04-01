@@ -3,11 +3,7 @@ title: Grammar
 description: Formal grammar reference for the toke language — EBNF production rules, key productions, and operator precedence.
 ---
 
-This page defines the formal grammar of toke Profile 1 (the current default). The grammar is LL(1)-compatible, meaning it can be parsed with a single token of lookahead and no backtracking.
-
-:::note[Looking for Phase 2?]
-Phase 2 replaces `[` `]` with `$` and `@` sigils for type and array syntax. See the [Phase 2 Grammar](/reference/phase2/grammar/) reference.
-:::
+This page defines the formal grammar of toke Phase 2 (the production language). The grammar is LL(1)-compatible, meaning it can be parsed with a single token of lookahead and no backtracking.
 
 ## EBNF Notation
 
@@ -45,7 +41,7 @@ Declarations must appear in this exact order: module, imports, types, constants,
 ### Type Declarations
 
 ```ebnf
-TypeDecl    = "T" , "=" , Ident , "{" , FieldList , "}" , ";" ;
+TypeDecl    = "T" , "=" , "$" , Ident , "{" , FieldList , "}" , ";" ;
 
 FieldList   = Field , { ";" , Field } , [ ";" ] ;
 
@@ -77,14 +73,14 @@ A function declaration without a body (terminated by `;` instead of a block) is 
 
 ```ebnf
 TypeExpr    = PrimType
-            | "[" , TypeExpr , "]"                   (* array *)
-            | "[" , TypeExpr , ":" , TypeExpr , "]"  (* map *)
-            | TypeExpr , "!" , Ident                 (* error union *)
-            | "*" , TypeExpr                         (* pointer, FFI only *)
-            | Ident                                  (* named type / struct *)
+            | "@" , "(" , TypeExpr , ")"                   (* array *)
+            | "$" , "(" , TypeExpr , ":" , TypeExpr , ")"  (* map *)
+            | TypeExpr , "!" , Ident                       (* error union *)
+            | "*" , TypeExpr                               (* pointer, FFI only *)
+            | "$" , Ident                                  (* named type / struct *)
             ;
 
-PrimType    = "i64" | "u64" | "f64" | "bool" | "Str" | "void" ;
+PrimType    = "i64" | "u64" | "f64" | "bool" | "$str" | "void" ;
 ```
 
 ### Statements
@@ -175,19 +171,19 @@ HexEscape   = 'x' , HexDigit , HexDigit ;
 
 BoolLit     = "true" | "false" ;
 
-ArrayLit    = "[" , [ Expr , { ";" , Expr } , [ ";" ] ] , "]" ;
+ArrayLit    = "@" , "(" , [ Expr , { ";" , Expr } , [ ";" ] ] , ")" ;
 
-MapLit      = "[" , MapEntry , { ";" , MapEntry } , [ ";" ] , "]" ;
+MapLit      = "$" , "(" , MapEntry , { ";" , MapEntry } , [ ";" ] , ")" ;
 
 MapEntry    = Expr , ":" , Expr ;
 
-StructLit   = Ident , "{" , FieldInit , { ";" , FieldInit } , [ ";" ] , "}" ;
+StructLit   = "$" , Ident , "{" , FieldInit , { ";" , FieldInit } , [ ";" ] , "}" ;
 
 FieldInit   = Ident , ":" , Expr ;
 
 Ident       = Letter , { Letter | Digit } ;
 
-Letter      = "a" .. "z" | "A" .. "Z" ;
+Letter      = "a" .. "z" ;
 
 Digit       = "0" .. "9" ;
 
@@ -203,7 +199,7 @@ Every toke source file is a `Module`. It begins with a mandatory module declarat
 ```toke
 M=myapp;
 I=io:std.file;
-T=Config{port: i64; host: Str};
+T=Config{port: i64; host: $str};
 F=main(): void { };
 ```
 
@@ -218,7 +214,7 @@ F=puts(s: *u8): void;
 
 ### TypeExpr
 
-Type expressions describe the type of a value. They can be primitives, arrays (`[T]`), maps (`[K:V]`), error unions (`T!Err`), pointers (`*T`, FFI only), or named struct types.
+Type expressions describe the type of a value. They can be primitives, arrays (`@(T)`), maps (`$(K:V)`), error unions (`T!Err`), pointers (`*T`, FFI only), or named struct types (`$name`).
 
 ### Stmt
 

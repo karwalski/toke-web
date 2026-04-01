@@ -99,7 +99,7 @@ When you ran `tkc hello.tk -o hello`, the compiler executed a five-stage pipelin
 
 2. **Parsing** -- The token stream is parsed into an abstract syntax tree (AST). toke's grammar is LL(1), meaning the parser never needs more than one token of lookahead to decide what production to apply. This makes parsing fast and deterministic.
 
-3. **Type checking** -- The compiler verifies that every expression has a valid type. It checks that `main` returns `i64`, that `io.println` receives a `Str` argument, and that every code path returns a value.
+3. **Type checking** -- The compiler verifies that every expression has a valid type. It checks that `main` returns `i64`, that `io.println` receives a `$str` argument, and that every code path returns a value.
 
 4. **LLVM IR generation** -- The typed AST is lowered to LLVM intermediate representation. This is where toke hands off to the LLVM backend for optimisation and native code generation.
 

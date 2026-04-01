@@ -6,7 +6,7 @@ description: "Type system reference for toke Phase 2 — sigil-prefixed types, r
 This page documents the Phase 2 type system. Phase 2 uses the same semantic rules as [Phase 1](/reference/types/) but with a different surface syntax: all type names are lowercased and prefixed with `$`.
 
 :::tip
-If you are new to toke, start with the [Phase 1 Type System](/reference/types/) reference. Phase 1 is the current default and uses familiar uppercase type names.
+If you are new to toke, start with the [core Type System](/reference/types/) reference which now uses Phase 2 notation.
 :::
 
 ## Primitive Types

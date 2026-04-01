@@ -34,7 +34,7 @@ The toke compiler emits structured JSON diagnostics with stable error codes. Err
 Emitted when a backslash in a string literal is followed by a character that is not one of `"`, `\`, `n`, `t`, `r`, `0`, `x`, or `(`. Also emitted when `\x` is not followed by exactly two hex digits.
 
 ```toke
-F=bad(): Str { < "\q" };
+F=bad(): $str { < "\q" };
 ```
 
 Triggers E1001.
@@ -55,7 +55,7 @@ Triggers E1001.
 The lexer reaches end-of-input before encountering a closing `"`.
 
 ```toke
-F=bad(): Str { < "unterminated };
+F=bad(): $str { < "unterminated };
 ```
 
 Triggers E1002.
@@ -66,14 +66,14 @@ Triggers E1002.
 
 ### E1003
 
-**Character outside Profile 1 character set**
+**Character outside permitted character set**
 
 | Field    | Value |
 |----------|-------|
 | Severity | error |
 | Stage    | lex   |
 
-Any byte that is not whitespace, alphanumeric, or a recognized symbol triggers this error. Profile 1 uses ASCII only.
+Any byte that is not whitespace, alphanumeric, or a recognized symbol triggers this error. toke uses ASCII only.
 
 ```toke
 M=test;
@@ -112,18 +112,18 @@ Triggers E1010.
 
 ### W1010
 
-**String interpolation not supported in Profile 1**
+**String interpolation not yet supported**
 
 | Field    | Value   |
 |----------|---------|
 | Severity | warning |
 | Stage    | lex     |
 
-The `\(` sequence inside a string literal triggers this warning. String interpolation is planned for a future profile.
+The `\(` sequence inside a string literal triggers this warning. String interpolation is planned for a future release.
 
 ```toke
 M=test;
-F=greet(): Str { < "hello \(name)" };
+F=greet(): $str { < "hello \(name)" };
 ```
 
 Triggers W1010.
@@ -509,7 +509,7 @@ All entries in a map literal must have the same key type and the same value type
 
 ```toke
 M=test;
-F=bad(): i64 { < [1: 10; 2: "x"] };
+F=bad(): i64 { < $(1: 10; 2: "x") };
 ```
 
 Triggers E4043.
@@ -565,7 +565,7 @@ Triggers E4051.
 | Severity | error      |
 | Stage    | type_check |
 
-In Profile 1, `spawn` only accepts nullary (zero-parameter) functions.
+`spawn` only accepts nullary (zero-parameter) functions.
 
 **Fix:** Wrap the parameterized function in a nullary function.
 
@@ -661,9 +661,9 @@ After emitting `.ll` IR, the compiler invokes `clang -O1` to produce a binary. I
 |-------|----------|-----------------|----------------------------------------------|
 | E1001 | error    | lex             | Invalid escape sequence                      |
 | E1002 | error    | lex             | Unterminated string literal                  |
-| E1003 | error    | lex             | Character outside Profile 1 set              |
+| E1003 | error    | lex             | Character outside permitted set              |
 | E1010 | error    | parse           | Reserved literal used as identifier          |
-| W1010 | warning  | lex             | String interpolation unsupported in P1       |
+| W1010 | warning  | lex             | String interpolation not yet supported       |
 | E2001 | error    | parse           | Declaration ordering violation               |
 | E2002 | error    | parse           | Unexpected token                             |
 | E2003 | error    | parse           | Missing semicolon                            |
@@ -687,7 +687,7 @@ After emitting `.ll` IR, the compiler invokes `clang -O1` to produce a binary. I
 | E4043 | error    | type_check      | Inconsistent types in map literal            |
 | E4050 | error    | type_check      | spawn argument not callable                  |
 | E4051 | error    | type_check      | await argument not a Task                    |
-| E4052 | error    | type_check      | Spawned function has parameters (v0.1)       |
+| E4052 | error    | type_check      | Spawned function has parameters              |
 | E4060 | error    | type_check      | FFI type mismatch (reserved)                 |
 | E5001 | error    | arena_check     | Value escapes arena scope                    |
 | E9001 | error    | codegen         | Failed to write interface file               |

@@ -87,7 +87,7 @@ I=io:std.io;
 
 F=main():i64{
   lp(let i=0;i<5;i=i+1){
-    io.println("i = \(i as Str)");
+    io.println("i = \(i as $str)");
   };
   <0;
 };
@@ -105,16 +105,16 @@ i = 4
 ### Sum of an array
 
 ```
-F=sum(arr:[i64]):i64{
+F=sum(arr:@(i64)):i64{
   let acc=mut.0;
   lp(let i=0;i<arr.len;i=i+1){
-    acc=acc+arr[i];
+    acc=acc+arr.get(i);
   };
   <acc;
 };
 ```
 
-The `arr.len` member gives the array length. Array elements are accessed with `arr[i]`.
+The `arr.len` member gives the array length. Array elements are accessed with `arr.get(i)`.
 
 ### While-style loop
 
@@ -134,11 +134,11 @@ lp(let x=0;!done;x=0){
 The `br` keyword exits the innermost loop immediately:
 
 ```
-F=findFirstNeg(arr:[i64]):i64{
+F=findFirstNeg(arr:@(i64)):i64{
   let result=mut.0-1;
   lp(let i=0;i<arr.len;i=i+1){
-    if(arr[i]<0){
-      result=arr[i];
+    if(arr.get(i)<0){
+      result=arr.get(i);
       br;
     };
   };
@@ -168,7 +168,7 @@ result|{
 Each arm has the form:
 
 ```
-VariantName:binding  result_expression;
+$variantname:binding  result_expression;
 ```
 
 ### Match is exhaustive
@@ -180,17 +180,17 @@ The compiler requires every variant to be covered. If you add a variant to a sum
 ```
 M=shapes;
 
-T=Shape{
-  Circle:f64;
-  Square:f64;
-  Rect:f64
+T=$shape{
+  $circle:f64;
+  $square:f64;
+  $rect:f64
 };
 
-F=describe(s:Shape):Str{
+F=describe(s:$shape):$str{
   <s|{
-    Circle:r "Circle";
-    Square:side "Square";
-    Rect:w "Rectangle"
+    $circle:r "Circle";
+    $square:side "Square";
+    $rect:w "Rectangle"
   };
 };
 ```
@@ -200,7 +200,7 @@ F=describe(s:Shape):Str{
 Match is the primary way to handle errors when you cannot propagate them:
 
 ```
-F=safeGet(arr:[i64];idx:u64):Str{
+F=safeGet(arr:@(i64);idx:u64):$str{
   <getElement(arr;idx)|{
     Ok:val "Found";
     Err:e "Error: not found"
@@ -218,16 +218,16 @@ Here is a more complete example -- a function that classifies numbers in an arra
 M=classify;
 I=io:std.io;
 
-F=classify(arr:[i64]):void{
+F=classify(arr:@(i64)):void{
   let positives=mut.0;
   let negatives=mut.0;
   let zeroes=mut.0;
 
   lp(let i=0;i<arr.len;i=i+1){
-    if(arr[i]>0){
+    if(arr.get(i)>0){
       positives=positives+1;
     }el{
-      if(arr[i]<0){
+      if(arr.get(i)<0){
         negatives=negatives+1;
       }el{
         zeroes=zeroes+1;
@@ -235,9 +235,9 @@ F=classify(arr:[i64]):void{
     };
   };
 
-  io.println("Positives: \(positives as Str)");
-  io.println("Negatives: \(negatives as Str)");
-  io.println("Zeroes: \(zeroes as Str)");
+  io.println("Positives: \(positives as $str)");
+  io.println("Negatives: \(negatives as $str)");
+  io.println("Zeroes: \(zeroes as $str)");
 };
 ```
 
@@ -254,7 +254,7 @@ Hints:
 
 ### Exercise 2: Find the maximum
 
-Write `F=max(arr:[i64]):i64` that returns the largest element in an array. Use `lp` and `if`.
+Write `F=max(arr:@(i64)):i64` that returns the largest element in an array. Use `lp` and `if`.
 
 ### Exercise 3: Reverse print
 
@@ -262,7 +262,7 @@ Write a function that prints the elements of an array in reverse order. Use `lp`
 
 ### Exercise 4: Count matches
 
-Write `F=countGreater(arr:[i64];threshold:i64):i64` that returns how many elements in the array are greater than `threshold`.
+Write `F=countGreater(arr:@(i64);threshold:i64):i64` that returns how many elements in the array are greater than `threshold`.
 
 ## Key takeaways
 
@@ -270,7 +270,7 @@ Write `F=countGreater(arr:[i64];threshold:i64):i64` that returns how many elemen
 - No `elif` -- nest `if` inside `el` for chains
 - `lp(init;cond;step){body}` is the only loop construct
 - `br` breaks out of the innermost loop
-- `expr|{Variant:binding result; ...}` is the match expression
+- `expr|{$variant:binding result; ...}` is the match expression
 - Match is exhaustive -- all variants must be covered
 - Conditions must be `bool` -- no implicit truthiness
 

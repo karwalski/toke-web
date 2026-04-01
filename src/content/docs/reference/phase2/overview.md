@@ -5,7 +5,7 @@ description: "How Phase 2 differs from Phase 1 — reduced character set, new si
 
 Phase 2 is a reduced-character profile of the toke language designed for use with the purpose-built BPE tokenizer. It expresses the same semantics as Phase 1 but uses only **56 characters**, enabling significantly higher token density during LLM inference.
 
-Phase 1 is the current default. Phase 2 is the target for production use once the toke tokenizer is trained and validated.
+Phase 2 is the production encoding. Phase 1 (80 characters) was used during corpus generation to leverage existing LLM tokenizers, and programs are mechanically transformed to Phase 2 for training and inference.
 
 :::note
 Phase 2 source is **not** valid Phase 1 source, and vice versa. The compiler accepts `--profile1` (default) or `--profile2` to select the active profile.
@@ -247,8 +247,8 @@ Everything not listed above is identical between profiles:
 
 ## See Also
 
-- [Phase 1 Type System](/reference/types/) — current default type reference
-- [Phase 2 Type System](/reference/phase2/types/) — Phase 2 type notation
-- [Phase 1 Grammar](/reference/grammar/) — current default grammar
-- [Phase 2 Grammar](/reference/phase2/grammar/) — Phase 2 grammar changes
+- [Type System](/reference/types/) — production type reference (Phase 2 notation)
+- [Phase 2 Type Details](/reference/phase2/types/) — Phase 2 type transformation details
+- [Grammar](/reference/grammar/) — production grammar reference (Phase 2 notation)
+- [Phase 2 Grammar Details](/reference/phase2/grammar/) — Phase 2 grammar transformation details
 - [Design Principles](/about/design/) — why toke has two profiles

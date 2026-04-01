@@ -83,7 +83,7 @@ let wide=narrow as i64;
 - **Numeric narrowing** (i64 to i32, f64 to f32): compiles with warning W1001, runtime trap if value does not fit
 - **Int to float** (i64 to f64): may lose precision for very large integers
 - **Float to int** (f64 to i64): truncates toward zero
-- **To Str** (`x as Str`): converts numbers to their string representation
+- **To $str** (`x as $str`): converts numbers to their string representation
 - **Pointer casts** (`s as *u8`): for FFI use only
 
 There are **no implicit conversions** in toke. Every conversion must use `as`. This is enforced by the compiler -- passing an `i32` where `i64` is expected is a type error (E4020).
@@ -100,7 +100,7 @@ The `spawn` function starts a function as a concurrent task:
 let task=spawn(fetchData);
 ```
 
-This returns a `Task` value immediately. The spawned function runs concurrently.
+This returns a `$task` value immediately. The spawned function runs concurrently.
 
 ### Awaiting a task
 
@@ -110,9 +110,9 @@ The `await` function blocks until a task completes and returns its result:
 let result=await(task);
 ```
 
-### The Task type
+### The $task type
 
-A `Task` is parameterised by the return type of the spawned function. If `fetchData` returns `Str!HttpErr`, then `spawn(fetchData)` returns `Task<Str!HttpErr>`, and `await(task)` produces the `Str!HttpErr` result.
+A `$task` is parameterised by the return type of the spawned function. If `fetchData` returns `$str!$httperr`, then `spawn(fetchData)` returns `$task<$str!$httperr>`, and `await(task)` produces the `$str!$httperr` result.
 
 ### Concurrent HTTP requests
 
@@ -121,8 +121,8 @@ M=parallel;
 I=http:std.http;
 I=io:std.io;
 
-F=fetch(url:Str):Str!http.Err{
-  let res=http.get(url)!http.Err;
+F=fetch(url:$str):$str!http.$err{
+  let res=http.get(url)!http.$err;
   <res.body;
 };
 
@@ -165,11 +165,11 @@ Arena blocks (`{arena ...}`) are a planned Phase 2 feature. The syntax is suppor
 By default, all allocations within a function are freed when the function returns. Arena blocks create shorter-lived allocation regions:
 
 ```
-F=processLargeData(items:[Str]):Str{
+F=processLargeData(items:@($str)):$str{
   let result=mut."";
   lp(let i=0;i<items.len;i=i+1){
     {arena
-      let temp=str.upper(items[i]);
+      let temp=str.upper(items.get(i));
       let processed=str.replace(temp;" ";"-");
       result=result+processed+"\n";
     };
@@ -190,7 +190,7 @@ Returning a reference to an arena-allocated value across the arena boundary is a
 
 ```
 {arena
-  let temp=[1;2;3];
+  let temp=@(1;2;3);
   result=temp;
 };
 ```
@@ -211,7 +211,7 @@ This pins the import to a specific version of the module. Version resolution and
 
 ### Exercise 1: Cast practice
 
-Write a function `F=stats(arr:[i64]):void` that computes and prints:
+Write a function `F=stats(arr:@(i64)):void` that computes and prints:
 - The sum (as i64)
 - The count (as i64)
 - The average (as f64 -- cast sum and count before dividing)
@@ -230,7 +230,7 @@ Write a function that processes an array of 1000 strings. Use an arena block ins
 - Pointer types (`*T`) are for FFI only -- not used in pure toke code
 - `as` performs explicit type casts -- no implicit conversions exist
 - `spawn(func)` starts concurrent tasks; `await(task)` retrieves their results
-- `Task` is the type of a spawned computation
+- `$task` is the type of a spawned computation
 - `{arena ... }` creates a sub-arena for temporary allocations
 - Arena-allocated values cannot escape their arena (compile-time check)
 

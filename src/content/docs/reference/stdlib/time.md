@@ -3,6 +3,8 @@ title: "std.time"
 description: "Time functions -- current time, elapsed measurement, and timestamp formatting."
 ---
 
+**Status: Implemented** -- C runtime backing, available in Phase 2.
+
 The `std.time` module provides functions for getting the current time, measuring elapsed time, and formatting timestamps. All timestamps are Unix timestamps in milliseconds (u64). All functions are infallible.
 
 ## Functions
@@ -12,7 +14,7 @@ The `std.time` module provides functions for getting the current time, measuring
 Returns the current Unix timestamp in milliseconds.
 
 ```toke
-let t = time.now();  (* e.g., 1705322096000 *)
+let t = time.now();  (* e.g. 1705322096000 *)
 ```
 
 ### time.since(ts: u64): u64
@@ -26,7 +28,7 @@ let elapsed = time.since(start);
 (* elapsed = number of ms since start *)
 ```
 
-### time.format(ts: u64; fmt: Str): Str
+### time.format(ts: u64; fmt: $str): $str
 
 Formats a millisecond Unix timestamp using strftime-compatible format codes. If `fmt` is null, falls back to an ISO-8601 style format.
 
@@ -53,12 +55,12 @@ let custom = time.format(ts; "year=%Y");    (* custom = "year=2024" *)
 ```toke
 (* Measure how long an operation takes *)
 let start = time.now();
-let rows = db.many("SELECT * FROM big_table"; []);
+let rows = db.many("SELECT * FROM big_table"; @());
 let ms = time.since(start);
-log.info("query complete"; [["elapsed_ms"; str.fromInt(ms)]]);
+log.info("query complete"; @(@("elapsed_ms"; str.fromInt(ms))));
 
 (* Log with a formatted timestamp *)
 let now = time.now();
 let stamp = time.format(now; "%Y-%m-%d %H:%M:%S");
-log.info("event occurred"; [["timestamp"; stamp]]);
+log.info("event occurred"; @(@("timestamp"; stamp)));
 ```

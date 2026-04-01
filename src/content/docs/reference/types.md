@@ -3,11 +3,7 @@ title: Type System
 description: Complete reference for toke's type system — primitives, composites, type inference, casts, and compatibility rules.
 ---
 
-toke uses a static type system with no implicit coercions. Every value has a single concrete type known at compile time. This page documents all types, inference rules, and compatibility semantics defined in Profile 1 (the current default).
-
-:::note[Looking for Phase 2?]
-Phase 2 uses `$`-prefixed type names and `@` array syntax for higher token density. See the [Phase 2 Type System](/reference/phase2/types/) reference.
-:::
+toke uses a static type system with no implicit coercions. Every value has a single concrete type known at compile time. This page documents all types, inference rules, and compatibility semantics.
 
 ## Primitive Types
 
@@ -17,7 +13,7 @@ Phase 2 uses `$`-prefixed type names and `@` array syntax for higher token densi
 | `u64`  | 64 bits | 0 to 18,446,744,073,709,551,615                         | `0`        | `0` (via cast from i64)  |
 | `f64`  | 64 bits | IEEE 754 double-precision floating point                 | `0.0`      | `3.14`, `0.0`, `-2.5`   |
 | `bool` | 1 byte  | `true` or `false`                                       | `false`    | `true`, `false`          |
-| `Str`  | pointer | Immutable UTF-8 string of arbitrary length              | `""`       | `"hello"`, `""`          |
+| `$str` | pointer | Immutable UTF-8 string of arbitrary length              | `""`       | `"hello"`, `""`          |
 | `void` | 0 bytes | Unit type — no value                                    | n/a        | (no literal form)        |
 
 ### Numeric types
@@ -32,11 +28,11 @@ let z: u64 = 100 as u64;
 
 ### String type
 
-`Str` is an immutable UTF-8 string. String interpolation is not supported in Profile 1 — use `str.concat()` from the standard library instead.
+`$str` is an immutable UTF-8 string. String interpolation is not yet supported — use `str.concat()` from the standard library instead.
 
 ```toke
-let name: Str = "toke";
-let greeting: Str = str.concat("hello, ", name);
+let name: $str = "toke";
+let greeting: $str = str.concat("hello, ", name);
 ```
 
 ### Boolean type
@@ -45,26 +41,26 @@ let greeting: Str = str.concat("hello, ", name);
 
 ## Composite Types
 
-### Arrays — `[T]`
+### Arrays — `@(T)`
 
 An ordered, homogeneous sequence of elements of type `T`.
 
 ```toke
-let nums: [i64] = [1; 2; 3];
-let empty: [i64] = [];
-let inferred = [1; 2; 3];
+let nums: @(i64) = @(1; 2; 3);
+let empty: @(i64) = @();
+let inferred = @(1; 2; 3);
 ```
 
 - Element type is determined by the first element, or by annotation.
-- An empty array literal `[]` has element type `unknown` until constrained by a type annotation.
+- An empty array literal `@()` has element type `unknown` until constrained by a type annotation.
 - Access `.len` to get the number of elements as `u64`.
 
-### Maps — `[K:V]`
+### Maps — `$(K:V)`
 
 A key-value collection where all keys have type `K` and all values have type `V`.
 
 ```toke
-let ages: [Str:i64] = ["alice": 30; "bob": 25];
+let ages: $($str:i64) = $("alice": 30; "bob": 25);
 ```
 
 - Key and value types are determined by the first entry.
@@ -76,8 +72,8 @@ let ages: [Str:i64] = ["alice": 30; "bob": 25];
 A sum type representing either a success value of type `T` or an error.
 
 ```toke
-F=readFile(path: Str): Str!Err {
-    let content = file.read(path)!Err;
+F=readFile(path: $str): $str!$err {
+    let content = file.read(path)!$err;
     < content
 };
 ```
@@ -102,7 +98,7 @@ F=main(): i64 {
 ```
 
 - `Task` is not directly writable as a type annotation — it is inferred from `spawn`.
-- In Profile 1, `spawn` only accepts nullary (zero-parameter) functions.
+- `spawn` only accepts nullary (zero-parameter) functions.
 - `await(t)` on a `Task<T>` yields type `T`.
 
 ### Pointers — `*T` (FFI only)
@@ -116,7 +112,7 @@ F=free(ptr: *u8): void;
 
 - Pointer types are **only** valid in extern (bodyless) function signatures.
 - Using `*T` in a function with a body produces error [E2010](/reference/errors/#e2010).
-- The restriction is recursive: `[*T]` and `*[T]` are also rejected in non-extern context.
+- The restriction is recursive: `@(*T)` and `*@(T)` are also rejected in non-extern context.
 
 ### Function Types — `func`
 
@@ -127,10 +123,10 @@ Function declarations have type `func` internally. Functions are first-class val
 Named product types declared with `T=`.
 
 ```toke
-T=Point{x: i64; y: i64};
+T=$point{x: i64; y: i64};
 
-F=origin(): Point {
-    < Point{x: 0; y: 0}
+F=origin(): $point {
+    < $point{x: 0; y: 0}
 };
 ```
 
@@ -148,12 +144,12 @@ toke infers types for `let` and `mut` bindings when no annotation is provided.
 |-----------------------------|---------------|--------------------------------|
 | Integer literal (`42`)      | `i64`         |                                |
 | Floating-point literal (`3.14`) | `f64`     |                                |
-| String literal (`"hello"`)  | `Str`         |                                |
+| String literal (`"hello"`)  | `$str`        |                                |
 | Boolean literal (`true`)    | `bool`        |                                |
-| Array literal `[e1; e2]`    | `[T]`         | T = type of first element      |
-| Empty array literal `[]`    | `[unknown]`   | Requires annotation            |
-| Map literal `[k1:v1; k2:v2]` | `[K:V]`     | K, V from first entry          |
-| Struct literal `Name{...}`  | `Name`        | Resolved via type declaration  |
+| Array literal `@(e1; e2)`   | `@(T)`        | T = type of first element      |
+| Empty array literal `@()`   | `@(unknown)`  | Requires annotation            |
+| Map literal `$(k1:v1; k2:v2)` | `$(K:V)`   | K, V from first entry          |
+| Struct literal `$name{...}` | `$name`       | Resolved via type declaration  |
 | Identifier reference        | declared type | From binding, parameter, or function |
 | Call expression `f(args)`   | return type   | From function declaration      |
 | Field access `expr.field`   | field type    | From struct or `.len` for collections |
@@ -181,7 +177,7 @@ let y: f64 = x as f64;
 let z: u64 = x as u64;
 ```
 
-In Profile 1, all casts are unconditionally allowed. A future profile may restrict which type pairs are castable.
+All casts are unconditionally allowed. A future release may restrict which type pairs are castable.
 
 ## Type Compatibility
 
@@ -195,15 +191,15 @@ Two types are equal according to these rules:
 | Primitives | Same kind (`i64 == i64`, but `i64 != u64`) |
 | Structs | Same name (nominal equality) |
 | Pointers | `*T == *U` iff `T == U` |
-| Arrays | `[T] == [U]` iff `T == U` (or either is `unknown`) |
-| Maps | `[K1:V1] == [K2:V2]` iff `K1 == K2` and `V1 == V2` (or either is `unknown`) |
+| Arrays | `@(T) == @(U)` iff `T == U` (or either is `unknown`) |
+| Maps | `$(K1:V1) == $(K2:V2)` iff `K1 == K2` and `V1 == V2` (or either is `unknown`) |
 | Tasks | `Task<T> == Task<U>` iff `T == U` |
 | Error unions | `T1!E1 == T2!E2` iff `T1 == T2` (or either is `unknown`) |
 | Functions | Equal iff return types are equal |
 
 ### No implicit coercions
 
-Profile 1 defines **no implicit coercions**. There is no automatic widening (e.g., `i64` to `f64`), no automatic narrowing, and no implicit conversion between any types. All conversions require an explicit `as` cast.
+toke defines **no implicit coercions**. There is no automatic widening (e.g., `i64` to `f64`), no automatic narrowing, and no implicit conversion between any types. All conversions require an explicit `as` cast.
 
 ### The `unknown` type
 

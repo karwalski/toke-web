@@ -44,11 +44,11 @@ Rules:
 After importing, access the module's exports through the alias:
 
 ```
-F=handle(req:http.Req):http.Res!ApiErr{
-  let body = json.dec(req.body)!ApiErr;
-  let user = auth.verify(req.token)!ApiErr;
-  let data = db.get(user.id)!ApiErr;
-  <http.Res.ok(json.enc(data));
+F=handle(req:http.$req):http.$res!$apierr{
+  let body = json.dec(req.body)!$apierr;
+  let user = auth.verify(req.token)!$apierr;
+  let data = db.get(user.id)!$apierr;
+  <http.$res.ok(json.enc(data));
 };
 ```
 
@@ -65,12 +65,12 @@ This produces `src/auth/login.tki` containing something like:
 ```
 M=myapp.auth.login;
 
-T=LoginErr{
-  BadCredentials:Str;
-  AccountLocked:Str
+T=$loginerr{
+  BadCredentials:$str;
+  AccountLocked:$str
 };
 
-F=login(username:Str;password:Str):Session!LoginErr;
+F=login(username:$str;password:$str):$session!$loginerr;
 ```
 
 Interface files serve two purposes:

@@ -70,7 +70,7 @@ F=add(a:i64;b:i64):i64{
 };
 ```
 
-Each parameter has the form `name:Type`. Multiple parameters are separated by `;` (not commas -- toke does not use commas anywhere).
+Each parameter has the form `name:$type`. Multiple parameters are separated by `;` (not commas -- toke does not use commas anywhere).
 
 The return type follows the closing parenthesis after a colon: `:i64`.
 
@@ -92,7 +92,7 @@ Use the `void` return type for functions that perform side effects but return no
 M=greet;
 I=io:std.io;
 
-F=sayHello(name:Str):void{
+F=sayHello(name:$str):void{
   io.println("Hello, \(name)!");
 };
 ```
@@ -167,7 +167,7 @@ F=abs(n:i64):i64{
 
 F=main():i64{
   let val=abs(0-42);
-  io.println(val as Str);
+  io.println(val as $str);
   <0;
 };
 ```
@@ -206,13 +206,13 @@ Write a function `F=distance(x1:f64;y1:f64;x2:f64;y2:f64):f64` that computes the
 ### Exercise 3: Greeting
 
 Write a module `greet` with:
-- A function `F=greet(name:Str;times:i64):void` that prints "Hello, {name}!" the specified number of times (use a mutable counter and `if` to check the count -- we will cover loops properly next lesson)
+- A function `F=greet(name:$str;times:i64):void` that prints "Hello, {name}!" the specified number of times (use a mutable counter and `if` to check the count -- we will cover loops properly next lesson)
 - A `main` function that calls `greet("World";3)`
 
 ## Key takeaways
 
 - Every file starts with `M=name;`
-- Functions use `F=name(params):RetType{body};`
+- Functions use `F=name(params):$rettype{body};`
 - Parameters are separated by `;`, not commas
 - `<expr;` returns a value from a function
 - `let x=expr;` creates an immutable binding; `let x=mut.expr;` creates a mutable one

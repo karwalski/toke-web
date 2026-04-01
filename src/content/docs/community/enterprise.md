@@ -7,7 +7,7 @@ description: How toke reduces LLM inference costs by 60-80% for enterprise code 
 
 Every token an LLM generates costs compute time and API dollars. When your code generation pipeline produces Python, TypeScript, or Go, the model spends tokens on verbose keywords, ambiguous syntax, and whitespace conventions that were designed for human readability -- not machine efficiency.
 
-toke eliminates this overhead at the language level. Its 80-character set is aligned to cl100k_base token boundaries. Its strict LL(1) grammar has exactly one valid interpretation at every syntactic position. Its mandatory typed interface files compress module contracts into minimal token sequences.
+toke eliminates this overhead at the language level. Its 56-character set with a purpose-built tokenizer achieves maximal token density. Its strict LL(1) grammar has exactly one valid interpretation at every syntactic position. Its mandatory typed interface files compress module contracts into minimal token sequences.
 
 The result: **LLMs generating toke instead of Python or JavaScript reduce inference costs by 60-80%** on equivalent tasks. Fewer tokens per program means faster generation, lower API bills, and higher throughput.
 

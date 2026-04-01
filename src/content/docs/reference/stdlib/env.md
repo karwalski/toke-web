@@ -3,20 +3,22 @@ title: "std.env"
 description: "Environment variables -- read, write, and provide defaults for process environment variables."
 ---
 
+**Status: Implemented** -- C runtime backing, available in Phase 2.
+
 The `std.env` module provides functions for reading and writing process environment variables. Keys and values are UTF-8 strings. Keys must not be empty or contain `=` or NUL characters.
 
 ## Functions
 
-### env.get(key: Str): Str!EnvErr
+### env.get(key: $str): $str!$enverr
 
-Looks up the environment variable `key`. Returns the value on success. Returns `EnvErr.NotFound` if the variable is not set, or `EnvErr.Invalid` if the key is empty or contains invalid characters.
+Looks up the environment variable `key`. Returns the value on success. Returns `$enverr.$notfound` if the variable is not set, or `$enverr.$invalid` if the key is empty or contains invalid characters.
 
 ```toke
 let path = env.get("PATH");  (* path = ok("/usr/bin:...") *)
-let e = env.get("UNSET_VAR"); (* e = err(EnvErr.NotFound{...}) *)
+let e = env.get("UNSET_VAR"); (* e = err($enverr.$notfound{...}) *)
 ```
 
-### env.getOr(key: Str; default: Str): Str
+### env.getOr(key: $str; default: $str): $str
 
 Looks up the environment variable `key`. Returns the value if it exists, or `default` if the variable is not set or the key is invalid. This function is infallible.
 
@@ -28,7 +30,7 @@ let home = env.getOr("HOME"; "/tmp");
 (* home = "/Users/alice" if HOME is set *)
 ```
 
-### env.set(key: Str; val: Str): bool
+### env.set(key: $str; val: $str): bool
 
 Sets the environment variable `key` to `val` in the current process. Overwrites any existing value. Returns `true` on success, `false` if the key is empty or contains invalid characters.
 
@@ -45,23 +47,23 @@ env.set("BAD=KEY"; ""); (* returns false -- key contains '=' *)
 ```toke
 (* Configure server port with fallback *)
 let port = env.getOr("PORT"; "3000");
-log.info("starting server"; [["port"; port]]);
+log.info("starting server"; @(@("port"; port)));
 
 (* Require a variable or exit *)
 let secret = env.get("API_SECRET");
 if secret.ok? =
-  log.info("secret loaded"; [])
+  log.info("secret loaded"; @())
 el =
-  log.error("API_SECRET is required"; []);
+  log.error("API_SECRET is required"; @());
 ```
 
 ## Error Types
 
-### EnvErr
+### $enverr
 
 A sum type representing environment variable lookup failures.
 
 | Variant | Meaning |
 |---------|---------|
-| NotFound | The environment variable is not set |
-| Invalid | The key is empty or contains invalid characters (`=`, NUL) |
+| $notfound | The environment variable is not set |
+| $invalid | The key is empty or contains invalid characters (`=`, NUL) |
