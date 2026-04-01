@@ -60,7 +60,7 @@ let age=ages.get("alice");
 Identical syntax to Phase 1, except type names use `$` prefix:
 
 ```
-F=readfile(path:$str):$str!$fileerr{
+f=readfile(path:$str):$str!$fileerr{
   let content=file.read(path)!$fileerr;
   <content;
 };
@@ -87,8 +87,8 @@ T=Shape{
 
 **Phase 2**
 ```
-T=$point{x:f64;y:f64};
-T=$shape{
+t=$point{x:f64;y:f64};
+t=$shape{
   $circle:f64;
   $rect:$point
 };
@@ -111,7 +111,7 @@ s|{
 ### Task
 
 ```
-F=work():i64{<42};
+f=work():i64{<42};
 let t=spawn(work);
 let result=await(t);
 ```
@@ -121,8 +121,8 @@ let result=await(t);
 ### Pointers (FFI)
 
 ```
-F=malloc(size:u64):*u8;
-F=free(ptr:*u8):void;
+f=malloc(size:u64):*u8;
+f=free(ptr:*u8):void;
 ```
 
 Pointer types use the same `*T` syntax. Only the inner type is transformed if it is uppercase.
@@ -153,6 +153,6 @@ The `as` keyword and all cast rules are identical to Phase 1.
 
 ## See Also
 
-- [Phase 1 Type System](/reference/types/) — the current default reference
+- [Type System](/reference/types/) — production type reference
 - [Phase 2 Overview](/reference/phase2/overview/) — complete profile comparison
 - [Phase 2 Grammar](/reference/phase2/grammar/) — production rule differences

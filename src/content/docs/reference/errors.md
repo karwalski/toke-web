@@ -34,7 +34,7 @@ The toke compiler emits structured JSON diagnostics with stable error codes. Err
 Emitted when a backslash in a string literal is followed by a character that is not one of `"`, `\`, `n`, `t`, `r`, `0`, `x`, or `(`. Also emitted when `\x` is not followed by exactly two hex digits.
 
 ```toke
-F=bad(): $str { < "\q" };
+f=bad(): $str { < "\q" };
 ```
 
 Triggers E1001.
@@ -55,7 +55,7 @@ Triggers E1001.
 The lexer reaches end-of-input before encountering a closing `"`.
 
 ```toke
-F=bad(): $str { < "unterminated };
+f=bad(): $str { < "unterminated };
 ```
 
 Triggers E1002.
@@ -76,8 +76,8 @@ Triggers E1002.
 Any byte that is not whitespace, alphanumeric, or a recognized symbol triggers this error. toke uses ASCII only.
 
 ```toke
-M=test;
-F=bad(): i64 { < 1 };
+m=test;
+f=bad(): i64 { < 1 };
 ```
 
 The above is valid; E1003 triggers when non-ASCII characters like `£` appear in source.
@@ -98,8 +98,8 @@ The above is valid; E1003 triggers when non-ASCII characters like `£` appear in
 The literals `true` and `false` cannot be used as identifiers.
 
 ```toke
-M=test;
-F=bad(): i64 { let true = 1; < true };
+m=test;
+f=bad(): i64 { let true = 1; < true };
 ```
 
 Triggers E1010.
@@ -122,8 +122,8 @@ Triggers E1010.
 The `\(` sequence inside a string literal triggers this warning. String interpolation is planned for a future release.
 
 ```toke
-M=test;
-F=greet(): $str { < "hello \(name)" };
+m=test;
+f=greet(): $str { < "hello \(name)" };
 ```
 
 Triggers W1010.
@@ -143,15 +143,15 @@ Triggers W1010.
 | Severity | error |
 | Stage    | parse |
 
-A toke source file must follow the declaration order: `M` (module), `I` (import), `T` (type), `C` (constant), `F` (function). This error fires when a declaration appears out of order or when the `M=` declaration is missing.
+A toke source file must follow the declaration order: `m` (module), `i` (import), `t` (type), `C` (constant), `f` (function). This error fires when a declaration appears out of order or when the `m=` declaration is missing.
 
 ```toke
-F=bad(): i64 { < 0 };
+f=bad(): i64 { < 0 };
 ```
 
 Triggers E2001 (missing module declaration).
 
-**Fix:** Ensure declarations appear in the required order, starting with `M=`.
+**Fix:** Ensure declarations appear in the required order, starting with `m=`.
 
 ---
 
@@ -167,8 +167,8 @@ Triggers E2001 (missing module declaration).
 The parser encountered a token it cannot consume in the current grammatical context.
 
 ```toke
-M=test;
-F=bad(): i64 { < 1 };
+m=test;
+f=bad(): i64 { < 1 };
 ```
 
 E2002 triggers when an unexpected token appears (e.g. a stray symbol).
@@ -189,8 +189,8 @@ E2002 triggers when an unexpected token appears (e.g. a stray symbol).
 A semicolon is required between consecutive statements inside a block. Semicolons may be elided before `}` or at end-of-file.
 
 ```toke
-M=test;
-F=bad(): i64 { let x = 1 let y = 2; < x };
+m=test;
+f=bad(): i64 { let x = 1 let y = 2; < x };
 ```
 
 Triggers E2003.
@@ -211,8 +211,8 @@ Triggers E2003.
 A `(`, `[`, or `{` was opened but the matching closing delimiter was not found.
 
 ```toke
-M=test;
-F=bad(): i64 { < (1 + 2 };
+m=test;
+f=bad(): i64 { < (1 + 2 };
 ```
 
 Triggers E2004.
@@ -233,8 +233,8 @@ Triggers E2004.
 Pointer types (`*T`) are only valid in extern (bodyless) function signatures. Using `*T` in a function with a body produces this error.
 
 ```toke
-M=test;
-F=bad(s: *u8): i64 { < 42 };
+m=test;
+f=bad(s: *u8): i64 { < 42 };
 ```
 
 Triggers E2010.
@@ -254,7 +254,7 @@ Triggers E2010.
 | Severity | error           |
 | Stage    | name_resolution |
 
-The module path in an `I=` declaration does not resolve to any `.tki` interface file on the search path.
+The module path in an `i=` declaration does not resolve to any `.tki` interface file on the search path.
 
 **Fix:** Check the module path spelling and ensure the dependency is available.
 
@@ -287,8 +287,8 @@ The import graph contains a cycle. Module A imports B which (directly or transit
 The optional version string in an import declaration does not match the expected `MAJOR.MINOR` or `MAJOR.MINOR.PATCH` format.
 
 ```toke
-M=test;
-I=io:std.io "abc";
+m=test;
+i=io:std.io "abc";
 ```
 
 Triggers E2035.
@@ -339,8 +339,8 @@ Two import declarations reference the same module path with different major vers
 A reference to an identifier that does not exist in any enclosing scope.
 
 ```toke
-M=test;
-F=bad(): i64 { < x };
+m=test;
+f=bad(): i64 { < x };
 ```
 
 Triggers E3011.
@@ -361,8 +361,8 @@ Triggers E3011.
 A second declaration of the same name in the same scope. Shadowing across scope boundaries is allowed; duplicate declaration within one scope is not.
 
 ```toke
-M=test;
-F=bad(): i64 { let x = 1; let x = 2; < x };
+m=test;
+f=bad(): i64 { let x = 1; let x = 2; < x };
 ```
 
 Triggers E3012.
@@ -400,8 +400,8 @@ The propagation operator `!` can only be applied to a value whose type is an err
 A `match` expression over a `bool` scrutinee must cover both `true` and `false`.
 
 ```toke
-M=test;
-F=bad(): i64 { < true|{True:v 1} };
+m=test;
+f=bad(): i64 { < true|{True:v 1} };
 ```
 
 Triggers E4010 (non-exhaustive match: missing arm for `false`).
@@ -508,8 +508,8 @@ Reserved. Planned for calling collection methods (e.g., `.push`, `.get`) on non-
 All entries in a map literal must have the same key type and the same value type. The first entry establishes the expected types.
 
 ```toke
-M=test;
-F=bad(): i64 { < $(1: 10; 2: "x") };
+m=test;
+f=bad(): i64 { < $(1: 10; 2: "x") };
 ```
 
 Triggers E4043.
@@ -545,9 +545,9 @@ Triggers E4043.
 `await(t)` requires its argument to have type `Task<T>`.
 
 ```toke
-M=test;
-F=notask(): i64 { < 42 };
-F=main(): i64 { < await(notask()) };
+m=test;
+f=notask(): i64 { < 42 };
+f=main(): i64 { < await(notask()) };
 ```
 
 Triggers E4051.
@@ -598,8 +598,8 @@ Reserved. Planned for type mismatches at FFI boundaries.
 Inside an `{arena ...}` block, assigning an arena-allocated value to a variable declared in an outer scope would create a dangling reference when the arena is freed.
 
 ```toke
-M=test;
-F=bad(): i64 { let x = 0; {arena x = 1}; < x };
+m=test;
+f=bad(): i64 { let x = 0; {arena x = 1}; < x };
 ```
 
 Triggers E5001.

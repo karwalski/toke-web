@@ -7,16 +7,16 @@ This tour covers every major feature of the toke language. Each section includes
 
 ## Modules and functions
 
-Every toke file begins with a module declaration. Functions are declared with `F=`.
+Every toke file begins with a module declaration. Functions are declared with `f=`.
 
 ```
-M=math;
+m=math;
 
-F=square(x:i64):i64{
+f=square(x:i64):i64{
   <x*x;
 };
 
-F=main():i64{
+f=main():i64{
   <square(7);
 };
 ```
@@ -36,16 +36,16 @@ toke has a small set of built-in types:
 | `$str` | UTF-8 string |
 | `void` | No value (for functions with no meaningful return) |
 
-You can also define struct types with `T=`:
+You can also define struct types with `t=`:
 
 ```
-T=$point{x:f64;y:f64};
+t=$point{x:f64;y:f64};
 ```
 
 And sum types (tagged unions) for error variants and enumerations:
 
 ```
-T=$shape{
+t=$shape{
   Circle:f64;
   Rect:$point
 };
@@ -56,7 +56,7 @@ T=$shape{
 Use `let` for immutable bindings and `let x=mut.` for mutable ones:
 
 ```
-F=example():i64{
+f=example():i64{
   let x=10;
   let y=mut.20;
   y=y+x;
@@ -71,7 +71,7 @@ Immutable bindings cannot be reassigned. Attempting to write `x=5;` after a `let
 Conditionals use `if()` and `el{}`:
 
 ```
-F=abs(n:i64):i64{
+f=abs(n:i64):i64{
   if(n<0){
     <0-n;
   }el{
@@ -83,7 +83,7 @@ F=abs(n:i64):i64{
 The condition goes inside parentheses after `if`. The else branch `el{...}` is optional. You can also write single-line conditionals:
 
 ```
-F=max(a:i64;b:i64):i64{
+f=max(a:i64;b:i64):i64{
   if(a>b){<a;}el{<b;};
 };
 ```
@@ -91,7 +91,7 @@ F=max(a:i64;b:i64):i64{
 For chained conditions, nest inside the else branch:
 
 ```
-F=classify(n:i64):$str{
+f=classify(n:i64):$str{
   if(n<0){
     <"negative";
   }el{
@@ -109,7 +109,7 @@ F=classify(n:i64):$str{
 toke has exactly one loop construct: `lp`. It takes an initialiser, a condition, and a step:
 
 ```
-F=sumTo(n:i64):i64{
+f=sumTo(n:i64):i64{
   let total=mut.0;
   lp(let i=0;i<n;i=i+1){
     total=total+i;
@@ -121,7 +121,7 @@ F=sumTo(n:i64):i64{
 Use `br;` to break out of a loop early:
 
 ```
-F=findFirstNeg(arr:@(i64)):i64{
+f=findFirstNeg(arr:@(i64)):i64{
   let result=mut.0-1;
   lp(let i=0;i<arr.len;i=i+1){
     if(arr.get(i)<0){
@@ -140,14 +140,14 @@ There is no `while`, `for-each`, or `do-while`. The `lp` construct covers all lo
 The `|{}` operator is used for pattern matching on sum types and error results:
 
 ```
-T=$color{
+t=$color{
   Red:bool;
   Green:bool;
   Blue:bool;
   Custom:$str
 };
 
-F=toHex(c:$color):$str{
+f=toHex(c:$color):$str{
   <c|{
     Red:r "#FF0000";
     Green:g "#00FF00";
@@ -164,7 +164,7 @@ Match is exhaustive -- the compiler rejects any match that does not cover all va
 Arrays use `@()` with semicolons as separators:
 
 ```
-F=example():@(i64){
+f=example():@(i64){
   let nums=@(1;2;3;4;5);
   <nums;
 };
@@ -173,7 +173,7 @@ F=example():@(i64){
 Maps use key-value pairs:
 
 ```
-F=example():$($str:i64){
+f=example():$($str:i64){
   let ages=$("alice":30;"bob":25;"carol":28);
   <ages;
 };
@@ -182,7 +182,7 @@ F=example():$($str:i64){
 Access array elements by index and map elements by key:
 
 ```
-F=example():i64{
+f=example():i64{
   let nums=@(10;20;30);
   let first=nums.0;
   <first;
@@ -196,12 +196,12 @@ Array types are written as `@(ElementType)` and map types as `$(KeyType:ValueTyp
 Functions that can fail declare an error type after `!`:
 
 ```
-T=$fileerr{
+t=$fileerr{
   NotFound:$str;
   PermDenied:$str
 };
 
-F=readFile(path:$str):$str!$fileerr{
+f=readFile(path:$str):$str!$fileerr{
   let f=io.open(path)!$fileerr;
   let content=io.readAll(f)!$fileerr;
   <content;
@@ -213,7 +213,7 @@ The `!` operator after a call propagates errors. If the call returns an error, t
 Use `|{}` to match on the result and handle each case:
 
 ```
-F=main():i64{
+f=main():i64{
   let result=readFile("config.tk");
   result|{
     Ok:content io.println(content);
@@ -227,15 +227,15 @@ Error handling is explicit and checked by the compiler. You cannot ignore an err
 
 ## Imports
 
-Import other modules with `I=`:
+Import other modules with `i=`:
 
 ```
-M=app;
-I=io:std.io;
-I=json:std.json;
-I=http:std.http;
+m=app;
+i=io:std.io;
+i=json:std.json;
+i=http:std.http;
 
-F=main():i64{
+f=main():i64{
   io.println(json.enc("hello"));
   <0;
 };
@@ -248,10 +248,10 @@ The alias before the colon is how you refer to the module in code. The path afte
 Here is a complete program that reads numbers from the command line and prints their sum:
 
 ```
-M=sum;
-I=io:std.io;
+m=sum;
+i=io:std.io;
 
-F=sum(arr:@(i64)):i64{
+f=sum(arr:@(i64)):i64{
   let total=mut.0;
   lp(let i=0;i<arr.len;i=i+1){
     total=total+arr.get(i);
@@ -259,7 +259,7 @@ F=sum(arr:@(i64)):i64{
   <total;
 };
 
-F=main():i64{
+f=main():i64{
   let args=io.args();
   let result=sum(args);
   io.println(result as $str);

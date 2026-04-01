@@ -16,7 +16,7 @@ This is a deliberate design choice. Exceptions hide control flow. In a language 
 Errors are defined as sum types -- tagged unions where each variant represents a distinct failure mode:
 
 ```
-T=$matherr{
+t=$matherr{
   $divbyzero:bool;
   $overflow:$str
 };
@@ -27,7 +27,7 @@ Each variant has a name (prefixed with `$`) and a payload type. Use `bool` for v
 Here is a more realistic error type:
 
 ```
-T=$dberr{
+t=$dberr{
   $connectionfailed:$str;
   $queryfailed:$str;
   $notfound:u64;
@@ -40,7 +40,7 @@ T=$dberr{
 When a function can fail, its return type includes the error type after `!`:
 
 ```
-F=divide(a:f64;b:f64):f64!$matherr{
+f=divide(a:f64;b:f64):f64!$matherr{
   if(b=0.0){
     <$matherr{$divbyzero:true};
   };
@@ -57,7 +57,7 @@ A function without `!` in its return type is **total** -- it cannot fail and can
 To return an error, construct the error variant:
 
 ```
-F=parseAge(s:$str):i64!$parseerr{
+f=parseAge(s:$str):i64!$parseerr{
   let n=str.toInt(s)!$parseerr;
   if(n<0){
     <$parseerr{$negativeage:s};
@@ -74,7 +74,7 @@ F=parseAge(s:$str):i64!$parseerr{
 The `!` operator is the primary way to handle errors from callees. It propagates errors upward automatically:
 
 ```
-F=getUser(id:u64):$user!$apierr{
+f=getUser(id:u64):$user!$apierr{
   let row=db.one("SELECT * FROM users WHERE id=?";@(id))!$apierr;
   <$user{id:row.u64("id");name:row.str("name")};
 };
@@ -93,7 +93,7 @@ The `!` operator makes error propagation concise. Without it, you would need a m
 Multiple fallible calls can be chained, each with their own error mapping:
 
 ```
-F=handle(req:http.$req):http.$res!$apierr{
+f=handle(req:http.$req):http.$res!$apierr{
   let body=json.dec(req.body)!$apierr;
   let user=db.getUser(body.id)!$apierr;
   let updated=db.save(user)!$apierr;
@@ -108,7 +108,7 @@ Each `!` is a potential early return. If any call fails, the function returns im
 When you need to handle errors instead of propagating them, use a match expression:
 
 ```
-F=getOrDefault(id:u64):$user{
+f=getOrDefault(id:u64):$user{
   <db.getUser(id)|{
     Ok:user  user;
     Err:e    $user{id:0;name:"anonymous"}
@@ -123,7 +123,7 @@ This function is total (no `!` in its return type) because it handles all errors
 You can match on the error type's variants to handle different failures differently:
 
 ```
-F=resilientGet(id:u64):http.$res{
+f=resilientGet(id:u64):http.$res{
   <db.getUser(id)|{
     Ok:user  http.$res.ok(json.enc(user));
     Err:e    e|{
@@ -140,22 +140,22 @@ F=resilientGet(id:u64):http.$res{
 Here is a full program demonstrating the error model:
 
 ```
-M=calc;
-I=io:std.io;
+m=calc;
+i=io:std.io;
 
-T=$calcerr{
+t=$calcerr{
   $divbyzero:bool;
   $invalidop:$str
 };
 
-F=divide(a:f64;b:f64):f64!$calcerr{
+f=divide(a:f64;b:f64):f64!$calcerr{
   if(b=0.0){
     <$calcerr{$divbyzero:true};
   };
   <a/b;
 };
 
-F=calc(a:f64;op:$str;b:f64):f64!$calcerr{
+f=calc(a:f64;op:$str;b:f64):f64!$calcerr{
   if(op="+"){<a+b};
   if(op="-"){<a-b};
   if(op="*"){<a*b};
@@ -166,7 +166,7 @@ F=calc(a:f64;op:$str;b:f64):f64!$calcerr{
   <$calcerr{$invalidop:op};
 };
 
-F=main():i64{
+f=main():i64{
   calc(10.0;"/";3.0)|{
     Ok:v   io.println(v as $str);
     Err:e  e|{
@@ -182,11 +182,11 @@ F=main():i64{
 
 ### Exercise 1: Safe division
 
-Write a function `F=safeDiv(a:i64;b:i64):i64!$matherr` that returns a `$divbyzero` error when `b` is zero. Write a `main` function that calls it and prints either the result or an error message using match.
+Write a function `f=safeDiv(a:i64;b:i64):i64!$matherr` that returns a `$divbyzero` error when `b` is zero. Write a `main` function that calls it and prints either the result or an error message using match.
 
 ### Exercise 2: Lookup with error
 
-Define an error type `T=$lookuperr{$notfound:$str;$emptymap:bool}`. Write a function `F=lookup(m:$($str:i64);key:$str):i64!$lookuperr` that:
+Define an error type `t=$lookuperr{$notfound:$str;$emptymap:bool}`. Write a function `f=lookup(m:$($str:i64);key:$str):i64!$lookuperr` that:
 - Returns `$emptymap` if the map has zero entries
 - Returns `$notfound(key)` if the key does not exist
 - Returns the value otherwise
@@ -194,15 +194,15 @@ Define an error type `T=$lookuperr{$notfound:$str;$emptymap:bool}`. Write a func
 ### Exercise 3: Error chain
 
 Write two functions:
-- `F=parseInt(s:$str):i64!$parseerr` that wraps `str.toInt`
-- `F=parseAndDouble(s:$str):i64!$calcerr` that calls `parseInt` and propagates the error as `$calcerr`, then doubles the result
+- `f=parseInt(s:$str):i64!$parseerr` that wraps `str.toInt`
+- `f=parseAndDouble(s:$str):i64!$calcerr` that calls `parseInt` and propagates the error as `$calcerr`, then doubles the result
 
 This exercises the `!` propagation with error type mapping.
 
 ## Key takeaways
 
 - toke has no exceptions -- errors are values in the type system
-- Error types are sum types: `T=$myerr{$variant1:$type1;$variant2:$type2}`
+- Error types are sum types: `t=$myerr{$variant1:$type1;$variant2:$type2}`
 - `:T!E` in a return type means the function can return either `T` (success) or `E` (error)
 - `expr!$errtype` propagates errors upward to the current function's error type
 - `expr|{Ok:v handleSuccess; Err:e handleError}` matches on results for recovery

@@ -27,9 +27,9 @@ The grammar uses standard EBNF notation:
 ```ebnf
 Module      = ModuleDecl , { ImportDecl } , { TypeDecl } , { ConstDecl } , { FuncDecl } ;
 
-ModuleDecl  = "M" , "=" , Ident , ";" ;
+ModuleDecl  = "m" , "=" , Ident , ";" ;
 
-ImportDecl  = "I" , "=" , Ident , ":" , ModulePath , [ VersionStr ] , ";" ;
+ImportDecl  = "i" , "=" , Ident , ":" , ModulePath , [ VersionStr ] , ";" ;
 
 ModulePath  = Ident , { "." , Ident } ;
 
@@ -41,7 +41,7 @@ Declarations must appear in this exact order: module, imports, types, constants,
 ### Type Declarations
 
 ```ebnf
-TypeDecl    = "T" , "=" , "$" , Ident , "{" , FieldList , "}" , ";" ;
+TypeDecl    = "t" , "=" , "$" , Ident , "{" , FieldList , "}" , ";" ;
 
 FieldList   = Field , { ";" , Field } , [ ";" ] ;
 
@@ -57,7 +57,7 @@ ConstDecl   = "C" , "=" , Ident , [ ":" , TypeExpr ] , Expr , ";" ;
 ### Function Declarations
 
 ```ebnf
-FuncDecl    = "F" , "=" , Ident , "(" , [ ParamList ] , ")" ,
+FuncDecl    = "f" , "=" , Ident , "(" , [ ParamList ] , ")" ,
               [ ":" , TypeExpr ] , ( Block | ";" ) ;
 
 ParamList   = Param , { ";" , Param } ;
@@ -194,22 +194,22 @@ HexDigit    = Digit | "a" .. "f" | "A" .. "F" ;
 
 ### Module
 
-Every toke source file is a `Module`. It begins with a mandatory module declaration (`M=name;`) followed by optional imports, type declarations, constants, and function declarations — in that strict order.
+Every toke source file is a `Module`. It begins with a mandatory module declaration (`m=name;`) followed by optional imports, type declarations, constants, and function declarations — in that strict order.
 
 ```toke
-M=myapp;
-I=io:std.file;
-T=Config{port: i64; host: $str};
-F=main(): void { };
+m=myapp;
+i=io:std.file;
+t=Config{port: i64; host: $str};
+f=main(): void { };
 ```
 
 ### FuncDecl
 
-Functions are declared with `F=name(params):ReturnType { body }`. A function without a body is an extern (FFI) declaration. The return statement uses `<` instead of a `return` keyword.
+Functions are declared with `f=name(params):ReturnType { body }`. A function without a body is an extern (FFI) declaration. The return statement uses `<` instead of a `return` keyword.
 
 ```toke
-F=add(a: i64; b: i64): i64 { < a + b };
-F=puts(s: *u8): void;
+f=add(a: i64; b: i64): i64 { < a + b };
+f=puts(s: *u8): void;
 ```
 
 ### TypeExpr
@@ -234,7 +234,7 @@ The toke grammar is designed to be LL(1)-parseable:
 
 Key design choices that enable LL(1) parsing:
 
-- Declaration prefixes (`M=`, `I=`, `T=`, `C=`, `F=`) are unique single-token lookaheads.
+- Declaration prefixes (`m=`, `i=`, `t=`, `C=`, `f=`) are unique single-token lookaheads.
 - Statement prefixes (`let`, `mut`, `<`, `?`, `lp`, `match`, `{arena`) are distinct.
 - The `<` return operator avoids ambiguity with the comparison `<` because return always appears at statement position.
 

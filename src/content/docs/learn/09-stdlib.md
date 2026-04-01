@@ -5,7 +5,7 @@ description: "A practical tour of the standard library modules with working exam
 
 **Estimated time: ~25 minutes**
 
-The toke standard library provides modules covering the most common programming tasks. Each module is imported with `I=alias:std.module;` and accessed through the alias.
+The toke standard library provides modules covering the most common programming tasks. Each module is imported with `i=alias:std.module;` and accessed through the alias.
 
 > **Note:** Of the modules documented below, 11 have C runtime implementations today (str, file, json, http, db, crypto, env, process, log, time, test). Three modules (io, math, net) are planned but not yet implemented -- they are included here as part of the design vision.
 
@@ -14,7 +14,7 @@ The toke standard library provides modules covering the most common programming 
 > **Status: Planned** -- not yet implemented. The API below is part of the design vision but has no compiler or runtime backing today.
 
 ```
-I=io:std.io;
+i=io:std.io;
 ```
 
 | Function | Signature | Purpose |
@@ -27,10 +27,10 @@ I=io:std.io;
 **Example: interactive prompt**
 
 ```
-M=prompt;
-I=io:std.io;
+m=prompt;
+i=io:std.io;
 
-F=main():i64{
+f=main():i64{
   io.print("Enter your name: ");
   let name=io.readline();
   io.println("Hello, \(name)!");
@@ -41,7 +41,7 @@ F=main():i64{
 ## std.str -- String operations
 
 ```
-I=str:std.str;
+i=str:std.str;
 ```
 
 | Function | Signature | Purpose |
@@ -65,7 +65,7 @@ I=str:std.str;
 **Example: parse a key=value config line**
 
 ```
-F=parseLine(line:$str):@($str){
+f=parseLine(line:$str):@($str){
   let parts=str.split(line;"=");
   <@(str.trim(parts.0);str.trim(parts.1));
 };
@@ -74,7 +74,7 @@ F=parseLine(line:$str):@($str){
 ## std.file -- File system
 
 ```
-I=file:std.file;
+i=file:std.file;
 ```
 
 | Function | Signature | Purpose |
@@ -91,7 +91,7 @@ I=file:std.file;
 **Example: copy a file**
 
 ```
-F=copyFile(src:$str;dst:$str):void!$fileerr{
+f=copyFile(src:$str;dst:$str):void!$fileerr{
   let content=file.read(src)!$fileerr;
   file.write(dst;content)!$fileerr;
 };
@@ -100,7 +100,7 @@ F=copyFile(src:$str;dst:$str):void!$fileerr{
 ## std.json -- JSON
 
 ```
-I=json:std.json;
+i=json:std.json;
 ```
 
 | Function | Signature | Purpose |
@@ -113,14 +113,14 @@ I=json:std.json;
 **Example: JSON round-trip**
 
 ```
-T=$config{host:$str;port:i64;debug:bool};
+t=$config{host:$str;port:i64;debug:bool};
 
-F=save(c:$config;path:$str):void!$apperr{
+f=save(c:$config;path:$str):void!$apperr{
   let data=json.enc(c);
   file.write(path;data)!$apperr;
 };
 
-F=load(path:$str):$config!$apperr{
+f=load(path:$str):$config!$apperr{
   let data=file.read(path)!$apperr;
   let cfg=json.dec(data)!$apperr;
   <cfg;
@@ -130,7 +130,7 @@ F=load(path:$str):$config!$apperr{
 ## std.http -- HTTP server and client
 
 ```
-I=http:std.http;
+i=http:std.http;
 ```
 
 ### Client functions
@@ -150,21 +150,21 @@ I=http:std.http;
 | `http.$res` | Response (status, body, headers) |
 | `http.$res.ok(body:$str)` | Create 200 response |
 | `http.$res.status(code:i32;body:$str)` | Create response with status |
-| `http.serve(port:i32;handler:F)` | Start HTTP server |
+| `http.serve(port:i32;handler:f)` | Start HTTP server |
 
 **Example: simple HTTP server**
 
 ```
-M=server;
-I=http:std.http;
-I=json:std.json;
+m=server;
+i=http:std.http;
+i=json:std.json;
 
-T=$apierr{
+t=$apierr{
   $notfound:$str;
   $badrequest:$str
 };
 
-F=handle(req:http.$req):http.$res{
+f=handle(req:http.$req):http.$res{
   if(req.path="/health"){
     <http.$res.ok("ok");
   };
@@ -174,7 +174,7 @@ F=handle(req:http.$req):http.$res{
   <http.$res.status(404;"not found");
 };
 
-F=main():i64{
+f=main():i64{
   http.serve(8080;handle);
   <0;
 };
@@ -183,11 +183,11 @@ F=main():i64{
 **Example: HTTP client**
 
 ```
-M=client;
-I=http:std.http;
-I=io:std.io;
+m=client;
+i=http:std.http;
+i=io:std.io;
 
-F=main():i64{
+f=main():i64{
   http.get("https://api.example.com/data")|{
     Ok:res  io.println("Status: \(res.status as $str)\nBody: \(res.body)");
     Err:e   io.println("Request failed");
@@ -199,7 +199,7 @@ F=main():i64{
 ## std.db -- Database access
 
 ```
-I=db:std.db;
+i=db:std.db;
 ```
 
 | Function | Signature | Purpose |
@@ -213,22 +213,22 @@ I=db:std.db;
 **Example: SQLite CRUD**
 
 ```
-M=todos;
-I=db:std.db;
+m=todos;
+i=db:std.db;
 
-T=$todo{id:u64;title:$str;done:bool};
-T=$todoerr{$dberr:$str;$notfound:u64};
+t=$todo{id:u64;title:$str;done:bool};
+t=$todoerr{$dberr:$str;$notfound:u64};
 
-F=init(conn:db.$conn):void!$todoerr{
+f=init(conn:db.$conn):void!$todoerr{
   db.exec(conn;"CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY, title TEXT, done INTEGER)";@())!$todoerr;
 };
 
-F=add(conn:db.$conn;title:$str):$todo!$todoerr{
+f=add(conn:db.$conn;title:$str):$todo!$todoerr{
   let r=db.exec(conn;"INSERT INTO todos (title,done) VALUES (?,0)";@(title))!$todoerr;
   <$todo{id:r.lastId;title:title;done:false};
 };
 
-F=list(conn:db.$conn):@($todo)!$todoerr{
+f=list(conn:db.$conn):@($todo)!$todoerr{
   let rows=db.query(conn;"SELECT id,title,done FROM todos";@())!$todoerr;
   let result=mut.@();
   lp(let i=0;i<rows.len;i=i+1){
@@ -246,7 +246,7 @@ F=list(conn:db.$conn):@($todo)!$todoerr{
 ## std.crypto -- Cryptographic utilities
 
 ```
-I=crypto:std.crypto;
+i=crypto:std.crypto;
 ```
 
 | Function | Signature | Purpose |
@@ -260,7 +260,7 @@ I=crypto:std.crypto;
 **Example: hash a password**
 
 ```
-F=hashPassword(password:$str;salt:$str):$str{
+f=hashPassword(password:$str;salt:$str):$str{
   <crypto.sha256(salt+password);
 };
 ```
@@ -268,7 +268,7 @@ F=hashPassword(password:$str;salt:$str):$str{
 ## std.process -- External commands
 
 ```
-I=proc:std.process;
+i=proc:std.process;
 ```
 
 | Function | Signature | Purpose |
@@ -280,11 +280,11 @@ I=proc:std.process;
 **Example: run a shell command**
 
 ```
-M=runner;
-I=proc:std.process;
-I=io:std.io;
+m=runner;
+i=proc:std.process;
+i=io:std.io;
 
-F=main():i64{
+f=main():i64{
   proc.run("ls";@("-la";"./src"))|{
     Ok:out  io.println(out.stdout);
     Err:e   io.println("Command failed");
@@ -296,7 +296,7 @@ F=main():i64{
 ## std.time -- Time and dates
 
 ```
-I=time:std.time;
+i=time:std.time;
 ```
 
 | Function | Signature | Purpose |
@@ -309,7 +309,7 @@ I=time:std.time;
 **Example: timestamp a log entry**
 
 ```
-F=log(msg:$str):void{
+f=log(msg:$str):void{
   let ts=time.format(time.now();"%Y-%m-%d %H:%M:%S");
   io.println("[\(ts)] \(msg)");
 };
@@ -320,7 +320,7 @@ F=log(msg:$str):void{
 > **Status: Planned** -- not yet implemented. The API below is part of the design vision but has no compiler or runtime backing today.
 
 ```
-I=math:std.math;
+i=math:std.math;
 ```
 
 | Function | Signature | Purpose |
@@ -337,7 +337,7 @@ I=math:std.math;
 **Example: distance formula**
 
 ```
-F=distance(x1:f64;y1:f64;x2:f64;y2:f64):f64{
+f=distance(x1:f64;y1:f64;x2:f64;y2:f64):f64{
   let dx=x2-x1;
   let dy=y2-y1;
   <math.sqrt(dx*dx+dy*dy);
@@ -349,7 +349,7 @@ F=distance(x1:f64;y1:f64;x2:f64;y2:f64):f64{
 > **Status: Planned** -- not yet implemented. The API below is part of the design vision but has no compiler or runtime backing today.
 
 ```
-I=net:std.net;
+i=net:std.net;
 ```
 
 | Function | Signature | Purpose |
@@ -364,10 +364,10 @@ I=net:std.net;
 **Example: TCP echo server**
 
 ```
-M=echo;
-I=net:std.net;
+m=echo;
+i=net:std.net;
 
-F=main():i64!net.$neterr{
+f=main():i64!net.$neterr{
   let listener=net.listen("0.0.0.0";9000)!net.$neterr;
   lp(let x=0;true;x=0){
     net.accept(listener)|{
@@ -414,7 +414,7 @@ Write a program that:
 ## Key takeaways
 
 - 11 standard library modules with C runtime implementations cover strings, files, JSON, HTTP, database, crypto, environment, process, logging, time, and testing -- with io, math, and net planned for future releases
-- All modules follow the same import pattern: `I=alias:std.module;`
+- All modules follow the same import pattern: `i=alias:std.module;`
 - Fallible stdlib functions return `T!$err` types -- always handle the error
 - The stdlib is designed for practical server-side and CLI applications
 - Each module is self-contained with a small, focused API

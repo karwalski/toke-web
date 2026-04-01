@@ -42,17 +42,17 @@ Every time an AI writes code, it generates one token at a time. Each token costs
 Each colour below represents one token. Fewer colours = fewer tokens = lower cost.
 
 <Tabs>
-  <TabItem label="toke Phase 2 (19 tokens)">
+  <TabItem label="toke (19 tokens)">
 <TokenViz
   code="m=arrproduct;f=product(arr:@(u64)):u64{let p=mut.1;let q=arr.len;lp(let i=0;i<q;i=i+1){p=p*arr.get(i);};<p};"
   boundaries={["m=arr","product;","f=product","(arr:","@(u64",")):u64","{let"," p=mut.","1;let"," q=arr.len",";lp(let"," i=0;","i<q;","i=i+1","){p=p","*arr.get","(i);","};","<p};"]}
   count={19}
   label="purpose-built tokenizer (projected)"
   variant="toke-p2"
-  note="Phase 2 uses a 56-character set with a custom BPE tokenizer trained on the toke corpus. Common patterns like 'let p=mut.' and 'lp(let' become single tokens."
+  note="toke uses a 56-character set with a custom BPE tokenizer. Common patterns like 'let p=mut.' and 'lp(let' become single tokens."
 />
 <div class="phase-note">
-  <strong>Phase 2</strong> eliminates uppercase letters and introduces sigils (<code>$</code> for types, <code>@</code> for arrays). A purpose-built BPE tokenizer trained on 500K+ toke programs will learn that patterns like <code>let&nbsp;p=mut.</code> and <code>lp(let</code> always appear together — encoding them as single tokens. Projected: ~2x further reduction over Phase 1. <em>These token boundaries are illustrative of the target efficiency.</em>
+  toke uses a 56-character set with <code>$</code> sigils for types and <code>@</code> for arrays. A purpose-built BPE tokenizer trained on toke programs learns that patterns like <code>let&nbsp;p=mut.</code> and <code>lp(let</code> always appear together — encoding them as single tokens. <em>These token boundaries are illustrative of the target efficiency.</em>
 </div>
   </TabItem>
   <TabItem label="How it was built (Phase 1, 52 tokens)">
@@ -108,7 +108,7 @@ Each colour below represents one token. Fewer colours = fewer tokens = lower cos
 Real-world code isn't minimal. Teams use documentation comments, descriptive names, and type annotations. Here's the same function written to production standards — and how that affects token cost.
 
 <Tabs>
-  <TabItem label="toke Phase 2 (19 tokens — unchanged)">
+  <TabItem label="toke (19 tokens — unchanged)">
 <TokenViz
   code="m=arrproduct;f=product(arr:@(u64)):u64{let p=mut.1;let q=arr.len;lp(let i=0;i<q;i=i+1){p=p*arr.get(i);};<p};"
   boundaries={["m=arr","product;","f=product","(arr:","@(u64",")):u64","{let"," p=mut.","1;let"," q=arr.len",";lp(let"," i=0;","i<q;","i=i+1","){p=p","*arr.get","(i);","};","<p};"]}
@@ -117,7 +117,7 @@ Real-world code isn't minimal. Teams use documentation comments, descriptive nam
   variant="toke-p2"
 />
 <div class="phase-note">
-  toke has no comments and no best-practices overhead. The program <em>is</em> the documentation — the type signature and structure are unambiguous. The token count is identical regardless of coding style. With Phase 2's custom tokenizer, 19 tokens covers the complete program.
+  toke has no comments and no best-practices overhead. The program <em>is</em> the documentation — the type signature and structure are unambiguous. The token count is identical regardless of coding style. With toke's custom tokenizer, 19 tokens covers the complete program.
 </div>
   </TabItem>
   <TabItem label="How it was built (Phase 1, 52 tokens)">
@@ -194,16 +194,16 @@ Real-world code isn't minimal. Teams use documentation comments, descriptive nam
 ## Quick Example
 
 ```
-M=hello;
-I=io:std.io;
+m=hello;
+i=io:std.io;
 
-F=main():i64{
+f=main():i64{
   io.println("Hello, world!");
   <0;
 };
 ```
 
-A complete toke program. `M=` declares the module. `I=` imports a library. `F=` declares a function. `<` returns a value. Every statement ends with `;`. No boilerplate, no ceremony.
+A complete toke program. `m=` declares the module. `i=` imports a library. `f=` declares a function. `<` returns a value. Every statement ends with `;`. No boilerplate, no ceremony.
 
 ## Development Timeline
 

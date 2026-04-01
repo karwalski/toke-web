@@ -52,7 +52,7 @@ export default defineConfig({
 					],
 				},
 				{
-					label: 'API Reference (Phase 1)',
+					label: 'API Reference',
 					items: [
 						{ label: 'Type System', slug: 'reference/types' },
 						{ label: 'Grammar', slug: 'reference/grammar' },
@@ -64,7 +64,7 @@ export default defineConfig({
 					],
 				},
 				{
-					label: 'API Reference (Phase 2)',
+					label: 'Background',
 					items: [
 						{ label: 'Phase 2 Overview', slug: 'reference/phase2/overview' },
 						{ label: 'Type System', slug: 'reference/phase2/types' },

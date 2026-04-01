@@ -50,8 +50,8 @@ T=ApiErr{NotFound:u64;Timeout:Str};
 
 **Phase 2**
 ```
-T=$user{id:u64;name:$str};
-T=$apierr{$notfound:u64;$timeout:$str};
+t=$user{id:u64;name:$str};
+t=$apierr{$notfound:u64;$timeout:$str};
 ```
 
 </div>
@@ -156,14 +156,14 @@ F=main():i64{
 
 **Phase 2**
 ```
-M=fib;
+m=fib;
 
-F=fib(n:i64):i64{
+f=fib(n:i64):i64{
   if(n<2){<n};
   <fib(n-1)+fib(n-2);
 };
 
-F=main():i64{
+f=main():i64{
   <fib(10);
 };
 ```
@@ -171,7 +171,7 @@ F=main():i64{
 </div>
 </div>
 
-This example is identical in both profiles because it uses no uppercase types, no arrays, and no maps. The differences emerge in programs that use the type system and collections.
+This example shows that even simple programs differ between profiles: Phase 2 lowercases the `M=`, `F=` keywords to `m=`, `f=`. The bigger differences emerge in programs that use the type system and collections.
 
 <div class="hero-comparison">
 <div>
@@ -199,16 +199,16 @@ F=handle(req:http.Req):http.Res!ApiErr{
 
 **Phase 2**
 ```
-M=api;
-I=http:std.http;
-I=json:std.json;
+m=api;
+i=http:std.http;
+i=json:std.json;
 
-T=$apierr{
+t=$apierr{
   $notfound:u64;
   $badrequest:$str
 };
 
-F=handle(req:http.$req):http.$res!$apierr{
+f=handle(req:http.$req):http.$res!$apierr{
   let id=json.dec(req.body)!$apierr.$badrequest;
   let users=$($str:i64)("alice":1;"bob":2);
   <http.$res.ok(json.enc(users));
@@ -227,7 +227,7 @@ The purpose-built Phase 2 tokenizer merges common patterns into single vocabular
 | `$user` | 2-3 | 1 |
 | `$str` | 2 | 1 |
 | `@(` | 2 | 1 |
-| `F=` | 2 | 1 |
+| `f=` | 2 | 1 |
 | `!$err` | 3 | 1 |
 | `<$res.ok` | 4-5 | 1-2 |
 
@@ -237,7 +237,7 @@ The target vocabulary size is 32,768 tokens. The tokenizer specification is fina
 
 Everything not listed above is identical between profiles:
 
-- Keywords: `F`, `T`, `I`, `M`, `if`, `el`, `lp`, `br`, `let`, `mut`, `as`, `rt`
+- Keywords: `f`, `t`, `i`, `m`, `if`, `el`, `lp`, `br`, `let`, `mut`, `as`, `rt`
 - Operators: `+`, `-`, `*`, `/`, `<`, `>`, `=`, `!`, `|`
 - Delimiters: `(`, `)`, `{`, `}`, `;`, `:`, `.`
 - Control flow: `if(){}`, `el{}`, `lp(){}`, `br`

@@ -11,10 +11,10 @@ toke compiles to native binaries, which means it can call C functions directly. 
 
 ### Extern function declarations
 
-An extern function is declared with `F=` but has no body:
+An extern function is declared with `f=` but has no body:
 
 ```
-F=cstrlen(s:*u8):u64;
+f=cstrlen(s:*u8):u64;
 ```
 
 The missing body tells the compiler this function is defined externally (in C or another language) and will be provided at link time.
@@ -24,12 +24,12 @@ The missing body tells the compiler this function is defined externally (in C or
 Once declared, extern functions are called like any other function:
 
 ```
-M=ffidemo;
+m=ffidemo;
 
-F=cstrlen(s:*u8):u64;
-F=cputs(s:*u8):i32;
+f=cstrlen(s:*u8):u64;
+f=cputs(s:*u8):i32;
 
-F=main():i64{
+f=main():i64{
   let msg="Hello from C\0";
   cputs(msg as *u8);
   <0;
@@ -117,16 +117,16 @@ A `$task` is parameterised by the return type of the spawned function. If `fetch
 ### Concurrent HTTP requests
 
 ```
-M=parallel;
-I=http:std.http;
-I=io:std.io;
+m=parallel;
+i=http:std.http;
+i=io:std.io;
 
-F=fetch(url:$str):$str!http.$err{
+f=fetch(url:$str):$str!http.$err{
   let res=http.get(url)!http.$err;
   <res.body;
 };
 
-F=main():i64{
+f=main():i64{
   let t1=spawn(fetch);
   let t2=spawn(fetch);
   let t3=spawn(fetch);
@@ -165,7 +165,7 @@ Arena blocks (`{arena ...}`) are a planned Phase 2 feature. The syntax is suppor
 By default, all allocations within a function are freed when the function returns. Arena blocks create shorter-lived allocation regions:
 
 ```
-F=processLargeData(items:@($str)):$str{
+f=processLargeData(items:@($str)):$str{
   let result=mut."";
   lp(let i=0;i<items.len;i=i+1){
     {arena
@@ -202,7 +202,7 @@ The compiler prevents use-after-free at the arena boundary.
 Import declarations will support version strings in a future specification:
 
 ```
-I=http:std.http "1.2";
+i=http:std.http "1.2";
 ```
 
 This pins the import to a specific version of the module. Version resolution and package registry semantics are deferred to a later version of the spec.
@@ -211,7 +211,7 @@ This pins the import to a specific version of the module. Version resolution and
 
 ### Exercise 1: Cast practice
 
-Write a function `F=stats(arr:@(i64)):void` that computes and prints:
+Write a function `f=stats(arr:@(i64)):void` that computes and prints:
 - The sum (as i64)
 - The count (as i64)
 - The average (as f64 -- cast sum and count before dividing)
@@ -226,7 +226,7 @@ Write a function that processes an array of 1000 strings. Use an arena block ins
 
 ## Key takeaways
 
-- Extern functions (`F=` with no body) declare C functions for FFI
+- Extern functions (`f=` with no body) declare C functions for FFI
 - Pointer types (`*T`) are for FFI only -- not used in pure toke code
 - `as` performs explicit type casts -- no implicit conversions exist
 - `spawn(func)` starts concurrent tasks; `await(task)` retrieves their results

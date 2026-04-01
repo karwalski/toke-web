@@ -23,9 +23,9 @@ This lesson ties together modules, functions, types, error handling, collections
 
 ```
 bm/
-  main.tk       M=bm.main       -- CLI entry point and argument parsing
-  store.tk      M=bm.store      -- Bookmark storage, load/save, CRUD operations
-  model.tk      M=bm.model      -- Type definitions
+  main.tk       m=bm.main       -- CLI entry point and argument parsing
+  store.tk      m=bm.store      -- Bookmark storage, load/save, CRUD operations
+  model.tk      m=bm.model      -- Type definitions
 ```
 
 Three files, each with a clear responsibility.
@@ -37,21 +37,21 @@ The model module defines the core types:
 `bm/model.tk`:
 
 ```
-M=bm.model;
+m=bm.model;
 
-T=$bookmark{
+t=$bookmark{
   id:u64;
   url:$str;
   title:$str;
   tags:@($str)
 };
 
-T=$bookmarkdb{
+t=$bookmarkdb{
   bookmarks:@($bookmark);
   nextId:u64
 };
 
-T=$bmerr{
+t=$bmerr{
   $fileerr:$str;
   $parseerr:$str;
   $notfound:u64
@@ -65,11 +65,11 @@ The interface file for this module would be:
 `bm/model.tki`:
 
 ```
-M=bm.model;
+m=bm.model;
 
-T=$bookmark{id:u64;url:$str;title:$str;tags:@($str)};
-T=$bookmarkdb{bookmarks:@($bookmark);nextId:u64};
-T=$bmerr{$fileerr:$str;$parseerr:$str;$notfound:u64};
+t=$bookmark{id:u64;url:$str;title:$str;tags:@($str)};
+t=$bookmarkdb{bookmarks:@($bookmark);nextId:u64};
+t=$bmerr{$fileerr:$str;$parseerr:$str;$notfound:u64};
 ```
 
 ## Step 2: Build the store
@@ -79,17 +79,17 @@ The store module handles persistence and CRUD operations:
 `bm/store.tk`:
 
 ```
-M=bm.store;
-I=file:std.file;
-I=json:std.json;
-I=str:std.str;
-I=m:bm.model;
+m=bm.store;
+i=file:std.file;
+i=json:std.json;
+i=str:std.str;
+i=m:bm.model;
 
-F=dbPath():$str{
+f=dbPath():$str{
   <"bookmarks.json";
 };
 
-F=load():m.$bookmarkdb!m.$bmerr{
+f=load():m.$bookmarkdb!m.$bmerr{
   if(!file.exists(dbPath())){
     <m.$bookmarkdb{bookmarks:@();nextId:1};
   };
@@ -98,12 +98,12 @@ F=load():m.$bookmarkdb!m.$bmerr{
   <db;
 };
 
-F=save(db:m.$bookmarkdb):void!m.$bmerr{
+f=save(db:m.$bookmarkdb):void!m.$bmerr{
   let data=json.pretty(db);
   file.write(dbPath();data)!m.$bmerr;
 };
 
-F=add(db:m.$bookmarkdb;url:$str;title:$str;tags:@($str)):m.$bookmarkdb{
+f=add(db:m.$bookmarkdb;url:$str;title:$str;tags:@($str)):m.$bookmarkdb{
   let bm=m.$bookmark{
     id:db.nextId;
     url:url;
@@ -117,7 +117,7 @@ F=add(db:m.$bookmarkdb;url:$str;title:$str;tags:@($str)):m.$bookmarkdb{
   };
 };
 
-F=delete(db:m.$bookmarkdb;id:u64):m.$bookmarkdb!m.$bmerr{
+f=delete(db:m.$bookmarkdb;id:u64):m.$bookmarkdb!m.$bmerr{
   let found=mut.false;
   let result=mut.@();
   lp(let i=0;i<db.bookmarks.len;i=i+1){
@@ -136,7 +136,7 @@ F=delete(db:m.$bookmarkdb;id:u64):m.$bookmarkdb!m.$bmerr{
   };
 };
 
-F=search(db:m.$bookmarkdb;query:$str):@(m.$bookmark){
+f=search(db:m.$bookmarkdb;query:$str):@(m.$bookmark){
   let q=str.lower(query);
   let result=mut.@();
   lp(let i=0;i<db.bookmarks.len;i=i+1){
@@ -176,13 +176,13 @@ The main module handles argument parsing and dispatches to the store:
 `bm/main.tk`:
 
 ```
-M=bm.main;
-I=io:std.io;
-I=str:std.str;
-I=store:bm.store;
-I=m:bm.model;
+m=bm.main;
+i=io:std.io;
+i=str:std.str;
+i=store:bm.store;
+i=m:bm.model;
 
-F=printBookmark(bm:m.$bookmark):void{
+f=printBookmark(bm:m.$bookmark):void{
   let tagsStr=str.join(bm.tags;", ");
   io.println("  [\(bm.id as $str)] \(bm.title)");
   io.println("      \(bm.url)");
@@ -191,7 +191,7 @@ F=printBookmark(bm:m.$bookmark):void{
   };
 };
 
-F=printBookmarks(bms:@(m.$bookmark)):void{
+f=printBookmarks(bms:@(m.$bookmark)):void{
   if(bms.len=0){
     io.println("  (no bookmarks)");
   }el{
@@ -201,7 +201,7 @@ F=printBookmarks(bms:@(m.$bookmark)):void{
   };
 };
 
-F=cmdAdd(url:$str;title:$str;tagStr:$str):void{
+f=cmdAdd(url:$str;title:$str;tagStr:$str):void{
   store.load()|{
     Ok:db  {
       let tags=str.split(tagStr;",");
@@ -222,7 +222,7 @@ F=cmdAdd(url:$str;title:$str;tagStr:$str):void{
   };
 };
 
-F=cmdList():void{
+f=cmdList():void{
   store.load()|{
     Ok:db  {
       io.println("Bookmarks (\(db.bookmarks.len as $str) total):");
@@ -232,7 +232,7 @@ F=cmdList():void{
   };
 };
 
-F=cmdSearch(query:$str):void{
+f=cmdSearch(query:$str):void{
   store.load()|{
     Ok:db  {
       let results=store.search(db;query);
@@ -243,7 +243,7 @@ F=cmdSearch(query:$str):void{
   };
 };
 
-F=cmdDelete(idStr:$str):void{
+f=cmdDelete(idStr:$str):void{
   store.load()|{
     Ok:db  {
       let id=str.toInt(idStr) as u64;
@@ -265,7 +265,7 @@ F=cmdDelete(idStr:$str):void{
   };
 };
 
-F=usage():void{
+f=usage():void{
   io.println("bm - bookmark manager");
   io.println("");
   io.println("Usage:");
@@ -275,7 +275,7 @@ F=usage():void{
   io.println("  bm delete <id>                 Delete a bookmark by ID");
 };
 
-F=main():i64{
+f=main():i64{
   io.println("bm - Interactive bookmark manager");
   io.println("Commands: add, list, search, delete, quit");
   io.println("");

@@ -10,15 +10,15 @@ description: "Learn module declarations, function syntax, parameters, return typ
 Every toke source file begins with exactly one module declaration. No exceptions.
 
 ```
-M=hello;
+m=hello;
 ```
 
-The `M=` keyword declares the module name. The name is a dot-separated path of lowercase identifiers. The semicolon terminates the declaration.
+The `m=` keyword declares the module name. The name is a dot-separated path of lowercase identifiers. The semicolon terminates the declaration.
 
 ```
-M=hello;
-M=api.user;
-M=app.util.math;
+m=hello;
+m=api.user;
+m=app.util.math;
 ```
 
 These are single-segment, multi-segment, and deeper-nested module paths respectively.
@@ -27,12 +27,12 @@ The module name identifies the file within the project. Two files with the same 
 
 ## Your first function
 
-Functions are declared with `F=`:
+Functions are declared with `f=`:
 
 ```
-M=hello;
+m=hello;
 
-F=main():i64{
+f=main():i64{
   <0;
 };
 ```
@@ -41,7 +41,7 @@ Let's break this down:
 
 | Part | Meaning |
 |------|---------|
-| `F=` | Function declaration keyword |
+| `f=` | Function declaration keyword |
 | `main` | Function name |
 | `()` | Parameter list (empty here) |
 | `:i64` | Return type |
@@ -63,9 +63,9 @@ echo $?  # prints 0
 Functions take typed parameters separated by semicolons:
 
 ```
-M=math;
+m=math;
 
-F=add(a:i64;b:i64):i64{
+f=add(a:i64;b:i64):i64{
   <a+b;
 };
 ```
@@ -77,9 +77,9 @@ The return type follows the closing parenthesis after a colon: `:i64`.
 Here is a function with more parameters:
 
 ```
-M=geometry;
+m=geometry;
 
-F=rectArea(width:f64;height:f64):f64{
+f=rectArea(width:f64;height:f64):f64{
   <width*height;
 };
 ```
@@ -89,10 +89,10 @@ F=rectArea(width:f64;height:f64):f64{
 Use the `void` return type for functions that perform side effects but return no value:
 
 ```
-M=greet;
-I=io:std.io;
+m=greet;
+i=io:std.io;
 
-F=sayHello(name:$str):void{
+f=sayHello(name:$str):void{
   io.println("Hello, \(name)!");
 };
 ```
@@ -104,17 +104,17 @@ Note the string interpolation syntax: `\(expr)` inside a string literal inserts 
 A file can contain multiple function declarations. They are called in the usual way:
 
 ```
-M=math;
+m=math;
 
-F=square(x:i64):i64{
+f=square(x:i64):i64{
   <x*x;
 };
 
-F=sumOfSquares(a:i64;b:i64):i64{
+f=sumOfSquares(a:i64;b:i64):i64{
   <square(a)+square(b);
 };
 
-F=main():i64{
+f=main():i64{
   let result=sumOfSquares(3;4);
   <0;
 };
@@ -155,17 +155,17 @@ The `mut.` prefix marks the binding as mutable. After creation, you reassign wit
 Here is a complete program that computes the absolute value of an integer:
 
 ```
-M=abs;
-I=io:std.io;
+m=abs;
+i=io:std.io;
 
-F=abs(n:i64):i64{
+f=abs(n:i64):i64{
   if(n<0){
     <0-n;
   };
   <n;
 };
 
-F=main():i64{
+f=main():i64{
   let val=abs(0-42);
   io.println(val as $str);
   <0;
@@ -176,7 +176,7 @@ Key observations:
 
 - The module declaration comes first
 - Imports come next (before any functions)
-- Functions are declared with `F=`
+- Functions are declared with `f=`
 - `<` returns a value
 - `;` terminates every statement, every block, and every declaration
 - `if` checks a condition; we will cover it fully in the next lesson
@@ -197,22 +197,22 @@ Declarations must appear in this order. You cannot put an import after a functio
 
 ### Exercise 1: Temperature converter
 
-Write a function `F=cToF(c:f64):f64` that converts Celsius to Fahrenheit using the formula `F = C * 9/5 + 32`. Write a `main` function that converts 100 degrees and prints the result.
+Write a function `f=cToF(c:f64):f64` that converts Celsius to Fahrenheit using the formula `F = C * 9/5 + 32`. Write a `main` function that converts 100 degrees and prints the result.
 
 ### Exercise 2: Distance formula
 
-Write a function `F=distance(x1:f64;y1:f64;x2:f64;y2:f64):f64` that computes the Euclidean distance between two points. You can use `(dx*dx+dy*dy)` for now -- we will cover square root from the stdlib later.
+Write a function `f=distance(x1:f64;y1:f64;x2:f64;y2:f64):f64` that computes the Euclidean distance between two points. You can use `(dx*dx+dy*dy)` for now -- we will cover square root from the stdlib later.
 
 ### Exercise 3: Greeting
 
 Write a module `greet` with:
-- A function `F=greet(name:$str;times:i64):void` that prints "Hello, {name}!" the specified number of times (use a mutable counter and `if` to check the count -- we will cover loops properly next lesson)
+- A function `f=greet(name:$str;times:i64):void` that prints "Hello, {name}!" the specified number of times (use a mutable counter and `if` to check the count -- we will cover loops properly next lesson)
 - A `main` function that calls `greet("World";3)`
 
 ## Key takeaways
 
-- Every file starts with `M=name;`
-- Functions use `F=name(params):$rettype{body};`
+- Every file starts with `m=name;`
+- Functions use `f=name(params):$rettype{body};`
 - Parameters are separated by `;`, not commas
 - `<expr;` returns a value from a function
 - `let x=expr;` creates an immutable binding; `let x=mut.expr;` creates a mutable one

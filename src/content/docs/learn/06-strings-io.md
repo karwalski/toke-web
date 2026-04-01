@@ -44,7 +44,7 @@ The expression inside `\(...)` must resolve to a `$str`-compatible type. Use `as
 Import the string module to access string functions:
 
 ```
-I=str:std.str;
+i=str:std.str;
 ```
 
 ### Length
@@ -100,7 +100,7 @@ let trimmed=str.trim("  hello  ");
 ## Console I/O with std.io
 
 ```
-I=io:std.io;
+i=io:std.io;
 ```
 
 ### Printing
@@ -119,18 +119,18 @@ let line=io.readline();
 ## File I/O with std.file
 
 ```
-I=file:std.file;
+i=file:std.file;
 ```
 
 ### Reading a file
 
 ```
-T=$fileerr{
+t=$fileerr{
   $notfound:$str;
   $readfailed:$str
 };
 
-F=readConfig(path:$str):$str!$fileerr{
+f=readConfig(path:$str):$str!$fileerr{
   let content=file.read(path)!$fileerr;
   <content;
 };
@@ -141,7 +141,7 @@ F=readConfig(path:$str):$str!$fileerr{
 ### Writing a file
 
 ```
-F=saveData(path:$str;data:$str):void!$fileerr{
+f=saveData(path:$str;data:$str):void!$fileerr{
   file.write(path;data)!$fileerr;
 };
 ```
@@ -151,7 +151,7 @@ F=saveData(path:$str;data:$str):void!$fileerr{
 ### Appending to a file
 
 ```
-F=log(path:$str;msg:$str):void!$fileerr{
+f=log(path:$str;msg:$str):void!$fileerr{
   file.append(path;msg)!$fileerr;
 };
 ```
@@ -165,15 +165,15 @@ let exists=file.exists("config.json");
 ## JSON with std.json
 
 ```
-I=json:std.json;
+i=json:std.json;
 ```
 
 ### Encoding (struct to JSON string)
 
 ```
-T=$user{id:u64;name:$str;email:$str};
+t=$user{id:u64;name:$str;email:$str};
 
-F=userToJson(u:$user):$str{
+f=userToJson(u:$user):$str{
   <json.enc(u);
 };
 ```
@@ -181,12 +181,12 @@ F=userToJson(u:$user):$str{
 ### Decoding (JSON string to struct)
 
 ```
-T=$jsonerr{
+t=$jsonerr{
   $parsefailed:$str;
   $missingfield:$str
 };
 
-F=jsonToUser(s:$str):$user!$jsonerr{
+f=jsonToUser(s:$str):$user!$jsonerr{
   let u=json.dec(s)!$jsonerr;
   <u;
 };
@@ -197,7 +197,7 @@ F=jsonToUser(s:$str):$user!$jsonerr{
 For JSON whose structure you do not know at compile time, use `json.get` to extract fields:
 
 ```
-F=getName(raw:$str):$str!$jsonerr{
+f=getName(raw:$str):$str!$jsonerr{
   let obj=json.dec(raw)!$jsonerr;
   let name=json.get(obj;"name")!$jsonerr;
   <name as $str;
@@ -209,16 +209,16 @@ F=getName(raw:$str):$str!$jsonerr{
 Here is a complete program that reads a file and counts word frequencies:
 
 ```
-M=wc;
-I=io:std.io;
-I=file:std.file;
-I=str:std.str;
+m=wc;
+i=io:std.io;
+i=file:std.file;
+i=str:std.str;
 
-T=$wcerr{
+t=$wcerr{
   $fileerr:$str
 };
 
-F=countWords(text:$str):$($str:i64){
+f=countWords(text:$str):$($str:i64){
   let words=str.split(text;" ");
   let freq=mut.$($str:i64)();
   lp(let i=0;i<words.len;i=i+1){
@@ -234,7 +234,7 @@ F=countWords(text:$str):$($str:i64){
   <freq;
 };
 
-F=main():i64{
+f=main():i64{
   file.read("input.txt")|{
     Ok:content  {
       let freq=countWords(content);
@@ -258,13 +258,13 @@ Write a program that reads a file and prints the number of lines. Use `str.split
 
 ### Exercise 2: CSV parser
 
-Write a function `F=parseCsv(content:$str):@(@($str))` that splits a CSV string into a 2D array. Split on `"\n"` for rows and `","` for columns.
+Write a function `f=parseCsv(content:$str):@(@($str))` that splits a CSV string into a 2D array. Split on `"\n"` for rows and `","` for columns.
 
 ### Exercise 3: JSON round-trip
 
-Define a `T=$config{host:$str;port:i64;debug:bool}` type. Write:
-- `F=saveConfig(path:$str;c:$config):void!$fileerr` that encodes to JSON and writes to a file
-- `F=loadConfig(path:$str):$config!$configerr` that reads a file and decodes from JSON
+Define a `t=$config{host:$str;port:i64;debug:bool}` type. Write:
+- `f=saveConfig(path:$str;c:$config):void!$fileerr` that encodes to JSON and writes to a file
+- `f=loadConfig(path:$str):$config!$configerr` that reads a file and decodes from JSON
 
 ## Key takeaways
 

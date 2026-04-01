@@ -8,10 +8,10 @@ description: Write, compile, and run your first toke program step by step.
 Create a file called `hello.tk` with the following contents:
 
 ```
-M=hello;
-I=io:std.io;
+m=hello;
+i=io:std.io;
 
-F=main():i64{
+f=main():i64{
   io.println("Hello, world!");
   <0;
 };
@@ -24,26 +24,26 @@ That is a complete toke program. Let's break it down line by line.
 ### Module declaration
 
 ```
-M=hello;
+m=hello;
 ```
 
-Every toke file starts with a module declaration. `M=` is the module keyword, followed by the module name. The semicolon terminates the declaration. This tells the compiler that this file belongs to the `hello` module.
+Every toke file starts with a module declaration. `m=` is the module keyword, followed by the module name. The semicolon terminates the declaration. This tells the compiler that this file belongs to the `hello` module.
 
 ### Import
 
 ```
-I=io:std.io;
+i=io:std.io;
 ```
 
-`I=` declares an import. The format is `I=alias:module.path;`. Here we import `std.io` (the standard I/O library) and bind it to the local alias `io`. After this line, we can call any function in `std.io` using the `io.` prefix.
+`i=` declares an import. The format is `i=alias:module.path;`. Here we import `std.io` (the standard I/O library) and bind it to the local alias `io`. After this line, we can call any function in `std.io` using the `io.` prefix.
 
 ### Function declaration
 
 ```
-F=main():i64{
+f=main():i64{
 ```
 
-`F=` declares a function. `main` is the function name. The empty parentheses `()` mean it takes no parameters. `:i64` is the return type -- a 64-bit signed integer. The opening `{` begins the function body.
+`f=` declares a function. `main` is the function name. The empty parentheses `()` mean it takes no parameters. `:i64` is the return type -- a 64-bit signed integer. The opening `{` begins the function body.
 
 Every toke program needs a `main` function that returns `i64`. The return value becomes the process exit code.
 
@@ -95,7 +95,7 @@ echo $?
 
 When you ran `tkc hello.tk -o hello`, the compiler executed a five-stage pipeline:
 
-1. **Lexing** -- The source text is converted into a flat stream of tokens. Whitespace is discarded (it has no structural meaning in toke). The lexer identifies keywords like `M`, `F`, `I`, identifiers like `main` and `io`, literals like `"Hello, world!"` and `0`, and symbols like `=`, `:`, `{`, `<`, `;`.
+1. **Lexing** -- The source text is converted into a flat stream of tokens. Whitespace is discarded (it has no structural meaning in toke). The lexer identifies keywords like `m`, `f`, `i`, identifiers like `main` and `io`, literals like `"Hello, world!"` and `0`, and symbols like `=`, `:`, `{`, `<`, `;`.
 
 2. **Parsing** -- The token stream is parsed into an abstract syntax tree (AST). toke's grammar is LL(1), meaning the parser never needs more than one token of lookahead to decide what production to apply. This makes parsing fast and deterministic.
 
@@ -110,14 +110,14 @@ When you ran `tkc hello.tk -o hello`, the compiler executed a five-stage pipelin
 Here is a program that computes the 10th Fibonacci number:
 
 ```
-M=fib;
+m=fib;
 
-F=fib(n:i64):i64{
+f=fib(n:i64):i64{
   if(n<2){<n;};
   <fib(n-1)+fib(n-2);
 };
 
-F=main():i64{
+f=main():i64{
   <fib(10);
 };
 ```

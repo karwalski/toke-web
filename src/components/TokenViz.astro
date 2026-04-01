@@ -1,0 +1,74 @@
+---
+// Token Visualization — shows code with per-token colour highlighting
+// Each "token" in the tokens array gets a cycling background colour
+
+interface Props {
+  code: string;
+  /** Pre-split token boundary strings (from cl100k_base or custom tokenizer) */
+  boundaries: string[];
+  count: number;
+  label: string;
+  variant?: 'toke' | 'toke-p2' | 'other';
+  note?: string;
+}
+
+const { code, boundaries, count, label, variant = 'other', note } = Astro.props;
+
+// 12-colour palette — visually distinct, readable on dark backgrounds
+const palette = [
+  'rgba(74,144,217,0.25)',  'rgba(217,74,122,0.25)', 'rgba(74,217,144,0.25)',
+  'rgba(217,168,74,0.25)',  'rgba(154,74,217,0.25)', 'rgba(74,217,217,0.25)',
+  'rgba(217,85,74,0.25)',   'rgba(122,217,74,0.25)', 'rgba(217,74,200,0.25)',
+  'rgba(74,111,217,0.25)',  'rgba(217,217,74,0.25)', 'rgba(74,184,217,0.25)',
+];
+const borders = [
+  '#4a90d9', '#d94a7a', '#4ad990', '#d9a84a',
+  '#9a4ad9', '#4ad9d9', '#d9554a', '#7ad94a',
+  '#d94ac8', '#4a6fd9', '#d9d94a', '#4ab8d9',
+];
+---
+
+<div class={`token-viz ${variant}`}>
+  <pre class="tv-code"><code>{boundaries.map((text, i) => {
+    const ci = i % 12;
+    const escaped = text;
+    return <span class="tv-tok" style={`background:${palette[ci]};border-bottom:2px solid ${borders[ci]};`}>{escaped}</span>;
+  })}</code></pre>
+  <div class="tv-footer">
+    <span class={`token-badge ${variant}`}>{count} tokens &mdash; {label}</span>
+    {note && <span class="tv-note">{note}</span>}
+  </div>
+</div>
+
+<style>
+.token-viz {
+  margin: 0.5rem 0;
+}
+.tv-code {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  background: var(--sl-color-gray-6, #1a1a2e);
+  border: 1px solid var(--sl-color-gray-5, #2a2a3e);
+  margin: 0;
+}
+.tv-tok {
+  padding: 1px 0;
+  border-radius: 2px;
+  white-space: pre;
+}
+.tv-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+}
+.tv-note {
+  font-size: 0.8rem;
+  color: var(--sl-color-gray-3, #888);
+  font-style: italic;
+}
+</style>

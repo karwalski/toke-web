@@ -54,7 +54,7 @@ This is the only way to chain conditions. One form, no alternatives.
 A common pattern is to use `if` with `<` for guard clauses:
 
 ```
-F=validate(age:i64):bool{
+f=validate(age:i64):bool{
   if(age<0){<false};
   if(age>150){<false};
   <true;
@@ -82,10 +82,10 @@ The three parts are:
 ### Counting loop
 
 ```
-M=count;
-I=io:std.io;
+m=count;
+i=io:std.io;
 
-F=main():i64{
+f=main():i64{
   lp(let i=0;i<5;i=i+1){
     io.println("i = \(i as $str)");
   };
@@ -105,7 +105,7 @@ i = 4
 ### Sum of an array
 
 ```
-F=sum(arr:@(i64)):i64{
+f=sum(arr:@(i64)):i64{
   let acc=mut.0;
   lp(let i=0;i<arr.len;i=i+1){
     acc=acc+arr.get(i);
@@ -134,7 +134,7 @@ lp(let x=0;!done;x=0){
 The `br` keyword exits the innermost loop immediately:
 
 ```
-F=findFirstNeg(arr:@(i64)):i64{
+f=findFirstNeg(arr:@(i64)):i64{
   let result=mut.0-1;
   lp(let i=0;i<arr.len;i=i+1){
     if(arr.get(i)<0){
@@ -178,15 +178,15 @@ The compiler requires every variant to be covered. If you add a variant to a sum
 ### Match on a custom sum type
 
 ```
-M=shapes;
+m=shapes;
 
-T=$shape{
+t=$shape{
   $circle:f64;
   $square:f64;
   $rect:f64
 };
 
-F=describe(s:$shape):$str{
+f=describe(s:$shape):$str{
   <s|{
     $circle:r "Circle";
     $square:side "Square";
@@ -200,7 +200,7 @@ F=describe(s:$shape):$str{
 Match is the primary way to handle errors when you cannot propagate them:
 
 ```
-F=safeGet(arr:@(i64);idx:u64):$str{
+f=safeGet(arr:@(i64);idx:u64):$str{
   <getElement(arr;idx)|{
     Ok:val "Found";
     Err:e "Error: not found"
@@ -215,10 +215,10 @@ We will cover error handling in depth in Lesson 5.
 Here is a more complete example -- a function that classifies numbers in an array:
 
 ```
-M=classify;
-I=io:std.io;
+m=classify;
+i=io:std.io;
 
-F=classify(arr:@(i64)):void{
+f=classify(arr:@(i64)):void{
   let positives=mut.0;
   let negatives=mut.0;
   let zeroes=mut.0;
@@ -254,7 +254,7 @@ Hints:
 
 ### Exercise 2: Find the maximum
 
-Write `F=max(arr:@(i64)):i64` that returns the largest element in an array. Use `lp` and `if`.
+Write `f=max(arr:@(i64)):i64` that returns the largest element in an array. Use `lp` and `if`.
 
 ### Exercise 3: Reverse print
 
@@ -262,7 +262,7 @@ Write a function that prints the elements of an array in reverse order. Use `lp`
 
 ### Exercise 4: Count matches
 
-Write `F=countGreater(arr:@(i64);threshold:i64):i64` that returns how many elements in the array are greater than `threshold`.
+Write `f=countGreater(arr:@(i64);threshold:i64):i64` that returns how many elements in the array are greater than `threshold`.
 
 ## Key takeaways
 

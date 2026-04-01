@@ -8,7 +8,7 @@ description: How to organise multi-file toke projects with modules, imports, and
 Every toke source file begins with a module declaration that identifies where the file sits in the project namespace:
 
 ```
-M=myapp.auth.login;
+m=myapp.auth.login;
 ```
 
 Module paths are dot-separated lowercase identifiers. By convention, the path mirrors the directory structure:
@@ -24,14 +24,14 @@ Each file should export one primary construct (a function, type, or small group 
 
 ## Import syntax
 
-Import other modules with `I=alias:module.path;`:
+Import other modules with `i=alias:module.path;`:
 
 ```
-M=myapp.api.handler;
-I=auth:myapp.auth;
-I=db:myapp.db;
-I=http:std.http;
-I=json:std.json;
+m=myapp.api.handler;
+i=auth:myapp.auth;
+i=db:myapp.db;
+i=http:std.http;
+i=json:std.json;
 ```
 
 The alias before the colon is the local name you use in code. The path after the colon is the fully qualified module path.
@@ -44,7 +44,7 @@ Rules:
 After importing, access the module's exports through the alias:
 
 ```
-F=handle(req:http.$req):http.$res!$apierr{
+f=handle(req:http.$req):http.$res!$apierr{
   let body = json.dec(req.body)!$apierr;
   let user = auth.verify(req.token)!$apierr;
   let data = db.get(user.id)!$apierr;
@@ -63,14 +63,14 @@ When you compile a toke source file, `tkc` can emit an interface file (`.tki`) t
 This produces `src/auth/login.tki` containing something like:
 
 ```
-M=myapp.auth.login;
+m=myapp.auth.login;
 
-T=$loginerr{
+t=$loginerr{
   BadCredentials:$str;
   AccountLocked:$str
 };
 
-F=login(username:$str;password:$str):$session!$loginerr;
+f=login(username:$str;password:$str):$session!$loginerr;
 ```
 
 Interface files serve two purposes:
@@ -86,17 +86,17 @@ A typical toke project looks like this:
 ```
 myapp/
   src/
-    myapp.tk          # M=myapp;         -- entry point with main()
+    myapp.tk          # m=myapp;         -- entry point with main()
     auth/
-      auth.tk         # M=myapp.auth;    -- auth types and helpers
-      login.tk        # M=myapp.auth.login;
-      session.tk      # M=myapp.auth.session;
+      auth.tk         # m=myapp.auth;    -- auth types and helpers
+      login.tk        # m=myapp.auth.login;
+      session.tk      # m=myapp.auth.session;
     db/
-      db.tk           # M=myapp.db;      -- database access
-      query.tk        # M=myapp.db.query;
+      db.tk           # m=myapp.db;      -- database access
+      query.tk        # m=myapp.db.query;
     api/
-      handler.tk      # M=myapp.api.handler;
-      routes.tk       # M=myapp.api.routes;
+      handler.tk      # m=myapp.api.handler;
+      routes.tk       # m=myapp.api.routes;
   build/
     myapp             # compiled binary
   Makefile
@@ -112,7 +112,7 @@ Pass all source files to `tkc`:
 ./build/tkc src/myapp.tk src/auth/*.tk src/db/*.tk src/api/*.tk -o build/myapp
 ```
 
-The compiler resolves imports by matching `I=alias:module.path` declarations against the `M=module.path` declarations in the provided source files.
+The compiler resolves imports by matching `i=alias:module.path` declarations against the `m=module.path` declarations in the provided source files.
 
 For larger projects, use a Makefile:
 

@@ -33,7 +33,7 @@ toke achieves token efficiency through deliberate constraint at every level of t
 
 The double-quote `"` appears in source as the string literal delimiter but is not a structural symbol -- it is consumed during lexing and never produces a token, similar to how whitespace separates tokens but carries no structural meaning.
 
-**12 keywords.** Where Python has 35 keywords and JavaScript has 64 reserved words, toke has 12: `M` (module), `F` (function), `T` (type), `I` (import), `if`, `el`, `lp` (loop), `br` (break), `let`, `mut`, `as`, `rt` (return). Single-character keywords for declarations. Two-character keywords for control flow.
+**12 keywords.** Where Python has 35 keywords and JavaScript has 64 reserved words, toke has 12: `m` (module), `f` (function), `t` (type), `i` (import), `if`, `el`, `lp` (loop), `br` (break), `let`, `mut`, `as`, `rt` (return). Single-character keywords for declarations. Two-character keywords for control flow.
 
 **LL(1) grammar.** The parser requires exactly one token of lookahead. No backtracking. No ambiguity. Every syntactic position has exactly one valid interpretation. This means the model's generation space contains fewer invalid programs.
 

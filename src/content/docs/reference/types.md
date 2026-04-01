@@ -72,7 +72,7 @@ let ages: $($str:i64) = $("alice": 30; "bob": 25);
 A sum type representing either a success value of type `T` or an error.
 
 ```toke
-F=readFile(path: $str): $str!$err {
+f=readFile(path: $str): $str!$err {
     let content = file.read(path)!$err;
     < content
 };
@@ -89,8 +89,8 @@ F=readFile(path: $str): $str!$err {
 The return type of `spawn(f)`, representing an asynchronous task that will produce a value of type `T`.
 
 ```toke
-F=work(): i64 { < 42 };
-F=main(): i64 {
+f=work(): i64 { < 42 };
+f=main(): i64 {
     let t: Task = spawn(work);
     let result: i64 = await(t);
     < result
@@ -106,8 +106,8 @@ F=main(): i64 {
 Raw pointer types for foreign function interface declarations.
 
 ```toke
-F=malloc(size: u64): *u8;
-F=free(ptr: *u8): void;
+f=malloc(size: u64): *u8;
+f=free(ptr: *u8): void;
 ```
 
 - Pointer types are **only** valid in extern (bodyless) function signatures.
@@ -120,12 +120,12 @@ Function declarations have type `func` internally. Functions are first-class val
 
 ### Struct Types
 
-Named product types declared with `T=`.
+Named product types declared with `t=`.
 
 ```toke
-T=$point{x: i64; y: i64};
+t=$point{x: i64; y: i64};
 
-F=origin(): $point {
+f=origin(): $point {
     < $point{x: 0; y: 0}
 };
 ```

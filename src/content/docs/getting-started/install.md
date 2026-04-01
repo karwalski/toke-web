@@ -66,7 +66,7 @@ You should see the compiler version and target triple printed to stdout.
 Create a minimal toke program and compile it:
 
 ```bash
-echo 'M=test; F=main():i64{<42};' > test.tk
+echo 'm=test; f=main():i64{<42};' > test.tk
 ./build/tkc test.tk -o test
 ./test; echo $?
 ```

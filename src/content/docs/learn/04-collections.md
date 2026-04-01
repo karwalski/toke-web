@@ -28,10 +28,10 @@ The type of an array is written `@(T)` where `T` is the element type:
 The parameter type `@($str)` denotes an array of strings. The return type `@(i64)` denotes an array of integers.
 
 ```
-F=process(items:@($str)):void{
+f=process(items:@($str)):void{
 };
 
-F=makeNumbers():@(i64){
+f=makeNumbers():@(i64){
   <@(10;20;30);
 };
 ```
@@ -63,7 +63,7 @@ Out-of-bounds access is a runtime trap (RT001) -- the program terminates with a 
 Use `lp` with an index variable:
 
 ```
-F=printAll(arr:@($str)):void{
+f=printAll(arr:@($str)):void{
   lp(let i=0;i<arr.len;i=i+1){
     io.println(arr.get(i));
   };
@@ -77,7 +77,7 @@ This is the standard iteration pattern in toke. There is no `for-each` or iterat
 To build an array dynamically, start with an empty array and use append operations:
 
 ```
-F=range(n:i64):@(i64){
+f=range(n:i64):@(i64){
   let result=mut.@();
   lp(let i=0;i<n;i=i+1){
     result=result.push(i);
@@ -105,7 +105,7 @@ let empty=$($str:i64)();
 The type of a map is written `$(K:V)` where `K` is the key type and `V` is the value type:
 
 ```
-F=process(lookup:$($str:i64)):void{
+f=process(lookup:$($str:i64)):void{
 };
 ```
 
@@ -155,7 +155,7 @@ let count=ages.len;
 To iterate over a map, retrieve its keys and iterate over that array:
 
 ```
-F=printMap(m:$($str:i64)):void{
+f=printMap(m:$($str:i64)):void{
   let keys=m.keys;
   lp(let i=0;i<keys.len;i=i+1){
     let k=keys.get(i);
@@ -172,10 +172,10 @@ F=printMap(m:$($str:i64)):void{
 Count how many times each word appears:
 
 ```
-M=freq;
-I=io:std.io;
+m=freq;
+i=io:std.io;
 
-F=countFreq(words:@($str)):$($str:i64){
+f=countFreq(words:@($str)):$($str:i64){
   let freq=mut.$($str:i64)();
   lp(let i=0;i<words.len;i=i+1){
     let w=words.get(i);
@@ -193,7 +193,7 @@ F=countFreq(words:@($str)):$($str:i64){
 ### Finding a value in an array
 
 ```
-F=contains(arr:@(i64);target:i64):bool{
+f=contains(arr:@(i64);target:i64):bool{
   lp(let i=0;i<arr.len;i=i+1){
     if(arr.get(i)=target){
       <true;
@@ -208,7 +208,7 @@ Note: equality comparison in toke uses `=` (single equals) in expression context
 ### Array reversal
 
 ```
-F=reverse(arr:@(i64)):@(i64){
+f=reverse(arr:@(i64)):@(i64){
   let result=mut.@();
   let i=mut.arr.len;
   lp(let x=0;i>0;x=0){
@@ -224,8 +224,8 @@ F=reverse(arr:@(i64)):@(i64){
 ### Exercise 1: Sum and average
 
 Write two functions:
-- `F=sum(arr:@(i64)):i64` -- returns the sum of all elements
-- `F=average(arr:@(i64)):f64` -- returns the average as a float (use `as f64` to cast the sum and length)
+- `f=sum(arr:@(i64)):i64` -- returns the sum of all elements
+- `f=average(arr:@(i64)):f64` -- returns the average as a float (use `as f64` to cast the sum and length)
 
 ### Exercise 2: Frequency counter
 
@@ -236,11 +236,11 @@ Write a complete program with module `freq` that:
 
 ### Exercise 3: Array reversal
 
-Write `F=reverse(arr:@($str)):@($str)` that returns a new array with elements in reverse order. Test it with `@("a";"b";"c";"d")`.
+Write `f=reverse(arr:@($str)):@($str)` that returns a new array with elements in reverse order. Test it with `@("a";"b";"c";"d")`.
 
 ### Exercise 4: Merge maps
 
-Write `F=merge(a:$($str:i64);b:$($str:i64)):$($str:i64)` that returns a new map containing all keys from both maps. If a key exists in both, use the value from `b`.
+Write `f=merge(a:$($str:i64);b:$($str:i64)):$($str:i64)` that returns a new map containing all keys from both maps. If a key exists in both, use the value from `b`.
 
 ## Key takeaways
 

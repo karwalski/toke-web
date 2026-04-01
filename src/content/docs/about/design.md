@@ -18,11 +18,11 @@ toke Phase 2 uses exactly 56 structural ASCII characters. No character outside t
 | Lowercase | `a-z` | 26 |
 | Digits | `0-9` | 10 |
 | Symbols | `( ) { } = : . ; + - * / < > ! \| $ @` | 18 |
-| Keywords | `M`, `F`, `T`, `I`, `C` | 2 uppercase chars (single-char keyword positions only) |
+| Keywords | `m`, `f`, `t`, `i`, `C` | 2 lowercase chars (single-char keyword positions only) |
 
 The double-quote `"` appears in source as the string literal delimiter but is not counted among the 18 structural symbols -- it is consumed during lexing and never produces a token, similar to how whitespace separates tokens but carries no structural meaning.
 
-**What is excluded:** whitespace is structurally meaningless (the semicolon is the universal separator). There is no comment syntax -- documentation lives outside source files. Uppercase letters (except in declaration keywords `M`, `F`, `T`, `I`, `C`), `[`, `]`, `#`, `%`, `^`, `&`, `~`, backtick, backslash, single-quote, comma, and question-mark do not appear in structural positions.
+**What is excluded:** whitespace is structurally meaningless (the semicolon is the universal separator). There is no comment syntax -- documentation lives outside source files. Uppercase letters, `[`, `]`, `#`, `%`, `^`, `&`, `~`, backtick, backslash, single-quote, comma, and question-mark do not appear in structural positions.
 
 **Why restricted:** every character in the set must be necessary. Every token in generated output must carry semantic information. A smaller, predictable character set means fewer token boundary splits in BPE tokenizers and a tighter generation space for the model. The `$` and `@` sigils replace uppercase type names (`$user` instead of `User`) and bracket-based array syntax (`@(T)` instead of `[T]`), producing forms that BPE training absorbs into single merged tokens.
 
@@ -41,10 +41,10 @@ toke reserves exactly 12 identifiers as keywords. For comparison, Python has 35 
 
 | Keyword | Role | Why it exists |
 |---|---|---|
-| `M` | Module declaration | Every source file begins with `M=module.path;`. Identifies the compilation unit. |
-| `F` | Function definition | `F=name(args):$returntype{body};` -- the only way to define a function. |
-| `T` | Type definition | `T=$name{fields};` -- the only way to define a struct type. |
-| `I` | Import declaration | `I=alias:module.path;` -- explicit aliased imports, no wildcards. |
+| `m` | Module declaration | Every source file begins with `m=module.path;`. Identifies the compilation unit. |
+| `f` | Function definition | `f=name(args):$returntype{body};` -- the only way to define a function. |
+| `t` | Type definition | `t=$name{fields};` -- the only way to define a struct type. |
+| `i` | Import declaration | `i=alias:module.path;` -- explicit aliased imports, no wildcards. |
 | `if` | Conditional branch | `if condition{body}` -- standard conditional. |
 | `el` | Else branch | Follows the closing `}` of an `if` block. Two characters instead of four. |
 | `lp` | Loop | The single loop construct. No `for`, `while`, `do`, or `foreach` variants. |
@@ -54,7 +54,7 @@ toke reserves exactly 12 identifiers as keywords. For comparison, Python has 35 
 | `as` | Explicit type cast | No implicit conversions. Every cast is visible in the source. |
 | `rt` | Return (long form) | Equivalent to the `<` operator. Two characters instead of six. |
 
-Single uppercase characters for declarations (`M`, `F`, `T`, `I`). Two-character lowercase for control flow (`if`, `el`, `lp`, `br`). Three-character lowercase for bindings (`let`, `mut`). Every keyword is as short as it can be while remaining unambiguous.
+Single lowercase characters for declarations (`m`, `f`, `t`, `i`). Two-character lowercase for control flow (`if`, `el`, `lp`, `br`). Three-character lowercase for bindings (`let`, `mut`). Every keyword is as short as it can be while remaining unambiguous.
 
 ## Explicit Everything
 
@@ -98,7 +98,7 @@ This means the generate-compile-repair loop does not require the model to parse 
 
 ## The Tradeoff
 
-toke is more concise than Python, but not less readable. The syntax is compressed, not obfuscated. A developer can read `F=fib(n:i64):i64{?n<2{<n};<fib(n-1)+fib(n-2)};` and understand it -- it is a function named `fib` that takes an integer and returns an integer.
+toke is more concise than Python, but not less readable. The syntax is compressed, not obfuscated. A developer can read `f=fib(n:i64):i64{?n<2{<n};<fib(n-1)+fib(n-2)};` and understand it -- it is a function named `fib` that takes an integer and returns an integer.
 
 The real tradeoff is breadth. toke does not have the ecosystem of Python or the flexibility of JavaScript. It is not designed to. It is designed to do one thing exceptionally well: be the most efficient language an LLM can generate, compile, and repair.
 

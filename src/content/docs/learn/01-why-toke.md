@@ -27,8 +27,8 @@ Under the `cl100k_base` tokenizer (used by GPT-4 and similar models), this is ap
 Here is the same function in toke:
 
 ```
-M=fib;
-F=fib(n:i64):i64{
+m=fib;
+f=fib(n:i64):i64{
   if(n<2){<n};
   <fib(n-1)+fib(n-2);
 };
@@ -38,7 +38,7 @@ This is approximately **47 tokens** under the same tokenizer. That is a **3.3x r
 
 The savings come from:
 
-- **`F=` instead of `def`** -- single-character keyword
+- **`f=` instead of `def`** -- single-character keyword
 - **`<` instead of `return`** -- one character, not six
 - **`if(cond){body}` instead of `if cond:\n    body`** -- no indentation tokens, no colon
 - **`i64` instead of `int`** -- explicit width, same token count
@@ -78,7 +78,7 @@ func sum(arr []int) int {
 
 **toke (approx. 38 tokens):**
 ```
-F=sum(arr:@(i64)):i64{
+f=sum(arr:@(i64)):i64{
   let acc=mut.0;
   lp(let i=0;i<arr.len;i=i+1){
     acc=acc+arr.get(i);
@@ -105,12 +105,12 @@ def get_user(id):
 
 **toke (approx. 65 tokens):**
 ```
-M=api.user;
-I=http:std.http;
-I=db:std.db;
-I=json:std.json;
+m=api.user;
+i=http:std.http;
+i=db:std.db;
+i=json:std.json;
 
-F=getUser(req:http.$req):http.$res!$apierr{
+f=getUser(req:http.$req):http.$res!$apierr{
   let id=req.param("id") as u64;
   let user=db.one("SELECT * FROM users WHERE id=?";@(id))!$apierr;
   <http.$res.ok(json.enc(user));
@@ -138,7 +138,7 @@ Humans can read and write toke -- it is designed to be learnable -- but its prim
 toke achieves token efficiency through deliberate constraints:
 
 - **56-character set** -- lowercase letters, digits, and 18 symbols. No uppercase, no `#`, `%`, `^`, `&`, `~`
-- **12 keywords** -- `F`, `T`, `I`, `M`, `if`, `el`, `lp`, `br`, `let`, `mut`, `as`, `rt`
+- **12 keywords** -- `f`, `t`, `i`, `m`, `if`, `el`, `lp`, `br`, `let`, `mut`, `as`, `rt`
 - **One way to do everything** -- no synonym constructs, no optional syntax
 - **LL(1) grammar** -- deterministic parsing with one token of lookahead
 - **Semicolons terminate everything** -- no whitespace-as-syntax
@@ -161,7 +161,7 @@ def max_of_three(a: int, b: int, c: int) -> int:
 ```
 
 1. Count the approximate tokens (you can use OpenAI's tokenizer tool or estimate: roughly 1 token per word/symbol/number)
-2. Rewrite it in toke using what you know so far (`F=`, `if`, `el`, `<`)
+2. Rewrite it in toke using what you know so far (`f=`, `if`, `el`, `<`)
 3. Count the toke tokens and compare
 
 Do not worry about getting the syntax perfectly right yet -- the next lesson covers it in detail. The goal is to build intuition for where the savings come from.

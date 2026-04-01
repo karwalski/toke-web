@@ -139,7 +139,7 @@ MatchArm    = SigilIdent , ":" , Ident , Expr ;
 
 All of the following are identical in Phase 1 and Phase 2:
 
-- **Module structure:** `M=`, `I=`, `T=`, `C=`, `F=` declarations
+- **Module structure:** `m=`, `i=`, `t=`, `c=`, `f=` declarations
 - **Function declarations:** parameter lists, return types, bodies
 - **Statements:** `let`, `mut`, assignment, return (`<`)
 - **Control flow:** `if(){}`, `el{}`, `lp(){}`, `br`
