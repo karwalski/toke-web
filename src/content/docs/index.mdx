@@ -55,18 +55,6 @@ Each colour below represents one token. Fewer colours = fewer tokens = lower cos
   toke uses a 56-character set with <code>$</code> sigils for types and <code>@</code> for arrays. A purpose-built BPE tokenizer trained on toke programs learns that patterns like <code>let&nbsp;p=mut.</code> and <code>lp(let</code> always appear together — encoding them as single tokens. <em>These token boundaries are illustrative of the target efficiency.</em>
 </div>
   </TabItem>
-  <TabItem label="How it was built (Phase 1, 52 tokens)">
-<TokenViz
-  code="M=arrproduct;F=product(arr:[u64]):u64{let p=mut.1;let q=arr.len;lp(let i=0;i<q;i=i+1){p=p*arr[i];};<p};"
-  boundaries={["M","=","arr","product",";","F","=","product","(arr",":[","u","64","]):","u","64","{","let"," p","=","mut",".","1",";","let"," q","=","arr",".len",";","lp","(let"," i","=","0",";i","<","q",";i","=i","+","1","){","p","=p","*","arr","[i","];","};","<","p","};",]}
-  count={52}
-  label="cl100k — complete program"
-  variant="toke"
-/>
-<div class="phase-note">
-  The training corpus was built using an 80-character profile compatible with existing LLM tokenizers (cl100k_base). This validated the language design before the purpose-built tokenizer was trained. Programs are then mechanically transformed to the production 56-character encoding above. toke has no significant whitespace — programs are fully compact.
-</div>
-  </TabItem>
   <TabItem label="Python (30 / 68 tokens)">
 <TokenViz
   code="def product(arr: list[int]) -> int: ..."
@@ -118,18 +106,6 @@ Real-world code isn't minimal. Teams use documentation comments, descriptive nam
 />
 <div class="phase-note">
   toke has no comments and no best-practices overhead. The program <em>is</em> the documentation — the type signature and structure are unambiguous. The token count is identical regardless of coding style. With toke's custom tokenizer, 19 tokens covers the complete program.
-</div>
-  </TabItem>
-  <TabItem label="How it was built (Phase 1, 52 tokens)">
-<TokenViz
-  code="M=arrproduct;F=product(arr:[u64]):u64{let p=mut.1;let q=arr.len;lp(let i=0;i<q;i=i+1){p=p*arr[i];};<p};"
-  boundaries={["M","=","arr","product",";","F","=","product","(arr",":[","u","64","]):","u","64","{","let"," p","=","mut",".","1",";","let"," q","=","arr",".len",";","lp","(let"," i","=","0",";i","<","q",";i","=i","+","1","){","p","=p","*","arr","[i","];","};","<","p","};",]}
-  count={52}
-  label="cl100k — complete program"
-  variant="toke"
-/>
-<div class="phase-note">
-  The corpus was built using the 80-character Phase 1 profile with existing LLM tokenizers (cl100k_base). Even without a custom tokenizer, toke's zero-comment design means best practices add no overhead — 52 tokens is unchanged regardless of coding style.
 </div>
   </TabItem>
   <TabItem label="Python (101 tokens)">

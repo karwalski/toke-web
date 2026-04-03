@@ -3,7 +3,7 @@ title: "std.http"
 description: "HTTP server and response helpers -- declarative route registration and response constructors."
 ---
 
-**Status: Implemented** -- C runtime backing, available in Phase 2.
+**Status: Implemented** -- C runtime backing.
 
 The `std.http` module provides a declarative HTTP server framework. Routes are registered using verb macros (`http.GET`, `http.POST`, etc.) that bind URL patterns to handler functions. Handlers receive a `$req` and return a `$res`. Response constructor functions simplify building common response shapes.
 

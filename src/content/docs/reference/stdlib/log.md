@@ -3,7 +3,7 @@ title: "std.log"
 description: "Structured logging -- NDJSON log output to stderr with level filtering."
 ---
 
-**Status: Implemented** -- C runtime backing, available in Phase 2.
+**Status: Implemented** -- C runtime backing.
 
 The `std.log` module provides structured logging functions that emit NDJSON (newline-delimited JSON) to stderr. Each log line includes a timestamp, level, message, and optional key-value fields.
 

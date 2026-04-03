@@ -3,7 +3,7 @@ title: "std.file"
 description: "File system operations -- read, write, append, delete, and list files and directories."
 ---
 
-**Status: Implemented** -- C runtime backing, available in Phase 2.
+**Status: Implemented** -- C runtime backing.
 
 The `std.file` module provides functions for reading, writing, and managing files on the local file system. All paths are UTF-8 strings. Operations that can fail return a result type with `FileErr`.
 

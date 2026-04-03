@@ -3,7 +3,7 @@ title: Grammar
 description: Formal grammar reference for the toke language — EBNF production rules, key productions, and operator precedence.
 ---
 
-This page defines the formal grammar of toke Phase 2 (the production language). The grammar is LL(1)-compatible, meaning it can be parsed with a single token of lookahead and no backtracking.
+This page defines the formal grammar of toke. The grammar is LL(1)-compatible, meaning it can be parsed with a single token of lookahead and no backtracking.
 
 ## EBNF Notation
 
@@ -51,7 +51,7 @@ Field       = Ident , ":" , TypeExpr ;
 ### Constant Declarations
 
 ```ebnf
-ConstDecl   = "C" , "=" , Ident , [ ":" , TypeExpr ] , Expr , ";" ;
+ConstDecl   = "c" , "=" , Ident , [ ":" , TypeExpr ] , Expr , ";" ;
 ```
 
 ### Function Declarations
@@ -234,7 +234,7 @@ The toke grammar is designed to be LL(1)-parseable:
 
 Key design choices that enable LL(1) parsing:
 
-- Declaration prefixes (`m=`, `i=`, `t=`, `C=`, `f=`) are unique single-token lookaheads.
+- Declaration prefixes (`m=`, `i=`, `t=`, `c=`, `f=`) are unique single-token lookaheads.
 - Statement prefixes (`let`, `mut`, `<`, `?`, `lp`, `match`, `{arena`) are distinct.
 - The `<` return operator avoids ambiguity with the comparison `<` because return always appears at statement position.
 

@@ -11,7 +11,7 @@ The language defines exactly one canonical syntactic form for each construct. Sy
 
 ## The 56-Character Set
 
-toke Phase 2 uses exactly 56 structural ASCII characters. No character outside this set may appear in a structural position. Arbitrary UTF-8 is permitted inside string literal content.
+toke uses exactly 56 structural ASCII characters. No character outside this set may appear in a structural position. Arbitrary UTF-8 is permitted inside string literal content.
 
 | Class | Characters | Count |
 |---|---|---|

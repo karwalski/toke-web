@@ -1,13 +1,9 @@
 ---
-title: "Phase 2 Type System"
-description: "Type system reference for toke Phase 2 — sigil-prefixed types, reduced character set, and transformation from Phase 1."
+title: "Type Encoding"
+description: "How toke's type system uses sigil-prefixed names and a reduced character set — the encoding transformation from the corpus-generation profile."
 ---
 
 This page documents the Phase 2 type system. Phase 2 uses the same semantic rules as [Phase 1](/reference/types/) but with a different surface syntax: all type names are lowercased and prefixed with `$`.
-
-:::tip
-If you are new to toke, start with the [core Type System](/reference/types/) reference which now uses Phase 2 notation.
-:::
 
 ## Primitive Types
 

@@ -3,7 +3,7 @@ title: "std.process"
 description: "Process management -- spawn child processes, read output, wait for completion, and send signals."
 ---
 
-**Status: Implemented** -- C runtime backing, available in Phase 2.
+**Status: Implemented** -- C runtime backing.
 
 The `std.process` module provides functions for spawning child processes, reading their output, waiting for completion, and sending signals. Process handles are opaque values obtained from `process.spawn`.
 

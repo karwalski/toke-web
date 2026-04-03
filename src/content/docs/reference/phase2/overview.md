@@ -1,6 +1,6 @@
 ---
-title: "Phase 2 Profile Overview"
-description: "How Phase 2 differs from Phase 1 — reduced character set, new sigils, and the purpose-built tokenizer."
+title: "Encoding Design"
+description: "How toke reduces its character set from 80 to 56 characters — the encoding methodology, transformation rules, and token efficiency gains."
 ---
 
 Phase 2 is a reduced-character profile of the toke language designed for use with the purpose-built BPE tokenizer. It expresses the same semantics as Phase 1 but uses only **56 characters**, enabling significantly higher token density during LLM inference.

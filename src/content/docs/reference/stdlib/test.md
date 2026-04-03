@@ -3,7 +3,7 @@ title: "std.test"
 description: "Test assertions -- assert conditions and string equality for writing tests."
 ---
 
-**Status: Implemented** -- C runtime backing, available in Phase 2.
+**Status: Implemented** -- C runtime backing.
 
 The `std.test` module provides assertion functions for writing tests. All functions return `bool` -- `true` (1) on pass, `false` (0) on fail. Failed assertions emit a structured diagnostic to stderr. These functions do not halt execution; the test continues after a failed assertion.
 

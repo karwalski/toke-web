@@ -3,7 +3,7 @@ title: "std.time"
 description: "Time functions -- current time, elapsed measurement, and timestamp formatting."
 ---
 
-**Status: Implemented** -- C runtime backing, available in Phase 2.
+**Status: Implemented** -- C runtime backing.
 
 The `std.time` module provides functions for getting the current time, measuring elapsed time, and formatting timestamps. All timestamps are Unix timestamps in milliseconds (u64). All functions are infallible.
 

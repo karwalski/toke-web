@@ -159,7 +159,7 @@ Full concurrency semantics (channels, select, structured concurrency) are deferr
 ## Arena blocks
 
 :::note
-Arena blocks (`{arena ...}`) are a planned Phase 2 feature. The syntax is supported by the parser but arena-based allocation is not yet implemented in the compiler backend.
+Arena blocks (`{arena ...}`) are a planned feature. The syntax is supported by the parser but arena-based allocation is not yet implemented in the compiler backend.
 :::
 
 By default, all allocations within a function are freed when the function returns. Arena blocks create shorter-lived allocation regions:

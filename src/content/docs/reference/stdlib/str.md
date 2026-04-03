@@ -3,7 +3,7 @@ title: "std.str"
 description: "String operations -- UTF-8 string manipulation, conversion, slicing, and transformation functions."
 ---
 
-**Status: Implemented** -- C runtime backing, available in Phase 2.
+**Status: Implemented** -- C runtime backing.
 
 The `std.str` module provides string manipulation functions for UTF-8 encoded strings. All strings in toke are immutable, null-terminated UTF-8 byte sequences. Functions that transform strings return new allocations.
 

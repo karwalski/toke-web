@@ -1,13 +1,9 @@
 ---
-title: "Phase 2 Grammar"
-description: "Grammar reference for toke Phase 2 — production rule changes from Phase 1, new sigil syntax, and array transformation."
+title: "Grammar Encoding"
+description: "How toke's grammar was encoded from the corpus-generation profile to the production 56-character set — changed production rules and new sigil syntax."
 ---
 
 This page documents the grammar differences between Phase 2 and [Phase 1](/reference/grammar/). Only changed productions are listed — all other rules are identical.
-
-:::tip
-If you are new to toke, start with the [Grammar reference](/reference/grammar/) which now uses Phase 2 notation.
-:::
 
 ## Changed Productions
 

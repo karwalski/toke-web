@@ -3,7 +3,7 @@ title: "std.json"
 description: "JSON encoding and decoding -- parse JSON strings and extract typed fields by key."
 ---
 
-**Status: Implemented** -- C runtime backing, available in Phase 2.
+**Status: Implemented** -- C runtime backing.
 
 The `std.json` module provides functions for parsing JSON strings into an opaque `Json` value and extracting typed fields by key. It also provides a simple encoding function for producing JSON string literals.
 

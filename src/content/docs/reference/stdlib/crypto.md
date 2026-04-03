@@ -3,7 +3,7 @@ title: "std.crypto"
 description: "Cryptographic hash functions -- SHA-256, HMAC-SHA-256, and hex encoding."
 ---
 
-**Status: Implemented** -- C runtime backing, available in Phase 2.
+**Status: Implemented** -- C runtime backing.
 
 The `std.crypto` module provides cryptographic hash and HMAC functions. The implementation is self-contained with no external dependencies beyond libc. All functions are infallible.
 

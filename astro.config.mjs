@@ -57,6 +57,7 @@ export default defineConfig({
 						{ label: 'Type System', slug: 'reference/types' },
 						{ label: 'Grammar', slug: 'reference/grammar' },
 						{ label: 'Error Codes', slug: 'reference/errors' },
+						{ label: 'Data Formats', slug: 'reference/data-formats' },
 						{
 							label: 'Standard Library',
 							autogenerate: { directory: 'reference/stdlib' },
@@ -64,11 +65,11 @@ export default defineConfig({
 					],
 				},
 				{
-					label: 'Background',
+					label: 'How toke Was Built',
 					items: [
-						{ label: 'Phase 2 Overview', slug: 'reference/phase2/overview' },
-						{ label: 'Type System', slug: 'reference/phase2/types' },
-						{ label: 'Grammar', slug: 'reference/phase2/grammar' },
+						{ label: 'Encoding Design', slug: 'reference/phase2/overview' },
+						{ label: 'Type Encoding', slug: 'reference/phase2/types' },
+						{ label: 'Grammar Encoding', slug: 'reference/phase2/grammar' },
 					],
 				},
 				{

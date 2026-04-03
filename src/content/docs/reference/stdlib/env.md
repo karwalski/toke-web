@@ -3,7 +3,7 @@ title: "std.env"
 description: "Environment variables -- read, write, and provide defaults for process environment variables."
 ---
 
-**Status: Implemented** -- C runtime backing, available in Phase 2.
+**Status: Implemented** -- C runtime backing.
 
 The `std.env` module provides functions for reading and writing process environment variables. Keys and values are UTF-8 strings. Keys must not be empty or contain `=` or NUL characters.
 

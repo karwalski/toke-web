@@ -3,7 +3,7 @@ title: "std.db"
 description: "Database operations -- SQL queries via SQLite with typed row accessors."
 ---
 
-**Status: Implemented** -- C runtime backing, available in Phase 2.
+**Status: Implemented** -- C runtime backing.
 
 The `std.db` module provides functions for querying a SQL database. It uses a single implicit connection opened with `db.open` and closed with `db.close`. Query results are returned as `$row` values, with typed accessor functions to extract column values.
 
