@@ -5,7 +5,7 @@ description: "File system operations -- read, write, append, delete, and list fi
 
 **Status: Implemented** -- C runtime backing.
 
-The `std.file` module provides functions for reading, writing, and managing files on the local file system. All paths are UTF-8 strings. Operations that can fail return a result type with `FileErr`.
+The `std.file` module provides functions for reading, writing, and managing files on the local file system. All paths are UTF-8 strings. Operations that can fail return a result type with `$fileerr`.
 
 ## Functions
 
@@ -70,16 +70,17 @@ let entries = file.list("/tmp");
 
 ```toke
 (* Read a config file with fallback *)
-let cfg = file.read("/etc/app.conf") |{ "default=true" };
+let cfg=file.read("/etc/app.conf")|{Ok:s s;Err:e "default=true"};
 
 (* Write only if file does not exist *)
-if file.exists("/tmp/lock") =
-  log.warn("lock file exists"; @())
-el =
-  file.write("/tmp/lock"; "locked");
+if(file.exists("/tmp/lock")){
+  log.warn("lock file exists";@());
+}el{
+  file.write("/tmp/lock";"locked");
+};
 
 (* List and process files *)
-let files = file.list("/tmp/data") |{ @() };
+let files=file.list("/tmp/data")|{Ok:f f;Err:e @()};
 ```
 
 ## Error Types

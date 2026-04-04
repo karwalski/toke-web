@@ -54,7 +54,7 @@ let empty = crypto.toHex(@());
 let pwHash = crypto.toHex(crypto.sha256(str.bytes("s3cret")));
 
 (* Sign an API request with HMAC *)
-let secret = str.bytes(env.get("HMAC_SECRET") |{ "default" });
+let secret=str.bytes(env.get("HMAC_SECRET")|{Ok:s s;Err:e "default"});
 let payload = str.bytes("amount=100&currency=usd");
 let sig = crypto.toHex(crypto.hmacSha256(secret; payload));
 log.info("signed request"; @(@("signature"; sig)));

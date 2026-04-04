@@ -51,8 +51,8 @@ i=str:std.str;
 | `contains` | `(s:$str;sub:$str):bool` | Check if substring exists |
 | `indexOf` | `(s:$str;sub:$str):i64` | Find substring position (-1 if not found) |
 | `replace` | `(s:$str;old:$str;new:$str):$str` | Replace all occurrences |
-| `split` | `(s:$str;delim:$str):@($str)` | Split into array |
-| `join` | `(parts:@($str);delim:$str):$str` | Join array into string |
+| `split` | `(s:$str;delim:$str):@$str` | Split into array |
+| `join` | `(parts:@$str;delim:$str):$str` | Join array into string |
 | `upper` | `(s:$str):$str` | Convert to uppercase |
 | `lower` | `(s:$str):$str` | Convert to lowercase |
 | `trim` | `(s:$str):$str` | Remove leading/trailing whitespace |
@@ -65,9 +65,9 @@ i=str:std.str;
 **Example: parse a key=value config line**
 
 ```
-f=parseLine(line:$str):@($str){
+f=parseLine(line:$str):@$str{
   let parts=str.split(line;"=");
-  <@(str.trim(parts.0);str.trim(parts.1));
+  <@(str.trim(parts.get(0));str.trim(parts.get(1)));
 };
 ```
 
@@ -84,9 +84,9 @@ i=file:std.file;
 | `append` | `(path:$str;content:$str):void!$fileerr` | Append string to file |
 | `exists` | `(path:$str):bool` | Check if file exists |
 | `delete` | `(path:$str):void!$fileerr` | Delete a file |
-| `readBytes` | `(path:$str):@(u8)!$fileerr` | Read file as byte array |
-| `writeBytes` | `(path:$str;data:@(u8)):void!$fileerr` | Write byte array to file |
-| `listDir` | `(path:$str):@($str)!$fileerr` | List directory entries |
+| `readBytes` | `(path:$str):@u8!$fileerr` | Read file as byte array |
+| `writeBytes` | `(path:$str;data:@u8):void!$fileerr` | Write byte array to file |
+| `listDir` | `(path:$str):@$str!$fileerr` | List directory entries |
 
 **Example: copy a file**
 
@@ -160,8 +160,8 @@ i=http:std.http;
 i=json:std.json;
 
 t=$apierr{
-  $notfound:$str;
-  $badrequest:$str
+  notfound:$str;
+  badrequest:$str
 };
 
 f=handle(req:http.$req):http.$res{
@@ -205,9 +205,9 @@ i=db:std.db;
 | Function | Signature | Purpose |
 |----------|-----------|---------|
 | `open` | `(path:$str):db.$conn!db.$err` | Open SQLite database |
-| `exec` | `(conn:db.$conn;sql:$str;params:@($str)):db.$result!db.$err` | Execute statement |
-| `query` | `(conn:db.$conn;sql:$str;params:@($str)):@(db.$row)!db.$err` | Query rows |
-| `one` | `(conn:db.$conn;sql:$str;params:@($str)):db.$row!db.$err` | Query single row |
+| `exec` | `(conn:db.$conn;sql:$str;params:@$str):db.$result!db.$err` | Execute statement |
+| `query` | `(conn:db.$conn;sql:$str;params:@$str):@db.$row!db.$err` | Query rows |
+| `one` | `(conn:db.$conn;sql:$str;params:@$str):db.$row!db.$err` | Query single row |
 | `close` | `(conn:db.$conn):void` | Close connection |
 
 **Example: SQLite CRUD**
@@ -217,7 +217,7 @@ m=todos;
 i=db:std.db;
 
 t=$todo{id:u64;title:$str;done:bool};
-t=$todoerr{$dberr:$str;$notfound:u64};
+t=$todoerr{dberr:$str;notfound:u64};
 
 f=init(conn:db.$conn):void!$todoerr{
   db.exec(conn;"CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY, title TEXT, done INTEGER)";@())!$todoerr;
@@ -228,7 +228,7 @@ f=add(conn:db.$conn;title:$str):$todo!$todoerr{
   <$todo{id:r.lastId;title:title;done:false};
 };
 
-f=list(conn:db.$conn):@($todo)!$todoerr{
+f=list(conn:db.$conn):@$todo!$todoerr{
   let rows=db.query(conn;"SELECT id,title,done FROM todos";@())!$todoerr;
   let result=mut.@();
   lp(let i=0;i<rows.len;i=i+1){
@@ -254,7 +254,7 @@ i=crypto:std.crypto;
 | `sha256` | `(data:$str):$str` | SHA-256 hash (hex string) |
 | `sha512` | `(data:$str):$str` | SHA-512 hash (hex string) |
 | `hmac` | `(key:$str;data:$str;algo:$str):$str` | HMAC signature |
-| `randomBytes` | `(n:u64):@(u8)` | Cryptographic random bytes |
+| `randomBytes` | `(n:u64):@u8` | Cryptographic random bytes |
 | `uuid` | `():$str` | Generate UUID v4 |
 
 **Example: hash a password**
@@ -273,8 +273,8 @@ i=proc:std.process;
 
 | Function | Signature | Purpose |
 |----------|-----------|---------|
-| `run` | `(cmd:$str;args:@($str)):proc.$output!proc.$err` | Run command and capture output |
-| `exec` | `(cmd:$str;args:@($str)):i32!proc.$err` | Run command and return exit code |
+| `run` | `(cmd:$str;args:@$str):proc.$output!proc.$err` | Run command and capture output |
+| `exec` | `(cmd:$str;args:@$str):i32!proc.$err` | Run command and return exit code |
 | `env` | `(key:$str):$str` | Get environment variable |
 
 **Example: run a shell command**

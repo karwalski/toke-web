@@ -23,7 +23,7 @@ The toke project is split across multiple repositories under the [karwalski](htt
 
 ## toke-spec
 
-**Language specification.** The normative grammar (`grammar.ebnf`), character set definitions for Phase 1 and Phase 2 profiles, keyword table, symbol assignment rules, and Profile 2 transformation rules. The RFC draft lives here.
+**Language specification.** The normative grammar (`grammar.ebnf`), character set definitions for the legacy and default syntax profiles, keyword table, symbol assignment rules, and legacy-to-default transformation rules. The RFC draft lives here.
 
 - **Status:** Active -- specification locked at milestone M0
 - **License:** MIT
@@ -33,7 +33,7 @@ The toke project is split across multiple repositories under the [karwalski](htt
 
 **Standard library.** C implementations of standard library functions with `.toki` interface files that the compiler consumes. Covers I/O, strings, math, collections, and error types.
 
-- **Status:** Active -- Phase 1 milestone M2 (standard library core) complete
+- **Status:** Active -- milestone M2 (standard library core) complete
 - **License:** MIT
 - **Link:** [github.com/karwalski/toke-stdlib](https://github.com/karwalski/toke-stdlib)
 
@@ -47,7 +47,7 @@ The toke project is split across multiple repositories under the [karwalski](htt
 
 ## toke-tokenizer
 
-**Purpose-built BPE tokenizer.** A tokenizer trained on the toke corpus, designed for the Phase 2 character profile. Optimises token boundaries for toke's syntax patterns so that common constructs like `$user`, `$str`, and `@(` merge into single vocabulary entries.
+**Purpose-built BPE tokenizer.** A tokenizer trained on the toke corpus, designed for the default syntax character profile. Optimises token boundaries for toke's syntax patterns so that common constructs like `$user`, `$str`, and `@(` merge into single vocabulary entries.
 
 - **Status:** Not started -- depends on corpus generation (Epic 1.5)
 - **License:** Apache 2.0

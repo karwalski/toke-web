@@ -7,7 +7,7 @@ description: How toke reduces LLM inference costs by 60-80% for enterprise code 
 
 Every token an LLM generates costs compute time and API dollars. When your code generation pipeline produces Python, TypeScript, or Go, the model spends tokens on verbose keywords, ambiguous syntax, and whitespace conventions that were designed for human readability -- not machine efficiency.
 
-toke eliminates this overhead at the language level. Its 56-character set with a purpose-built tokenizer achieves maximal token density. Its strict LL(1) grammar has exactly one valid interpretation at every syntactic position. Its mandatory typed interface files compress module contracts into minimal token sequences.
+toke eliminates this overhead at the language level. Its toke character set (56 characters) with a purpose-built tokenizer achieves maximal token density. Its strict LL(1) grammar has exactly one valid interpretation at every syntactic position. Its mandatory typed interface files compress module contracts into minimal token sequences.
 
 The result: **LLMs generating toke instead of Python or JavaScript reduce inference costs by 60-80%** on equivalent tasks. Fewer tokens per program means faster generation, lower API bills, and higher throughput.
 
@@ -45,13 +45,13 @@ The compiler is a single self-contained binary with no runtime dependencies. It 
 
 ### Interface Files
 
-toke's mandatory `.tokei` interface files act as compressed task descriptions for LLMs. Feed the interface file to a model as context, and it can generate a conforming implementation with minimal prompt engineering.
+toke's mandatory `.tki` interface files act as compressed task descriptions for LLMs. Feed the interface file to a model as context, and it can generate a conforming implementation with minimal prompt engineering.
 
 ```bash
 # Generate the interface file
 tkc --emit-interface module.toke
 
-# The .tokei file is now available as LLM context
+# The .tki file is now available as LLM context
 ```
 
 ### Diagnostic Integration
@@ -111,4 +111,4 @@ toke is released under the **MIT licence**. There are no restrictions on commerc
 
 4. **Integrate into your pipeline.** The `tkc` binary is a single static executable. Copy it into your container image or CI environment and invoke it as part of your code generation workflow.
 
-5. **Feed `.tokei` interface files to your LLM** as context for code generation tasks. Measure the token reduction against your current target language.
+5. **Feed `.tki` interface files to your LLM** as context for code generation tasks. Measure the token reduction against your current target language.

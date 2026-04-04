@@ -41,13 +41,13 @@ let greeting: $str = str.concat("hello, ", name);
 
 ## Composite Types
 
-### Arrays — `@(T)`
+### Arrays — `@T`
 
 An ordered, homogeneous sequence of elements of type `T`.
 
 ```toke
-let nums: @(i64) = @(1; 2; 3);
-let empty: @(i64) = @();
+let nums: @i64 = @(1; 2; 3);
+let empty: @i64 = @();
 let inferred = @(1; 2; 3);
 ```
 
@@ -84,23 +84,6 @@ f=readFile(path: $str): $str!$err {
 
 ## Special Types
 
-### Task — `Task<T>`
-
-The return type of `spawn(f)`, representing an asynchronous task that will produce a value of type `T`.
-
-```toke
-f=work(): i64 { < 42 };
-f=main(): i64 {
-    let t: Task = spawn(work);
-    let result: i64 = await(t);
-    < result
-};
-```
-
-- `Task` is not directly writable as a type annotation — it is inferred from `spawn`.
-- `spawn` only accepts nullary (zero-parameter) functions.
-- `await(t)` on a `Task<T>` yields type `T`.
-
 ### Pointers — `*T` (FFI only)
 
 Raw pointer types for foreign function interface declarations.
@@ -112,11 +95,11 @@ f=free(ptr: *u8): void;
 
 - Pointer types are **only** valid in extern (bodyless) function signatures.
 - Using `*T` in a function with a body produces error [E2010](/reference/errors/#e2010).
-- The restriction is recursive: `@(*T)` and `*@(T)` are also rejected in non-extern context.
+- The restriction is recursive: `@*T` and `*@T` are also rejected in non-extern context.
 
 ### Function Types — `func`
 
-Function declarations have type `func` internally. Functions are first-class values that can be passed to `spawn`.
+Function declarations have type `func` internally. Functions are first-class values.
 
 ### Struct Types
 
@@ -146,16 +129,14 @@ toke infers types for `let` and `mut` bindings when no annotation is provided.
 | Floating-point literal (`3.14`) | `f64`     |                                |
 | String literal (`"hello"`)  | `$str`        |                                |
 | Boolean literal (`true`)    | `bool`        |                                |
-| Array literal `@(e1; e2)`   | `@(T)`        | T = type of first element      |
-| Empty array literal `@()`   | `@(unknown)`  | Requires annotation            |
+| Array literal `@(e1; e2)`   | `@T`          | T = type of first element      |
+| Empty array literal `@()`   | `@unknown`    | Requires annotation            |
 | Map literal `$(k1:v1; k2:v2)` | `$(K:V)`   | K, V from first entry          |
 | Struct literal `$name{...}` | `$name`       | Resolved via type declaration  |
 | Identifier reference        | declared type | From binding, parameter, or function |
 | Call expression `f(args)`   | return type   | From function declaration      |
 | Field access `expr.field`   | field type    | From struct or `.len` for collections |
 | Cast `expr as T`            | `T`           | Target type                    |
-| `spawn(f)`                  | `Task<T>`     | T = return type of f           |
-| `await(t)`                  | `T`           | T = inner type of Task         |
 
 ### Binding inference
 
@@ -191,9 +172,8 @@ Two types are equal according to these rules:
 | Primitives | Same kind (`i64 == i64`, but `i64 != u64`) |
 | Structs | Same name (nominal equality) |
 | Pointers | `*T == *U` iff `T == U` |
-| Arrays | `@(T) == @(U)` iff `T == U` (or either is `unknown`) |
+| Arrays | `@T == @U` iff `T == U` (or either is `unknown`) |
 | Maps | `$(K1:V1) == $(K2:V2)` iff `K1 == K2` and `V1 == V2` (or either is `unknown`) |
-| Tasks | `Task<T> == Task<U>` iff `T == U` |
 | Error unions | `T1!E1 == T2!E2` iff `T1 == T2` (or either is `unknown`) |
 | Functions | Equal iff return types are equal |
 

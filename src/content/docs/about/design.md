@@ -24,7 +24,7 @@ The double-quote `"` appears in source as the string literal delimiter but is no
 
 **What is excluded:** whitespace is structurally meaningless (the semicolon is the universal separator). There is no comment syntax -- documentation lives outside source files. Uppercase letters, `[`, `]`, `#`, `%`, `^`, `&`, `~`, backtick, backslash, single-quote, comma, and question-mark do not appear in structural positions.
 
-**Why restricted:** every character in the set must be necessary. Every token in generated output must carry semantic information. A smaller, predictable character set means fewer token boundary splits in BPE tokenizers and a tighter generation space for the model. The `$` and `@` sigils replace uppercase type names (`$user` instead of `User`) and bracket-based array syntax (`@(T)` instead of `[T]`), producing forms that BPE training absorbs into single merged tokens.
+**Why restricted:** every character in the set must be necessary. Every token in generated output must carry semantic information. A smaller, predictable character set means fewer token boundary splits in BPE tokenizers and a tighter generation space for the model. The `$` and `@` sigils replace uppercase type names (`$user` instead of `User`) and bracket-based array syntax (`@T` instead of `[T]`), producing forms that BPE training absorbs into single merged tokens.
 
 ## LL(1) Grammar
 

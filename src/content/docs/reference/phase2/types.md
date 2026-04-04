@@ -3,11 +3,11 @@ title: "Type Encoding"
 description: "How toke's type system uses sigil-prefixed names and a reduced character set — the encoding transformation from the corpus-generation profile."
 ---
 
-This page documents the Phase 2 type system. Phase 2 uses the same semantic rules as [Phase 1](/reference/types/) but with a different surface syntax: all type names are lowercased and prefixed with `$`.
+This page documents the default syntax type system. The default syntax uses the same semantic rules as the [legacy profile](/reference/types/) but with a different surface syntax: all type names are lowercased and prefixed with `$`.
 
 ## Primitive Types
 
-| Phase 1 | Phase 2 | Size | Range / Values |
+| Legacy | Default | Size | Range / Values |
 |---------|---------|------|----------------|
 | `i64` | `i64` | 64 bits | -2^63 to 2^63-1 |
 | `u64` | `u64` | 64 bits | 0 to 2^64-1 |
@@ -16,31 +16,30 @@ This page documents the Phase 2 type system. Phase 2 uses the same semantic rule
 | `Str` | `$str` | pointer | Immutable UTF-8 string |
 | `void` | `void` | 0 bytes | Unit type |
 
-Lowercase primitives (`i64`, `u64`, `f64`, `bool`, `void`) are unchanged. Only `Str` becomes `$str` because it begins with uppercase in Phase 1.
+Lowercase primitives (`i64`, `u64`, `f64`, `bool`, `void`) are unchanged. Only `Str` becomes `$str` because it begins with uppercase in the legacy profile.
 
 ## Composite Types
 
 ### Arrays
 
-| Aspect | Phase 1 | Phase 2 |
+| Aspect | Legacy | Default |
 |--------|---------|---------|
 | Type notation | `[T]` | `@T` or `@($type)` |
 | Literal | `[1;2;3]` | `@(1;2;3)` |
 | Empty literal | `[]` | `@()` |
-| Constant index | `arr[0]` | `arr.0` |
-| Variable index | `arr[i]` | `arr.get(i)` |
+| Index | `arr[i]` | `arr.get(i)` |
 | Length | `arr.len` | `arr.len` |
 
 ```
 let nums=@(1;2;3);
-let first=nums.0;
+let first=nums.get(0);
 let n=nums.get(i);
 let size=nums.len;
 ```
 
 ### Maps
 
-| Aspect | Phase 1 | Phase 2 |
+| Aspect | Legacy | Default |
 |--------|---------|---------|
 | Type notation | `[K:V]` | `$(K:V)` |
 | Literal | `["a":1;"b":2]` | `$("a":1;"b":2)` |
@@ -53,10 +52,10 @@ let age=ages.get("alice");
 
 ### Error Unions
 
-Identical syntax to Phase 1, except type names use `$` prefix:
+Identical syntax to the legacy profile, except type names use `$` prefix:
 
 ```
-f=readfile(path:$str):$str!$fileerr{
+f=readFile(path:$str):$str!$fileerr{
   let content=file.read(path)!$fileerr;
   <content;
 };
@@ -69,7 +68,7 @@ Type declarations use `$` prefix for the type name and for any uppercase-initial
 <div class="hero-comparison">
 <div>
 
-**Phase 1**
+**Legacy**
 ```
 T=Point{x:f64;y:f64};
 T=Shape{
@@ -81,38 +80,28 @@ T=Shape{
 </div>
 <div>
 
-**Phase 2**
+**Default**
 ```
 t=$point{x:f64;y:f64};
 t=$shape{
-  $circle:f64;
-  $rect:$point
+  circle:f64;
+  rect:$point
 };
 ```
 
 </div>
 </div>
 
-Struct field access is unchanged (`p.x`, `p.y`). Match arms use the `$`-prefixed variant names:
+Struct field access is unchanged (`p.x`, `p.y`). Match arms use the variant names:
 
 ```
 s|{
-  $circle:r  3.14*r*r;
-  $rect:p    p.x*p.y
+  circle:r  3.14*r*r;
+  rect:p    p.x*p.y
 };
 ```
 
 ## Special Types
-
-### Task
-
-```
-f=work():i64{<42};
-let t=spawn(work);
-let result=await(t);
-```
-
-`Task` is an internal type and does not appear in source — no `$` transformation needed.
 
 ### Pointers (FFI)
 
@@ -125,7 +114,7 @@ Pointer types use the same `*T` syntax. Only the inner type is transformed if it
 
 ## Type Inference
 
-All inference rules from [Phase 1](/reference/types/#type-inference) apply identically. The inferred types simply use Phase 2 notation:
+All inference rules from the [legacy profile](/reference/types/#type-inference) apply identically. The inferred types simply use default syntax notation:
 
 | Expression | Inferred Type |
 |------------|---------------|
@@ -145,10 +134,10 @@ let y=x as f64;
 let s="hello" as $str;
 ```
 
-The `as` keyword and all cast rules are identical to Phase 1.
+The `as` keyword and all cast rules are identical to the legacy profile.
 
 ## See Also
 
 - [Type System](/reference/types/) — production type reference
-- [Phase 2 Overview](/reference/phase2/overview/) — complete profile comparison
-- [Phase 2 Grammar](/reference/phase2/grammar/) — production rule differences
+- [Default Syntax Overview](/reference/phase2/overview/) — complete profile comparison
+- [Default Syntax Grammar](/reference/phase2/grammar/) — production rule differences

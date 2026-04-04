@@ -1,24 +1,24 @@
 ---
 title: "Grammar Encoding"
-description: "How toke's grammar was encoded from the corpus-generation profile to the production 56-character set — changed production rules and new sigil syntax."
+description: "How toke's grammar was encoded from the legacy profile to the default 56-character syntax — changed production rules and new sigil syntax."
 ---
 
-This page documents the grammar differences between Phase 2 and [Phase 1](/reference/grammar/). Only changed productions are listed — all other rules are identical.
+This page documents the grammar differences between the default syntax and the [legacy profile](/reference/grammar/). Only changed productions are listed — all other rules are identical.
 
 ## Changed Productions
 
 ### Type Expressions
 
-Phase 1 uses uppercase-initial identifiers and brackets for composite types. Phase 2 uses `$` prefix and `@` sigil.
+The legacy profile uses uppercase-initial identifiers and brackets for composite types. The default syntax uses `$` prefix and `@` sigil.
 
 ```ebnf
-(* Phase 1 *)
+(* Legacy *)
 TypeExpr    = ScalarType | ArrayType | MapType | PtrType | TypeIdent ;
 ArrayType   = "[" , TypeExpr , "]" ;
 MapType     = "[" , TypeExpr , ":" , TypeExpr , "]" ;
 TypeIdent   = UpperIdent ;
 
-(* Phase 2 *)
+(* Default *)
 TypeExpr    = ScalarType | ArrayType | MapType | PtrType | SigilType ;
 ArrayType   = "@" , TypeExpr ;
 MapType     = "$" , "(" , TypeExpr , ":" , TypeExpr , ")" ;
@@ -27,7 +27,7 @@ SigilType   = "$" , LowerIdent ;
 
 **Examples:**
 
-| Concept | Phase 1 | Phase 2 |
+| Concept | Legacy | Default |
 |---------|---------|---------|
 | String type | `Str` | `$str` |
 | User-defined type | `User` | `$user` |
@@ -39,14 +39,14 @@ SigilType   = "$" , LowerIdent ;
 ### Array Literals
 
 ```ebnf
-(* Phase 1 *)
+(* Legacy *)
 ArrayLit    = "[" , [ Expr , { ";" , Expr } ] , "]" ;
 
-(* Phase 2 *)
+(* Default *)
 ArrayLit    = "@" , "(" , [ Expr , { ";" , Expr } ] , ")" ;
 ```
 
-| Phase 1 | Phase 2 |
+| Legacy | Default |
 |---------|---------|
 | `[1;2;3]` | `@(1;2;3)` |
 | `["a";"b"]` | `@("a";"b")` |
@@ -55,63 +55,60 @@ ArrayLit    = "@" , "(" , [ Expr , { ";" , Expr } ] , ")" ;
 ### Map Literals
 
 ```ebnf
-(* Phase 1 *)
+(* Legacy *)
 MapLit      = "[" , MapEntry , { ";" , MapEntry } , "]" ;
 
-(* Phase 2 *)
+(* Default *)
 MapLit      = "$" , "(" , MapEntry , { ";" , MapEntry } , ")" ;
 ```
 
-| Phase 1 | Phase 2 |
+| Legacy | Default |
 |---------|---------|
 | `["a":1;"b":2]` | `$("a":1;"b":2)` |
 
 ### Array Indexing
 
 ```ebnf
-(* Phase 1 *)
+(* Legacy *)
 IndexExpr   = PostfixExpr , "[" , Expr , "]" ;
 
-(* Phase 2 -- constant index *)
-IndexExpr   = PostfixExpr , "." , IntLit ;
-
-(* Phase 2 -- variable index *)
+(* Default *)
 IndexExpr   = PostfixExpr , "." , "get" , "(" , Expr , ")" ;
 ```
 
-| Phase 1 | Phase 2 |
+| Legacy | Default |
 |---------|---------|
-| `arr[0]` | `arr.0` |
+| `arr[0]` | `arr.get(0)` |
 | `arr[i]` | `arr.get(i)` |
 | `arr[i+1]` | `arr.get(i+1)` |
 
 ### Identifiers
 
 ```ebnf
-(* Phase 1 *)
+(* Legacy *)
 Ident       = Letter , { Letter | Digit } ;
 Letter      = "a".."z" | "A".."Z" ;
 TypeIdent   = UpperLetter , { Letter | Digit } ;
 
-(* Phase 2 *)
+(* Default *)
 Ident       = LowerLetter , { LowerLetter | Digit } ;
 LowerLetter = "a".."z" ;
 SigilIdent  = "$" , LowerLetter , { LowerLetter | Digit } ;
 ```
 
-There is no `TypeIdent` in Phase 2. All type references use `SigilIdent` (`$name`).
+There is no `TypeIdent` in the default syntax. All type references use `SigilIdent` (`$name`).
 
 ### Struct Literals
 
 ```ebnf
-(* Phase 1 *)
+(* Legacy *)
 StructLit   = TypeIdent , "{" , FieldInit , { ";" , FieldInit } , "}" ;
 
-(* Phase 2 *)
+(* Default *)
 StructLit   = SigilIdent , "{" , FieldInit , { ";" , FieldInit } , "}" ;
 ```
 
-| Phase 1 | Phase 2 |
+| Legacy | Default |
 |---------|---------|
 | `Point{x:1;y:2}` | `$point{x:1;y:2}` |
 | `User{id:1;name:"alice"}` | `$user{id:1;name:"alice"}` |
@@ -119,21 +116,21 @@ StructLit   = SigilIdent , "{" , FieldInit , { ";" , FieldInit } , "}" ;
 ### Match Arms
 
 ```ebnf
-(* Phase 1 *)
+(* Legacy *)
 MatchArm    = TypeIdent , ":" , Ident , Expr ;
 
-(* Phase 2 *)
+(* Default *)
 MatchArm    = SigilIdent , ":" , Ident , Expr ;
 ```
 
-| Phase 1 | Phase 2 |
+| Legacy | Default |
 |---------|---------|
 | `Ok:val val+1` | `$ok:val val+1` |
 | `Err:e defaultVal` | `$err:e defaultval` |
 
 ## Unchanged Productions
 
-All of the following are identical in Phase 1 and Phase 2:
+All of the following are identical in the legacy profile and default syntax:
 
 - **Module structure:** `m=`, `i=`, `t=`, `c=`, `f=` declarations
 - **Function declarations:** parameter lists, return types, bodies
@@ -148,11 +145,11 @@ All of the following are identical in Phase 1 and Phase 2:
 
 ## Operator Precedence
 
-Identical to [Phase 1 operator precedence](/reference/grammar/#operator-precedence). No changes.
+Identical to [legacy profile operator precedence](/reference/grammar/#operator-precedence). No changes.
 
 ## LL(1) Property
 
-Phase 2 preserves the LL(1) property. The new sigils introduce no ambiguity:
+The default syntax preserves the LL(1) property. The new sigils introduce no ambiguity:
 
 - `$` in expression position always begins a sigil type or map literal
 - `@` in expression position always begins an array literal
@@ -163,6 +160,6 @@ One token of lookahead after `$` or `@` disambiguates all cases.
 
 ## See Also
 
-- [Phase 1 Grammar](/reference/grammar/) — the current default reference
-- [Phase 2 Overview](/reference/phase2/overview/) — complete profile comparison
-- [Phase 2 Type System](/reference/phase2/types/) — type notation differences
+- [Legacy Grammar](/reference/grammar/) — the legacy profile grammar reference
+- [Default Syntax Overview](/reference/phase2/overview/) — complete profile comparison
+- [Default Syntax Type System](/reference/phase2/types/) — type notation differences

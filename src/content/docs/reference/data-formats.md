@@ -13,7 +13,7 @@ toke provides a multi-format serialization strategy designed around LLM token ef
 | Secondary | **YAML** | `std.yaml` | Nested configuration, human-readable mappings | 18--30% vs pretty JSON |
 | Secondary | **JSON** | `std.json` | Heterogeneous/deeply nested data, API interop | Baseline |
 
-All three formats share a common interface pattern: `enc`, `dec`, typed accessors (`str`, `i64`, `f64`, `bool`, `arr`), and cross-format conversion (`from_json`, `to_json`).
+All three formats share a common interface pattern: `enc`, `dec`, typed accessors (`str`, `i64`, `f64`, `bool`, `arr`), and cross-format conversion (`fromJson`, `toJson`).
 
 ## Why TOON is the Default
 
@@ -56,18 +56,18 @@ Use JSON when data is:
 
 ## Cross-Format Conversion
 
-All format modules provide `from_json` and `to_json` for interconversion:
+All format modules provide `fromJson` and `toJson` for interconversion:
 
 ```toke
 (* Convert API JSON response to TOON for storage *)
 let json = http.get(url).body;
-let compact = toon.from_json(json);
+let compact = toon.fromJson(json);
 
 (* Convert TOON back to JSON for an external API *)
-let payload = toon.to_json(compact);
+let payload = toon.toJson(compact);
 
 (* Convert JSON to YAML for human review *)
-let readable = yaml.from_json(json);
+let readable = yaml.fromJson(json);
 ```
 
 ## Internationalisation (std.i18n)
@@ -76,7 +76,7 @@ toke's design principle is that **code generators focus on code, not strings**. 
 
 ```toke
 (* Load French strings -- tries strings.fr.toon, then .yaml, then .json *)
-let ui = i18n.load("lang/strings"; "fr") |{ i18n.load("lang/strings"; "en")! };
+let ui=i18n.load("lang/strings";"fr")|{Ok:u u;Err:e i18n.load("lang/strings";"en")!$i18nerr};
 
 (* Look up strings by key *)
 let title = i18n.get(ui; "app_title");
@@ -111,5 +111,5 @@ All serialization modules follow the same interface pattern, making it straightf
 | `mod.f64` | `(m: $mod; key: $str): f64!$moderr` | Extract float by key |
 | `mod.bool` | `(m: $mod; key: $str): bool!$moderr` | Extract boolean by key |
 | `mod.arr` | `(m: $mod; key: $str): @($mod)!$moderr` | Extract array by key |
-| `mod.from_json` | `(json: $str): $str` | Convert from JSON |
-| `mod.to_json` | `(data: $str): $str` | Convert to JSON |
+| `mod.fromJson` | `(json: $str): $str` | Convert from JSON |
+| `mod.toJson` | `(data: $str): $str` | Convert to JSON |

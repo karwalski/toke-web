@@ -50,11 +50,10 @@ let port = env.getOr("PORT"; "3000");
 log.info("starting server"; @(@("port"; port)));
 
 (* Require a variable or exit *)
-let secret = env.get("API_SECRET");
-if secret.ok? =
-  log.info("secret loaded"; @())
-el =
-  log.error("API_SECRET is required"; @());
+env.get("API_SECRET")|{
+  Ok:s   log.info("secret loaded";@());
+  Err:e  log.error("API_SECRET is required";@())
+};
 ```
 
 ## Error Types

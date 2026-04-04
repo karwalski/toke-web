@@ -58,16 +58,18 @@ process.wait(h);             (* reap the process *)
 
 ```toke
 (* Run a command and capture its output *)
-let h = process.spawn(@("ls"; "-la"; "/tmp")) |{
-  log.error("failed to spawn ls"; @());
+process.spawn(@("ls";"-la";"/tmp"))|{
+  Ok:h  {
+    let output=process.stdout(h)|{Ok:s s;Err:e ""};
+    let code=process.wait(h)|{Ok:c c;Err:e 0-1};
+    if(code=0){
+      log.info("ls succeeded";@(@("output";output)));
+    }el{
+      log.error("ls failed";@(@("code";str.fromInt(code))));
+    };
+  };
+  Err:e  log.error("failed to spawn ls";@())
 };
-let output = process.stdout(h) |{ "" };
-let code = process.wait(h) |{ -1 };
-
-if code == 0 =
-  log.info("ls succeeded"; @(@("output"; output)))
-el =
-  log.error("ls failed"; @(@("code"; str.fromInt(code))));
 ```
 
 ## Error Types

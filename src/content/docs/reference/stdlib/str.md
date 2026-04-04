@@ -133,16 +133,17 @@ let s = str.fromBytes(@(104; 105));  (* s = ok("hi") *)
 
 ```toke
 (* Parse a number from user input with fallback *)
-let input = str.trim(rawInput);
-let val = str.toInt(input) |{ 0 };
+let input=str.trim(rawInput);
+let val=str.toInt(input)|{Ok:n n;Err:e 0};
 
 (* Build a greeting *)
-let name = str.upper(str.slice("alice"; 0; 1) |{ "" });
-let rest = str.slice("alice"; 1; 5) |{ "" };
-let greeting = str.concat("Hello "; str.concat(name; rest));
+let first=str.slice("alice";0;1)|{Ok:s s;Err:e ""};
+let name=str.upper(first);
+let rest=str.slice("alice";1;5)|{Ok:s s;Err:e ""};
+let greeting=str.concat("Hello ";str.concat(name;rest));
 
 (* Split delimited string and process each field *)
-let fields = str.split("name:age:city"; ":");
+let fields=str.split("name:age:city";":");
 ```
 
 ## Error Types

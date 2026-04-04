@@ -31,7 +31,7 @@ By the end of this course you will be able to:
 | 5 | [Error Handling](/learn/05-errors/) | ~25 min | Error types, the Result model, propagation, and recovery |
 | 6 | [Strings and I/O](/learn/06-strings-io/) | ~20 min | String operations, file I/O, and JSON handling |
 | 7 | [Modules and Imports](/learn/07-modules-imports/) | ~20 min | Import syntax, standard library modules, interface files, and multi-file projects |
-| 8 | [Advanced Topics](/learn/08-advanced/) | ~25 min | FFI, pointers, async, tasks, and casts |
+| 8 | [Advanced Topics](/learn/08-advanced/) | ~25 min | FFI, pointers, casts, and arena blocks |
 | 9 | [Standard Library Deep Dive](/learn/09-stdlib/) | ~25 min | Tour of all standard library modules with practical examples |
 | 10 | [Build a Complete Project](/learn/10-project/) | ~30 min | Design and build a CLI bookmark manager from scratch |
 

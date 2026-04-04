@@ -82,23 +82,23 @@ let items = yaml.arr(y; "items");
 (* items = ok(@($yaml; $yaml)) *)
 ```
 
-### yaml.from_json(json: $str): $str
+### yaml.fromJson(json: $str): $str
 
 Converts a JSON string to YAML format.
 
 ```toke
 let j = "{\"name\":\"Alice\",\"age\":30}";
-let y = yaml.from_json(j);
+let y = yaml.fromJson(j);
 (* y = "name: Alice\nage: 30" *)
 ```
 
-### yaml.to_json(yaml: $str): $str
+### yaml.toJson(yaml: $str): $str
 
 Converts YAML format back to JSON.
 
 ```toke
 let y = "name: Alice\nage: 30\n";
-let j = yaml.to_json(y);
+let j = yaml.toJson(y);
 (* j = "{\"name\":\"Alice\",\"age\":30}" *)
 ```
 
@@ -106,13 +106,14 @@ let j = yaml.to_json(y);
 
 ```toke
 (* Parse a YAML configuration file *)
-let config = yaml.dec(file.read("config.yaml") |{ "" });
-let host = yaml.str(config; "host") |{ "localhost" };
-let port = yaml.i64(config; "port") |{ 8080 };
-let debug = yaml.bool(config; "debug") |{ false };
+let raw=file.read("config.yaml")|{Ok:s s;Err:e ""};
+let config=yaml.dec(raw)|{Ok:c c;Err:e yaml.dec("")!$yamlerr};
+let host=yaml.str(config;"host")|{Ok:s s;Err:e "localhost"};
+let port=yaml.i64(config;"port")|{Ok:n n;Err:e 8080};
+let debug=yaml.bool(config;"debug")|{Ok:b b;Err:e false};
 
 (* Convert between formats *)
-let json_data = yaml.to_json("key: value\ncount: 42\n");
+let jsondata=yaml.toJson("key: value\ncount: 42\n");
 ```
 
 ## Error Types

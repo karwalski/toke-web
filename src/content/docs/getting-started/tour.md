@@ -46,8 +46,8 @@ And sum types (tagged unions) for error variants and enumerations:
 
 ```
 t=$shape{
-  Circle:f64;
-  Rect:$point
+  circle:f64;
+  rect:$point
 };
 ```
 
@@ -121,7 +121,7 @@ f=sumTo(n:i64):i64{
 Use `br;` to break out of a loop early:
 
 ```
-f=findFirstNeg(arr:@(i64)):i64{
+f=findFirstNeg(arr:@i64):i64{
   let result=mut.0-1;
   lp(let i=0;i<arr.len;i=i+1){
     if(arr.get(i)<0){
@@ -141,18 +141,18 @@ The `|{}` operator is used for pattern matching on sum types and error results:
 
 ```
 t=$color{
-  Red:bool;
-  Green:bool;
-  Blue:bool;
-  Custom:$str
+  red:bool;
+  green:bool;
+  blue:bool;
+  custom:$str
 };
 
 f=toHex(c:$color):$str{
   <c|{
-    Red:r "#FF0000";
-    Green:g "#00FF00";
-    Blue:b "#0000FF";
-    Custom:s s
+    red:r "#FF0000";
+    green:g "#00FF00";
+    blue:b "#0000FF";
+    custom:s s
   };
 };
 ```
@@ -164,7 +164,7 @@ Match is exhaustive -- the compiler rejects any match that does not cover all va
 Arrays use `@()` with semicolons as separators:
 
 ```
-f=example():@(i64){
+f=example():@i64{
   let nums=@(1;2;3;4;5);
   <nums;
 };
@@ -184,12 +184,12 @@ Access array elements by index and map elements by key:
 ```
 f=example():i64{
   let nums=@(10;20;30);
-  let first=nums.0;
+  let first=nums.get(0);
   <first;
 };
 ```
 
-Array types are written as `@(ElementType)` and map types as `$(KeyType:ValueType)`.
+Array types are written as `@ElementType` and map types as `$(KeyType:ValueType)`.
 
 ## Error handling
 
@@ -197,8 +197,8 @@ Functions that can fail declare an error type after `!`:
 
 ```
 t=$fileerr{
-  NotFound:$str;
-  PermDenied:$str
+  notfound:$str;
+  permdenied:$str
 };
 
 f=readFile(path:$str):$str!$fileerr{
@@ -251,7 +251,7 @@ Here is a complete program that reads numbers from the command line and prints t
 m=sum;
 i=io:std.io;
 
-f=sum(arr:@(i64)):i64{
+f=sum(arr:@i64):i64{
   let total=mut.0;
   lp(let i=0;i<arr.len;i=i+1){
     total=total+arr.get(i);

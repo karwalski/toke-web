@@ -14,7 +14,7 @@ The `std.test` module provides assertion functions for writing tests. All functi
 Passes if `cond` is `true`. On failure, emits a diagnostic containing `msg` to stderr and returns `false`.
 
 ```toke
-test.assert(str.len("hi") == 2; "length should be 2");
+test.assert(str.len("hi")=2; "length should be 2");
 test.assert(file.exists("/tmp/data.txt"); "file should exist");
 ```
 
@@ -40,16 +40,16 @@ test.assertNe(""; "x"; "empty and non-empty differ");
 
 ```toke
 (* Test string operations *)
-test.assertEq(str.trim("  hi  "); "hi"; "trim removes whitespace");
-test.assert(str.contains("foobar"; "oba"); "contains finds substring");
+test.assertEq(str.trim("  hi  ");"hi";"trim removes whitespace");
+test.assert(str.contains("foobar";"oba");"contains finds substring");
 
 (* Test with computed values *)
-let parts = str.split("a:b:c"; ":");
-test.assertEq(str.fromInt(str.len(parts)); "3"; "split produces 3 parts");
+let parts=str.split("a:b:c";":");
+test.assertEq(str.fromInt(parts.len as i64);"3";"split produces 3 parts");
 
 (* Test error cases *)
-let result = str.toInt("not a number");
-test.assert(result.err?; "toInt rejects non-numeric input");
+let isErr=str.toInt("not a number")|{Ok:n false;Err:e true};
+test.assert(isErr;"toInt rejects non-numeric input");
 ```
 
 ## Diagnostic Output

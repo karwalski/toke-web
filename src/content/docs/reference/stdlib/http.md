@@ -5,7 +5,7 @@ description: "HTTP server and response helpers -- declarative route registration
 
 **Status: Implemented** -- C runtime backing.
 
-The `std.http` module provides a declarative HTTP server framework. Routes are registered using verb macros (`http.GET`, `http.POST`, etc.) that bind URL patterns to handler functions. Handlers receive a `$req` and return a `$res`. Response constructor functions simplify building common response shapes.
+The `std.http` module provides an HTTP server framework. Handlers receive a `$req` and return a `$res`. Response constructor functions simplify building common response shapes.
 
 ## Types
 
@@ -31,39 +31,24 @@ Represents an outgoing HTTP response.
 | headers | @(@($str)) | Key-value pairs of response headers |
 | body | $str | Response body |
 
-## Route Registration
+## Server
 
-Routes are registered using verb macros. Each takes a URL pattern string and a handler function. Patterns may include named parameters prefixed with `:` (e.g., `"/items/:id"`).
+### http.serve(port: i32; handler: f): void
 
-### http.GET(pattern: $str; handler: fn($req): $res)
-
-Registers a handler for GET requests matching `pattern`.
-
-### http.POST(pattern: $str; handler: fn($req): $res)
-
-Registers a handler for POST requests matching `pattern`.
-
-### http.PUT(pattern: $str; handler: fn($req): $res)
-
-Registers a handler for PUT requests matching `pattern`.
-
-### http.DELETE(pattern: $str; handler: fn($req): $res)
-
-Registers a handler for DELETE requests matching `pattern`.
-
-### http.PATCH(pattern: $str; handler: fn($req): $res)
-
-Registers a handler for PATCH requests matching `pattern`.
+Starts an HTTP server on the given port. The handler function receives a `$req` and returns a `$res`. URL path matching and dispatch is handled within the handler.
 
 ```toke
-http.GET("/"; fn(req: $req): $res =
-  http.Res.ok("hello world")
-);
+f=handle(req:http.$req):http.$res{
+  if(req.path="/"){
+    <http.$res.ok("hello world");
+  };
+  <http.$res.status(404;"not found");
+};
 
-http.GET("/items/:id"; fn(req: $req): $res =
-  let id = http.param(req; "id");
-  http.Res.json(200; "{\"id\":" ++ id ++ "}")
-);
+f=main():i64{
+  http.serve(8080;handle);
+  <0;
+};
 ```
 
 ## Accessor Functions
@@ -87,39 +72,39 @@ let ct = http.header(req; "content-type");
 
 ## Response Constructors
 
-### http.Res.ok(body: $str): $res
+### http.$res.ok(body: $str): $res
 
 Creates a 200 OK response with the given body.
 
 ```toke
-let r = http.Res.ok("hello");
+let r=http.$res.ok("hello");
 (* r.status = 200; r.body = "hello" *)
 ```
 
-### http.Res.json(status: u16; body: $str): $res
+### http.$res.json(status: u16; body: $str): $res
 
 Creates a response with the given status code and a JSON body. Sets the `Content-Type` header to `application/json`.
 
 ```toke
-let r = http.Res.json(201; "{\"created\":true}");
+let r=http.$res.json(201;"{\"created\":true}");
 (* r.status = 201 *)
 ```
 
-### http.Res.bad(msg: $str): $res
+### http.$res.status(code: u16; body: $str): $res
 
-Creates a 400 Bad Request response with the given message as the body.
+Creates a response with the given status code and body.
 
 ```toke
-let r = http.Res.bad("invalid input");
+let r=http.$res.status(400;"invalid input");
 (* r.status = 400; r.body = "invalid input" *)
 ```
 
-### http.Res.err(msg: $str): $res
+### http.$res.err(msg: $str): $res
 
 Creates a 500 Internal Server Error response with the given message as the body.
 
 ```toke
-let r = http.Res.err("something broke");
+let r=http.$res.err("something broke");
 (* r.status = 500; r.body = "something broke" *)
 ```
 
@@ -127,22 +112,20 @@ let r = http.Res.err("something broke");
 
 ```toke
 (* A simple CRUD API *)
-http.GET("/users/:id"; fn(req: $req): $res =
-  let id = http.param(req; "id") |{ http.Res.bad("missing id") };
-  let row = db.one("SELECT * FROM users WHERE id=?"; @(id));
-  if row.ok? =
-    let name = row.str(row!; "name") |{ "unknown" };
-    http.Res.json(200; "{\"name\":\"" ++ name ++ "\"}")
-  el =
-    http.Res.json(404; "{\"error\":\"not found\"}")
-);
-
-http.POST("/users"; fn(req: $req): $res =
-  let body = json.dec(req.body) |{ http.Res.bad("invalid json") };
-  let name = json.str(body; "name") |{ http.Res.bad("missing name") };
-  db.exec("INSERT INTO users(name) VALUES(?)"; @(name));
-  http.Res.json(201; "{\"ok\":true}")
-);
+f=handle(req:http.$req):http.$res{
+  if(req.path="/users"){
+    if(req.method="GET"){
+      <http.$res.ok(json.enc(db.many("SELECT * FROM users";@())));
+    };
+    if(req.method="POST"){
+      let body=json.dec(req.body)!$apierr;
+      let name=json.str(body;"name")|{Ok:s s;Err:e ""};
+      db.exec("INSERT INTO users(name) VALUES(?)";@(name));
+      <http.$res.json(201;"{\"ok\":true}");
+    };
+  };
+  <http.$res.status(404;"{\"error\":\"not found\"}");
+};
 ```
 
 ## Error Types

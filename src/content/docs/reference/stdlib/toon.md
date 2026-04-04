@@ -88,23 +88,23 @@ let names = toon.arr(t; "name");
 (* names = ok(@($toon; $toon; $toon)) *)
 ```
 
-### toon.from_json(json: $str): $str
+### toon.fromJson(json: $str): $str
 
 Converts a JSON array of objects to TOON format.
 
 ```toke
 let j = "[{\"id\":1,\"name\":\"Alice\"},{\"id\":2,\"name\":\"Bob\"}]";
-let t = toon.from_json(j);
+let t = toon.fromJson(j);
 (* t = "data[2]{id,name}:\n1|Alice\n2|Bob\n" *)
 ```
 
-### toon.to_json(toon: $str): $str
+### toon.toJson(toon: $str): $str
 
 Converts TOON format back to JSON.
 
 ```toke
 let t = "data[2]{id,name}:\n1|Alice\n2|Bob\n";
-let j = toon.to_json(t);
+let j = toon.toJson(t);
 (* j = "[{\"id\":1,\"name\":\"Alice\"},{\"id\":2,\"name\":\"Bob\"}]" *)
 ```
 
@@ -112,13 +112,13 @@ let j = toon.to_json(t);
 
 ```toke
 (* Convert API response from JSON to TOON for token-efficient storage *)
-let payload = http.get("https://api.example.com/users").body;
-let compact = toon.from_json(payload);
+let payload=http.get("https://api.example.com/users").body;
+let compact=toon.fromJson(payload);
 
 (* Parse TOON data and extract fields *)
-let data = toon.dec(compact) |{ toon.dec("{err}:\nparse error") };
-let name = toon.str(data; "name") |{ "unknown" };
-let age = toon.i64(data; "age") |{ 0 };
+let data=toon.dec(compact)|{Ok:d d;Err:e toon.dec("{err}:\nparse error")!$toonerr};
+let name=toon.str(data;"name")|{Ok:s s;Err:e "unknown"};
+let age=toon.i64(data;"age")|{Ok:n n;Err:e 0};
 ```
 
 ## Error Types

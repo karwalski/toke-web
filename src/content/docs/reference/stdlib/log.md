@@ -68,14 +68,14 @@ let start = time.now();
 let result = db.one("SELECT * FROM users WHERE id=1"; @());
 let elapsed = time.since(start);
 
-if result.ok? =
-  log.info("query succeeded"; @(
-    @("elapsed_ms"; str.fromInt(elapsed));
-    @("table"; "users")
-  ))
-el =
-  log.error("query failed"; @(
-    @("elapsed_ms"; str.fromInt(elapsed));
-    @("table"; "users")
+result|{
+  Ok:r  log.info("query succeeded";@(
+    @("elapsed_ms";str.fromInt(elapsed));
+    @("table";"users")
   ));
+  Err:e  log.error("query failed";@(
+    @("elapsed_ms";str.fromInt(elapsed));
+    @("table";"users")
+  ))
+};
 ```

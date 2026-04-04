@@ -107,15 +107,16 @@ let active = row.bool(r; "active");  (* active = ok(true) *)
 ```toke
 (* Open an in-memory database; create a table; insert and query *)
 db.open(":memory:");
-db.exec("CREATE TABLE users(id INTEGER; name TEXT; active INTEGER)"; @());
-db.exec("INSERT INTO users VALUES(1;'alice';1)"; @());
+db.exec("CREATE TABLE users(id INTEGER; name TEXT; active INTEGER)";@());
+db.exec("INSERT INTO users VALUES(1;'alice';1)";@());
 
-let row = db.one("SELECT * FROM users WHERE id=1"; @());
-if row.ok? =
-  let name = row.str(row!; "name") |{ "unknown" };
-  log.info("found user"; @(@("name"; name)))
-el =
-  log.warn("user not found"; @());
+db.one("SELECT * FROM users WHERE id=1";@())|{
+  Ok:r  {
+    let name=row.str(r;"name")|{Ok:s s;Err:e "unknown"};
+    log.info("found user";@(@("name";name)));
+  };
+  Err:e  log.warn("user not found";@())
+};
 
 db.close();
 ```

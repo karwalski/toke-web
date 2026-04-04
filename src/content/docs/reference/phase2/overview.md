@@ -3,23 +3,23 @@ title: "Encoding Design"
 description: "How toke reduces its character set from 80 to 56 characters — the encoding methodology, transformation rules, and token efficiency gains."
 ---
 
-Phase 2 is a reduced-character profile of the toke language designed for use with the purpose-built BPE tokenizer. It expresses the same semantics as Phase 1 but uses only **56 characters**, enabling significantly higher token density during LLM inference.
+The default syntax is a reduced-character profile of the toke language designed for use with the purpose-built BPE tokenizer. It expresses the same semantics as the legacy profile but uses only **56 characters**, enabling significantly higher token density during LLM inference.
 
-Phase 2 is the production encoding. Phase 1 (80 characters) was used during corpus generation to leverage existing LLM tokenizers, and programs are mechanically transformed to Phase 2 for training and inference.
+The default syntax is the production encoding. The legacy profile (80 characters) was used during corpus generation to leverage existing LLM tokenizers, and programs are mechanically transformed to the default syntax for training and inference.
 
 :::note
-Phase 2 source is **not** valid Phase 1 source, and vice versa. The compiler accepts `--profile1` (default) or `--profile2` to select the active profile.
+Default syntax source is **not** valid legacy profile source, and vice versa. The compiler accepts `--profile1` (legacy) or `--profile2` (default) to select the active profile.
 :::
 
 ## Why Two Profiles?
 
-Phase 1 uses existing LLM tokenizers (like cl100k_base) which were not designed for toke. It needs uppercase letters for type names and brackets for arrays because these are what existing tokenizers handle well.
+The legacy profile uses existing LLM tokenizers (like cl100k_base) which were not designed for toke. It needs uppercase letters for type names and brackets for arrays because these are what existing tokenizers handle well.
 
-Phase 2 drops uppercase letters entirely and replaces bracket-heavy syntax with sigils (`$` for types, `@` for arrays). A purpose-built tokenizer trained on toke source can merge these patterns into single vocabulary entries — `$user`, `$str`, `@(` — achieving 2.5-4x better token density than Phase 1 with cl100k_base.
+The default syntax drops uppercase letters entirely and replaces bracket-heavy syntax with sigils (`$` for types, `@` for arrays). A purpose-built tokenizer trained on toke source can merge these patterns into single vocabulary entries — `$user`, `$str`, `@(` — achieving 2.5-4x better token density than the legacy profile with cl100k_base.
 
 ## Character Set Comparison
 
-| Class | Phase 1 (80 chars) | Phase 2 (56 chars) | Change |
+| Class | Legacy (80 chars) | Default (56 chars) | Change |
 |-------|--------------------|--------------------|--------|
 | Lowercase | a-z (26) | a-z (26) | Same |
 | Uppercase | A-Z (26) | — | Removed |
@@ -30,16 +30,16 @@ Phase 2 drops uppercase letters entirely and replaces bracket-heavy syntax with 
 
 ## Transformation Rules
 
-Every Phase 1 program can be mechanically transformed to Phase 2. The transformation is deterministic and reversible.
+Every legacy profile program can be mechanically transformed to the default syntax. The transformation is deterministic and reversible.
 
 ### 1. Type sigil: uppercase becomes `$lowercase`
 
-Phase 1 uses uppercase-initial identifiers for types. Phase 2 prefixes them with `$` and lowercases.
+The legacy profile uses uppercase-initial identifiers for types. The default syntax prefixes them with `$` and lowercases.
 
 <div class="hero-comparison">
 <div>
 
-**Phase 1**
+**Legacy**
 ```
 T=User{id:u64;name:Str};
 T=ApiErr{NotFound:u64;Timeout:Str};
@@ -48,10 +48,10 @@ T=ApiErr{NotFound:u64;Timeout:Str};
 </div>
 <div>
 
-**Phase 2**
+**Default**
 ```
 t=$user{id:u64;name:$str};
-t=$apierr{$notfound:u64;$timeout:$str};
+t=$apierr{notfound:u64;timeout:$str};
 ```
 
 </div>
@@ -64,7 +64,7 @@ This applies to all type positions: declarations, annotations, struct literals, 
 <div class="hero-comparison">
 <div>
 
-**Phase 1**
+**Legacy**
 ```
 let nums=[1;2;3];
 let names=["alice";"bob"];
@@ -73,7 +73,7 @@ let names=["alice";"bob"];
 </div>
 <div>
 
-**Phase 2**
+**Default**
 ```
 let nums=@(1;2;3);
 let names=@("alice";"bob");
@@ -87,7 +87,7 @@ let names=@("alice";"bob");
 <div class="hero-comparison">
 <div>
 
-**Phase 1**
+**Legacy**
 ```
 let first=arr[0];
 let item=arr[i];
@@ -96,23 +96,23 @@ let item=arr[i];
 </div>
 <div>
 
-**Phase 2**
+**Default**
 ```
-let first=arr.0;
+let first=arr.get(0);
 let item=arr.get(i);
 ```
 
 </div>
 </div>
 
-Constant indices use dot notation (`arr.0`, `arr.1`). Variable indices use `.get(n)`.
+All array indexing uses `.get(n)`.
 
 ### 4. Map types: `[K:V]` becomes `$(K:V)`
 
 <div class="hero-comparison">
 <div>
 
-**Phase 1**
+**Legacy**
 ```
 let ages=[Str:i64]["alice":30;"bob":25];
 ```
@@ -120,7 +120,7 @@ let ages=[Str:i64]["alice":30;"bob":25];
 </div>
 <div>
 
-**Phase 2**
+**Default**
 ```
 let ages=$($str:i64)("alice":30;"bob":25);
 ```
@@ -130,14 +130,14 @@ let ages=$($str:i64)("alice":30;"bob":25);
 
 ### 5. Identifiers
 
-Phase 1 identifiers may begin with uppercase or lowercase. Phase 2 identifiers are lowercase only. All user-defined identifiers that began with uppercase in Phase 1 are lowercased and prefixed with `$` in Phase 2.
+Legacy profile identifiers may begin with uppercase or lowercase. Default syntax identifiers are lowercase only. All user-defined identifiers that began with uppercase in the legacy profile are lowercased and prefixed with `$` in the default syntax.
 
 ## Complete Example
 
 <div class="hero-comparison">
 <div>
 
-**Phase 1**
+**Legacy**
 ```
 M=fib;
 
@@ -154,7 +154,7 @@ F=main():i64{
 </div>
 <div>
 
-**Phase 2**
+**Default**
 ```
 m=fib;
 
@@ -171,12 +171,12 @@ f=main():i64{
 </div>
 </div>
 
-This example shows that even simple programs differ between profiles: Phase 2 lowercases the `M=`, `F=` keywords to `m=`, `f=`. The bigger differences emerge in programs that use the type system and collections.
+This example shows that even simple programs differ between profiles: the default syntax lowercases the `M=`, `F=` keywords to `m=`, `f=`. The bigger differences emerge in programs that use the type system and collections.
 
 <div class="hero-comparison">
 <div>
 
-**Phase 1**
+**Legacy**
 ```
 M=api;
 I=http:std.http;
@@ -197,15 +197,15 @@ F=handle(req:http.Req):http.Res!ApiErr{
 </div>
 <div>
 
-**Phase 2**
+**Default**
 ```
 m=api;
 i=http:std.http;
 i=json:std.json;
 
 t=$apierr{
-  $notfound:u64;
-  $badrequest:$str
+  notfound:u64;
+  badrequest:$str
 };
 
 f=handle(req:http.$req):http.$res!$apierr{
@@ -220,9 +220,9 @@ f=handle(req:http.$req):http.$res!$apierr{
 
 ## Token Efficiency
 
-The purpose-built Phase 2 tokenizer merges common patterns into single vocabulary entries:
+The purpose-built default syntax tokenizer merges common patterns into single vocabulary entries:
 
-| Pattern | Phase 1 tokens (cl100k) | Phase 2 tokens (toke BPE) |
+| Pattern | Legacy tokens (cl100k) | Default tokens (toke BPE) |
 |---------|------------------------|--------------------------|
 | `$user` | 2-3 | 1 |
 | `$str` | 2 | 1 |
@@ -231,7 +231,7 @@ The purpose-built Phase 2 tokenizer merges common patterns into single vocabular
 | `!$err` | 3 | 1 |
 | `<$res.ok` | 4-5 | 1-2 |
 
-The target vocabulary size is 32,768 tokens. The tokenizer specification is finalised after Phase 1 corpus generation is complete.
+The target vocabulary size is 32,768 tokens. The tokenizer specification is finalised after legacy corpus generation is complete.
 
 ## What Stays the Same
 
@@ -247,8 +247,8 @@ Everything not listed above is identical between profiles:
 
 ## See Also
 
-- [Type System](/reference/types/) — production type reference (Phase 2 notation)
-- [Phase 2 Type Details](/reference/phase2/types/) — Phase 2 type transformation details
-- [Grammar](/reference/grammar/) — production grammar reference (Phase 2 notation)
-- [Phase 2 Grammar Details](/reference/phase2/grammar/) — Phase 2 grammar transformation details
+- [Type System](/reference/types/) — production type reference (default syntax notation)
+- [Default Syntax Type Details](/reference/phase2/types/) — type transformation details
+- [Grammar](/reference/grammar/) — production grammar reference (default syntax notation)
+- [Default Syntax Grammar Details](/reference/phase2/grammar/) — grammar transformation details
 - [Design Principles](/about/design/) — why toke has two profiles

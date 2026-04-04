@@ -78,7 +78,7 @@ func sum(arr []int) int {
 
 **toke (approx. 38 tokens):**
 ```
-f=sum(arr:@(i64)):i64{
+f=sum(arr:@i64):i64{
   let acc=mut.0;
   lp(let i=0;i<arr.len;i=i+1){
     acc=acc+arr.get(i);

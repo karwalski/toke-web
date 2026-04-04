@@ -1,6 +1,6 @@
 ---
 title: "Lesson 8: Advanced Topics"
-description: "Explore FFI with extern functions, pointer types, async with spawn and await, tasks, casts, and arena blocks."
+description: "Explore FFI with extern functions, pointer types, casts, and arena blocks."
 ---
 
 **Estimated time: ~25 minutes**
@@ -88,74 +88,6 @@ let wide=narrow as i64;
 
 There are **no implicit conversions** in toke. Every conversion must use `as`. This is enforced by the compiler -- passing an `i32` where `i64` is expected is a type error (E4020).
 
-## Async: spawn and await
-
-toke supports concurrent execution through spawning tasks.
-
-### Spawning a task
-
-The `spawn` function starts a function as a concurrent task:
-
-```
-let task=spawn(fetchData);
-```
-
-This returns a `$task` value immediately. The spawned function runs concurrently.
-
-### Awaiting a task
-
-The `await` function blocks until a task completes and returns its result:
-
-```
-let result=await(task);
-```
-
-### The $task type
-
-A `$task` is parameterised by the return type of the spawned function. If `fetchData` returns `$str!$httperr`, then `spawn(fetchData)` returns `$task<$str!$httperr>`, and `await(task)` produces the `$str!$httperr` result.
-
-### Concurrent HTTP requests
-
-```
-m=parallel;
-i=http:std.http;
-i=io:std.io;
-
-f=fetch(url:$str):$str!http.$err{
-  let res=http.get(url)!http.$err;
-  <res.body;
-};
-
-f=main():i64{
-  let t1=spawn(fetch);
-  let t2=spawn(fetch);
-  let t3=spawn(fetch);
-
-  let users=await(t1);
-  let posts=await(t2);
-  let comments=await(t3);
-
-  users|{
-    Ok:data  io.println("Users: \(data)");
-    Err:e    io.println("Failed to fetch users");
-  };
-  <0;
-};
-```
-
-All three HTTP requests run concurrently. The `await` calls block until each completes. The total time is roughly the time of the slowest request, not the sum of all three.
-
-### Concurrency notes
-
-Concurrency semantics are partially specified in toke v0.1. The key guarantees:
-
-- Spawned tasks run independently
-- `await` blocks the current task until the spawned task completes
-- There is no shared mutable state between tasks (no data races by construction)
-- Communication between tasks happens through the return value
-
-Full concurrency semantics (channels, select, structured concurrency) are deferred to v0.2.
-
 ## Arena blocks
 
 :::note
@@ -165,7 +97,7 @@ Arena blocks (`{arena ...}`) are a planned feature. The syntax is supported by t
 By default, all allocations within a function are freed when the function returns. Arena blocks create shorter-lived allocation regions:
 
 ```
-f=processLargeData(items:@($str)):$str{
+f=processLargeData(items:@$str):$str{
   let result=mut."";
   lp(let i=0;i<items.len;i=i+1){
     {arena
@@ -211,16 +143,12 @@ This pins the import to a specific version of the module. Version resolution and
 
 ### Exercise 1: Cast practice
 
-Write a function `f=stats(arr:@(i64)):void` that computes and prints:
+Write a function `f=stats(arr:@i64):void` that computes and prints:
 - The sum (as i64)
 - The count (as i64)
 - The average (as f64 -- cast sum and count before dividing)
 
-### Exercise 2: Concurrent fetches
-
-Write a program that spawns three tasks to simulate parallel work. Each task should call a function that returns a string after doing some computation. Await all three and print the results.
-
-### Exercise 3: Arena usage
+### Exercise 2: Arena usage
 
 Write a function that processes an array of 1000 strings. Use an arena block inside the loop to ensure temporary allocations are freed per iteration. Print the final aggregated result.
 
@@ -229,8 +157,6 @@ Write a function that processes an array of 1000 strings. Use an arena block ins
 - Extern functions (`f=` with no body) declare C functions for FFI
 - Pointer types (`*T`) are for FFI only -- not used in pure toke code
 - `as` performs explicit type casts -- no implicit conversions exist
-- `spawn(func)` starts concurrent tasks; `await(task)` retrieves their results
-- `$task` is the type of a spawned computation
 - `{arena ... }` creates a sub-arena for temporary allocations
 - Arena-allocated values cannot escape their arena (compile-time check)
 

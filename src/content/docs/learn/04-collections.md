@@ -23,15 +23,15 @@ Note the last line -- an empty array literal `@()` has element type `unknown` un
 
 ### Array types
 
-The type of an array is written `@(T)` where `T` is the element type:
+The type of an array is written `@T` where `T` is the element type:
 
-The parameter type `@($str)` denotes an array of strings. The return type `@(i64)` denotes an array of integers.
+The parameter type `@$str` denotes an array of strings. The return type `@i64` denotes an array of integers.
 
 ```
-f=process(items:@($str)):void{
+f=process(items:@$str):void{
 };
 
-f=makeNumbers():@(i64){
+f=makeNumbers():@i64{
   <@(10;20;30);
 };
 ```
@@ -51,9 +51,9 @@ Access elements by constant index using dot notation, or by variable using `.get
 
 ```
 let arr=@(10;20;30);
-let first=arr.0;
-let second=arr.1;
-let third=arr.2;
+let first=arr.get(0);
+let second=arr.get(1);
+let third=arr.get(2);
 ```
 
 Out-of-bounds access is a runtime trap (RT001) -- the program terminates with a structured error. There is no silent undefined behaviour.
@@ -63,7 +63,7 @@ Out-of-bounds access is a runtime trap (RT001) -- the program terminates with a 
 Use `lp` with an index variable:
 
 ```
-f=printAll(arr:@($str)):void{
+f=printAll(arr:@$str):void{
   lp(let i=0;i<arr.len;i=i+1){
     io.println(arr.get(i));
   };
@@ -77,7 +77,7 @@ This is the standard iteration pattern in toke. There is no `for-each` or iterat
 To build an array dynamically, start with an empty array and use append operations:
 
 ```
-f=range(n:i64):@(i64){
+f=range(n:i64):@i64{
   let result=mut.@();
   lp(let i=0;i<n;i=i+1){
     result=result.push(i);
@@ -175,7 +175,7 @@ Count how many times each word appears:
 m=freq;
 i=io:std.io;
 
-f=countFreq(words:@($str)):$($str:i64){
+f=countFreq(words:@$str):$($str:i64){
   let freq=mut.$($str:i64)();
   lp(let i=0;i<words.len;i=i+1){
     let w=words.get(i);
@@ -193,7 +193,7 @@ f=countFreq(words:@($str)):$($str:i64){
 ### Finding a value in an array
 
 ```
-f=contains(arr:@(i64);target:i64):bool{
+f=contains(arr:@i64;target:i64):bool{
   lp(let i=0;i<arr.len;i=i+1){
     if(arr.get(i)=target){
       <true;
@@ -208,7 +208,7 @@ Note: equality comparison in toke uses `=` (single equals) in expression context
 ### Array reversal
 
 ```
-f=reverse(arr:@(i64)):@(i64){
+f=reverse(arr:@i64):@i64{
   let result=mut.@();
   let i=mut.arr.len;
   lp(let x=0;i>0;x=0){
@@ -224,8 +224,8 @@ f=reverse(arr:@(i64)):@(i64){
 ### Exercise 1: Sum and average
 
 Write two functions:
-- `f=sum(arr:@(i64)):i64` -- returns the sum of all elements
-- `f=average(arr:@(i64)):f64` -- returns the average as a float (use `as f64` to cast the sum and length)
+- `f=sum(arr:@i64):i64` -- returns the sum of all elements
+- `f=average(arr:@i64):f64` -- returns the average as a float (use `as f64` to cast the sum and length)
 
 ### Exercise 2: Frequency counter
 
@@ -236,7 +236,7 @@ Write a complete program with module `freq` that:
 
 ### Exercise 3: Array reversal
 
-Write `f=reverse(arr:@($str)):@($str)` that returns a new array with elements in reverse order. Test it with `@("a";"b";"c";"d")`.
+Write `f=reverse(arr:@$str):@$str` that returns a new array with elements in reverse order. Test it with `@("a";"b";"c";"d")`.
 
 ### Exercise 4: Merge maps
 
@@ -244,10 +244,10 @@ Write `f=merge(a:$($str:i64);b:$($str:i64)):$($str:i64)` that returns a new map 
 
 ## Key takeaways
 
-- Array literals: `@(1;2;3)`, type: `@(i64)`
+- Array literals: `@(1;2;3)`, type: `@i64`
 - Map literals: `$($str:i64)("a":1;"b":2)`, type: `$($str:i64)`
 - `.len` gives the size of arrays and maps
-- Array indexing: `arr.0` (constant), `arr.get(i)` (variable) -- zero-based, bounds-checked
+- Array indexing: `arr.get(i)` -- zero-based, bounds-checked
 - Map operations: `.get`, `.put`, `.delete`, `.contains`, `.keys`
 - Iterate with `lp` and an index variable
 - Out-of-bounds access is a runtime trap, not undefined behaviour

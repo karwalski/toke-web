@@ -15,7 +15,7 @@ if(x>0){
 };
 ```
 
-The condition must be of type `bool`. toke has no implicit truthiness -- you cannot write `if(x)` where `x` is an integer. You must write `if(x!=0)`.
+The condition must be of type `bool`. toke has no implicit truthiness -- you cannot write `if(x)` where `x` is an integer. You must write `if(!(x=0))`.
 
 ### If-else with `el`
 
@@ -105,7 +105,7 @@ i = 4
 ### Sum of an array
 
 ```
-f=sum(arr:@(i64)):i64{
+f=sum(arr:@i64):i64{
   let acc=mut.0;
   lp(let i=0;i<arr.len;i=i+1){
     acc=acc+arr.get(i);
@@ -134,7 +134,7 @@ lp(let x=0;!done;x=0){
 The `br` keyword exits the innermost loop immediately:
 
 ```
-f=findFirstNeg(arr:@(i64)):i64{
+f=findFirstNeg(arr:@i64):i64{
   let result=mut.0-1;
   lp(let i=0;i<arr.len;i=i+1){
     if(arr.get(i)<0){
@@ -177,21 +177,17 @@ The compiler requires every variant to be covered. If you add a variant to a sum
 
 ### Match on a custom sum type
 
-```
+```toke
 m=shapes;
 
 t=$shape{
-  $circle:f64;
-  $square:f64;
-  $rect:f64
+  circle:f64;
+  square:f64;
+  rect:f64
 };
 
 f=describe(s:$shape):$str{
-  <s|{
-    $circle:r "Circle";
-    $square:side "Square";
-    $rect:w "Rectangle"
-  };
+  <s|{circle:r "circle";square:side "square";rect:w "rectangle"};
 };
 ```
 
@@ -200,7 +196,7 @@ f=describe(s:$shape):$str{
 Match is the primary way to handle errors when you cannot propagate them:
 
 ```
-f=safeGet(arr:@(i64);idx:u64):$str{
+f=safeGet(arr:@i64;idx:u64):$str{
   <getElement(arr;idx)|{
     Ok:val "Found";
     Err:e "Error: not found"
@@ -218,7 +214,7 @@ Here is a more complete example -- a function that classifies numbers in an arra
 m=classify;
 i=io:std.io;
 
-f=classify(arr:@(i64)):void{
+f=classify(arr:@i64):void{
   let positives=mut.0;
   let negatives=mut.0;
   let zeroes=mut.0;
@@ -254,7 +250,7 @@ Hints:
 
 ### Exercise 2: Find the maximum
 
-Write `f=max(arr:@(i64)):i64` that returns the largest element in an array. Use `lp` and `if`.
+Write `f=max(arr:@i64):i64` that returns the largest element in an array. Use `lp` and `if`.
 
 ### Exercise 3: Reverse print
 
@@ -262,7 +258,7 @@ Write a function that prints the elements of an array in reverse order. Use `lp`
 
 ### Exercise 4: Count matches
 
-Write `f=countGreater(arr:@(i64);threshold:i64):i64` that returns how many elements in the array are greater than `threshold`.
+Write `f=countGreater(arr:@i64;threshold:i64):i64` that returns how many elements in the array are greater than `threshold`.
 
 ## Key takeaways
 
@@ -270,7 +266,7 @@ Write `f=countGreater(arr:@(i64);threshold:i64):i64` that returns how many eleme
 - No `elif` -- nest `if` inside `el` for chains
 - `lp(init;cond;step){body}` is the only loop construct
 - `br` breaks out of the innermost loop
-- `expr|{$variant:binding result; ...}` is the match expression
+- `expr|{variant:binding result; ...}` is the match expression
 - Match is exhaustive -- all variants must be covered
 - Conditions must be `bool` -- no implicit truthiness
 

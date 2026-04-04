@@ -43,18 +43,18 @@ t=$bookmark{
   id:u64;
   url:$str;
   title:$str;
-  tags:@($str)
+  tags:@$str
 };
 
 t=$bookmarkdb{
-  bookmarks:@($bookmark);
+  bookmarks:@$bookmark;
   nextId:u64
 };
 
 t=$bmerr{
-  $fileerr:$str;
-  $parseerr:$str;
-  $notfound:u64
+  fileerr:$str;
+  parseerr:$str;
+  notfound:u64
 };
 ```
 
@@ -67,9 +67,9 @@ The interface file for this module would be:
 ```
 m=bm.model;
 
-t=$bookmark{id:u64;url:$str;title:$str;tags:@($str)};
-t=$bookmarkdb{bookmarks:@($bookmark);nextId:u64};
-t=$bmerr{$fileerr:$str;$parseerr:$str;$notfound:u64};
+t=$bookmark{id:u64;url:$str;title:$str;tags:@$str};
+t=$bookmarkdb{bookmarks:@$bookmark;nextId:u64};
+t=$bmerr{fileerr:$str;parseerr:$str;notfound:u64};
 ```
 
 ## Step 2: Build the store
@@ -103,7 +103,7 @@ f=save(db:m.$bookmarkdb):void!m.$bmerr{
   file.write(dbPath();data)!m.$bmerr;
 };
 
-f=add(db:m.$bookmarkdb;url:$str;title:$str;tags:@($str)):m.$bookmarkdb{
+f=add(db:m.$bookmarkdb;url:$str;title:$str;tags:@$str):m.$bookmarkdb{
   let bm=m.$bookmark{
     id:db.nextId;
     url:url;
@@ -128,7 +128,7 @@ f=delete(db:m.$bookmarkdb;id:u64):m.$bookmarkdb!m.$bmerr{
     };
   };
   if(!found){
-    <m.$bmerr{$notfound:id};
+    <m.$bmerr{notfound:id};
   };
   <m.$bookmarkdb{
     bookmarks:result;
@@ -136,7 +136,7 @@ f=delete(db:m.$bookmarkdb;id:u64):m.$bookmarkdb!m.$bmerr{
   };
 };
 
-f=search(db:m.$bookmarkdb;query:$str):@(m.$bookmark){
+f=search(db:m.$bookmarkdb;query:$str):@m.$bookmark{
   let q=str.lower(query);
   let result=mut.@();
   lp(let i=0;i<db.bookmarks.len;i=i+1){
@@ -191,7 +191,7 @@ f=printBookmark(bm:m.$bookmark):void{
   };
 };
 
-f=printBookmarks(bms:@(m.$bookmark)):void{
+f=printBookmarks(bms:@m.$bookmark):void{
   if(bms.len=0){
     io.println("  (no bookmarks)");
   }el{
@@ -255,9 +255,9 @@ f=cmdDelete(idStr:$str):void{
           };
         };
         Err:e  e|{
-          $notfound:n   io.println("Bookmark not found");
-          $fileerr:msg  io.println("File error");
-          $parseerr:msg io.println("Parse error")
+          notfound:n   io.println("Bookmark not found");
+          fileerr:msg  io.println("File error");
+          parseerr:msg io.println("Parse error")
         }
       };
     };
@@ -290,11 +290,11 @@ f=main():i64{
       if(parts.len<2){
         io.println("Usage: add <url> <title> [tags]");
       }el{
-        let url=parts.0;
-        let title=parts.1;
+        let url=parts.get(0);
+        let title=parts.get(1);
         let tags="";
         if(parts.len>2){
-          tags=parts.2;
+          tags=parts.get(2);
         };
         cmdAdd(url;title;tags);
       };

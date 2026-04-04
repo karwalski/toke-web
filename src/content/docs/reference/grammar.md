@@ -73,7 +73,7 @@ A function declaration without a body (terminated by `;` instead of a block) is 
 
 ```ebnf
 TypeExpr    = PrimType
-            | "@" , "(" , TypeExpr , ")"                   (* array *)
+            | "@" , TypeExpr                               (* array *)
             | "$" , "(" , TypeExpr , ":" , TypeExpr , ")"  (* map *)
             | TypeExpr , "!" , Ident                       (* error union *)
             | "*" , TypeExpr                               (* pointer, FFI only *)
@@ -89,7 +89,7 @@ PrimType    = "i64" | "u64" | "f64" | "bool" | "$str" | "void" ;
 StmtList    = { Stmt , [ ";" ] } ;
 
 Stmt        = LetStmt
-            | MutStmt
+            | MutLetStmt
             | AssignStmt
             | ReturnStmt
             | IfStmt
@@ -101,13 +101,13 @@ Stmt        = LetStmt
 
 LetStmt     = "let" , Ident , [ ":" , TypeExpr ] , "=" , Expr ;
 
-MutStmt     = "mut" , Ident , [ ":" , TypeExpr ] , "=" , Expr ;
+MutLetStmt  = "let" , Ident , [ ":" , TypeExpr ] , "=" , "mut" , "." , Expr ;
 
 AssignStmt  = Ident , "=" , Expr ;
 
 ReturnStmt  = "<" , Expr ;
 
-IfStmt      = "?" , "(" , Expr , ")" , Block , [ ":" , Block ] ;
+IfStmt      = "if" , "(" , Expr , ")" , Block , [ "el" , Block ] ;
 
 LoopStmt    = "lp" , "(" , [ LoopInit ] , ";" , [ Expr ] , ";" , [ Expr ] , ")" , Block ;
 
@@ -134,7 +134,7 @@ Expr        = UnaryExpr , [ BinOp , Expr ]
 
 UnaryExpr   = [ "-" ] , PrimaryExpr ;
 
-BinOp       = "+" | "-" | "*" | "/" | "<" | ">" | "==" | "&&" | "||" ;
+BinOp       = "+" | "-" | "*" | "/" | "<" | ">" | "=" | "&&" | "||" ;
 
 CallExpr    = Ident , "(" , [ ArgList ] , ")" ;
 
@@ -144,13 +144,11 @@ FieldExpr   = Expr , "." , Ident ;
 
 CastExpr    = Expr , "as" , TypeExpr ;
 
-PropagateExpr = Expr , "!" ;
+PropagateExpr = Expr , "!" , TypeExpr ;
 
-MatchExpr   = "match" , Expr , "{" , MatchArm , { ";" , MatchArm } , [ ";" ] , "}" ;
+MatchExpr   = Expr , "|" , "{" , MatchArm , { ";" , MatchArm } , [ ";" ] , "}" ;
 
-MatchArm    = Pattern , "=>" , ( Expr | Block ) ;
-
-Pattern     = Literal | Ident | "_" ;
+MatchArm    = TypeIdent , ":" , Ident , Expr ;
 ```
 
 ### Literals
@@ -199,7 +197,7 @@ Every toke source file is a `Module`. It begins with a mandatory module declarat
 ```toke
 m=myapp;
 i=io:std.file;
-t=Config{port: i64; host: $str};
+t=$config{port:i64;host:$str};
 f=main(): void { };
 ```
 
@@ -214,7 +212,7 @@ f=puts(s: *u8): void;
 
 ### TypeExpr
 
-Type expressions describe the type of a value. They can be primitives, arrays (`@(T)`), maps (`$(K:V)`), error unions (`T!Err`), pointers (`*T`, FFI only), or named struct types (`$name`).
+Type expressions describe the type of a value. They can be primitives, arrays (`@T`), maps (`$(K:V)`), error unions (`T!Err`), pointers (`*T`, FFI only), or named struct types (`$name`).
 
 ### Stmt
 
@@ -251,7 +249,7 @@ Operators are listed from highest to lowest precedence:
 | 5          | `as`               | Left          | Type cast                |
 | 6          | `*`, `/`           | Left          | Multiplication, division |
 | 7          | `+`, `-`           | Left          | Addition, subtraction    |
-| 8          | `<`, `>`, `==`     | Left          | Comparison               |
+| 8          | `<`, `>`, `=`      | Left          | Comparison               |
 | 9          | `&&`               | Left          | Logical AND              |
 | 10 (lowest)| `\|\|`             | Left          | Logical OR               |
 
@@ -260,7 +258,7 @@ Operators are listed from highest to lowest precedence:
 ```toke
 a + b * c
 x.len + 1
-value!Err + 1
+value!$err + 1
 x as f64 + 1.0
 a > 0
 ```

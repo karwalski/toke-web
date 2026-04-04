@@ -17,21 +17,21 @@ Errors are defined as sum types -- tagged unions where each variant represents a
 
 ```
 t=$matherr{
-  $divbyzero:bool;
-  $overflow:$str
+  divbyzero:bool;
+  overflow:$str
 };
 ```
 
-Each variant has a name (prefixed with `$`) and a payload type. Use `bool` for variants that carry no meaningful data -- the value `true` is implicit.
+Each variant has a name and a payload type. Use `bool` for variants that carry no meaningful data -- the value `true` is implicit.
 
 Here is a more realistic error type:
 
 ```
 t=$dberr{
-  $connectionfailed:$str;
-  $queryfailed:$str;
-  $notfound:u64;
-  $timeout:u32
+  connectionfailed:$str;
+  queryfailed:$str;
+  notfound:u64;
+  timeout:u32
 };
 ```
 
@@ -42,7 +42,7 @@ When a function can fail, its return type includes the error type after `!`:
 ```
 f=divide(a:f64;b:f64):f64!$matherr{
   if(b=0.0){
-    <$matherr{$divbyzero:true};
+    <$matherr{divbyzero:true};
   };
   <a/b;
 };
@@ -60,10 +60,10 @@ To return an error, construct the error variant:
 f=parseAge(s:$str):i64!$parseerr{
   let n=str.toInt(s)!$parseerr;
   if(n<0){
-    <$parseerr{$negativeage:s};
+    <$parseerr{negativeage:s};
   };
   if(n>150){
-    <$parseerr{$unreasonableage:s};
+    <$parseerr{unreasonableage:s};
   };
   <n;
 };
@@ -127,9 +127,9 @@ f=resilientGet(id:u64):http.$res{
   <db.getUser(id)|{
     Ok:user  http.$res.ok(json.enc(user));
     Err:e    e|{
-      $notfound:x   http.$res.status(404;"User not found");
-      $timeout:x    http.$res.status(503;"Service temporarily unavailable");
-      $dberror:msg  http.$res.status(500;msg)
+      notfound:x   http.$res.status(404;"User not found");
+      timeout:x    http.$res.status(503;"Service temporarily unavailable");
+      dberror:msg  http.$res.status(500;msg)
     }
   };
 };
@@ -144,13 +144,13 @@ m=calc;
 i=io:std.io;
 
 t=$calcerr{
-  $divbyzero:bool;
-  $invalidop:$str
+  divbyzero:bool;
+  invalidop:$str
 };
 
 f=divide(a:f64;b:f64):f64!$calcerr{
   if(b=0.0){
-    <$calcerr{$divbyzero:true};
+    <$calcerr{divbyzero:true};
   };
   <a/b;
 };
@@ -163,15 +163,15 @@ f=calc(a:f64;op:$str;b:f64):f64!$calcerr{
     let result=divide(a;b)!$calcerr;
     <result;
   };
-  <$calcerr{$invalidop:op};
+  <$calcerr{invalidop:op};
 };
 
 f=main():i64{
   calc(10.0;"/";3.0)|{
     Ok:v   io.println(v as $str);
     Err:e  e|{
-      $divbyzero:x  io.println("Error: division by zero");
-      $invalidop:op io.println("Error: unknown operator")
+      divbyzero:x  io.println("Error: division by zero");
+      invalidop:op io.println("Error: unknown operator")
     }
   };
   <0;
@@ -182,13 +182,13 @@ f=main():i64{
 
 ### Exercise 1: Safe division
 
-Write a function `f=safeDiv(a:i64;b:i64):i64!$matherr` that returns a `$divbyzero` error when `b` is zero. Write a `main` function that calls it and prints either the result or an error message using match.
+Write a function `f=safeDiv(a:i64;b:i64):i64!$matherr` that returns a `divbyzero` error when `b` is zero. Write a `main` function that calls it and prints either the result or an error message using match.
 
 ### Exercise 2: Lookup with error
 
-Define an error type `t=$lookuperr{$notfound:$str;$emptymap:bool}`. Write a function `f=lookup(m:$($str:i64);key:$str):i64!$lookuperr` that:
-- Returns `$emptymap` if the map has zero entries
-- Returns `$notfound(key)` if the key does not exist
+Define an error type `t=$lookuperr{notfound:$str;emptymap:bool}`. Write a function `f=lookup(m:$($str:i64);key:$str):i64!$lookuperr` that:
+- Returns `emptymap` if the map has zero entries
+- Returns `notfound(key)` if the key does not exist
 - Returns the value otherwise
 
 ### Exercise 3: Error chain
@@ -202,7 +202,7 @@ This exercises the `!` propagation with error type mapping.
 ## Key takeaways
 
 - toke has no exceptions -- errors are values in the type system
-- Error types are sum types: `t=$myerr{$variant1:$type1;$variant2:$type2}`
+- Error types are sum types: `t=$myerr{variant1:$type1;variant2:$type2}`
 - `:T!E` in a return type means the function can return either `T` (success) or `E` (error)
 - `expr!$errtype` propagates errors upward to the current function's error type
 - `expr|{Ok:v handleSuccess; Err:e handleError}` matches on results for recovery

@@ -91,16 +91,15 @@ let items = json.arr(j; "items");  (* items = ok(@($json; $json; $json)) *)
 
 ```toke
 (* Parse a JSON payload and extract fields *)
-let body = json.dec(req.body) |{ http.Res.bad("invalid json") };
-let name = json.str(body; "name") |{ "unknown" };
-let age = json.u64(body; "age") |{ 0 };
+let body=json.dec(req.body)!$apierr;
+let name=json.str(body;"name")|{Ok:s s;Err:e "unknown"};
+let age=json.u64(body;"age")|{Ok:n n;Err:e 0};
 
 (* Handle missing vs wrong type separately *)
-let val = json.str(body; "email");
-if val.ok? =
-  log.info("email found"; @(@("email"; val!)))
-el =
-  log.warn("email missing"; @());
+json.str(body;"email")|{
+  Ok:v   log.info("email found";@(@("email";v)));
+  Err:e  log.warn("email missing";@())
+};
 ```
 
 ## Error Types

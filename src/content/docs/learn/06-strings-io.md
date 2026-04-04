@@ -12,7 +12,7 @@ Strings in toke are UTF-8 encoded, heap-allocated values of type `$str`. String 
 ```
 let greeting="Hello, world!";
 let empty="";
-let with_escape="Line one\nLine two";
+let escaped="Line one\nLine two";
 ```
 
 ### Escape sequences
@@ -126,8 +126,8 @@ i=file:std.file;
 
 ```
 t=$fileerr{
-  $notfound:$str;
-  $readfailed:$str
+  notfound:$str;
+  readfailed:$str
 };
 
 f=readConfig(path:$str):$str!$fileerr{
@@ -182,8 +182,8 @@ f=userToJson(u:$user):$str{
 
 ```
 t=$jsonerr{
-  $parsefailed:$str;
-  $missingfield:$str
+  parsefailed:$str;
+  missingfield:$str
 };
 
 f=jsonToUser(s:$str):$user!$jsonerr{
@@ -215,7 +215,7 @@ i=file:std.file;
 i=str:std.str;
 
 t=$wcerr{
-  $fileerr:$str
+  fileerr:$str
 };
 
 f=countWords(text:$str):$($str:i64){
@@ -258,7 +258,7 @@ Write a program that reads a file and prints the number of lines. Use `str.split
 
 ### Exercise 2: CSV parser
 
-Write a function `f=parseCsv(content:$str):@(@($str))` that splits a CSV string into a 2D array. Split on `"\n"` for rows and `","` for columns.
+Write a function `f=parseCsv(content:$str):@@$str` that splits a CSV string into a 2D array. Split on `"\n"` for rows and `","` for columns.
 
 ### Exercise 3: JSON round-trip
 

@@ -42,14 +42,14 @@ Every time an AI writes code, it generates one token at a time. Each token costs
 Each colour below represents one token. Fewer colours = fewer tokens = lower cost.
 
 <Tabs>
-  <TabItem label="toke (19 tokens)">
+  <TabItem label="toke (18 tokens)">
 <TokenViz
-  code="m=arrproduct;f=product(arr:@(u64)):u64{let p=mut.1;let q=arr.len;lp(let i=0;i<q;i=i+1){p=p*arr.get(i);};<p};"
-  boundaries={["m=arr","product;","f=product","(arr:","@(u64",")):u64","{let"," p=mut.","1;let"," q=arr.len",";lp(let"," i=0;","i<q;","i=i+1","){p=p","*arr.get","(i);","};","<p};"]}
-  count={19}
+  code="m=arrproduct;f=product(arr:@u64):u64{let p=mut.1;let q=arr.len;lp(let i=0;i<q;i=i+1){p=p*arr.get(i);};<p};"
+  boundaries={["m=arr","product;","f=product","(arr:","@u64):u64","{let"," p=mut.","1;let"," q=arr.len",";lp(let"," i=0;","i<q;","i=i+1","){p=p","*arr.get","(i);","};","<p};"]}
+  count={18}
   label="purpose-built tokenizer (projected)"
   variant="toke-p2"
-  note="toke uses a 56-character set with a custom BPE tokenizer. Common patterns like 'let p=mut.' and 'lp(let' become single tokens."
+  note="toke uses a 56-character set (the toke character set) with a custom BPE tokenizer. Common patterns like 'let p=mut.' and 'lp(let' become single tokens."
 />
 <div class="phase-note">
   toke uses a 56-character set with <code>$</code> sigils for types and <code>@</code> for arrays. A purpose-built BPE tokenizer trained on toke programs learns that patterns like <code>let&nbsp;p=mut.</code> and <code>lp(let</code> always appear together — encoding them as single tokens. <em>These token boundaries are illustrative of the target efficiency.</em>
@@ -96,11 +96,11 @@ Each colour below represents one token. Fewer colours = fewer tokens = lower cos
 Real-world code isn't minimal. Teams use documentation comments, descriptive names, and type annotations. Here's the same function written to production standards — and how that affects token cost.
 
 <Tabs>
-  <TabItem label="toke (19 tokens — unchanged)">
+  <TabItem label="toke (18 tokens — unchanged)">
 <TokenViz
-  code="m=arrproduct;f=product(arr:@(u64)):u64{let p=mut.1;let q=arr.len;lp(let i=0;i<q;i=i+1){p=p*arr.get(i);};<p};"
-  boundaries={["m=arr","product;","f=product","(arr:","@(u64",")):u64","{let"," p=mut.","1;let"," q=arr.len",";lp(let"," i=0;","i<q;","i=i+1","){p=p","*arr.get","(i);","};","<p};"]}
-  count={19}
+  code="m=arrproduct;f=product(arr:@u64):u64{let p=mut.1;let q=arr.len;lp(let i=0;i<q;i=i+1){p=p*arr.get(i);};<p};"
+  boundaries={["m=arr","product;","f=product","(arr:","@u64):u64","{let"," p=mut.","1;let"," q=arr.len",";lp(let"," i=0;","i<q;","i=i+1","){p=p","*arr.get","(i);","};","<p};"]}
+  count={18}
   label="purpose-built tokenizer (projected)"
   variant="toke-p2"
 />
@@ -184,6 +184,16 @@ A complete toke program. `m=` declares the module. `i=` imports a library. `f=` 
 ## Development Timeline
 
 <DevTimeline />
+
+## Built with toke
+
+<Card title="loke — Local Intelligence Layer" icon="star">
+	A locally-run intelligence layer that sits between users, their data, and external LLMs — minimising token spend, maximising privacy, and keeping sensitive data where it belongs: on your device.
+
+	The market has split into enterprise cloud gateways that need DevOps expertise, local model runners that don't optimise cloud-bound traffic, and multi-provider chat UIs that pass prompts through unchanged. loke occupies the empty quadrant at the centre — privacy, optimisation, and routing in one place, running locally.
+
+	[Explore loke](https://loke.tokelang.dev/)
+</Card>
 
 ## Ready to Start?
 

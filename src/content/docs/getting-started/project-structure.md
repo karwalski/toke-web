@@ -66,8 +66,8 @@ This produces `src/auth/login.tki` containing something like:
 m=myapp.auth.login;
 
 t=$loginerr{
-  BadCredentials:$str;
-  AccountLocked:$str
+  badcredentials:$str;
+  accountlocked:$str
 };
 
 f=login(username:$str;password:$str):$session!$loginerr;
