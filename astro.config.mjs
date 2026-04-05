@@ -24,6 +24,7 @@ export default defineConfig({
 						{ label: 'Why toke?', slug: 'about/why' },
 						{ label: 'Design Principles', slug: 'about/design' },
 						{ label: 'Project Repositories', slug: 'about/repos' },
+						{ label: 'Changelog', slug: 'about/changelog' },
 					],
 				},
 				{
