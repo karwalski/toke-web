@@ -231,42 +231,42 @@
       </div>
     </div>
 
-    <div class="timeline-milestone in-progress">
+    <div class="timeline-milestone complete">
       <div class="milestone-marker"></div>
       <div class="milestone-content">
         <div class="milestone-header">
           <span class="milestone-id">2.2</span>
           <span class="milestone-title">Purpose-Built Tokenizer</span>
-          <span class="phase-status in-progress">In Progress</span>
+          <span class="phase-status complete">Complete</span>
         </div>
         <p class="milestone-desc">Train a custom tokenizer on toke programs. Instead of using a general-purpose tokenizer, this one learns that toke-specific patterns (like <code>lp(let</code> or <code>arr.len</code>) should be single tokens.</p>
-        <p class="milestone-technical">SentencePiece BPE tokenizer (8K vocabulary) trained on Phase 1 corpus (46,730 programs). Achieved 12.5% token reduction vs cl100k_base, 100% round-trip fidelity. Retrain on expanded default-syntax corpus pending (Epic 23). <a href="https://github.com/karwalski/toke-model">toke-model</a></p>
+        <p class="milestone-technical">8K BPE trained, 15.2% token reduction vs cl100k_base. SentencePiece BPE tokenizer trained on Phase 1 corpus (46,730 programs), 100% round-trip fidelity. <a href="https://github.com/karwalski/toke-model">toke-model</a></p>
       </div>
     </div>
 
-    <div class="timeline-milestone in-progress">
+    <div class="timeline-milestone complete">
       <div class="milestone-marker"></div>
       <div class="milestone-content">
         <div class="milestone-header">
           <span class="milestone-id">2.3</span>
           <span class="milestone-title">First Fine-Tuned Model</span>
-          <span class="phase-status in-progress">In Progress</span>
+          <span class="phase-status complete">Complete</span>
         </div>
         <p class="milestone-desc">Take an existing 7-billion parameter AI model and specialise it on toke. The model learns from ~47,000 verified programs, becoming significantly better at writing correct toke code.</p>
-        <p class="milestone-technical">QLoRA fine-tune of Qwen 2.5 Coder 7B. 73,000 training examples (direct generation + multi-language comparison). Training on AWS EC2 (A10G GPU). ChatML instruction format. Round 2 training on frozen default syntax pending (Epic 24). Gate 1 results: 63.7% Pass@1, 12.5% token reduction. <a href="https://github.com/karwalski/toke-model">toke-model</a></p>
+        <p class="milestone-technical">Gate 1 PASS: 63.7% Pass@1, 12.5% token reduction. QLoRA fine-tune of Qwen 2.5 Coder 7B. 73,000 training examples (direct generation + multi-language comparison). ChatML instruction format. <a href="https://github.com/karwalski/toke-model">toke-model</a></p>
       </div>
     </div>
 
-    <div class="timeline-milestone planned">
+    <div class="timeline-milestone complete">
       <div class="milestone-marker"></div>
       <div class="milestone-content">
         <div class="milestone-header">
           <span class="milestone-id">2.4</span>
-          <span class="milestone-title">Extended Corpus — Phases B &amp; C</span>
-          <span class="phase-status planned">Planned</span>
+          <span class="milestone-title">Standard Library</span>
+          <span class="phase-status complete">Complete</span>
         </div>
-        <p class="milestone-desc">Expand the training library with 30,000 data-structure programs (multi-file, using types and collections) and 20,000 system-interaction programs (HTTP servers, database queries, file I/O).</p>
-        <p class="milestone-technical">Phase B: 30K multi-file programs (2-4 files each, type definitions + implementations). Phase C: 20K stdlib-dependent programs (HTTP, DB, file I/O). Uses Phase 2 tokenizer. <a href="https://github.com/karwalski/toke-model">toke-model</a></p>
+        <p class="milestone-desc">Expanded the standard library to cover a broad surface area for AI-generated programs, with interface contracts reconciled across all modules.</p>
+        <p class="milestone-technical">30+ modules implemented, .tki contracts reconciled. Covers encoding, encrypt, auth, ws, sse, router, template, csv, math, llm, chart, html, dashboard, svg, canvas, image, dataframe, analytics, and ml. <a href="https://github.com/karwalski/toke">toke</a></p>
       </div>
     </div>
 
