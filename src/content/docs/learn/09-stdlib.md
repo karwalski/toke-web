@@ -7,11 +7,9 @@ description: "A practical tour of the standard library modules with working exam
 
 The toke standard library provides modules covering the most common programming tasks. Each module is imported with `i=alias:std.module;` and accessed through the alias.
 
-> **Note:** Of the modules documented below, 11 have C runtime implementations today (str, file, json, http, db, crypto, env, process, log, time, test). Three modules (io, math, net) are planned but not yet implemented -- they are included here as part of the design vision.
+> **Note:** Of the modules documented below, 30+ have C runtime implementations. The standard library covers strings, files, JSON, HTTP, database, crypto, environment, process, logging, time, testing, encoding, encryption, authentication, WebSocket, SSE, routing, templates, CSV, math, LLM integration, charting, HTML generation, dashboards, SVG, canvas, image processing, dataframes, analytics, and machine learning.
 
 ## std.io -- Console I/O
-
-> **Status: Planned** -- not yet implemented. The API below is part of the design vision but has no compiler or runtime backing today.
 
 ```
 i=io:std.io;
@@ -317,8 +315,6 @@ f=log(msg:$str):void{
 
 ## std.math -- Mathematical functions
 
-> **Status: Planned** -- not yet implemented. The API below is part of the design vision but has no compiler or runtime backing today.
-
 ```
 i=math:std.math;
 ```
@@ -333,6 +329,13 @@ i=math:std.math;
 | `min` | `(a:f64;b:f64):f64` | Minimum |
 | `max` | `(a:f64;b:f64):f64` | Maximum |
 | `PI` | `f64` | Pi constant |
+| `sum` | `(vals:@f64):f64` | Sum of array |
+| `mean` | `(vals:@f64):f64` | Arithmetic mean |
+| `median` | `(vals:@f64):f64` | Median value |
+| `stddev` | `(vals:@f64):f64` | Standard deviation |
+| `variance` | `(vals:@f64):f64` | Variance |
+| `percentile` | `(vals:@f64;p:f64):f64` | Percentile (0--100) |
+| `linreg` | `(xs:@f64;ys:@f64):math.$lr` | Simple linear regression (slope, intercept, r2) |
 
 **Example: distance formula**
 
@@ -345,8 +348,6 @@ f=distance(x1:f64;y1:f64;x2:f64;y2:f64):f64{
 ```
 
 ## std.net -- TCP sockets
-
-> **Status: Planned** -- not yet implemented. The API below is part of the design vision but has no compiler or runtime backing today.
 
 ```
 i=net:std.net;
@@ -385,6 +386,55 @@ f=main():i64!net.$neterr{
 };
 ```
 
+## New Modules (Phase 2)
+
+The following modules were added during Phase 2 development. Each has full C runtime implementations and test coverage.
+
+### Security & Encoding
+
+| Module | Import | Purpose |
+|--------|--------|---------|
+| `std.encoding` | `i=enc:std.encoding;` | Base64, base64url, hex, URL encode/decode |
+| `std.encrypt` | `i=crypt:std.encrypt;` | AES-256-GCM, X25519 key exchange, Ed25519 signatures, SHA-512, HKDF |
+| `std.auth` | `i=auth:std.auth;` | JWT HS256 sign/verify, API key generation, constant-time compare |
+
+### Networking
+
+| Module | Import | Purpose |
+|--------|--------|---------|
+| `std.router` | `i=rt:std.router;` | HTTP path matching with `:param` capture, wildcard routes, query string decode |
+| `std.ws` | `i=ws:std.ws;` | RFC 6455 WebSocket framing, handshake, mask/unmask |
+| `std.sse` | `i=sse:std.sse;` | Server-Sent Events wire format, multi-line data, keepalive |
+
+### Data Processing
+
+| Module | Import | Purpose |
+|--------|--------|---------|
+| `std.csv` | `i=csv:std.csv;` | RFC 4180 CSV parser, streaming reader, writer |
+| `std.math` | `i=math:std.math;` | Statistics (mean, median, stddev, percentile), linear regression |
+| `std.dataframe` | `i=df:std.dataframe;` | Columnar data storage, filter, groupby, join, CSV import |
+| `std.analytics` | `i=an:std.analytics;` | Descriptive stats, timeseries bucketing, anomaly detection, correlation |
+| `std.ml` | `i=ml:std.ml;` | Linear regression, k-means, decision tree, KNN |
+| `std.template` | `i=tmpl:std.template;` | Mustache-style `{{slot}}` templates with HTML escaping |
+
+### LLM Integration
+
+| Module | Import | Purpose |
+|--------|--------|---------|
+| `std.llm` | `i=llm:std.llm;` | HTTP client for OpenAI/Anthropic/Ollama, SSE stream parser |
+| `std.llm_tool` | `i=tool:std.llm_tool;` | OpenAI function calling: tool JSON builder, tool_calls parser |
+
+### Visualization
+
+| Module | Import | Purpose |
+|--------|--------|---------|
+| `std.html` | `i=html:std.html;` | DOM tree builder, render to HTML string, table generation |
+| `std.svg` | `i=svg:std.svg;` | SVG element set, arrows, render to XML |
+| `std.canvas` | `i=canvas:std.canvas;` | 2D drawing commands, JS/HTML output |
+| `std.chart` | `i=chart:std.chart;` | Chart.js v4 and Vega-Lite JSON serializer |
+| `std.dashboard` | `i=dash:std.dashboard;` | Grid layout with chart/table widgets, HTML render |
+| `std.image` | `i=img:std.image;` | PNG encode/decode, bilinear resize, pixel manipulation |
+
 ## Exercises
 
 ### Exercise 1: HTTP API
@@ -413,7 +463,7 @@ Write a program that:
 
 ## Key takeaways
 
-- 11 standard library modules with C runtime implementations cover strings, files, JSON, HTTP, database, crypto, environment, process, logging, time, and testing -- with io, math, and net planned for future releases
+- 30+ standard library modules with C runtime implementations cover strings, files, JSON, HTTP, database, crypto, encoding, encryption, authentication, environment, process, logging, time, testing, WebSocket, SSE, routing, templates, CSV, math, LLM integration, charting, HTML generation, dashboards, SVG, canvas, image processing, dataframes, analytics, and machine learning
 - All modules follow the same import pattern: `i=alias:std.module;`
 - Fallible stdlib functions return `T!$err` types -- always handle the error
 - The stdlib is designed for practical server-side and CLI applications
