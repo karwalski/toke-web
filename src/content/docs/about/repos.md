@@ -3,7 +3,7 @@ title: Project Repositories
 description: The toke project's multi-repo structure, with descriptions, status, and links for each repository.
 ---
 
-The toke project is organised across six repositories under the [karwalski](https://github.com/karwalski) GitHub account. The project was recently consolidated from 10 repositories into 6 for maintainability.
+The toke project is organised across six repositories under the [karwalski](https://github.com/karwalski) GitHub account.
 
 ## toke
 
@@ -12,7 +12,7 @@ The toke project is organised across six repositories under the [karwalski](http
 - **Status:** Active — Phase 1 complete, Phase 2 in progress
 - **License:** Apache 2.0
 - **Link:** [github.com/karwalski/toke](https://github.com/karwalski/toke)
-- **Contains:** compiler (formerly tkc), spec (formerly toke-spec), stdlib (formerly toke-stdlib)
+- **Contains:** compiler, spec, stdlib
 
 ## toke-model
 
@@ -21,7 +21,7 @@ The toke project is organised across six repositories under the [karwalski](http
 - **Status:** Active — corpus complete, tokenizer trained, model training round 2 pending
 - **License:** Apache 2.0
 - **Link:** [github.com/karwalski/toke-model](https://github.com/karwalski/toke-model)
-- **Contains:** corpus (formerly toke-corpus), tokenizer (formerly toke-tokenizer), models (formerly toke-models)
+- **Contains:** corpus, tokenizer, models
 
 ## toke-eval
 
@@ -30,7 +30,7 @@ The toke project is organised across six repositories under the [karwalski](http
 - **Status:** Active — Gate 1 complete (63.7% Pass@1, 12.5% token reduction)
 - **License:** Apache 2.0
 - **Link:** [github.com/karwalski/toke-eval](https://github.com/karwalski/toke-eval)
-- **Contains:** benchmarks (formerly toke-benchmark), evaluation pipeline (formerly toke-eval)
+- **Contains:** benchmarks, evaluation pipeline
 
 ## toke-mcp
 

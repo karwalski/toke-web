@@ -177,7 +177,7 @@ The compiler requires every variant to be covered. If you add a variant to a sum
 
 ### Match on a custom sum type
 
-```toke
+```
 m=shapes;
 
 t=$shape{

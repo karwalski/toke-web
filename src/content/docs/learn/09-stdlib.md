@@ -341,7 +341,9 @@ i=auth:std.auth;
 **Example: issue and verify a JWT**
 
 ```
-let token=auth.jwtSign(%(sub:"user123";exp:time.now()+3600);"my-secret");
+t=$claims{sub:$str;exp:u64};
+
+let token=auth.jwtSign($claims{sub:"user123";exp:time.now()+3600};"my-secret");
 auth.jwtVerify(token;"my-secret")|{
   Ok:claims  io.println("Valid: \(claims.sub)");
   Err:e      io.println("Invalid token");
@@ -471,10 +473,12 @@ Mustache-style `{{slot}}` template engine with automatic HTML escaping. Use `{{{
 **Example: render a page**
 
 ```
-let html=tmpl.render("<h1>{{title}}</h1><p>{{body}}</p>";%(
+t=$page{title:$str;body:$str};
+
+let html=tmpl.render("<h1>{{title}}</h1><p>{{body}}</p>";$page{
   title:"Welcome";
   body:"Hello from toke"
-));
+});
 ```
 
 ### std.net -- TCP sockets
@@ -498,8 +502,8 @@ i=net:std.net;
 m=echo;
 i=net:std.net;
 
-f=main():i64!net.$neterr{
-  let listener=net.listen("0.0.0.0";9000)!net.$neterr;
+f=main():i64!net.$err{
+  let listener=net.listen("0.0.0.0";9000)!net.$err;
   lp(let x=0;true;x=0){
     net.accept(listener)|{
       Ok:conn  {
@@ -645,11 +649,14 @@ HTTP client targeting OpenAI, Anthropic, and Ollama APIs. Includes SSE stream pa
 **Example: call an LLM**
 
 ```
-let res=llm.chat(%(
+t=$msg{role:$str;content:$str};
+t=$chatreq{provider:$str;model:$str;messages:@$msg};
+
+let res=llm.chat($chatreq{
   provider:"openai";
   model:"gpt-4o";
-  messages:@(%(role:"user";content:"What is toke?"))
-))!$llmerr;
+  messages:@($msg{role:"user";content:"What is toke?"})
+})!$llmerr;
 io.println(res.content);
 ```
 
