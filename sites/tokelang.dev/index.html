@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>toke — a compact systems language</title>
+  <meta name="description" content="toke is a compiled, statically-typed language with a compact syntax designed for AI-generated code.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%234F46E5'/><text x='32' y='44' text-anchor='middle' font-family='monospace' font-size='28' font-weight='700' fill='white'>tk</text></svg>">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a href="/" class="nav-brand">toke</a>
+    <ul class="nav-links">
+      <li><a href="/about/">About</a></li>
+      <li><a href="/docs/">Docs</a></li>
+      <li><a href="https://github.com/karwalski/toke">GitHub</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main>
+  <section class="hero">
+    <div class="container">
+      <div class="hero-tag">compiled · statically typed · compact</div>
+      <h1><span>toke</span> — a compact<br>systems language</h1>
+      <p>toke is a compiled, statically-typed language with a compact syntax designed for AI-generated code. Programs are shorter, faster to generate, and still readable.</p>
+      <div class="btn-row">
+        <a href="/docs/" class="btn btn-primary">Get started</a>
+        <a href="https://github.com/karwalski/toke" class="btn btn-secondary">View on GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="code-block">
+<span class="cmt">-- hello world in toke</span>
+<span class="kw">m</span>=hello;
+<span class="kw">i</span>=fmt:std.fmt;
+
+<span class="kw">f</span>=<span class="fn">greet</span>(name:<span class="kw">str</span>):<span class="kw">str</span>{
+  <span class="str">"Hello, "</span>+name+<span class="str">"!"</span>
+};
+
+<span class="kw">f</span>=<span class="fn">main</span>():<span class="kw">i64</span>{
+  fmt.println(greet(<span class="str">"world"</span>));
+  &lt;<span class="num">0</span>
+};
+    </div>
+
+    <section class="features">
+      <h2>Why toke?</h2>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-icon">&#9632;</div>
+          <h3>Compact syntax</h3>
+          <p>Designed for AI code generation. Every construct is short, unambiguous, and consistent — no syntactic noise, no optional sigils.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">&#9670;</div>
+          <h3>LLVM-compiled</h3>
+          <p>Compiles to native machine code via LLVM. Fast binaries, small footprint, runs anywhere LLVM targets.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">&#9679;</div>
+          <h3>Rich stdlib</h3>
+          <p>Standard library covers HTTP, JSON, file I/O, cryptography, environment, strings, and more — all with the same compact import style.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <p>&copy; 2025 toke. Active development — Phase 2.</p>
+    <nav>
+      <div class="container">
+        <ul class="nav-links">
+          <li><a href="/about/">About</a></li>
+          <li><a href="/docs/">Docs</a></li>
+          <li><a href="https://github.com/karwalski/toke">GitHub</a></li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>
