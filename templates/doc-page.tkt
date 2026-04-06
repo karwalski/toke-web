@@ -1,0 +1,49 @@
+{! layout("docs") !}
+{! block("content") !}
+
+<h1>Hello World</h1>
+<p class="lead">Write, compile, and run your first toke program.</p>
+
+<h2>The program</h2>
+<p>Create a file called <code>hello.tk</code>:</p>
+
+<pre><code>m=hello;
+i=io:std.io;
+
+f=main():i64{
+  io.println("Hello, world!");
+  &lt;0;
+};</code></pre>
+
+<p>Every toke file begins with a module declaration (<code>m=</code>). Imports use <code>i=alias:module.path;</code>. Functions are declared with <code>f=</code>. The <code>&lt;</code> operator returns a value.</p>
+
+<h2>Compile and run</h2>
+
+<pre><code>./build/tkc hello.tk -o hello
+./hello</code></pre>
+
+<p>Output:</p>
+
+<pre><code>Hello, world!</code></pre>
+
+<h2>Next: Fibonacci</h2>
+
+<pre><code>m=fib;
+
+f=fib(n:i64):i64{
+  if(n&lt;2){&lt;n;};
+  &lt;fib(n-1)+fib(n-2);
+};
+
+f=main():i64{
+  &lt;fib(10);
+};</code></pre>
+
+<p>Run: <code>./fib; echo $?</code> → <code>55</code></p>
+
+<nav style="margin-top:3rem;display:flex;justify-content:space-between;padding-top:1.5rem;border-top:1px solid #1a1a1a;">
+  <span></span>
+  <a href="/docs/getting-started/install">Install &rarr;</a>
+</nav>
+
+{! end !}

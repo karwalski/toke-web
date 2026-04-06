@@ -1,0 +1,48 @@
+{! layout("docs") !}
+{! block("content") !}
+
+<h1>Documentation</h1>
+<p class="lead">toke reference documentation — language spec, standard library, and tutorials.</p>
+
+<h2>Getting Started</h2>
+<p>New to toke? Start here.</p>
+<ul>
+  <li><a href="/docs/getting-started/hello-world">Hello World</a> — write, compile, and run your first toke program</li>
+  <li><a href="/docs/getting-started/install">Install</a> — build toke from source on macOS or Linux</li>
+  <li><a href="/docs/getting-started/tour">Language Tour</a> — a fast overview of toke syntax and features</li>
+</ul>
+
+<h2>Learn</h2>
+<p>Step-by-step tutorials covering the full language.</p>
+<ul>
+  <li><a href="/docs/learn/01-why-toke">Why toke?</a> — motivation, design goals, and Gate 1 results</li>
+  <li><a href="/docs/learn/02-modules-functions">Modules &amp; Functions</a> — the building blocks of every toke program</li>
+  <li><a href="/docs/learn/03-control-flow">Control Flow</a> — if, loop, and early return</li>
+  <li><a href="/docs/learn/04-collections">Collections</a> — arrays and maps with @() syntax</li>
+  <li><a href="/docs/learn/05-errors">Errors</a> — structured error types and recovery</li>
+  <li><a href="/docs/learn/06-strings-io">Strings &amp; I/O</a> — working with text and the file system</li>
+  <li><a href="/docs/learn/07-modules-imports">Modules &amp; Imports</a> — organising larger programs</li>
+  <li><a href="/docs/learn/08-advanced">Advanced</a> — generics, closures, and unsafe blocks</li>
+</ul>
+
+<h2>Reference</h2>
+<p>Precise specifications for the language and standard library.</p>
+<ul>
+  <li><a href="/docs/reference/grammar">Grammar</a> — the complete LL(1) grammar in BNF</li>
+  <li><a href="/docs/reference/types">Types</a> — the type system: primitives, structs, and enums</li>
+  <li><a href="/docs/reference/errors">Error Codes</a> — machine-readable compiler error reference</li>
+</ul>
+
+<h2>Standard Library</h2>
+<ul>
+  <li><a href="/docs/reference/stdlib/http">std.http</a> — HTTP client and server</li>
+  <li><a href="/docs/reference/stdlib/str">std.str</a> — string manipulation</li>
+  <li><a href="/docs/reference/stdlib/json">std.json</a> — JSON encode/decode</li>
+  <li><a href="/docs/reference/stdlib/file">std.file</a> — file I/O</li>
+  <li><a href="/docs/reference/stdlib/log">std.log</a> — structured logging</li>
+  <li><a href="/docs/reference/stdlib/env">std.env</a> — environment variables</li>
+  <li><a href="/docs/reference/stdlib/crypto">std.crypto</a> — hashing and HMAC</li>
+  <li><a href="/docs/reference/stdlib/time">std.time</a> — time and duration</li>
+</ul>
+
+{! end !}

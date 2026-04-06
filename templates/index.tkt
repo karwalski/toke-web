@@ -1,0 +1,114 @@
+{! layout("base") !}
+{! block("content") !}
+
+<section class="hero">
+  <h1>The language built for <span>LLMs</span></h1>
+  <p>toke uses a 56-character set and 12-keyword vocabulary. LLMs generate correct toke code in fewer tokens, with structured error recovery on first-pass failures.</p>
+  <div class="cta">
+    <a href="/docs" class="btn btn-primary">Get started</a>
+    <a href="https://github.com/karwalski/toke" class="btn btn-outline">GitHub</a>
+  </div>
+</section>
+
+<div class="code-compare">
+  <div class="code-pane">
+    <div class="pane-label">Python · ~156 tokens</div>
+    <pre><span class="py-kw">def</span> <span class="py-fn">fib</span>(n):
+    <span class="py-kw">if</span> n &lt; 2:
+        <span class="py-kw">return</span> n
+    <span class="py-kw">return</span> fib(n - 1) + fib(n - 2)
+
+<span class="py-kw">def</span> <span class="py-fn">main</span>():
+    <span class="py-kw">return</span> fib(10)
+
+<span class="py-kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    print(main())</pre>
+  </div>
+  <div class="code-pane">
+    <div class="pane-label">toke · ~47 tokens</div>
+    <pre><span class="kw">m</span>=fib;
+<span class="kw">f</span>=<span class="fn">fib</span>(n:<span class="kw">i64</span>):<span class="kw">i64</span>{
+  <span class="kw">if</span>(n&lt;<span class="num">2</span>){&lt;n;};
+  &lt;<span class="fn">fib</span>(n-<span class="num">1</span>)+<span class="fn">fib</span>(n-<span class="num">2</span>);
+};
+<span class="kw">f</span>=<span class="fn">main</span>():<span class="kw">i64</span>{&lt;<span class="fn">fib</span>(<span class="num">10</span>);};
+</pre>
+  </div>
+</div>
+
+<div class="gate-callout">
+  <strong>Gate 1 result:</strong> 12.5% token reduction &middot; 63.7% Pass@1
+</div>
+
+<div class="features">
+  <div class="feature-card">
+    <h3>Native Binary</h3>
+    <p>toke compiles directly to native code via LLVM. No runtime, no GC pauses, no VM — just a tight binary that starts in microseconds.</p>
+  </div>
+  <div class="feature-card">
+    <h3>LL(1) Grammar</h3>
+    <p>Every construct is unambiguous and predictable. LLMs and humans alike can parse toke with a single token of lookahead — no edge cases.</p>
+  </div>
+  <div class="feature-card">
+    <h3>Structured Errors</h3>
+    <p>Compiler errors carry machine-readable codes and spans. First-pass failures feed directly back into the generation loop for automatic correction.</p>
+  </div>
+  <div class="feature-card">
+    <h3>LLM-First Design</h3>
+    <p>56-character set. 12 keywords. Every decision made to minimise token cost and maximise generation accuracy — without sacrificing expressiveness.</p>
+  </div>
+</div>
+
+<div class="comparison">
+  <h2>How toke compares</h2>
+  <table class="cmp-table">
+    <thead>
+      <tr>
+        <th>Metric</th>
+        <th class="toke-col">toke</th>
+        <th>Python</th>
+        <th>Go</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Fibonacci tokens</td>
+        <td class="toke-col">~47</td>
+        <td>~156</td>
+        <td>~130</td>
+      </tr>
+      <tr>
+        <td>Runtime deps</td>
+        <td class="toke-col">none</td>
+        <td>interpreter + stdlib</td>
+        <td>Go runtime</td>
+      </tr>
+      <tr>
+        <td>Binary size (hello world)</td>
+        <td class="toke-col">&lt;50 KB</td>
+        <td>N/A</td>
+        <td>~1.8 MB</td>
+      </tr>
+      <tr>
+        <td>Keywords</td>
+        <td class="toke-col">12</td>
+        <td>35</td>
+        <td>25</td>
+      </tr>
+      <tr>
+        <td>Grammar class</td>
+        <td class="toke-col">LL(1)</td>
+        <td>LL(k)</td>
+        <td>LL(k)</td>
+      </tr>
+      <tr>
+        <td>LLM Pass@1</td>
+        <td class="toke-col">63.7%</td>
+        <td>baseline</td>
+        <td>baseline</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+{! end !}

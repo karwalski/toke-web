@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{= title =} — toke docs</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <nav class="site-nav">
+    <a href="/" class="logo">toke<span>lang</span></a>
+    <div class="nav-links">
+      <a href="/docs">Docs</a>
+      <a href="/docs/learn">Learn</a>
+      <a href="/docs/reference">Reference</a>
+      <a href="https://github.com/karwalski/toke">GitHub</a>
+    </div>
+  </nav>
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <h4>Getting Started</h4>
+      <a href="/docs/getting-started/hello-world">Hello World</a>
+      <a href="/docs/getting-started/install">Install</a>
+      <a href="/docs/getting-started/tour">Language Tour</a>
+      <h4>Learn</h4>
+      <a href="/docs/learn/01-why-toke">Why toke?</a>
+      <a href="/docs/learn/02-modules-functions">Modules &amp; Functions</a>
+      <a href="/docs/learn/03-control-flow">Control Flow</a>
+      <a href="/docs/learn/04-collections">Collections</a>
+      <a href="/docs/learn/05-errors">Errors</a>
+      <a href="/docs/learn/06-strings-io">Strings &amp; I/O</a>
+      <a href="/docs/learn/07-modules-imports">Modules &amp; Imports</a>
+      <a href="/docs/learn/08-advanced">Advanced</a>
+      <h4>Reference</h4>
+      <a href="/docs/reference/grammar">Grammar</a>
+      <a href="/docs/reference/types">Types</a>
+      <a href="/docs/reference/errors">Errors</a>
+      <h4>Standard Library</h4>
+      <a href="/docs/reference/stdlib/http">std.http</a>
+      <a href="/docs/reference/stdlib/str">std.str</a>
+      <a href="/docs/reference/stdlib/json">std.json</a>
+      <a href="/docs/reference/stdlib/file">std.file</a>
+      <a href="/docs/reference/stdlib/log">std.log</a>
+      <a href="/docs/reference/stdlib/env">std.env</a>
+      <a href="/docs/reference/stdlib/crypto">std.crypto</a>
+      <a href="/docs/reference/stdlib/time">std.time</a>
+    </aside>
+    <div class="docs-content">
+      {! yield("content") !}
+    </div>
+  </div>
+  <footer class="site-footer">
+    <p>toke language — MIT licence — <span>toke on ooke</span></p>
+  </footer>
+</body>
+</html>

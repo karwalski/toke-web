@@ -1,0 +1,2 @@
+m=page.docs;
+i=http:std.http;
