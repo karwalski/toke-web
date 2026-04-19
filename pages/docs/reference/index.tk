@@ -1,0 +1,7 @@
+m=page.docs.reference;
+i=http:std.http;
+i=tpl:ooke.template;
+
+f=get(req:http.$req):http.$res{
+  <tpl.renderfile("templates/docs/reference/index.tkt"; @("page.title":"Standard Library Reference — toke"));
+};

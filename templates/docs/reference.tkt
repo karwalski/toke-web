@@ -1,0 +1,11 @@
+{! layout("docs") !}
+{! block("title") !}{= title =} — toke{! end !}
+{! block("content") !}
+
+<div class="ref-page">
+  <div class="ref-body">
+    {= body | md =}
+  </div>
+</div>
+
+{! end !}

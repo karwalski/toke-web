@@ -3,23 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{= title =}{= site.name =} — toke</title>
+  <title>{! yield("title") !}</title>
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
   <nav class="site-nav">
-    <a href="/" class="logo">toke<span>lang</span></a>
+    <a href="/" class="logo">toke</a>
     <div class="nav-links">
       <a href="/docs">Docs</a>
       <a href="/docs/learn">Learn</a>
       <a href="/docs/reference">Reference</a>
+      <a href="/ecosystem">Ecosystem</a>
       <a href="https://github.com/karwalski/toke">GitHub</a>
     </div>
   </nav>
   {! yield("content") !}
   <footer class="site-footer">
-    <p>toke language — <a href="https://github.com/karwalski/toke">GitHub</a> — MIT licence</p>
-    <p style="margin-top:0.5rem">This site is served by <span>toke on ooke</span> — build light, ship fast.</p>
+    <p>toke language — <a href="https://github.com/karwalski/toke">GitHub</a> — <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></p>
+    <p style="font-size:0.8rem;opacity:0.6">© 2026 Matthew Watt</p>
+    <p style="margin-top:0.5rem">This site is built and served by <a href="/ooke">toke on ooke</a> — build light, ship fast.</p>
   </footer>
 </body>
 </html>

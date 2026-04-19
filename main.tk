@@ -4,10 +4,12 @@ i=log:std.log;
 
 f=main():i64{
   log.openaccess("logs/access.log"; 10000; 30; 0);
+  http.getstatic("/health"; "{\"status\":\"ok\",\"version\":\"0.1.0\"}");
+  http.getstatic("/api/version"; "{\"version\":\"0.1.0\"}");
   http.vhost("tokelang.dev"; "sites/tokelang.dev");
   http.vhost("www.tokelang.dev"; "sites/tokelang.dev");
   http.vhost("staging.tokelang.dev"; "sites/tokelang.dev");
   http.vhost("loke.tokelang.dev"; "sites/loke.tokelang.dev");
-  http.servevhoststls(8443; "certs/cert.pem"; "certs/key.pem");
+  http.servevhoststls(443; "certs/cert.pem"; "certs/key.pem");
   <0
 };

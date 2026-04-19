@@ -1,7 +1,20 @@
-website
-*.ll
-certs/
-logs/
-.DS_Store
+# Build outputs
 build/
+*.ll
+*.dSYM
+
+# Compiled binaries
 website
+main
+
+# TLS certificates (generated locally)
+certs/
+
+# Logs
+logs/
+
+# Local content symlinks (point to machine-specific paths)
+content/docs/
+
+# macOS
+.DS_Store

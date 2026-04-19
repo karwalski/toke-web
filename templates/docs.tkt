@@ -3,16 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{= title =} — toke docs</title>
+  <title>{! yield("title") !}</title>
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
   <nav class="site-nav">
-    <a href="/" class="logo">toke<span>lang</span></a>
+    <a href="/" class="logo">toke</a>
     <div class="nav-links">
       <a href="/docs">Docs</a>
       <a href="/docs/learn">Learn</a>
       <a href="/docs/reference">Reference</a>
+      <a href="/ecosystem">Ecosystem</a>
       <a href="https://github.com/karwalski/toke">GitHub</a>
     </div>
   </nav>
@@ -31,26 +32,119 @@
       <a href="/docs/learn/06-strings-io">Strings &amp; I/O</a>
       <a href="/docs/learn/07-modules-imports">Modules &amp; Imports</a>
       <a href="/docs/learn/08-advanced">Advanced</a>
-      <h4>Reference</h4>
+      <a href="/docs/learn/09-stdlib">Standard Library</a>
+      <a href="/docs/learn/10-project">Project Structure</a>
+      <h4>Language Reference</h4>
       <a href="/docs/reference/grammar">Grammar</a>
       <a href="/docs/reference/types">Types</a>
-      <a href="/docs/reference/errors">Errors</a>
+      <a href="/docs/reference/type-system">Type System</a>
+      <a href="/docs/reference/expressions">Expressions</a>
+      <a href="/docs/reference/statements">Statements</a>
+      <a href="/docs/reference/modules">Modules</a>
+      <a href="/docs/reference/error-handling">Error Handling</a>
+      <a href="/docs/reference/errors">Error Codes</a>
+      <a href="/docs/reference/data-formats">Data Formats</a>
+      <a href="/docs/reference/glossary">Glossary</a>
+      <a href="/docs/reference/migration">Migration Guide</a>
+      <a href="/docs/reference/plugin-guide">Plugin Guide</a>
+      <a href="/docs/reference/stdlib-coverage">stdlib Coverage</a>
+      <h4>Default Syntax (Phase 2)</h4>
+      <a href="/docs/reference/phase2-overview">Encoding Design</a>
+      <a href="/docs/reference/phase2-types">Type Encoding</a>
+      <a href="/docs/reference/phase2-grammar">Grammar Encoding</a>
       <h4>Standard Library</h4>
-      <a href="/docs/reference/stdlib/http">std.http</a>
-      <a href="/docs/reference/stdlib/str">std.str</a>
-      <a href="/docs/reference/stdlib/json">std.json</a>
-      <a href="/docs/reference/stdlib/file">std.file</a>
-      <a href="/docs/reference/stdlib/log">std.log</a>
-      <a href="/docs/reference/stdlib/env">std.env</a>
-      <a href="/docs/reference/stdlib/crypto">std.crypto</a>
-      <a href="/docs/reference/stdlib/time">std.time</a>
+      <a href="/docs/stdlib/analytics">analytics</a>
+      <a href="/docs/stdlib/args">args</a>
+      <a href="/docs/stdlib/auth">auth</a>
+      <a href="/docs/stdlib/canvas">canvas</a>
+      <a href="/docs/stdlib/chart">chart</a>
+      <a href="/docs/stdlib/crypto">crypto</a>
+      <a href="/docs/stdlib/crypto_ext">crypto_ext</a>
+      <a href="/docs/stdlib/csv">csv</a>
+      <a href="/docs/stdlib/dashboard">dashboard</a>
+      <a href="/docs/stdlib/dataframe">dataframe</a>
+      <a href="/docs/stdlib/db">db</a>
+      <a href="/docs/stdlib/encoding">encoding</a>
+      <a href="/docs/stdlib/encrypt">encrypt</a>
+      <a href="/docs/stdlib/env">env</a>
+      <a href="/docs/stdlib/file">file</a>
+      <a href="/docs/stdlib/html">html</a>
+      <a href="/docs/stdlib/http">http</a>
+      <a href="/docs/stdlib/i18n">i18n</a>
+      <a href="/docs/stdlib/image">image</a>
+      <a href="/docs/stdlib/json">json</a>
+      <a href="/docs/stdlib/json_stream">json_stream</a>
+      <a href="/docs/stdlib/llm">llm</a>
+      <a href="/docs/stdlib/llm_tool">llm_tool</a>
+      <a href="/docs/stdlib/log">log</a>
+      <a href="/docs/stdlib/math">math</a>
+      <a href="/docs/stdlib/md">md</a>
+      <a href="/docs/stdlib/ml">ml</a>
+      <a href="/docs/stdlib/net">net</a>
+      <a href="/docs/stdlib/path">path</a>
+      <a href="/docs/stdlib/process">process</a>
+      <a href="/docs/stdlib/router">router</a>
+      <a href="/docs/stdlib/sse">sse</a>
+      <a href="/docs/stdlib/str">str</a>
+      <a href="/docs/stdlib/svg">svg</a>
+      <a href="/docs/stdlib/template">template</a>
+      <a href="/docs/stdlib/test">test</a>
+      <a href="/docs/stdlib/time">time</a>
+      <a href="/docs/stdlib/toml">toml</a>
+      <a href="/docs/stdlib/toon">toon</a>
+      <a href="/docs/stdlib/ws">ws</a>
+      <a href="/docs/stdlib/yaml">yaml</a>
+      <h4>Specification</h4>
+      <a href="/docs/spec/toke-spec-v02">Language Spec</a>
+      <a href="/docs/spec/semantics">Formal Semantics</a>
+      <a href="/docs/spec/errors">Error Registry</a>
+      <a href="/docs/spec/stdlib-signatures">stdlib Signatures</a>
+      <a href="/docs/spec/spec-implementation-delta">Spec-Implementation Delta</a>
+      <a href="/docs/spec/oke-namespace">oke Namespace</a>
+      <h4>Cookbook</h4>
+      <a href="/docs/cookbook/rest-api">REST API</a>
+      <a href="/docs/cookbook/data-pipeline">Data Pipeline</a>
+      <a href="/docs/cookbook/doc-pipeline">Doc Pipeline</a>
+      <h4>Compiler</h4>
+      <a href="/docs/compiler/runtime-abi">Runtime ABI</a>
+      <a href="/docs/compiler/binary-size">Binary Size</a>
+      <a href="/docs/compiler/build-deps">Build Dependencies</a>
+      <a href="/docs/compiler/companion-file-spec">Companion File Spec</a>
+      <a href="/docs/compiler/conventions">Conventions</a>
+      <a href="/docs/compiler/lint-rules-v1">Lint Rules</a>
+      <h4>Decisions</h4>
+      <a href="/docs/decisions/ADR-0001">ADR-0001: Architecture</a>
+      <a href="/docs/decisions/ADR-0002-file-extension">ADR-0002: File Extension</a>
+      <a href="/docs/decisions/ADR-0003">ADR-0003: Serialization</a>
+      <a href="/docs/decisions/gate1-decision">Gate 1 Decision</a>
+      <h4>Tutorials</h4>
+      <a href="/docs/tutorials/cli-tool">CLI Tool</a>
+      <a href="/docs/tutorials/rest-api">REST API</a>
+      <a href="/docs/tutorials/data-pipeline">Data Pipeline</a>
+      <a href="/docs/tutorials/static-site">Static Site</a>
+      <a href="/docs/tutorials/mortgage-cli">Mortgage CLI</a>
+      <a href="/docs/tutorials/mortgage-web">Mortgage Web</a>
+      <a href="/docs/tutorials/cross-platform">Cross-Platform</a>
+      <h4>About</h4>
+      <a href="/docs/about/why">Why toke?</a>
+      <a href="/docs/about/design">Design Principles</a>
+      <a href="/docs/about/changelog">Changelog</a>
+      <a href="/docs/about/ecosystem">Ecosystem</a>
+      <a href="/docs/about/repos">Repositories</a>
+      <a href="/docs/about/enterprise">Enterprise</a>
+      <a href="/docs/about/web-server">Web Server</a>
+      <a href="/docs/about/competitive-matrix">Competitive Matrix</a>
+      <a href="/docs/about/contributing">Contributing</a>
+      <a href="/docs/about/ooke">ooke</a>
+      <a href="/docs/about/loke">loke</a>
     </aside>
     <div class="docs-content">
       {! yield("content") !}
     </div>
   </div>
   <footer class="site-footer">
-    <p>toke language — MIT licence — <span>toke on ooke</span></p>
+    <p>toke language — <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> — <span>toke on ooke</span></p>
+    <p style="margin-top:0.4rem;font-size:0.75rem;opacity:0.5">© 2026 Matthew Watt</p>
   </footer>
 </body>
 </html>

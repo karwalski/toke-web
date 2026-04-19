@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # Job 1: syntax check the toke source
+  check:
+    name: tkc --check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # TODO(48.1.4): tkc is not yet on a public registry.
+      # When a release is published to github.com/karwalski/toke, replace this
+      # step with a real download:
+      #
+      #   - name: Install tkc
+      #     run: |
+      #       curl -fsSL "${{ secrets.TKC_DOWNLOAD_URL }}" -o tkc
+      #       chmod +x tkc
+      #       sudo mv tkc /usr/local/bin/tkc
+      #
+      # Until then this step is a no-op placeholder so the job structure is
+      # ready to activate once the compiler binary is published.
+      - name: Install tkc (placeholder — compiler not yet on public registry)
+        run: |
+          echo "TODO: download tkc from \${{ secrets.TKC_DOWNLOAD_URL }} once published"
+          echo "Skipping tkc --check until compiler is available on CI runner"
+
+      # Activate this step once tkc is installed above.
+      # - name: Check syntax
+      #   run: tkc --check main.tk
+
+  # Job 2: compile binary on Linux, start it, smoke-test /health, kill it
+  build-smoke:
+    name: Binary compile smoke test
+    runs-on: ubuntu-latest
+    needs: check
+    steps:
+      - uses: actions/checkout@v4
+
+      # Install LLVM/Clang for the final link step (IR → native binary).
+      # The toke compiler emits LLVM IR; clang links it with the C stdlib
+      # runtime sources.
+      - name: Install Clang
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y clang-15 lld
+
+      # TODO(48.1.4): same blocker as the check job — tkc must be available
+      # to produce main.ll before clang can link the final binary.
+      # Once tkc is installed, uncomment the emit step below.
+      - name: Compile toke IR to native binary (placeholder)
+        run: |
+          echo "TODO: run 'tkc --emit-llvm main.tk -o main.ll' once tkc is on PATH"
+          echo "Then: clang-15 main.ll stdlib/*.c -o website_server -lpthread -lm"
+          echo "Skipping binary compile until compiler is available on CI runner"
+
+      # The steps below are ready to activate once main.ll is produced.
+      # Uncomment this block after enabling tkc above:
+      #
+      # - name: Link binary
+      #   run: clang-15 main.ll stdlib/*.c -o website_server -lpthread -lm
+      #
+      # - name: Start server and smoke-test /health
+      #   run: |
+      #     ./website_server &
+      #     SERVER_PID=$!
+      #     # Give the server a moment to bind its port
+      #     sleep 2
+      #     # /health returns JSON {"status":"ok"} — verify HTTP 200
+      #     curl --fail --silent --max-time 5 http://localhost:8081/health
+      #     # Clean up
+      #     kill "$SERVER_PID" || true

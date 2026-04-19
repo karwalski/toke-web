@@ -1,4 +1,5 @@
 {! layout("docs") !}
+{! block("title") !}Documentation — toke{! end !}
 {! block("content") !}
 
 <h1>Documentation</h1>
@@ -35,14 +36,14 @@
 
 <h2>Standard Library</h2>
 <ul>
-  <li><a href="/docs/reference/stdlib/http">std.http</a> — HTTP client and server</li>
-  <li><a href="/docs/reference/stdlib/str">std.str</a> — string manipulation</li>
-  <li><a href="/docs/reference/stdlib/json">std.json</a> — JSON encode/decode</li>
-  <li><a href="/docs/reference/stdlib/file">std.file</a> — file I/O</li>
-  <li><a href="/docs/reference/stdlib/log">std.log</a> — structured logging</li>
-  <li><a href="/docs/reference/stdlib/env">std.env</a> — environment variables</li>
-  <li><a href="/docs/reference/stdlib/crypto">std.crypto</a> — hashing and HMAC</li>
-  <li><a href="/docs/reference/stdlib/time">std.time</a> — time and duration</li>
+  <li><a href="/docs/stdlib/http">std.http</a> — HTTP client and server</li>
+  <li><a href="/docs/stdlib/str">std.str</a> — string manipulation</li>
+  <li><a href="/docs/stdlib/json">std.json</a> — JSON encode/decode</li>
+  <li><a href="/docs/stdlib/file">std.file</a> — file I/O</li>
+  <li><a href="/docs/stdlib/log">std.log</a> — structured logging</li>
+  <li><a href="/docs/stdlib/env">std.env</a> — environment variables</li>
+  <li><a href="/docs/stdlib/crypto">std.crypto</a> — hashing and HMAC</li>
+  <li><a href="/docs/stdlib/time">std.time</a> — time and duration</li>
 </ul>
 
 {! end !}

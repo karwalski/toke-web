@@ -1,0 +1,102 @@
+{! layout("base") !}
+{! block("title") !}ooke — toke ecosystem{! end !}
+{! block("content") !}
+
+<div class="page-hero">
+  <h1>ooke</h1>
+  <p class="tagline">A CMS and web framework built on the toke language. File-system routing, flat-file content, template engine with Markdown. Zero runtime dependencies. Ships as a single native binary.</p>
+  <div class="hero-actions">
+    <a href="https://github.com/karwalski/ooke" class="btn btn-primary">GitHub</a>
+    <a href="/ecosystem" class="btn btn-secondary">← Ecosystem</a>
+  </div>
+</div>
+
+<div class="stat-row">
+  <div class="stat"><div class="num">0</div><div class="lbl">Runtime deps</div></div>
+  <div class="stat"><div class="num">&lt;5ms</div><div class="lbl">TTFB</div></div>
+  <div class="stat"><div class="num">1</div><div class="lbl">Binary</div></div>
+  <div class="stat"><div class="num">2</div><div class="lbl">Modes: build+serve</div></div>
+</div>
+
+<div class="container">
+
+<h2>Quick start</h2>
+<div class="code-block">
+<span class="cm"># Scaffold a new project</span>
+ooke new mysite
+cd mysite
+
+<span class="cm"># Start the development server</span>
+ooke serve
+
+<span class="cm"># Build static HTML</span>
+ooke build
+</div>
+
+<h2>What is ooke?</h2>
+<p>ooke is the web framework layer of the toke ecosystem. Write route handlers in toke, templates in <code>.tkt</code> files, and content in Markdown with YAML frontmatter. ooke compiles everything to a single native binary — no Node.js, no Python, no nginx required.</p>
+
+<div class="features">
+  <div class="feature">
+    <h3>File-system routing</h3>
+    <p><code>pages/blog/[slug].tk</code> becomes <code>/blog/:slug</code>. Convention over configuration. Index files map to directory roots. Dynamic segments use <code>[name]</code> notation.</p>
+  </div>
+  <div class="feature">
+    <h3>Template engine</h3>
+    <p>Templates use <code>&#123;= expr =&#125;</code> for expressions, <code>&#123;! directive !&#125;</code> for layout/blocks/partials. Layout inheritance, named blocks, partials, and a Markdown filter built in.</p>
+  </div>
+  <div class="feature">
+    <h3>Flat-file content store</h3>
+    <p>Content lives as <code>.md</code> files with YAML frontmatter. <code>store.all("posts")</code>, <code>store.slug("posts"; "hello-world")</code>. No database. Version-controlled alongside code.</p>
+  </div>
+  <div class="feature">
+    <h3>Build and serve modes</h3>
+    <p><code>ooke build</code> renders static HTML with CSS inlining and minification. <code>ooke serve</code> runs a live HTTP server with an in-memory page cache. TLS supported.</p>
+  </div>
+  <div class="feature">
+    <h3>LLM-first scaffolding</h3>
+    <p>toke's 56-char syntax means an LLM generates a complete ooke site in fewer tokens with higher correctness. <code>ooke gen page</code>, <code>ooke gen type</code>, <code>ooke gen api</code> scaffold common patterns instantly.</p>
+  </div>
+  <div class="feature">
+    <h3>Native binary output</h3>
+    <p>ooke itself is a compiled C binary linked against the toke stdlib. No interpreter, no VM, no GC. Runs on macOS, Linux, and anything clang can target.</p>
+  </div>
+</div>
+
+<h2>Template syntax</h2>
+<div class="code-block">
+<span class="cm">&#123;! layout("base") !&#125;</span>
+<span class="cm">&#123;! block("content") !&#125;</span>
+
+&lt;h1&gt;<span class="str">&#123;= page.title =&#125;</span>&lt;/h1&gt;
+&lt;div class="body"&gt;
+  <span class="str">&#123;= body | md =&#125;</span>
+&lt;/div&gt;
+
+<span class="cm">&#123;! end !&#125;</span>
+</div>
+
+<h2>Route handler</h2>
+<div class="code-block">
+<span class="kw">m</span>=page.blog.slug;
+<span class="kw">i</span>=http:std.http;
+<span class="kw">i</span>=tpl:ooke.template;
+<span class="kw">i</span>=store:ooke.store;
+
+<span class="kw">f</span>=<span class="fn">get</span>(req:http.$req):http.$res{
+  let post=store.<span class="fn">slug</span>(<span class="str">"posts"</span>;req.<span class="fn">param</span>(<span class="str">"slug"</span>));
+  <span class="kw">&lt;</span>tpl.<span class="fn">renderfile</span>(<span class="str">"templates/blog/post.tkt"</span>;post);
+};
+</div>
+
+<div class="ecosystem-note" style="border-left-color:#7c83fd;">
+  <p><strong>You are looking at it.</strong> This website &mdash; tokelang.dev &mdash; is built and served by toke on ooke. The page you are reading was rendered by the same framework described above: toke code compiled to a native binary, <code>.tkt</code> templates, Markdown content, file-system routing. No Node.js, no Python, no nginx.</p>
+</div>
+
+<div class="ecosystem-note">
+  <p>ooke is part of the <a href="/ecosystem">toke ecosystem</a>. See the <a href="https://github.com/karwalski/ooke">ooke GitHub repository</a> for source, releases, and contribution guide.</p>
+</div>
+
+</div>
+
+{! end !}

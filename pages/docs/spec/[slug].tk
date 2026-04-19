@@ -1,0 +1,17 @@
+m=page.docs.spec.slug;
+i=http:std.http;
+i=tpl:ooke.template;
+i=store:ooke.store;
+
+f=get(req:http.$req):http.$res{
+  let slug=req.param("slug");
+  let result=store.slug("docs/spec"; slug);
+  match result{
+    ok(page){
+      <tpl.renderfile("templates/docs/spec/[slug].tkt"; @("title":page.meta.get("title"); "description":page.meta.get("description"); "body":page.body; "slug":slug; "site.name":"toke"))
+    };
+    err(e){
+      <http.res_status(404; "<!DOCTYPE html><html><body><h1>404 Not Found</h1><p>No spec page for <code>"+slug+"</code>.</p></body></html>")
+    }
+  }
+};

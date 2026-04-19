@@ -1,0 +1,70 @@
+{! layout("base") !}
+{! block("title") !}Ecosystem — toke{! end !}
+{! block("content") !}
+
+<div class="page-hero">
+  <h1>The <em>*oke</em> Ecosystem</h1>
+  <p class="tagline">A layered stack of tools, frameworks, and runtimes — each named with the <code>*oke</code> convention. Four characters, always pronounceable, always part of the family.</p>
+</div>
+
+<div class="ecosystem-grid">
+
+  <div class="oke-card oke-core">
+    <div class="oke-badge">language</div>
+    <h2><a href="/">toke</a></h2>
+    <p>The core programming language, purpose-built for LLM code generation. 56-character syntax, zero runtime, single binary. Compiles via LLVM to native code on any platform.</p>
+    <div class="oke-links">
+      <a href="/docs">Docs</a>
+      <a href="https://github.com/karwalski/toke">GitHub</a>
+    </div>
+  </div>
+
+  <div class="oke-card">
+    <div class="oke-badge">web framework</div>
+    <h2><a href="/ooke">ooke</a></h2>
+    <p>A CMS and web framework built on toke. File-system routing, flat-file content store, template engine with Markdown, build and serve modes. Zero dependencies. Ships as a single binary.</p>
+    <div class="oke-links">
+      <a href="/ooke">Project page</a>
+      <a href="https://github.com/karwalski/ooke">GitHub</a>
+    </div>
+  </div>
+
+  <div class="oke-card">
+    <div class="oke-badge">intelligence layer</div>
+    <h2><a href="/loke">loke</a></h2>
+    <p>A locally-run intelligence layer that sits between users, their data, and external LLMs. Minimises token spend, maximises privacy, and keeps sensitive data on the user's device. 60–80% token reduction.</p>
+    <div class="oke-links">
+      <a href="/loke">Project page</a>
+      <a href="https://github.com/karwalski/loke">GitHub</a>
+    </div>
+  </div>
+
+  <div class="oke-card oke-reserved">
+    <div class="oke-badge">human experience</div>
+    <h2>aoke</h2>
+    <p>The topmost layer. Sound, light, perception — the interface between computation and the senses. UX, design systems, accessibility, and sensory analytics.</p>
+    <div class="oke-meta">Reserved</div>
+  </div>
+
+  <div class="oke-card oke-reserved">
+    <div class="oke-badge">hardware layer</div>
+    <h2>zoke</h2>
+    <p>The bottommost layer. Silicon, electrons, circuits — the physical substrate of computation. Drivers, ISA, FPGA, and everything below the OS.</p>
+    <div class="oke-meta">Reserved</div>
+  </div>
+
+  <div class="oke-card">
+    <div class="oke-badge">playground</div>
+    <h2>moke</h2>
+    <p>The donkey. Demo environments, sandboxes, and experimental features. The thing you ride when you're just messing around. Originally a demo of loke.</p>
+    <div class="oke-meta">Internal</div>
+  </div>
+
+</div>
+
+<div class="ecosystem-note">
+  <h3>The <em>*oke</em> naming convention</h3>
+  <p>Every tool in the toke ecosystem uses a single consonant prefix followed by <code>oke</code>. Four characters, always pronounceable. The alphabetical ordering maps roughly to abstraction depth — <code>zoke</code> at the hardware layer, <code>aoke</code> at the human experience layer — giving the stack a built-in mnemonic.</p>
+</div>
+
+{! end !}

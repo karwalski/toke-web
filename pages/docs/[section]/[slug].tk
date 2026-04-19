@@ -1,0 +1,19 @@
+m=page.docs.section.slug;
+i=http:std.http;
+i=tpl:ooke.template;
+i=store:ooke.store;
+
+f=get(req:http.$req):http.$res{
+  let section=req.param("section");
+  let slug=req.param("slug");
+  let contentpath="docs/"+section;
+  let result=store.slug(contentpath; slug);
+  match result{
+    ok(page){
+      <tpl.renderfile("templates/docs/[section]/[slug].tkt"; @("title":page.meta.get("title"); "description":page.meta.get("description"); "body":page.body; "slug":slug; "section":section; "site.name":"toke"))
+    };
+    err(e){
+      <http.res_status(404; "<!DOCTYPE html><html><body><h1>404 Not Found</h1><p>No docs page for <code>"+section+"/"+slug+"</code>.</p></body></html>")
+    }
+  }
+};

@@ -1,0 +1,30 @@
+{! layout("docs") !}
+{! block("title") !}Learn toke{! end !}
+{! block("content") !}
+
+<h1>Learn toke</h1>
+<p>A structured, hands-on introduction to the toke programming language. Start from the beginning or jump to any lesson.</p>
+
+<h2>Getting Started</h2>
+<div class="ref-grid">
+  <a href="/docs/learn/overview" class="ref-card"><strong>Overview</strong><span>Course introduction and prerequisites</span></a>
+  <a href="/docs/learn/install" class="ref-card"><strong>Install</strong><span>Install the toke compiler</span></a>
+  <a href="/docs/learn/hello-world" class="ref-card"><strong>Hello World</strong><span>Write your first toke program</span></a>
+  <a href="/docs/learn/tour" class="ref-card"><strong>Language Tour</strong><span>Quick tour of toke syntax</span></a>
+</div>
+
+<h2>Lessons</h2>
+<div class="ref-grid">
+  <a href="/docs/learn/01-why-toke" class="ref-card"><strong>1. Why toke?</strong><span>Design goals and motivation</span></a>
+  <a href="/docs/learn/02-modules-functions" class="ref-card"><strong>2. Modules &amp; Functions</strong><span>Defining and calling functions</span></a>
+  <a href="/docs/learn/03-control-flow" class="ref-card"><strong>3. Control Flow</strong><span>Conditionals, loops, and matching</span></a>
+  <a href="/docs/learn/04-collections" class="ref-card"><strong>4. Collections</strong><span>Arrays and maps</span></a>
+  <a href="/docs/learn/05-errors" class="ref-card"><strong>5. Errors</strong><span>Error types and handling</span></a>
+  <a href="/docs/learn/06-strings-io" class="ref-card"><strong>6. Strings &amp; I/O</strong><span>String operations and file I/O</span></a>
+  <a href="/docs/learn/07-modules-imports" class="ref-card"><strong>7. Modules &amp; Imports</strong><span>Multi-file projects</span></a>
+  <a href="/docs/learn/08-advanced" class="ref-card"><strong>8. Advanced</strong><span>Closures, generics, and more</span></a>
+  <a href="/docs/learn/09-stdlib" class="ref-card"><strong>9. Standard Library</strong><span>Using the stdlib modules</span></a>
+  <a href="/docs/learn/10-project" class="ref-card"><strong>10. Project</strong><span>Build a complete application</span></a>
+</div>
+
+{! end !}

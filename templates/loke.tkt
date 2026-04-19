@@ -1,0 +1,62 @@
+{! layout("base") !}
+{! block("title") !}loke — toke ecosystem{! end !}
+{! block("content") !}
+
+<div class="page-hero">
+  <h1>loke</h1>
+  <p class="tagline">A locally-run intelligence layer that sits between users, their data, and external LLMs — minimising token spend, maximising privacy, and keeping sensitive data on the user's device.</p>
+  <div class="hero-actions">
+    <a href="https://github.com/karwalski/loke" class="btn btn-primary">GitHub</a>
+    <a href="/ecosystem" class="btn btn-secondary">← Ecosystem</a>
+  </div>
+</div>
+
+<div class="stat-row">
+  <div class="stat"><div class="num">60–80%</div><div class="lbl">Token reduction</div></div>
+  <div class="stat"><div class="num">&lt;1s</div><div class="lbl">Pipeline overhead</div></div>
+  <div class="stat"><div class="num">0</div><div class="lbl">Data leaves device</div></div>
+  <div class="stat"><div class="num">local</div><div class="lbl">First</div></div>
+</div>
+
+<div class="container">
+
+<h2>What is loke?</h2>
+<p>loke is the intelligence layer of the toke ecosystem. It runs locally on your machine and intercepts the flow between your applications and external LLMs. Before any prompt leaves your device, loke compresses it — stripping redundancy, caching repeated context, and routing cheap queries to smaller local models. The result: fewer tokens sent, lower cost, and sensitive data that never touches a remote server.</p>
+
+<div class="features">
+  <div class="feature">
+    <h3>Token optimisation</h3>
+    <p>loke's compression pipeline strips whitespace, deduplicates repeated context, and summarises long histories. 60–80% reduction in tokens sent to the LLM API without sacrificing response quality.</p>
+  </div>
+  <div class="feature">
+    <h3>Privacy by default</h3>
+    <p>Sensitive data — PII, credentials, internal documents — is detected and redacted before leaving the device. You decide what goes to the cloud and what stays local.</p>
+  </div>
+  <div class="feature">
+    <h3>Policy control</h3>
+    <p>Define routing rules: send code completion to a fast local model, send complex reasoning to GPT-4, block certain data categories entirely. Policy lives in a config file you own.</p>
+  </div>
+  <div class="feature">
+    <h3>Companion devices</h3>
+    <p>loke can coordinate across a local network of devices — offloading compute to a nearby Mac Studio or NAS while keeping the interface on your laptop.</p>
+  </div>
+  <div class="feature">
+    <h3>MCP integration</h3>
+    <p>loke integrates with the Model Context Protocol (MCP), acting as a local MCP server that any MCP-compatible client can connect to. toke's own MCP tools route through loke by default.</p>
+  </div>
+  <div class="feature">
+    <h3>Browser and terminal</h3>
+    <p>loke works in two modes: terminal daemon for CLI and IDE integration, and browser extension for web-based LLM interfaces. Both share the same local policy engine.</p>
+  </div>
+</div>
+
+<h2>How it works</h2>
+<p>loke sits as a transparent proxy between your tools and the LLM API. Applications point to <code>localhost:loke</code> instead of the API endpoint directly. Outbound requests are compressed and filtered. Responses are cached and decompressed. The application sees a normal LLM API — it doesn't need to know loke is there.</p>
+
+<div class="ecosystem-note">
+  <p>loke is part of the <a href="/ecosystem">toke ecosystem</a>. It is a separate project from toke the language. See the <a href="https://github.com/karwalski/loke">loke GitHub repository</a> for source, releases, and contribution guide.</p>
+</div>
+
+</div>
+
+{! end !}
