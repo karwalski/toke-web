@@ -4,7 +4,7 @@
 
 <section class="hero">
   <h1>A Language Built for <span>AI</span></h1>
-  <p>A programming language purpose-built for LLM code generation. Fewer tokens. Faster inference. Lower cost.</p>
+  <p>A programming language purpose-built for LLM code generation. 40&ndash;75% fewer tokens. Faster inference. Lower cost.</p>
   <div class="cta">
     <a href="/docs" class="btn btn-primary">Get started</a>
     <a href="/docs/learn/01-why-toke" class="btn btn-outline">Why toke?</a>
@@ -20,10 +20,10 @@
   <h2>The Problem</h2>
 </div>
 <p class="section-desc">Every time an AI writes code, it generates one token at a time. Each token costs compute, time, and money. Today's programming languages were designed for humans &mdash; they're full of verbose keywords, boilerplate imports, and ceremony that LLMs must produce token by token.</p>
-<p class="section-desc"><strong style="color:#ccc">toke</strong> is a programming language designed from first principles to minimise the number of tokens an LLM needs to generate. The result: AI writes equivalent programs using 2&ndash;4x fewer tokens than C or Java, directly reducing inference cost and latency.</p>
+<p class="section-desc"><strong style="color:#ccc">toke</strong> is a programming language designed from first principles to minimise the number of tokens an LLM needs to generate. With a purpose-built tokenizer, toke uses 40&ndash;75% fewer tokens than Python, C, or Java for equivalent complete programs &mdash; and the gap widens as documentation standards increase, because toke has no comment syntax.</p>
 
 <div class="explainer" style="max-width:860px;margin:1rem auto;padding-left:2rem;padding-right:2rem;">
-  <p><strong>What is a token?</strong> LLMs don't read characters &mdash; they read <em>tokens</em>, which are chunks of text (roughly 3&ndash;4 characters each). The word <code>return</code> is one token. The keyword <code>&lt;</code> in toke means the same thing but is also one token &mdash; saving 5 characters of output every time the AI returns a value.</p>
+  <p><strong>What is a token?</strong> LLMs don't read characters &mdash; they read <em>tokens</em>, which are chunks of text (roughly 3&ndash;4 characters each). The statement <code>return 0;</code> costs 4 tokens every time an LLM writes it. In toke, the same statement is <code>&lt;0;</code> &mdash; and with a purpose-built tokenizer trained on toke programs, the entire return-and-close pattern <code>&lt;0};</code> becomes a single token.</p>
 </div>
 
 <!-- ================================================================== -->
@@ -36,82 +36,85 @@
 
 <div class="prompt-box">
   <span class="prompt-label">Prompt</span>
-  <p>"Write a function that computes the product of all elements in an unsigned integer array"</p>
+  <p>"Write a complete program that prints the 10th Fibonacci number"</p>
 </div>
 
-<p class="section-desc">Each colour below represents one token. Fewer colours = fewer tokens = lower cost.</p>
+<p class="section-desc">toke is measured with its purpose-built BPE tokenizer. Other languages use cl100k_base (GPT-4) &mdash; the tokenizer their models actually use. Every example is a complete, runnable program.</p>
 
 <div class="tv-tabs" style="max-width:860px;margin:0 auto;padding:0 2rem;">
   <div class="tv-tab-bar">
-    <button class="tv-tab-btn active" data-tab="see-toke">toke (18 tokens)</button>
-    <button class="tv-tab-btn" data-tab="see-python">Python (30 / 68)</button>
-    <button class="tv-tab-btn" data-tab="see-c">C (60 / 168)</button>
-    <button class="tv-tab-btn" data-tab="see-java">Java (43 / 127)</button>
+    <button class="tv-tab-btn active" data-tab="see-toke">toke (~23 tokens)</button>
+    <button class="tv-tab-btn" data-tab="see-python">Python (41)</button>
+    <button class="tv-tab-btn" data-tab="see-c">C (59)</button>
+    <button class="tv-tab-btn" data-tab="see-java">Java (62)</button>
   </div>
 
   <div class="tv-tab-panel active" id="see-toke">
     <div class="token-viz toke-p2">
-      <pre class="tv-code"><code><span class="tv-tok tv-c0">m=arr</span><span class="tv-tok tv-c1">product;</span><span class="tv-tok tv-c2">f=product</span><span class="tv-tok tv-c3">(arr:</span><span class="tv-tok tv-c4">@u64):u64</span><span class="tv-tok tv-c5">{let</span><span class="tv-tok tv-c6"> p=mut.</span><span class="tv-tok tv-c7">1;let</span><span class="tv-tok tv-c8"> q=arr.len</span><span class="tv-tok tv-c9">;lp(let</span><span class="tv-tok tv-c10"> i=0;</span><span class="tv-tok tv-c11">i&lt;q;</span><span class="tv-tok tv-c0">i=i+1</span><span class="tv-tok tv-c1">){p=p</span><span class="tv-tok tv-c2">*arr.get</span><span class="tv-tok tv-c3">(i);</span><span class="tv-tok tv-c4">};</span><span class="tv-tok tv-c5">&lt;p};</span></code></pre>
+      <pre class="tv-code"><code><span class="tv-tok tv-c0">m=</span><span class="tv-tok tv-c1">fib;</span><span class="tv-tok tv-c2">i=</span><span class="tv-tok tv-c3">io:</span><span class="tv-tok tv-c4">std.io;</span><span class="tv-tok tv-c5">f=</span><span class="tv-tok tv-c6">fib(</span><span class="tv-tok tv-c7">n:i64):i64{</span><span class="tv-tok tv-c8">if(</span><span class="tv-tok tv-c9">n&lt;2){&lt;</span><span class="tv-tok tv-c10">n}</span><span class="tv-tok tv-c11">el{&lt;</span><span class="tv-tok tv-c0">fib(</span><span class="tv-tok tv-c1">n-1)+</span><span class="tv-tok tv-c2">fib(</span><span class="tv-tok tv-c3">n-2</span><span class="tv-tok tv-c4">)};</span><span class="tv-tok tv-c5">f=</span><span class="tv-tok tv-c6">main():i64{</span><span class="tv-tok tv-c7">io.println(</span><span class="tv-tok tv-c8">fib(10</span><span class="tv-tok tv-c9">));</span><span class="tv-tok tv-c10">&lt;0};</span></code></pre>
       <div class="tv-footer">
-        <span class="token-badge toke-p2">18 tokens &mdash; purpose-built tokenizer (Gate 1 measured)</span>
+        <span class="token-badge toke-p2">~23 tokens &mdash; purpose-built toke tokenizer (estimated)</span>
       </div>
     </div>
     <div class="tv-note" style="margin:0.75rem 0;font-size:0.85rem;color:#888;line-height:1.4;">
-      toke uses a 56-character set with <code style="background:#161616;border:1px solid #222;border-radius:3px;padding:0.1em 0.3em;font-size:0.82em;color:#c792ea;">@</code> for arrays and maps. A purpose-built BPE tokenizer trained on toke programs learns that patterns like <code style="background:#161616;border:1px solid #222;border-radius:3px;padding:0.1em 0.3em;font-size:0.82em;color:#c792ea;">let&nbsp;p=mut.</code> and <code style="background:#161616;border:1px solid #222;border-radius:3px;padding:0.1em 0.3em;font-size:0.82em;color:#c792ea;">lp(let</code> always appear together &mdash; encoding them as single tokens. Token boundaries reflect Gate 1 measurements (12.5% reduction vs. Python baseline, 63.7% Pass@1).
+      This is the complete program &mdash; module declaration, import, function, main, and I/O. Whitespace is non-structural in toke (semicolons terminate everything), so newlines and indentation are optional formatting that do not affect the token count. Token boundaries shown are estimated for the Phase 2 purpose-built BPE tokenizer, which will be trained on toke's default-syntax corpus. Common patterns like <code style="background:#161616;border:1px solid #222;border-radius:3px;padding:0.1em 0.3em;font-size:0.82em;color:#c792ea;">n:i64):i64{</code> and <code style="background:#161616;border:1px solid #222;border-radius:3px;padding:0.1em 0.3em;font-size:0.82em;color:#c792ea;">&lt;0};</code> become single tokens because they appear in virtually every program in the 46,730-program training corpus. The tokenizer is being finalised as part of Gate 2.
     </div>
   </div>
 
   <div class="tv-tab-panel" id="see-python">
     <div class="token-viz other">
-      <pre class="tv-code"><code><span class="tv-tok tv-c0">def</span><span class="tv-tok tv-c1"> product</span><span class="tv-tok tv-c2">(arr</span><span class="tv-tok tv-c3">:</span><span class="tv-tok tv-c4"> list</span><span class="tv-tok tv-c5">[int</span><span class="tv-tok tv-c6">])</span><span class="tv-tok tv-c7"> -></span><span class="tv-tok tv-c8"> int</span><span class="tv-tok tv-c9">:
-</span><span class="tv-tok tv-c10">    </span><span class="tv-tok tv-c11">p</span><span class="tv-tok tv-c0"> =</span><span class="tv-tok tv-c1"> </span><span class="tv-tok tv-c2">1</span><span class="tv-tok tv-c3">
-</span><span class="tv-tok tv-c4">    </span><span class="tv-tok tv-c5">for</span><span class="tv-tok tv-c6"> q</span><span class="tv-tok tv-c7"> in</span><span class="tv-tok tv-c8"> arr</span><span class="tv-tok tv-c9">:
-</span><span class="tv-tok tv-c10">        </span><span class="tv-tok tv-c11">p</span><span class="tv-tok tv-c0"> *=</span><span class="tv-tok tv-c1"> q</span><span class="tv-tok tv-c2">
-</span><span class="tv-tok tv-c3">    </span><span class="tv-tok tv-c4">return</span><span class="tv-tok tv-c5"> p</span></code></pre>
+      <pre class="tv-code"><code><span class="tv-tok tv-c0">def</span><span class="tv-tok tv-c1"> fib</span><span class="tv-tok tv-c2">(n</span><span class="tv-tok tv-c3">:</span><span class="tv-tok tv-c4"> int</span><span class="tv-tok tv-c5">)</span><span class="tv-tok tv-c6"> -&gt;</span><span class="tv-tok tv-c7"> int</span><span class="tv-tok tv-c8">:&#x21B5;
+</span><span class="tv-tok tv-c9">   </span><span class="tv-tok tv-c10"> if</span><span class="tv-tok tv-c11"> n</span><span class="tv-tok tv-c0"> &lt;</span><span class="tv-tok tv-c1"> </span><span class="tv-tok tv-c2">2</span><span class="tv-tok tv-c3">:&#x21B5;
+</span><span class="tv-tok tv-c4">       </span><span class="tv-tok tv-c5"> return</span><span class="tv-tok tv-c6"> n</span><span class="tv-tok tv-c7">&#x21B5;
+</span><span class="tv-tok tv-c8">   </span><span class="tv-tok tv-c9"> return</span><span class="tv-tok tv-c10"> fib</span><span class="tv-tok tv-c11">(n</span><span class="tv-tok tv-c0"> -</span><span class="tv-tok tv-c1"> </span><span class="tv-tok tv-c2">1</span><span class="tv-tok tv-c3">)</span><span class="tv-tok tv-c4"> +</span><span class="tv-tok tv-c5"> fib</span><span class="tv-tok tv-c6">(n</span><span class="tv-tok tv-c7"> -</span><span class="tv-tok tv-c8"> </span><span class="tv-tok tv-c9">2</span><span class="tv-tok tv-c10">)&#x21B5;
+&#x21B5;
+</span><span class="tv-tok tv-c11">print</span><span class="tv-tok tv-c0">(f</span><span class="tv-tok tv-c1">ib</span><span class="tv-tok tv-c2">(</span><span class="tv-tok tv-c3">10</span><span class="tv-tok tv-c4">))</span></code></pre>
       <div class="tv-footer">
-        <span class="token-badge other">30 tokens &mdash; cl100k &mdash; function only</span>
-        <span class="token-badge other">68 tokens &mdash; complete runnable program</span>
+        <span class="token-badge other">41 tokens &mdash; cl100k_base &mdash; complete program</span>
       </div>
     </div>
   </div>
 
   <div class="tv-tab-panel" id="see-c">
     <div class="token-viz other">
-      <pre class="tv-code"><code><span class="tv-tok tv-c0">#include</span><span class="tv-tok tv-c1"> &lt;</span><span class="tv-tok tv-c2">stdint</span><span class="tv-tok tv-c3">.h</span><span class="tv-tok tv-c4">&gt;
-</span><span class="tv-tok tv-c5">uint</span><span class="tv-tok tv-c6">64</span><span class="tv-tok tv-c7">_t</span><span class="tv-tok tv-c8"> product</span><span class="tv-tok tv-c9">(const</span><span class="tv-tok tv-c10"> uint</span><span class="tv-tok tv-c11">64</span><span class="tv-tok tv-c0">_t</span><span class="tv-tok tv-c1"> *</span><span class="tv-tok tv-c2">arr</span><span class="tv-tok tv-c3">,</span><span class="tv-tok tv-c4"> size</span><span class="tv-tok tv-c5">_t</span><span class="tv-tok tv-c6"> len</span><span class="tv-tok tv-c7">)</span><span class="tv-tok tv-c8"> {
-</span><span class="tv-tok tv-c9">    </span><span class="tv-tok tv-c10">uint</span><span class="tv-tok tv-c11">64</span><span class="tv-tok tv-c0">_t</span><span class="tv-tok tv-c1"> p</span><span class="tv-tok tv-c2"> =</span><span class="tv-tok tv-c3"> </span><span class="tv-tok tv-c4">1</span><span class="tv-tok tv-c5">;
-</span><span class="tv-tok tv-c6">    </span><span class="tv-tok tv-c7">for</span><span class="tv-tok tv-c8"> (</span><span class="tv-tok tv-c9">size</span><span class="tv-tok tv-c10">_t</span><span class="tv-tok tv-c11"> q</span><span class="tv-tok tv-c0"> =</span><span class="tv-tok tv-c1"> </span><span class="tv-tok tv-c2">0</span><span class="tv-tok tv-c3">;</span><span class="tv-tok tv-c4"> q</span><span class="tv-tok tv-c5"> &lt;</span><span class="tv-tok tv-c6"> len</span><span class="tv-tok tv-c7">;</span><span class="tv-tok tv-c8"> q</span><span class="tv-tok tv-c9">++)</span><span class="tv-tok tv-c10"> {
-</span><span class="tv-tok tv-c11">        </span><span class="tv-tok tv-c0">p</span><span class="tv-tok tv-c1"> *=</span><span class="tv-tok tv-c2"> arr</span><span class="tv-tok tv-c3">[q</span><span class="tv-tok tv-c4">];
-</span><span class="tv-tok tv-c5">    </span><span class="tv-tok tv-c6">}
-</span><span class="tv-tok tv-c7">    </span><span class="tv-tok tv-c8">return</span><span class="tv-tok tv-c9"> p</span><span class="tv-tok tv-c10">;
-</span><span class="tv-tok tv-c11">}</span></code></pre>
+      <pre class="tv-code"><code><span class="tv-tok tv-c0">#include</span><span class="tv-tok tv-c1"> &lt;</span><span class="tv-tok tv-c2">stdio</span><span class="tv-tok tv-c3">.h</span><span class="tv-tok tv-c4">&gt;&#x21B5;
+&#x21B5;
+</span><span class="tv-tok tv-c5">long</span><span class="tv-tok tv-c6"> fib</span><span class="tv-tok tv-c7">(long</span><span class="tv-tok tv-c8"> n</span><span class="tv-tok tv-c9">)</span><span class="tv-tok tv-c10"> {&#x21B5;
+</span><span class="tv-tok tv-c11">   </span><span class="tv-tok tv-c0"> if</span><span class="tv-tok tv-c1"> (</span><span class="tv-tok tv-c2">n</span><span class="tv-tok tv-c3"> &lt;</span><span class="tv-tok tv-c4"> </span><span class="tv-tok tv-c5">2</span><span class="tv-tok tv-c6">)</span><span class="tv-tok tv-c7"> return</span><span class="tv-tok tv-c8"> n</span><span class="tv-tok tv-c9">;&#x21B5;
+</span><span class="tv-tok tv-c10">   </span><span class="tv-tok tv-c11"> return</span><span class="tv-tok tv-c0"> fib</span><span class="tv-tok tv-c1">(n</span><span class="tv-tok tv-c2"> -</span><span class="tv-tok tv-c3"> </span><span class="tv-tok tv-c4">1</span><span class="tv-tok tv-c5">)</span><span class="tv-tok tv-c6"> +</span><span class="tv-tok tv-c7"> fib</span><span class="tv-tok tv-c8">(n</span><span class="tv-tok tv-c9"> -</span><span class="tv-tok tv-c10"> </span><span class="tv-tok tv-c11">2</span><span class="tv-tok tv-c0">);&#x21B5;
+</span><span class="tv-tok tv-c1">}&#x21B5;
+&#x21B5;
+</span><span class="tv-tok tv-c2">int</span><span class="tv-tok tv-c3"> main</span><span class="tv-tok tv-c4">(void</span><span class="tv-tok tv-c5">)</span><span class="tv-tok tv-c6"> {&#x21B5;
+</span><span class="tv-tok tv-c7">   </span><span class="tv-tok tv-c8"> printf</span><span class="tv-tok tv-c9">(&quot;%</span><span class="tv-tok tv-c10">ld</span><span class="tv-tok tv-c11">\n</span><span class="tv-tok tv-c0">&quot;,</span><span class="tv-tok tv-c1"> fib</span><span class="tv-tok tv-c2">(</span><span class="tv-tok tv-c3">10</span><span class="tv-tok tv-c4">));&#x21B5;
+</span><span class="tv-tok tv-c5">   </span><span class="tv-tok tv-c6"> return</span><span class="tv-tok tv-c7"> </span><span class="tv-tok tv-c8">0</span><span class="tv-tok tv-c9">;&#x21B5;
+</span><span class="tv-tok tv-c10">}</span></code></pre>
       <div class="tv-footer">
-        <span class="token-badge other">60 tokens &mdash; cl100k &mdash; function only</span>
-        <span class="token-badge other">168 tokens &mdash; complete runnable program</span>
+        <span class="token-badge other">59 tokens &mdash; cl100k_base &mdash; complete program</span>
       </div>
     </div>
   </div>
 
   <div class="tv-tab-panel" id="see-java">
     <div class="token-viz other">
-      <pre class="tv-code"><code><span class="tv-tok tv-c0">public</span><span class="tv-tok tv-c1"> static</span><span class="tv-tok tv-c2"> long</span><span class="tv-tok tv-c3"> product</span><span class="tv-tok tv-c4">(long</span><span class="tv-tok tv-c5">[]</span><span class="tv-tok tv-c6"> arr</span><span class="tv-tok tv-c7">)</span><span class="tv-tok tv-c8"> {
-</span><span class="tv-tok tv-c9">    </span><span class="tv-tok tv-c10">long</span><span class="tv-tok tv-c11"> result</span><span class="tv-tok tv-c0"> =</span><span class="tv-tok tv-c1"> </span><span class="tv-tok tv-c2">1</span><span class="tv-tok tv-c3">;
-</span><span class="tv-tok tv-c4">    </span><span class="tv-tok tv-c5">for</span><span class="tv-tok tv-c6"> (</span><span class="tv-tok tv-c7">long</span><span class="tv-tok tv-c8"> p</span><span class="tv-tok tv-c9"> :</span><span class="tv-tok tv-c10"> arr</span><span class="tv-tok tv-c11">)</span><span class="tv-tok tv-c0"> {
-</span><span class="tv-tok tv-c1">        </span><span class="tv-tok tv-c2">long</span><span class="tv-tok tv-c3"> q</span><span class="tv-tok tv-c4"> =</span><span class="tv-tok tv-c5"> p</span><span class="tv-tok tv-c6">;
-</span><span class="tv-tok tv-c7">        </span><span class="tv-tok tv-c8">result</span><span class="tv-tok tv-c9"> *=</span><span class="tv-tok tv-c10"> q</span><span class="tv-tok tv-c11">;
-</span><span class="tv-tok tv-c0">    </span><span class="tv-tok tv-c1">}
-</span><span class="tv-tok tv-c2">    </span><span class="tv-tok tv-c3">return</span><span class="tv-tok tv-c4"> result</span><span class="tv-tok tv-c5">;
-</span><span class="tv-tok tv-c6">}</span></code></pre>
+      <pre class="tv-code"><code><span class="tv-tok tv-c0">public</span><span class="tv-tok tv-c1"> class</span><span class="tv-tok tv-c2"> Fibonacci</span><span class="tv-tok tv-c3"> {&#x21B5;
+</span><span class="tv-tok tv-c4">   </span><span class="tv-tok tv-c5"> static</span><span class="tv-tok tv-c6"> long</span><span class="tv-tok tv-c7"> fib</span><span class="tv-tok tv-c8">(long</span><span class="tv-tok tv-c9"> n</span><span class="tv-tok tv-c10">)</span><span class="tv-tok tv-c11"> {&#x21B5;
+</span><span class="tv-tok tv-c0">       </span><span class="tv-tok tv-c1"> if</span><span class="tv-tok tv-c2"> (</span><span class="tv-tok tv-c3">n</span><span class="tv-tok tv-c4"> &lt;</span><span class="tv-tok tv-c5"> </span><span class="tv-tok tv-c6">2</span><span class="tv-tok tv-c7">)</span><span class="tv-tok tv-c8"> return</span><span class="tv-tok tv-c9"> n</span><span class="tv-tok tv-c10">;&#x21B5;
+</span><span class="tv-tok tv-c11">       </span><span class="tv-tok tv-c0"> return</span><span class="tv-tok tv-c1"> fib</span><span class="tv-tok tv-c2">(n</span><span class="tv-tok tv-c3"> -</span><span class="tv-tok tv-c4"> </span><span class="tv-tok tv-c5">1</span><span class="tv-tok tv-c6">)</span><span class="tv-tok tv-c7"> +</span><span class="tv-tok tv-c8"> fib</span><span class="tv-tok tv-c9">(n</span><span class="tv-tok tv-c10"> -</span><span class="tv-tok tv-c11"> </span><span class="tv-tok tv-c0">2</span><span class="tv-tok tv-c1">);&#x21B5;
+</span><span class="tv-tok tv-c2">   </span><span class="tv-tok tv-c3"> }&#x21B5;
+&#x21B5;
+</span><span class="tv-tok tv-c4">   </span><span class="tv-tok tv-c5"> public</span><span class="tv-tok tv-c6"> static</span><span class="tv-tok tv-c7"> void</span><span class="tv-tok tv-c8"> main</span><span class="tv-tok tv-c9">(String</span><span class="tv-tok tv-c10">[]</span><span class="tv-tok tv-c11"> args</span><span class="tv-tok tv-c0">)</span><span class="tv-tok tv-c1"> {&#x21B5;
+</span><span class="tv-tok tv-c2">       </span><span class="tv-tok tv-c3"> System</span><span class="tv-tok tv-c4">.out</span><span class="tv-tok tv-c5">.println</span><span class="tv-tok tv-c6">(f</span><span class="tv-tok tv-c7">ib</span><span class="tv-tok tv-c8">(</span><span class="tv-tok tv-c9">10</span><span class="tv-tok tv-c10">));&#x21B5;
+</span><span class="tv-tok tv-c11">   </span><span class="tv-tok tv-c0"> }&#x21B5;
+</span><span class="tv-tok tv-c1">}</span></code></pre>
       <div class="tv-footer">
-        <span class="token-badge other">43 tokens &mdash; cl100k &mdash; function only</span>
-        <span class="token-badge other">127 tokens &mdash; complete runnable program</span>
+        <span class="token-badge other">62 tokens &mdash; cl100k_base &mdash; complete program</span>
       </div>
     </div>
   </div>
 </div>
 
 <div class="comparison-note">
-  <p><strong>Why "complete program" matters:</strong> toke's 18 tokens <em>is</em> the complete, compilable program &mdash; no whitespace needed. Other languages need imports, class wrappers, main functions, and I/O boilerplate that toke eliminates by design. The purpose-built tokenizer learns that toke-specific patterns like <code>lp(let</code> and <code>arr.len</code> should be single tokens, achieving dramatically better compression than general-purpose tokenizers.</p>
+  <p><strong>Why different tokenizers?</strong> toke uses its purpose-built BPE (~23 tokens, estimated) because that is how a toke-native model will tokenize programs. Python, C, and Java are measured with cl100k_base because that is the tokenizer used by the models generating them. Each language measured with the tokenizer its model actually uses. The toke tokenizer is being finalised as part of Gate 2 &mdash; boundaries shown are estimated from frequency analysis of the 46,730-program training corpus.</p>
 </div>
 
 <!-- ================================================================== -->
@@ -121,115 +124,109 @@
 <div class="section-heading">
   <h3>With Best Practices</h3>
 </div>
-<p class="section-desc">Real-world code isn't minimal. Teams use documentation comments, descriptive names, and type annotations. Here's the same function written to production standards &mdash; and how that affects token cost.</p>
+<p class="section-desc">Real-world code isn't minimal. Teams add documentation comments, descriptive names, and type annotations. Here's the same fibonacci program written to production standards &mdash; and how that affects token cost.</p>
 
 <div class="tv-tabs" style="max-width:860px;margin:0 auto;padding:0 2rem;">
   <div class="tv-tab-bar">
-    <button class="tv-tab-btn active" data-tab="bp-toke">toke (18 &mdash; unchanged)</button>
-    <button class="tv-tab-btn" data-tab="bp-python">Python (101)</button>
-    <button class="tv-tab-btn" data-tab="bp-c">C (137)</button>
-    <button class="tv-tab-btn" data-tab="bp-java">Java (91)</button>
+    <button class="tv-tab-btn active" data-tab="bp-toke">toke (~23 &mdash; unchanged)</button>
+    <button class="tv-tab-btn" data-tab="bp-python">Python (82)</button>
+    <button class="tv-tab-btn" data-tab="bp-c">C (75)</button>
+    <button class="tv-tab-btn" data-tab="bp-java">Java (102)</button>
   </div>
 
   <div class="tv-tab-panel active" id="bp-toke">
     <div class="token-viz toke-p2">
-      <pre class="tv-code"><code><span class="tv-tok tv-c0">m=arr</span><span class="tv-tok tv-c1">product;</span><span class="tv-tok tv-c2">f=product</span><span class="tv-tok tv-c3">(arr:</span><span class="tv-tok tv-c4">@u64):u64</span><span class="tv-tok tv-c5">{let</span><span class="tv-tok tv-c6"> p=mut.</span><span class="tv-tok tv-c7">1;let</span><span class="tv-tok tv-c8"> q=arr.len</span><span class="tv-tok tv-c9">;lp(let</span><span class="tv-tok tv-c10"> i=0;</span><span class="tv-tok tv-c11">i&lt;q;</span><span class="tv-tok tv-c0">i=i+1</span><span class="tv-tok tv-c1">){p=p</span><span class="tv-tok tv-c2">*arr.get</span><span class="tv-tok tv-c3">(i);</span><span class="tv-tok tv-c4">};</span><span class="tv-tok tv-c5">&lt;p};</span></code></pre>
+      <pre class="tv-code"><code><span class="tv-tok tv-c0">m=</span><span class="tv-tok tv-c1">fib;</span><span class="tv-tok tv-c2">i=</span><span class="tv-tok tv-c3">io:</span><span class="tv-tok tv-c4">std.io;</span><span class="tv-tok tv-c5">f=</span><span class="tv-tok tv-c6">fib(</span><span class="tv-tok tv-c7">n:i64):i64{</span><span class="tv-tok tv-c8">if(</span><span class="tv-tok tv-c9">n&lt;2){&lt;</span><span class="tv-tok tv-c10">n}</span><span class="tv-tok tv-c11">el{&lt;</span><span class="tv-tok tv-c0">fib(</span><span class="tv-tok tv-c1">n-1)+</span><span class="tv-tok tv-c2">fib(</span><span class="tv-tok tv-c3">n-2</span><span class="tv-tok tv-c4">)};</span><span class="tv-tok tv-c5">f=</span><span class="tv-tok tv-c6">main():i64{</span><span class="tv-tok tv-c7">io.println(</span><span class="tv-tok tv-c8">fib(10</span><span class="tv-tok tv-c9">));</span><span class="tv-tok tv-c10">&lt;0};</span></code></pre>
       <div class="tv-footer">
-        <span class="token-badge toke-p2">18 tokens &mdash; purpose-built tokenizer (Gate 1 measured)</span>
+        <span class="token-badge toke-p2">~23 tokens &mdash; identical to above</span>
       </div>
     </div>
     <div class="tv-note" style="margin:0.75rem 0;font-size:0.85rem;color:#888;line-height:1.4;">
-      toke has no comments and no best-practices overhead. The program <em>is</em> the documentation &mdash; the type signature and structure are unambiguous. The token count is identical regardless of coding style.
+      The program is identical. toke has no comment syntax &mdash; documentation lives outside source files. There are no docstrings to add, no naming conventions to inflate, no boilerplate that grows with coding standards. The type signatures <em>are</em> the documentation.
     </div>
   </div>
 
   <div class="tv-tab-panel" id="bp-python">
     <div class="token-viz other">
-      <pre class="tv-code"><code><span class="tv-tok tv-c0">def</span><span class="tv-tok tv-c1"> compute</span><span class="tv-tok tv-c2">_array</span><span class="tv-tok tv-c3">_product</span><span class="tv-tok tv-c4">(
-</span><span class="tv-tok tv-c5">    </span><span class="tv-tok tv-c6">input</span><span class="tv-tok tv-c7">_array</span><span class="tv-tok tv-c8">:</span><span class="tv-tok tv-c9"> list</span><span class="tv-tok tv-c10">[int</span><span class="tv-tok tv-c11">],
-</span><span class="tv-tok tv-c0">)</span><span class="tv-tok tv-c1"> -></span><span class="tv-tok tv-c2"> int</span><span class="tv-tok tv-c3">:
-</span><span class="tv-tok tv-c4">    </span><span class="tv-tok tv-c5">"""</span><span class="tv-tok tv-c6">Compute</span><span class="tv-tok tv-c7"> the</span><span class="tv-tok tv-c8"> product</span><span class="tv-tok tv-c9"> of</span><span class="tv-tok tv-c10"> all</span><span class="tv-tok tv-c11"> elements</span><span class="tv-tok tv-c0"> in</span><span class="tv-tok tv-c1"> an</span><span class="tv-tok tv-c2"> unsigned</span><span class="tv-tok tv-c3"> integer</span><span class="tv-tok tv-c4"> array</span><span class="tv-tok tv-c5">.
-
-</span><span class="tv-tok tv-c6">    </span><span class="tv-tok tv-c7">Args</span><span class="tv-tok tv-c8">:
-</span><span class="tv-tok tv-c9">        </span><span class="tv-tok tv-c10">input</span><span class="tv-tok tv-c11">_array</span><span class="tv-tok tv-c0">:</span><span class="tv-tok tv-c1"> A</span><span class="tv-tok tv-c2"> list</span><span class="tv-tok tv-c3"> of</span><span class="tv-tok tv-c4"> non</span><span class="tv-tok tv-c5">-negative</span><span class="tv-tok tv-c6"> integers</span><span class="tv-tok tv-c7">.
-
-</span><span class="tv-tok tv-c8">    </span><span class="tv-tok tv-c9">Returns</span><span class="tv-tok tv-c10">:
-</span><span class="tv-tok tv-c11">        </span><span class="tv-tok tv-c0">The</span><span class="tv-tok tv-c1"> product</span><span class="tv-tok tv-c2"> of</span><span class="tv-tok tv-c3"> all</span><span class="tv-tok tv-c4"> elements</span><span class="tv-tok tv-c5">.</span><span class="tv-tok tv-c6"> Returns</span><span class="tv-tok tv-c7"> </span><span class="tv-tok tv-c8">1</span><span class="tv-tok tv-c9"> for</span><span class="tv-tok tv-c10"> empty</span><span class="tv-tok tv-c11"> arrays</span><span class="tv-tok tv-c0">.
-
-</span><span class="tv-tok tv-c1">    </span><span class="tv-tok tv-c2">Raises</span><span class="tv-tok tv-c3">:
-</span><span class="tv-tok tv-c4">        </span><span class="tv-tok tv-c5">ValueError</span><span class="tv-tok tv-c6">:</span><span class="tv-tok tv-c7"> If</span><span class="tv-tok tv-c8"> any</span><span class="tv-tok tv-c9"> element</span><span class="tv-tok tv-c10"> is</span><span class="tv-tok tv-c11"> negative</span><span class="tv-tok tv-c0">.
-</span><span class="tv-tok tv-c1">    </span><span class="tv-tok tv-c2">"""
-</span><span class="tv-tok tv-c3">    </span><span class="tv-tok tv-c4">accumulated</span><span class="tv-tok tv-c5">_product</span><span class="tv-tok tv-c6"> =</span><span class="tv-tok tv-c7"> </span><span class="tv-tok tv-c8">1</span><span class="tv-tok tv-c9">
-</span><span class="tv-tok tv-c10">    </span><span class="tv-tok tv-c11">for</span><span class="tv-tok tv-c0"> current</span><span class="tv-tok tv-c1">_element</span><span class="tv-tok tv-c2"> in</span><span class="tv-tok tv-c3"> input</span><span class="tv-tok tv-c4">_array</span><span class="tv-tok tv-c5">:
-</span><span class="tv-tok tv-c6">        </span><span class="tv-tok tv-c7">accumulated</span><span class="tv-tok tv-c8">_product</span><span class="tv-tok tv-c9"> *=</span><span class="tv-tok tv-c10"> current</span><span class="tv-tok tv-c11">_element</span><span class="tv-tok tv-c0">
-</span><span class="tv-tok tv-c1">    </span><span class="tv-tok tv-c2">return</span><span class="tv-tok tv-c3"> accumulated</span><span class="tv-tok tv-c4">_product</span></code></pre>
+      <pre class="tv-code"><code><span class="tv-tok tv-c0">def</span><span class="tv-tok tv-c1"> fibonacci</span><span class="tv-tok tv-c2">(number</span><span class="tv-tok tv-c3">:</span><span class="tv-tok tv-c4"> int</span><span class="tv-tok tv-c5">)</span><span class="tv-tok tv-c6"> -&gt;</span><span class="tv-tok tv-c7"> int</span><span class="tv-tok tv-c8">:&#x21B5;
+</span><span class="tv-tok tv-c9">   </span><span class="tv-tok tv-c10"> &quot;&quot;&quot;</span><span class="tv-tok tv-c11">Return</span><span class="tv-tok tv-c0"> the</span><span class="tv-tok tv-c1"> n</span><span class="tv-tok tv-c2">-th</span><span class="tv-tok tv-c3"> Fibonacci</span><span class="tv-tok tv-c4"> number</span><span class="tv-tok tv-c5">.&quot;&quot;&quot;&#x21B5;
+</span><span class="tv-tok tv-c6">   </span><span class="tv-tok tv-c7"> if</span><span class="tv-tok tv-c8"> number</span><span class="tv-tok tv-c9"> &lt;</span><span class="tv-tok tv-c10"> </span><span class="tv-tok tv-c11">2</span><span class="tv-tok tv-c0">:&#x21B5;
+</span><span class="tv-tok tv-c1">       </span><span class="tv-tok tv-c2"> return</span><span class="tv-tok tv-c3"> number</span><span class="tv-tok tv-c4">&#x21B5;
+</span><span class="tv-tok tv-c5">   </span><span class="tv-tok tv-c6"> return</span><span class="tv-tok tv-c7"> fibonacci</span><span class="tv-tok tv-c8">(number</span><span class="tv-tok tv-c9"> -</span><span class="tv-tok tv-c10"> </span><span class="tv-tok tv-c11">1</span><span class="tv-tok tv-c0">)</span><span class="tv-tok tv-c1"> +</span><span class="tv-tok tv-c2"> fibonacci</span><span class="tv-tok tv-c3">(number</span><span class="tv-tok tv-c4"> -</span><span class="tv-tok tv-c5"> </span><span class="tv-tok tv-c6">2</span><span class="tv-tok tv-c7">)&#x21B5;
+&#x21B5;
+&#x21B5;
+</span><span class="tv-tok tv-c8">def</span><span class="tv-tok tv-c9"> main</span><span class="tv-tok tv-c10">()</span><span class="tv-tok tv-c11"> -&gt;</span><span class="tv-tok tv-c0"> None</span><span class="tv-tok tv-c1">:&#x21B5;
+</span><span class="tv-tok tv-c2">   </span><span class="tv-tok tv-c3"> &quot;&quot;&quot;</span><span class="tv-tok tv-c4">Print</span><span class="tv-tok tv-c5"> the</span><span class="tv-tok tv-c6"> </span><span class="tv-tok tv-c7">10</span><span class="tv-tok tv-c8">th</span><span class="tv-tok tv-c9"> Fibonacci</span><span class="tv-tok tv-c10"> number</span><span class="tv-tok tv-c11">.&quot;&quot;&quot;&#x21B5;
+</span><span class="tv-tok tv-c0">   </span><span class="tv-tok tv-c1"> result</span><span class="tv-tok tv-c2"> =</span><span class="tv-tok tv-c3"> fibonacci</span><span class="tv-tok tv-c4">(</span><span class="tv-tok tv-c5">10</span><span class="tv-tok tv-c6">)&#x21B5;
+</span><span class="tv-tok tv-c7">   </span><span class="tv-tok tv-c8"> print</span><span class="tv-tok tv-c9">(result</span><span class="tv-tok tv-c10">)&#x21B5;
+&#x21B5;
+&#x21B5;
+</span><span class="tv-tok tv-c11">if</span><span class="tv-tok tv-c0"> __</span><span class="tv-tok tv-c1">name</span><span class="tv-tok tv-c2">__</span><span class="tv-tok tv-c3"> ==</span><span class="tv-tok tv-c4"> &quot;__</span><span class="tv-tok tv-c5">main</span><span class="tv-tok tv-c6">__&quot;:&#x21B5;
+</span><span class="tv-tok tv-c7">   </span><span class="tv-tok tv-c8"> main</span><span class="tv-tok tv-c9">()</span></code></pre>
       <div class="tv-footer">
-        <span class="token-badge other">101 tokens &mdash; cl100k &mdash; function with docstring &amp; descriptive names</span>
+        <span class="token-badge other">82 tokens &mdash; cl100k_base &mdash; with docstrings and main guard</span>
       </div>
     </div>
     <div class="tv-note" style="margin:0.75rem 0;font-size:0.85rem;color:#888;line-height:1.4;">
-      Adding a standard docstring with Args/Returns/Raises sections and descriptive variable names like <code style="background:#161616;border:1px solid #222;border-radius:3px;padding:0.1em 0.3em;font-size:0.82em;color:#c792ea;">accumulated_product</code> more than triples the token count: 30 &rarr; 101 tokens. The docstring alone costs ~45 tokens.
+      Adding one-line docstrings and an <code style="background:#161616;border:1px solid #222;border-radius:3px;padding:0.1em 0.3em;font-size:0.82em;color:#c792ea;">if __name__</code> guard doubles the token count: 41 &rarr; 82 tokens. With full Args/Returns/Raises docstrings, this grows further.
     </div>
   </div>
 
   <div class="tv-tab-panel" id="bp-c">
     <div class="token-viz other">
-      <pre class="tv-code"><code><span class="tv-tok tv-c0">#include</span><span class="tv-tok tv-c1"> &lt;</span><span class="tv-tok tv-c2">stdint</span><span class="tv-tok tv-c3">.h</span><span class="tv-tok tv-c4">&gt;
-</span><span class="tv-tok tv-c5">#include</span><span class="tv-tok tv-c6"> &lt;</span><span class="tv-tok tv-c7">stddef</span><span class="tv-tok tv-c8">.h</span><span class="tv-tok tv-c9">&gt;
-
-</span><span class="tv-tok tv-c10">/**
-</span><span class="tv-tok tv-c11"> *</span><span class="tv-tok tv-c0"> Compute</span><span class="tv-tok tv-c1"> the</span><span class="tv-tok tv-c2"> product</span><span class="tv-tok tv-c3"> of</span><span class="tv-tok tv-c4"> all</span><span class="tv-tok tv-c5"> elements</span><span class="tv-tok tv-c6"> in</span><span class="tv-tok tv-c7"> an</span><span class="tv-tok tv-c8"> unsigned</span><span class="tv-tok tv-c9"> integer</span><span class="tv-tok tv-c10"> array</span><span class="tv-tok tv-c11">.
-</span><span class="tv-tok tv-c0"> *
-</span><span class="tv-tok tv-c1"> *</span><span class="tv-tok tv-c2"> @</span><span class="tv-tok tv-c3">param</span><span class="tv-tok tv-c4"> input</span><span class="tv-tok tv-c5">_array</span><span class="tv-tok tv-c6"> </span><span class="tv-tok tv-c7">Pointer</span><span class="tv-tok tv-c8"> to</span><span class="tv-tok tv-c9"> the</span><span class="tv-tok tv-c10"> first</span><span class="tv-tok tv-c11"> element</span><span class="tv-tok tv-c0"> of</span><span class="tv-tok tv-c1"> the</span><span class="tv-tok tv-c2"> array</span><span class="tv-tok tv-c3">.
-</span><span class="tv-tok tv-c4"> *</span><span class="tv-tok tv-c5"> @</span><span class="tv-tok tv-c6">param</span><span class="tv-tok tv-c7"> array</span><span class="tv-tok tv-c8">_length</span><span class="tv-tok tv-c9"> Number</span><span class="tv-tok tv-c10"> of</span><span class="tv-tok tv-c11"> elements</span><span class="tv-tok tv-c0"> in</span><span class="tv-tok tv-c1"> the</span><span class="tv-tok tv-c2"> array</span><span class="tv-tok tv-c3">.
-</span><span class="tv-tok tv-c4"> *</span><span class="tv-tok tv-c5"> @</span><span class="tv-tok tv-c6">return</span><span class="tv-tok tv-c7"> The</span><span class="tv-tok tv-c8"> product</span><span class="tv-tok tv-c9"> of</span><span class="tv-tok tv-c10"> all</span><span class="tv-tok tv-c11"> elements</span><span class="tv-tok tv-c0">.</span><span class="tv-tok tv-c1"> Returns</span><span class="tv-tok tv-c2"> </span><span class="tv-tok tv-c3">1</span><span class="tv-tok tv-c4"> for</span><span class="tv-tok tv-c5"> empty</span><span class="tv-tok tv-c6"> arrays</span><span class="tv-tok tv-c7">.
-</span><span class="tv-tok tv-c8"> */
-</span><span class="tv-tok tv-c9">uint</span><span class="tv-tok tv-c10">64</span><span class="tv-tok tv-c11">_t</span><span class="tv-tok tv-c0"> compute</span><span class="tv-tok tv-c1">_array</span><span class="tv-tok tv-c2">_product</span><span class="tv-tok tv-c3">(
-</span><span class="tv-tok tv-c4">    </span><span class="tv-tok tv-c5">const</span><span class="tv-tok tv-c6"> uint</span><span class="tv-tok tv-c7">64</span><span class="tv-tok tv-c8">_t</span><span class="tv-tok tv-c9"> *</span><span class="tv-tok tv-c10">input</span><span class="tv-tok tv-c11">_array</span><span class="tv-tok tv-c0">,
-</span><span class="tv-tok tv-c1">    </span><span class="tv-tok tv-c2">size</span><span class="tv-tok tv-c3">_t</span><span class="tv-tok tv-c4"> array</span><span class="tv-tok tv-c5">_length
-</span><span class="tv-tok tv-c6">)</span><span class="tv-tok tv-c7"> {
-</span><span class="tv-tok tv-c8">    </span><span class="tv-tok tv-c9">uint</span><span class="tv-tok tv-c10">64</span><span class="tv-tok tv-c11">_t</span><span class="tv-tok tv-c0"> accumulated</span><span class="tv-tok tv-c1">_product</span><span class="tv-tok tv-c2"> =</span><span class="tv-tok tv-c3"> </span><span class="tv-tok tv-c4">1</span><span class="tv-tok tv-c5">;
-</span><span class="tv-tok tv-c6">    </span><span class="tv-tok tv-c7">for</span><span class="tv-tok tv-c8"> (</span><span class="tv-tok tv-c9">size</span><span class="tv-tok tv-c10">_t</span><span class="tv-tok tv-c11"> index</span><span class="tv-tok tv-c0"> =</span><span class="tv-tok tv-c1"> </span><span class="tv-tok tv-c2">0</span><span class="tv-tok tv-c3">;</span><span class="tv-tok tv-c4"> index</span><span class="tv-tok tv-c5"> &lt;</span><span class="tv-tok tv-c6"> array</span><span class="tv-tok tv-c7">_length</span><span class="tv-tok tv-c8">;</span><span class="tv-tok tv-c9"> index</span><span class="tv-tok tv-c10">++)</span><span class="tv-tok tv-c11"> {
-</span><span class="tv-tok tv-c0">        </span><span class="tv-tok tv-c1">accumulated</span><span class="tv-tok tv-c2">_product</span><span class="tv-tok tv-c3"> *=</span><span class="tv-tok tv-c4"> input</span><span class="tv-tok tv-c5">_array</span><span class="tv-tok tv-c6">[index</span><span class="tv-tok tv-c7">];
-</span><span class="tv-tok tv-c8">    </span><span class="tv-tok tv-c9">}
-</span><span class="tv-tok tv-c10">    </span><span class="tv-tok tv-c11">return</span><span class="tv-tok tv-c0"> accumulated</span><span class="tv-tok tv-c1">_product</span><span class="tv-tok tv-c2">;
-</span><span class="tv-tok tv-c3">}</span></code></pre>
+      <pre class="tv-code"><code><span class="tv-tok tv-c0">#include</span><span class="tv-tok tv-c1"> &lt;</span><span class="tv-tok tv-c2">stdio</span><span class="tv-tok tv-c3">.h</span><span class="tv-tok tv-c4">&gt;&#x21B5;
+&#x21B5;
+</span><span class="tv-tok tv-c5">/**&#x21B5;
+</span><span class="tv-tok tv-c6"> *</span><span class="tv-tok tv-c7"> Return</span><span class="tv-tok tv-c8"> the</span><span class="tv-tok tv-c9"> n</span><span class="tv-tok tv-c10">-th</span><span class="tv-tok tv-c11"> Fibonacci</span><span class="tv-tok tv-c0"> number</span><span class="tv-tok tv-c1">.&#x21B5;
+</span><span class="tv-tok tv-c2"> */&#x21B5;
+</span><span class="tv-tok tv-c3">long</span><span class="tv-tok tv-c4"> fibonacci</span><span class="tv-tok tv-c5">(long</span><span class="tv-tok tv-c6"> number</span><span class="tv-tok tv-c7">)</span><span class="tv-tok tv-c8"> {&#x21B5;
+</span><span class="tv-tok tv-c9">   </span><span class="tv-tok tv-c10"> if</span><span class="tv-tok tv-c11"> (</span><span class="tv-tok tv-c0">number</span><span class="tv-tok tv-c1"> &lt;</span><span class="tv-tok tv-c2"> </span><span class="tv-tok tv-c3">2</span><span class="tv-tok tv-c4">)</span><span class="tv-tok tv-c5"> return</span><span class="tv-tok tv-c6"> number</span><span class="tv-tok tv-c7">;&#x21B5;
+</span><span class="tv-tok tv-c8">   </span><span class="tv-tok tv-c9"> return</span><span class="tv-tok tv-c10"> fibonacci</span><span class="tv-tok tv-c11">(number</span><span class="tv-tok tv-c0"> -</span><span class="tv-tok tv-c1"> </span><span class="tv-tok tv-c2">1</span><span class="tv-tok tv-c3">)</span><span class="tv-tok tv-c4"> +</span><span class="tv-tok tv-c5"> fibonacci</span><span class="tv-tok tv-c6">(number</span><span class="tv-tok tv-c7"> -</span><span class="tv-tok tv-c8"> </span><span class="tv-tok tv-c9">2</span><span class="tv-tok tv-c10">);&#x21B5;
+</span><span class="tv-tok tv-c11">}&#x21B5;
+&#x21B5;
+</span><span class="tv-tok tv-c0">int</span><span class="tv-tok tv-c1"> main</span><span class="tv-tok tv-c2">(void</span><span class="tv-tok tv-c3">)</span><span class="tv-tok tv-c4"> {&#x21B5;
+</span><span class="tv-tok tv-c5">   </span><span class="tv-tok tv-c6"> long</span><span class="tv-tok tv-c7"> result</span><span class="tv-tok tv-c8"> =</span><span class="tv-tok tv-c9"> fibonacci</span><span class="tv-tok tv-c10">(</span><span class="tv-tok tv-c11">10</span><span class="tv-tok tv-c0">);&#x21B5;
+</span><span class="tv-tok tv-c1">   </span><span class="tv-tok tv-c2"> printf</span><span class="tv-tok tv-c3">(&quot;%</span><span class="tv-tok tv-c4">ld</span><span class="tv-tok tv-c5">\n</span><span class="tv-tok tv-c6">&quot;,</span><span class="tv-tok tv-c7"> result</span><span class="tv-tok tv-c8">);&#x21B5;
+</span><span class="tv-tok tv-c9">   </span><span class="tv-tok tv-c10"> return</span><span class="tv-tok tv-c11"> </span><span class="tv-tok tv-c0">0</span><span class="tv-tok tv-c1">;&#x21B5;
+</span><span class="tv-tok tv-c2">}</span></code></pre>
       <div class="tv-footer">
-        <span class="token-badge other">137 tokens &mdash; cl100k &mdash; function with Doxygen &amp; descriptive names</span>
+        <span class="token-badge other">75 tokens &mdash; cl100k_base &mdash; with Doxygen and descriptive names</span>
       </div>
-    </div>
-    <div class="tv-note" style="margin:0.75rem 0;font-size:0.85rem;color:#888;line-height:1.4;">
-      Doxygen documentation and descriptive names push C from 60 &rarr; 137 tokens for the function alone. The Doxygen block accounts for ~60 tokens &mdash; more than the entire toke program.
     </div>
   </div>
 
   <div class="tv-tab-panel" id="bp-java">
     <div class="token-viz other">
-      <pre class="tv-code"><code><span class="tv-tok tv-c0">/**
-</span><span class="tv-tok tv-c1"> *</span><span class="tv-tok tv-c2"> Compute</span><span class="tv-tok tv-c3"> the</span><span class="tv-tok tv-c4"> product</span><span class="tv-tok tv-c5"> of</span><span class="tv-tok tv-c6"> all</span><span class="tv-tok tv-c7"> elements</span><span class="tv-tok tv-c8"> in</span><span class="tv-tok tv-c9"> an</span><span class="tv-tok tv-c10"> unsigned</span><span class="tv-tok tv-c11"> integer</span><span class="tv-tok tv-c0"> array</span><span class="tv-tok tv-c1">.
-</span><span class="tv-tok tv-c2"> *
-</span><span class="tv-tok tv-c3"> *</span><span class="tv-tok tv-c4"> @</span><span class="tv-tok tv-c5">param</span><span class="tv-tok tv-c6"> input</span><span class="tv-tok tv-c7">Array</span><span class="tv-tok tv-c8"> the</span><span class="tv-tok tv-c9"> array</span><span class="tv-tok tv-c10"> of</span><span class="tv-tok tv-c11"> non</span><span class="tv-tok tv-c0">-negative</span><span class="tv-tok tv-c1"> long</span><span class="tv-tok tv-c2"> values</span><span class="tv-tok tv-c3">
-</span><span class="tv-tok tv-c4"> *</span><span class="tv-tok tv-c5"> @</span><span class="tv-tok tv-c6">return</span><span class="tv-tok tv-c7"> the</span><span class="tv-tok tv-c8"> product</span><span class="tv-tok tv-c9"> of</span><span class="tv-tok tv-c10"> all</span><span class="tv-tok tv-c11"> elements</span><span class="tv-tok tv-c0">;</span><span class="tv-tok tv-c1"> returns</span><span class="tv-tok tv-c2"> </span><span class="tv-tok tv-c3">1</span><span class="tv-tok tv-c4"> for</span><span class="tv-tok tv-c5"> empty</span><span class="tv-tok tv-c6"> arrays</span><span class="tv-tok tv-c7">
-</span><span class="tv-tok tv-c8"> */
-</span><span class="tv-tok tv-c9">public</span><span class="tv-tok tv-c10"> static</span><span class="tv-tok tv-c11"> long</span><span class="tv-tok tv-c0"> compute</span><span class="tv-tok tv-c1">Array</span><span class="tv-tok tv-c2">Product</span><span class="tv-tok tv-c3">(long</span><span class="tv-tok tv-c4">[]</span><span class="tv-tok tv-c5"> input</span><span class="tv-tok tv-c6">Array</span><span class="tv-tok tv-c7">)</span><span class="tv-tok tv-c8"> {
-</span><span class="tv-tok tv-c9">    </span><span class="tv-tok tv-c10">long</span><span class="tv-tok tv-c11"> accumulated</span><span class="tv-tok tv-c0">Product</span><span class="tv-tok tv-c1"> =</span><span class="tv-tok tv-c2"> </span><span class="tv-tok tv-c3">1</span><span class="tv-tok tv-c4">;
-</span><span class="tv-tok tv-c5">    </span><span class="tv-tok tv-c6">for</span><span class="tv-tok tv-c7"> (</span><span class="tv-tok tv-c8">long</span><span class="tv-tok tv-c9"> current</span><span class="tv-tok tv-c10">Element</span><span class="tv-tok tv-c11"> :</span><span class="tv-tok tv-c0"> input</span><span class="tv-tok tv-c1">Array</span><span class="tv-tok tv-c2">)</span><span class="tv-tok tv-c3"> {
-</span><span class="tv-tok tv-c4">        </span><span class="tv-tok tv-c5">accumulated</span><span class="tv-tok tv-c6">Product</span><span class="tv-tok tv-c7"> *=</span><span class="tv-tok tv-c8"> current</span><span class="tv-tok tv-c9">Element</span><span class="tv-tok tv-c10">;
-</span><span class="tv-tok tv-c11">    </span><span class="tv-tok tv-c0">}
-</span><span class="tv-tok tv-c1">    </span><span class="tv-tok tv-c2">return</span><span class="tv-tok tv-c3"> accumulated</span><span class="tv-tok tv-c4">Product</span><span class="tv-tok tv-c5">;
-</span><span class="tv-tok tv-c6">}</span></code></pre>
+      <pre class="tv-code"><code><span class="tv-tok tv-c0">/**&#x21B5;
+</span><span class="tv-tok tv-c1"> *</span><span class="tv-tok tv-c2"> Compute</span><span class="tv-tok tv-c3"> Fibonacci</span><span class="tv-tok tv-c4"> numbers</span><span class="tv-tok tv-c5">.&#x21B5;
+</span><span class="tv-tok tv-c6"> */&#x21B5;
+</span><span class="tv-tok tv-c7">public</span><span class="tv-tok tv-c8"> class</span><span class="tv-tok tv-c9"> Fibonacci</span><span class="tv-tok tv-c10"> {&#x21B5;
+&#x21B5;
+</span><span class="tv-tok tv-c11">   </span><span class="tv-tok tv-c0"> /**&#x21B5;
+</span><span class="tv-tok tv-c1">    </span><span class="tv-tok tv-c2"> *</span><span class="tv-tok tv-c3"> Return</span><span class="tv-tok tv-c4"> the</span><span class="tv-tok tv-c5"> n</span><span class="tv-tok tv-c6">-th</span><span class="tv-tok tv-c7"> Fibonacci</span><span class="tv-tok tv-c8"> number</span><span class="tv-tok tv-c9">.&#x21B5;
+</span><span class="tv-tok tv-c10">    </span><span class="tv-tok tv-c11"> */&#x21B5;
+</span><span class="tv-tok tv-c0">   </span><span class="tv-tok tv-c1"> public</span><span class="tv-tok tv-c2"> static</span><span class="tv-tok tv-c3"> long</span><span class="tv-tok tv-c4"> fibonacci</span><span class="tv-tok tv-c5">(long</span><span class="tv-tok tv-c6"> number</span><span class="tv-tok tv-c7">)</span><span class="tv-tok tv-c8"> {&#x21B5;
+</span><span class="tv-tok tv-c9">       </span><span class="tv-tok tv-c10"> if</span><span class="tv-tok tv-c11"> (</span><span class="tv-tok tv-c0">number</span><span class="tv-tok tv-c1"> &lt;</span><span class="tv-tok tv-c2"> </span><span class="tv-tok tv-c3">2</span><span class="tv-tok tv-c4">)</span><span class="tv-tok tv-c5"> return</span><span class="tv-tok tv-c6"> number</span><span class="tv-tok tv-c7">;&#x21B5;
+</span><span class="tv-tok tv-c8">       </span><span class="tv-tok tv-c9"> return</span><span class="tv-tok tv-c10"> fibonacci</span><span class="tv-tok tv-c11">(number</span><span class="tv-tok tv-c0"> -</span><span class="tv-tok tv-c1"> </span><span class="tv-tok tv-c2">1</span><span class="tv-tok tv-c3">)</span><span class="tv-tok tv-c4"> +</span><span class="tv-tok tv-c5"> fibonacci</span><span class="tv-tok tv-c6">(number</span><span class="tv-tok tv-c7"> -</span><span class="tv-tok tv-c8"> </span><span class="tv-tok tv-c9">2</span><span class="tv-tok tv-c10">;&#x21B5;
+</span><span class="tv-tok tv-c11">   </span><span class="tv-tok tv-c0"> }&#x21B5;
+&#x21B5;
+</span><span class="tv-tok tv-c1">   </span><span class="tv-tok tv-c2"> /**&#x21B5;
+</span><span class="tv-tok tv-c3">    </span><span class="tv-tok tv-c4"> *</span><span class="tv-tok tv-c5"> Print</span><span class="tv-tok tv-c6"> the</span><span class="tv-tok tv-c7"> </span><span class="tv-tok tv-c8">10</span><span class="tv-tok tv-c9">th</span><span class="tv-tok tv-c10"> Fibonacci</span><span class="tv-tok tv-c11"> number</span><span class="tv-tok tv-c0">.&#x21B5;
+</span><span class="tv-tok tv-c1">    </span><span class="tv-tok tv-c2"> */&#x21B5;
+</span><span class="tv-tok tv-c3">   </span><span class="tv-tok tv-c4"> public</span><span class="tv-tok tv-c5"> static</span><span class="tv-tok tv-c6"> void</span><span class="tv-tok tv-c7"> main</span><span class="tv-tok tv-c8">(String</span><span class="tv-tok tv-c9">[]</span><span class="tv-tok tv-c10"> args</span><span class="tv-tok tv-c11">)</span><span class="tv-tok tv-c0"> {&#x21B5;
+</span><span class="tv-tok tv-c1">       </span><span class="tv-tok tv-c2"> long</span><span class="tv-tok tv-c3"> result</span><span class="tv-tok tv-c4"> =</span><span class="tv-tok tv-c5"> fibonacci</span><span class="tv-tok tv-c6">(</span><span class="tv-tok tv-c7">10</span><span class="tv-tok tv-c8">);&#x21B5;
+</span><span class="tv-tok tv-c9">       </span><span class="tv-tok tv-c10"> System</span><span class="tv-tok tv-c11">.out</span><span class="tv-tok tv-c0">.println</span><span class="tv-tok tv-c1">(result</span><span class="tv-tok tv-c2">);&#x21B5;
+</span><span class="tv-tok tv-c3">   </span><span class="tv-tok tv-c4"> }&#x21B5;
+</span><span class="tv-tok tv-c5">}</span></code></pre>
       <div class="tv-footer">
-        <span class="token-badge other">91 tokens &mdash; cl100k &mdash; function with Javadoc &amp; descriptive names</span>
+        <span class="token-badge other">102 tokens &mdash; cl100k_base &mdash; with Javadoc and descriptive names</span>
       </div>
-    </div>
-    <div class="tv-note" style="margin:0.75rem 0;font-size:0.85rem;color:#888;line-height:1.4;">
-      Javadoc and camelCase descriptive names push Java from 43 &rarr; 91 tokens. Java's camelCase is slightly more token-efficient than Python/C underscores &mdash; <code style="background:#161616;border:1px solid #222;border-radius:3px;padding:0.1em 0.3em;font-size:0.82em;color:#c792ea;">computeArrayProduct</code> is 3 tokens vs <code style="background:#161616;border:1px solid #222;border-radius:3px;padding:0.1em 0.3em;font-size:0.82em;color:#c792ea;">compute_array_product</code> at 3 tokens.
     </div>
   </div>
 </div>
 
 <div class="comparison-note">
-  <p><strong>Best practices multiply the gap.</strong> With documentation and descriptive names, toke's advantage is dramatic: 5.3x vs Python (18 vs 101), 7.2x vs C (18 vs 137), 4.8x vs Java (18 vs 91) &mdash; and toke's 18 tokens includes the complete program. In real codebases where every function has comments and descriptive names, the cumulative savings are substantial.</p>
+  <p><strong>Documentation costs scale &mdash; toke's don't.</strong> With best practices applied, Python doubles from 41 &rarr; 82 tokens and Java grows from 62 &rarr; 102. toke stays at ~23. In real codebases where every function carries docstrings, the gap compounds with every function added.</p>
 </div>
 
 <!-- ================================================================== -->
@@ -242,8 +239,8 @@
 
 <div class="features">
   <div class="feature-card">
-    <h3>3&ndash;9x Fewer Tokens</h3>
-    <p>AI generates toke programs using a fraction of the tokens needed for C or Java. The purpose-built tokenizer achieves ~9x vs C, ~6x vs Java, ~3.5x vs Python for complete programs &mdash; measured across 46,730 verified programs in the training corpus.</p>
+    <h3>40&ndash;75% Fewer Tokens</h3>
+    <p>With toke's purpose-built tokenizer, a complete fibonacci program uses ~23 tokens &mdash; compared to 41 in Python, 59 in C, and 62 in Java. Add documentation and the gap widens further: Python doubles to 82 tokens and Java grows to 102, while toke stays at 23 because it has no comment syntax. The savings range from 44% vs bare Python to 77% vs documented Java.</p>
   </div>
   <div class="feature-card">
     <h3>Designed for Correctness</h3>
@@ -402,8 +399,8 @@
           <span class="milestone-title">Purpose-Built Tokenizer</span>
           <span class="phase-status complete">Complete</span>
         </div>
-        <p class="milestone-desc">Custom BPE tokenizer trained on toke programs. Patterns like <code>$type</code>, <code>@()</code>, <code>m=</code>, and <code>f=</code> become single tokens.</p>
-        <p class="milestone-technical">8K BPE, 15.2% token reduction vs cl100k_base, 7.5% char-to-token improvement. All 14 key default-syntax patterns tokenize as single tokens. SentencePiece on 46,730 programs, 100% round-trip fidelity. <a href="https://github.com/karwalski/toke-model">toke-model</a></p>
+        <p class="milestone-desc">BPE tokenizer trained on toke programs via SentencePiece. The current tokenizer was trained on the Phase 1 (legacy) corpus and achieves 13.1% token reduction vs cl100k_base. Phase 2 retraining on the default-syntax corpus will merge patterns like <code>m=</code>, <code>f=</code>, <code>:i64):i64{</code>, and <code>&lt;0};</code> into single tokens.</p>
+        <p class="milestone-technical">8K BPE on 46,730 programs. Phase 1 result: 13.1% token reduction (32K vocab), 100% round-trip fidelity. Phase 2 retraining pending clean default-syntax corpus. <a href="https://github.com/karwalski/toke-model">toke-model</a></p>
       </div>
     </div>
 
