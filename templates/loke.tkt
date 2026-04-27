@@ -4,15 +4,16 @@
 
 <div class="page-hero">
   <h1>loke</h1>
-  <p class="tagline">A locally-run intelligence layer that sits between users, their data, and external LLMs — minimising token spend, maximising privacy, and keeping sensitive data on the user's device.</p>
+  <p class="tagline">A locally-run intelligence layer that sits between users, their data, and external LLMs &mdash; minimising token spend, maximising privacy, and keeping sensitive data on the user's device.</p>
   <div class="hero-actions">
     <a href="https://github.com/karwalski/loke" class="btn btn-primary">GitHub</a>
-    <a href="/ecosystem" class="btn btn-secondary">← Ecosystem</a>
+    <a href="/moke" class="btn btn-outline">Try moke</a>
+    <a href="/ecosystem" class="btn btn-secondary">&larr; Ecosystem</a>
   </div>
 </div>
 
 <div class="stat-row">
-  <div class="stat"><div class="num">60–80%</div><div class="lbl">Token reduction</div></div>
+  <div class="stat"><div class="num">60&ndash;80%</div><div class="lbl">Token reduction</div></div>
   <div class="stat"><div class="num">&lt;1s</div><div class="lbl">Pipeline overhead</div></div>
   <div class="stat"><div class="num">0</div><div class="lbl">Data leaves device</div></div>
   <div class="stat"><div class="num">local</div><div class="lbl">First</div></div>
@@ -20,38 +21,340 @@
 
 <div class="container">
 
-<h2>What is loke?</h2>
-<p>loke is the intelligence layer of the toke ecosystem. It runs locally on your machine and intercepts the flow between your applications and external LLMs. Before any prompt leaves your device, loke compresses it — stripping redundancy, caching repeated context, and routing cheap queries to smaller local models. The result: fewer tokens sent, lower cost, and sensitive data that never touches a remote server.</p>
+<!-- ── Architecture ─────────────────────────────────────────── -->
+
+<div class="section-heading"><h2>How it works</h2></div>
+<p>loke sits as a transparent proxy between your tools and the LLM API. Applications point to <code>localhost:loke</code> instead of the API endpoint directly. Every request passes through a pipeline of privacy, optimisation, and routing stages before anything leaves your machine.</p>
+
+<div class="code-block" style="text-align:left; line-height:1.8;">
+<span class="cm">                       loke (local)</span>
+<span class="cm">                ┌──────────────────────┐</span>
+  User/App ───&gt; │ <span class="kw">Privacy</span>   filter     │
+                │ <span class="kw">Optimiser</span> (TOON etc) │ ───&gt; LLM (cloud or local)
+                │ <span class="kw">Router</span>    (intent)   │          │
+                │ <span class="kw">Governance</span> gateway   │          │
+                └──────────────────────┘          │
+  User/App &lt;── response restoration &lt;────────────┘
+</div>
+
+<!-- ── Privacy Pipeline ────────────────────────────────────── -->
+
+<div class="section-heading"><h2>Privacy Pipeline</h2></div>
+<p>Before any prompt leaves your device, loke detects and handles sensitive data through multiple layers. You control exactly what reaches a remote model.</p>
 
 <div class="features">
   <div class="feature">
-    <h3>Token optimisation</h3>
-    <p>loke's compression pipeline strips whitespace, deduplicates repeated context, and summarises long histories. 60–80% reduction in tokens sent to the LLM API without sacrificing response quality.</p>
+    <h3>Multi-layer PII detection</h3>
+    <p>Three detection layers working in sequence: regex patterns for structured data (emails, phone numbers, ABNs), NLP entity recognition for names and addresses, and a small local language model for contextual PII that rules miss. 180+ entity types via Presidio integration.</p>
   </div>
   <div class="feature">
-    <h3>Privacy by default</h3>
-    <p>Sensitive data — PII, credentials, internal documents — is detected and redacted before leaving the device. You decide what goes to the cloud and what stays local.</p>
+    <h3>Reversible anonymisation</h3>
+    <p>Detected PII is replaced with consistent placeholders before the prompt is sent. When the response comes back, loke restores the original values. The LLM never sees real data, but you get a coherent answer with your actual names and details intact.</p>
   </div>
   <div class="feature">
-    <h3>Policy control</h3>
-    <p>Define routing rules: send code completion to a fast local model, send complex reasoning to GPT-4, block certain data categories entirely. Policy lives in a config file you own.</p>
+    <h3>Guardian system prompt</h3>
+    <p>A system-level instruction injected into every outbound request, telling the model not to request or reproduce sensitive information. Defence in depth &mdash; even if detection misses something, the model is instructed to avoid it.</p>
   </div>
   <div class="feature">
-    <h3>Companion devices</h3>
-    <p>loke can coordinate across a local network of devices — offloading compute to a nearby Mac Studio or NAS while keeping the interface on your laptop.</p>
-  </div>
-  <div class="feature">
-    <h3>MCP integration</h3>
-    <p>loke integrates with the Model Context Protocol (MCP), acting as a local MCP server that any MCP-compatible client can connect to. toke's own MCP tools route through loke by default.</p>
-  </div>
-  <div class="feature">
-    <h3>Browser and terminal</h3>
-    <p>loke works in two modes: terminal daemon for CLI and IDE integration, and browser extension for web-based LLM interfaces. Both share the same local policy engine.</p>
+    <h3>Dry-run mode</h3>
+    <p>Preview exactly what will be sent to the LLM before it goes. See the anonymised prompt, the detected entities, and the placeholder mapping. Nothing leaves your machine until you confirm.</p>
   </div>
 </div>
 
-<h2>How it works</h2>
-<p>loke sits as a transparent proxy between your tools and the LLM API. Applications point to <code>localhost:loke</code> instead of the API endpoint directly. Outbound requests are compressed and filtered. Responses are cached and decompressed. The application sees a normal LLM API — it doesn't need to know loke is there.</p>
+<!-- ── Token Optimisation ──────────────────────────────────── -->
+
+<div class="section-heading"><h2>Token Optimisation</h2></div>
+<p>loke combines multiple compression strategies to reduce the tokens you send to an LLM API. Less tokens means lower cost and faster responses, without sacrificing output quality.</p>
+
+<div class="features">
+  <div class="feature">
+    <h3>TOON format</h3>
+    <p>Token-Optimised Object Notation &mdash; a data serialisation format designed for minimal token consumption. Strips quotes, colons, and redundant whitespace. Tabular data uses <code>HDR[col1|col2]</code> notation. 30&ndash;60% fewer tokens than equivalent JSON.</p>
+  </div>
+  <div class="feature">
+    <h3>LLMLingua compression</h3>
+    <p>Prompt compression that removes redundant tokens while preserving meaning. Combined with TOON, prompts that would cost hundreds of tokens can often be expressed in dozens.</p>
+  </div>
+  <div class="feature">
+    <h3>Semantic caching</h3>
+    <p>Responses are cached by semantic similarity, not exact string match. If you ask a question similar enough to a previous one, loke returns the cached response instantly. 73% cache hit rate in typical usage &mdash; three out of four queries never touch the API.</p>
+  </div>
+  <div class="feature">
+    <h3>Combined savings</h3>
+    <p>TOON + LLMLingua + semantic caching + template reuse + local routing. Combined, these strategies achieve 60&ndash;80% reduction in tokens sent to external LLMs. The pipeline adds less than one second of overhead.</p>
+  </div>
+</div>
+
+<div class="code-compare">
+  <div class="code-pane">
+    <div class="pane-label">JSON (68 tokens)</div>
+<pre>{
+  <span class="str">"name"</span>: <span class="str">"Alice Chen"</span>,
+  <span class="str">"role"</span>: <span class="str">"engineer"</span>,
+  <span class="str">"department"</span>: <span class="str">"platform"</span>,
+  <span class="str">"projects"</span>: [
+    {<span class="str">"id"</span>: <span class="num">42</span>, <span class="str">"name"</span>: <span class="str">"loke"</span>},
+    {<span class="str">"id"</span>: <span class="num">51</span>, <span class="str">"name"</span>: <span class="str">"ooke"</span>}
+  ]
+}</pre>
+  </div>
+  <div class="code-pane">
+    <div class="pane-label">TOON (29 tokens &mdash; 57% smaller)</div>
+<pre>name=Alice Chen
+role=engineer
+department=platform
+projects=HDR[id|name]
+  42|loke
+  51|ooke</pre>
+  </div>
+</div>
+
+<!-- ── Intelligent Routing ─────────────────────────────────── -->
+
+<div class="section-heading"><h2>Intelligent Routing</h2></div>
+<p>Not every query needs the most expensive model. loke classifies intent and routes each request to the right destination &mdash; local model, small cloud model, or large cloud model &mdash; based on complexity, sensitivity, and cost.</p>
+
+<div class="features">
+  <div class="feature">
+    <h3>Intent classification</h3>
+    <p>A lightweight local classifier analyses each prompt in under 10ms. Categories include code completion, creative writing, factual lookup, reasoning, and more. Classification drives routing and optimisation decisions.</p>
+  </div>
+  <div class="feature">
+    <h3>Sensitivity scoring</h3>
+    <p>Each prompt receives a sensitivity score based on detected PII, data categories, and configured policies. High-sensitivity prompts are routed to local models or blocked entirely. Low-sensitivity prompts are eligible for cost-optimised cloud routing.</p>
+  </div>
+  <div class="feature">
+    <h3>Cost-optimised model selection</h3>
+    <p>loke selects the cheapest model capable of handling each query. Simple lookups go to small fast models. Complex reasoning goes to larger models. You set the budget and quality floor; loke optimises within those constraints.</p>
+  </div>
+</div>
+
+<!-- ── Local Inference ──────────────────────────────────────── -->
+
+<div class="section-heading"><h2>Local Inference</h2></div>
+<p>loke runs models locally using a tiered system matched to your hardware. No data leaves the device for local inference &mdash; privacy is absolute.</p>
+
+<div class="features">
+  <div class="feature">
+    <h3>Interactive tier</h3>
+    <p>Fast responses for real-time use: autocomplete, quick lookups, short answers. Small quantised models running at 25&ndash;55 tokens/second. Optimised for latency.</p>
+  </div>
+  <div class="feature">
+    <h3>Considered tier</h3>
+    <p>Mid-range models for tasks that can tolerate a few seconds of latency: code review, document summarisation, analysis. 5&ndash;15 tokens/second. Better quality than interactive, still fast enough for conversational use.</p>
+  </div>
+  <div class="feature">
+    <h3>Background tier</h3>
+    <p>Large models for batch processing, overnight analysis, and deep reasoning. 0.5&ndash;5 tokens/second. Queue jobs and collect results later. Disk-streaming for models that exceed RAM.</p>
+  </div>
+  <div class="feature">
+    <h3>MLX for Apple Silicon</h3>
+    <p>Native acceleration on Apple Silicon via MLX. Hardware-aware model recommendations based on your specific chip and available memory. loke detects your hardware and suggests the best models for each tier.</p>
+  </div>
+</div>
+
+<!-- ── AI Governance ────────────────────────────────────────── -->
+
+<div class="section-heading"><h2>AI Governance</h2></div>
+<p>loke provides a governance framework that treats AI usage as a first-class compliance concern. Every AI interaction passes through a mandatory governance gateway.</p>
+
+<div class="features">
+  <div class="feature">
+    <h3>Governance gateway</h3>
+    <p>A mandatory chokepoint for all AI interactions. Every request is classified by risk tier, checked against policies, and logged. No AI usage bypasses governance &mdash; it is architecturally impossible.</p>
+  </div>
+  <div class="feature">
+    <h3>Risk classification</h3>
+    <p>Each use case is assigned a risk tier with associated controls. High-risk use cases require additional approval, human review, or are blocked entirely. Risk tiers align with regulatory frameworks.</p>
+  </div>
+  <div class="feature">
+    <h3>Kill switches</h3>
+    <p>Instant shutdown at multiple levels: global (all AI), per-provider, per-use-case, and per-agent. If something goes wrong, one switch stops it. Kill switches work even if the network is down.</p>
+  </div>
+  <div class="feature">
+    <h3>Decision traces</h3>
+    <p>Full audit trail on every AI interaction: what was sent, what was received, which model, what privacy filtering was applied, what the governance decision was. Traces are stored locally and can be exported for compliance review.</p>
+  </div>
+  <div class="feature">
+    <h3>Compliance reporting</h3>
+    <p>Pre-built report templates for EU AI Act, Australian Privacy Act, HIPAA, and GDPR. Generate compliance documentation from actual usage data rather than self-assessment questionnaires.</p>
+  </div>
+  <div class="feature">
+    <h3>Incident management</h3>
+    <p>Severity-tiered incident handling with post-incident review workflows. When an AI interaction produces an unexpected result, loke captures the full context for investigation and creates a traceable incident record.</p>
+  </div>
+</div>
+
+<!-- ── Agents ───────────────────────────────────────────────── -->
+
+<div class="section-heading"><h2>Agents</h2></div>
+<p>loke supports autonomous agents that run tasks on your behalf &mdash; scheduled, triggered, or on-demand. All agents operate within the same privacy and governance framework as interactive queries.</p>
+
+<div class="features">
+  <div class="feature">
+    <h3>Scheduled and triggered</h3>
+    <p>Agents can run on a cron schedule (nightly report generation, weekly summarisation) or be triggered by events (new file, webhook, another agent completing). Define the trigger, the task, and the output destination.</p>
+  </div>
+  <div class="feature">
+    <h3>Sandbox execution</h3>
+    <p>Each agent runs in an isolated sandbox with defined permissions. An agent can read specific directories but not others, can call specific APIs but not others. Principle of least privilege, enforced at the runtime level.</p>
+  </div>
+  <div class="feature">
+    <h3>Agent-to-agent communication</h3>
+    <p>Agents can pass results to other agents, forming pipelines. A research agent gathers data, passes it to an analysis agent, which passes results to a reporting agent. Each stage is independently governed and auditable.</p>
+  </div>
+  <div class="feature">
+    <h3>Overnight batch</h3>
+    <p>Queue compute-intensive work for overnight processing using the Background inference tier. Large-context analysis, bulk document processing, and deep research tasks run while you sleep, with results ready in the morning.</p>
+  </div>
+</div>
+
+<!-- ── Memory Palace ───────────────────────────────────────── -->
+
+<div class="section-heading"><h2>Memory Palace</h2></div>
+<p>loke maintains a structured memory system that gives AI interactions persistent context without re-sending entire conversation histories. Memory is hierarchical, searchable, and compressed.</p>
+
+<div class="features">
+  <div class="feature">
+    <h3>Wing / Hall / Room hierarchy</h3>
+    <p>Memory is organised into Wings (broad domains like "work" or "personal"), Halls (projects or topics within a domain), and Rooms (specific conversations or task contexts). Navigate memory the way you think about your work.</p>
+  </div>
+  <div class="feature">
+    <h3>Semantic search</h3>
+    <p>Find relevant memories by meaning, not keywords. Ask "what did I decide about the database migration?" and loke retrieves the right context even if those exact words were never used. Embeddings are computed and stored locally.</p>
+  </div>
+  <div class="feature">
+    <h3>AAAK shorthand</h3>
+    <p>Memories are stored in AAAK &mdash; a compressed English shorthand that achieves 5&ndash;30x compression compared to full prose. Context that would cost thousands of tokens is loaded in dozens. The AI expands AAAK back to natural language when needed.</p>
+  </div>
+</div>
+
+<!-- ── MCP Integration ─────────────────────────────────────── -->
+
+<div class="section-heading"><h2>MCP Integration</h2></div>
+<p>loke implements the Model Context Protocol at multiple levels, acting as a bridge between MCP-compatible clients and the local intelligence layer.</p>
+
+<div class="features">
+  <div class="feature">
+    <h3>Host, client, and broker</h3>
+    <p>loke acts as an MCP host (exposing tools to clients), an MCP client (connecting to external MCP servers), and a broker (routing between multiple MCP services). One local endpoint that unifies your MCP ecosystem.</p>
+  </div>
+  <div class="feature">
+    <h3>mDNS discovery</h3>
+    <p>MCP services on the local network are discovered automatically via mDNS. Companion devices running loke advertise their capabilities. No manual configuration &mdash; plug in a device and its models and tools become available.</p>
+  </div>
+</div>
+
+<!-- ── Operating Modes ─────────────────────────────────────── -->
+
+<div class="section-heading"><h2>Operating Modes</h2></div>
+<p>loke works wherever you do &mdash; in the terminal or in the browser. Both modes share the same local policy engine, privacy pipeline, and governance framework.</p>
+
+<div class="features">
+  <div class="feature">
+    <h3>Terminal mode</h3>
+    <p>A background daemon that intercepts LLM API calls from CLI tools, IDEs, and scripts. Point any OpenAI-compatible client at <code>localhost:loke</code> and every request is automatically filtered, optimised, and routed. No code changes to your existing tools.</p>
+  </div>
+  <div class="feature">
+    <h3>Browser mode</h3>
+    <p>A browser extension that applies loke's pipeline to web-based LLM interfaces. Use ChatGPT, Claude, or any web UI and loke intercepts outbound prompts, applies privacy filtering, and logs everything through the governance gateway.</p>
+  </div>
+</div>
+
+<!-- ── Built vs Coming Next ────────────────────────────────── -->
+
+<div class="section-heading"><h2>Built vs Coming Next</h2></div>
+<p>loke is under active development. Here is what works today and what is specified and coming next.</p>
+
+<div class="code-compare">
+  <div class="code-pane">
+    <div class="pane-label">Built</div>
+<pre style="color:#4ade80;">Foundation
+  Core engine and pipeline
+  Configuration system
+
+Platform
+  Privacy pipeline (PII detection,
+    anonymisation, restoration)
+  Token optimisation (TOON, caching)
+  Intelligent routing
+  Local inference (tiered)
+  MCP integration (host/client/broker)
+  mDNS discovery
+
+Accountable AI
+  Governance gateway
+  Risk classification
+  Kill switches
+  Decision traces
+
+Agents
+  Scheduled and triggered execution
+  Sandbox isolation
+  Agent-to-agent communication
+
+Memory
+  Wing/Hall/Room hierarchy
+  Semantic search
+  AAAK compression
+
+Application
+  Terminal mode (daemon)
+  Browser mode (extension)</pre>
+  </div>
+  <div class="code-pane">
+    <div class="pane-label">Coming Next</div>
+<pre style="color:#60a5fa;">Policy and Compliance
+  Policy loader (file-based rules)
+  Regulatory defaults (AU, EU, US)
+  Compliance feedback loop
+  Audit reporting and export
+
+User Experience
+  Setup wizard
+  Pipeline visibility panel
+  Savings dashboard
+  Prompt approval workflow
+  Issue reporting UI
+
+Deployment
+  Companion device coordination
+  Distributed inference (Exo)
+  Remote model offloading</pre>
+  </div>
+</div>
+
+<!-- ── toke Ecosystem ──────────────────────────────────────── -->
+
+<div class="section-heading"><h2>toke Ecosystem</h2></div>
+<p>loke is built entirely within the toke ecosystem. Each piece is designed to work together, and each contributes to loke's core mission of minimising tokens and maximising privacy.</p>
+
+<div class="features">
+  <div class="feature">
+    <h3>toke</h3>
+    <p>The programming language. Designed for minimal token consumption &mdash; a 56-character syntax that LLMs can generate with fewer tokens and higher correctness. loke's core engine is written in toke.</p>
+  </div>
+  <div class="feature">
+    <h3>ooke</h3>
+    <p>The web framework. Built on toke, compiles to a single native binary with zero runtime dependencies. loke's HTTP interface and the moke demo run on ooke. No Node.js, no Python, no Docker.</p>
+  </div>
+  <div class="feature">
+    <h3>TOON</h3>
+    <p>Token-Optimised Object Notation. The serialisation format that gives loke its 30&ndash;60% token savings on structured data. Designed to be readable by both humans and LLMs while using minimal tokens.</p>
+  </div>
+  <div class="feature">
+    <h3>AAAK</h3>
+    <p>Compressed English shorthand used by the Memory Palace. Achieves 5&ndash;30x compression on natural language context. Lets loke load rich background context into a prompt without blowing the token budget.</p>
+  </div>
+  <div class="feature">
+    <h3>loke</h3>
+    <p>The intelligence layer that ties it all together. toke for the code, ooke for the web, TOON for the data, AAAK for the memory. Build light, ship fast, keep data local.</p>
+  </div>
+</div>
+
+<div class="ecosystem-note" style="border-left-color:#7c83fd;">
+  <p><strong>toke on ooke &mdash; build light, ship fast.</strong> loke ships as a single native binary compiled from toke. No interpreter, no VM, no garbage collector, no runtime dependencies. Install one file and everything works.</p>
+</div>
 
 <div class="ecosystem-note">
   <p>loke is part of the <a href="/ecosystem">toke ecosystem</a>. It is a separate project from toke the language. See the <a href="https://github.com/karwalski/loke">loke GitHub repository</a> for source, releases, and contribution guide.</p>
