@@ -287,6 +287,11 @@ Accountable AI
   Risk classification
   Kill switches
   Decision traces
+  Governance health dashboard
+  Value realisation dashboard
+  Provider scorecard
+  Cost forecasting
+  Tier utilisation dashboards
 
 Agents
   Scheduled and triggered execution
@@ -297,6 +302,39 @@ Memory
   Wing/Hall/Room hierarchy
   Semantic search
   AAAK compression
+
+Companion Devices
+  mDNS auto-discovery
+  TLS 1.3 secure transport
+  Remote model execution
+  Exo distributed inference
+
+Desktop Distribution
+  Code signing (macOS, Windows)
+  Auto-update mechanism
+  Portable CLI binary
+
+Model Evaluation
+  Benchmarking suite
+  A/B testing framework
+  "Could this run locally?" analysis
+
+Internationalisation
+  Full i18n framework
+  Locale-aware formatting
+
+Integration Framework
+  OAuth 2.0 provider support
+  Retry with exponential backoff
+  Circuit-breaking
+
+Error Handling
+  Server/client/API error framework
+  Structured error reporting
+
+Feedback System
+  Thumbs up/down on every interaction
+  Feedback-driven model selection
 
 Application
   Terminal mode (daemon)
@@ -313,14 +351,9 @@ Application
 User Experience
   Setup wizard
   Pipeline visibility panel
-  Savings dashboard
+  Savings dashboard (user-facing)
   Prompt approval workflow
-  Issue reporting UI
-
-Deployment
-  Companion device coordination
-  Distributed inference (Exo)
-  Remote model offloading</pre>
+  Issue reporting UI</pre>
   </div>
 </div>
 
