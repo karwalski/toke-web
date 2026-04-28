@@ -372,16 +372,8 @@ User Experience
     <p>The web framework. Built on toke, compiles to a single native binary with zero runtime dependencies. loke's HTTP interface and the moke demo run on ooke. No Node.js, no Python, no Docker.</p>
   </div>
   <div class="feature">
-    <h3>TOON</h3>
-    <p>Token-Optimised Object Notation. The serialisation format that gives loke its 30&ndash;60% token savings on structured data. Designed to be readable by both humans and LLMs while using minimal tokens.</p>
-  </div>
-  <div class="feature">
-    <h3>AAAK</h3>
-    <p>Compressed English shorthand used by the Memory Palace. Achieves 5&ndash;30x compression on natural language context. Lets loke load rich background context into a prompt without blowing the token budget.</p>
-  </div>
-  <div class="feature">
     <h3>loke</h3>
-    <p>The intelligence layer that ties it all together. toke for the code, ooke for the web, TOON for the data, AAAK for the memory. Build light, ship fast, keep data local.</p>
+    <p>The intelligence layer that ties it all together. Built on toke and ooke, loke leverages libraries like TOON (token-optimised serialisation) and AAAK (compressed context shorthand) to minimise token spend while maximising privacy. Build light, ship fast, keep data local.</p>
   </div>
 </div>
 
