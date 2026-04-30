@@ -2,9 +2,16 @@ m=website;
 i=http:std.http;
 i=log:std.log;
 
+f=healthjson():$str{
+  <"{\"status\":\"ok\",\"version\":\"0.1.0\",\"service\":\"toke-website\"}"
+};
+
 f=main():i64{
   log.openaccess("logs/access.log"; 10000; 30; 0);
-  http.getstatic("/health"; "{\"status\":\"ok\",\"version\":\"0.1.0\"}");
+  let hj=healthjson();
+  http.getstaticmime("/health"; hj; "application/json");
+  http.getstaticmime("/api/health"; hj; "application/json");
+  http.postjson("/api/health"; hj);
   http.getstatic("/api/version"; "{\"version\":\"0.1.0\"}");
   http.vhost("tokelang.dev"; "sites/tokelang.dev");
   http.vhost("www.tokelang.dev"; "sites/tokelang.dev");

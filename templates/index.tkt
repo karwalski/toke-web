@@ -20,7 +20,7 @@
   <h2>The Problem</h2>
 </div>
 <p class="section-desc">Every time an AI writes code, it generates one token at a time. Each token costs compute, time, and money. Today's programming languages were designed for humans &mdash; they're full of verbose keywords, boilerplate imports, and ceremony that LLMs must produce token by token.</p>
-<p class="section-desc"><strong style="color:#ccc">toke</strong> is a programming language designed from first principles to minimise the number of tokens an LLM needs to generate. With a purpose-built tokenizer, toke uses 40&ndash;75% fewer tokens than Python, C, or Java for equivalent complete programs &mdash; and the gap widens as documentation standards increase, because toke has no comment syntax.</p>
+<p class="section-desc"><strong style="color:#ccc">toke</strong> is a programming language designed from first principles to minimise the number of tokens an LLM needs to generate. With a purpose-built tokenizer, toke uses 40&ndash;75% fewer tokens than Python, C, or Java for equivalent complete programs &mdash; and the gap widens as documentation standards increase, because toke's LLM training corpus is comment-stripped.</p>
 
 <div class="explainer" style="max-width:860px;margin:1rem auto;padding-left:2rem;padding-right:2rem;">
   <p><strong>What is a token?</strong> LLMs don't read characters &mdash; they read <em>tokens</em>, which are chunks of text (roughly 3&ndash;4 characters each). The statement <code>return 0;</code> costs 4 tokens every time an LLM writes it. In toke, the same statement is <code>&lt;0;</code> &mdash; and with a purpose-built tokenizer trained on toke programs, the entire return-and-close pattern <code>&lt;0};</code> becomes a single token.</p>
@@ -142,7 +142,7 @@
       </div>
     </div>
     <div class="tv-note" style="margin:0.75rem 0;font-size:0.85rem;color:#888;line-height:1.4;">
-      The program is identical. toke has no comment syntax &mdash; documentation lives outside source files. There are no docstrings to add, no naming conventions to inflate, no boilerplate that grows with coding standards. The type signatures <em>are</em> the documentation.
+      The program is identical. toke supports comments via <code style="background:#161616;border:1px solid #222;border-radius:3px;padding:0.1em 0.3em;font-size:0.82em;color:#c792ea;">(* ... *)</code> for human authors, but the LLM training corpus is comment-stripped &mdash; so AI-generated code carries zero documentation overhead. There are no docstrings to inflate, no boilerplate that grows with coding standards. The type signatures <em>are</em> the documentation.
     </div>
   </div>
 
@@ -240,11 +240,11 @@
 <div class="features">
   <div class="feature-card">
     <h3>40&ndash;75% Fewer Tokens</h3>
-    <p>With toke's purpose-built tokenizer, a complete fibonacci program uses ~23 tokens &mdash; compared to 41 in Python, 59 in C, and 62 in Java. Add documentation and the gap widens further: Python doubles to 82 tokens and Java grows to 102, while toke stays at 23 because it has no comment syntax. The savings range from 44% vs bare Python to 77% vs documented Java.</p>
+    <p>With toke's purpose-built tokenizer, a complete fibonacci program uses ~23 tokens &mdash; compared to 41 in Python, 59 in C, and 62 in Java. Add documentation and the gap widens further: Python doubles to 82 tokens and Java grows to 102, while toke stays at 23 because LLMs are trained to write without comments. The savings range from 44% vs bare Python to 77% vs documented Java.</p>
   </div>
   <div class="feature-card">
     <h3>Designed for Correctness</h3>
-    <p>LL(1) grammar, 12 keywords, minimal character set (56 characters). No ambiguity, no implicit coercions, full static type checking. The compiler catches mistakes before code runs &mdash; critical when AI is writing the code.</p>
+    <p>LL(1) grammar, 12 keywords, minimal character set (59 characters). No ambiguity, no implicit coercions, full static type checking. The compiler catches mistakes before code runs &mdash; critical when AI is writing the code.</p>
   </div>
   <div class="feature-card">
     <h3>Standard Library with C Runtime</h3>
@@ -304,7 +304,7 @@
           <span class="phase-status complete">Complete</span>
         </div>
         <p class="milestone-desc">Defined the complete toke language &mdash; grammar, keywords, types, operators, and the character sets for both profiles.</p>
-        <p class="milestone-technical">LL(1) grammar, 12 keywords. Phase 1 (80 chars) for corpus generation. Phase 2 (56 chars) production encoding with <code>$</code> type sigils and <code>@()</code> arrays. Formal EBNF, RFC draft, mechanical transformation rules. <a href="https://github.com/karwalski/toke">toke</a></p>
+        <p class="milestone-technical">LL(1) grammar, 12 keywords. Phase 1 (80 chars) for corpus generation. Phase 2 (59 chars) production encoding with <code>$</code> type sigils and <code>@()</code> arrays. Formal EBNF, RFC draft, mechanical transformation rules. <a href="https://github.com/karwalski/toke">toke</a></p>
       </div>
     </div>
 
@@ -375,8 +375,8 @@
       <span class="phase-group-label">Phase 2</span>
       <span class="phase-group-title">Custom tokenizer &amp; first AI model</span>
     </div>
-    <p class="phase-summary">With the thesis validated, Phase 2 builds a tokenizer purpose-built for toke, expands the standard library, and works toward training a model on the production default syntax. A major syntax decision &mdash; adopting the 56-character encoding as the default &mdash; required regenerating the entire corpus in the new format.</p>
-    <p class="phase-technical">Epics 2.1&ndash;2.5. Profile 2 (56-char) BPE tokenizer. QLoRA fine-tuning of Qwen 2.5 Coder 7B. Gate 2 criteria: 7B model outperforms baseline on default-syntax generation.</p>
+    <p class="phase-summary">With the thesis validated, Phase 2 builds a tokenizer purpose-built for toke, expands the standard library, and works toward training a model on the production default syntax. A major syntax decision &mdash; adopting the 59-character encoding as the default &mdash; required regenerating the entire corpus in the new format.</p>
+    <p class="phase-technical">Epics 2.1&ndash;2.5. Profile 2 (59-char) BPE tokenizer. QLoRA fine-tuning of Qwen 2.5 Coder 7B. Gate 2 criteria: 7B model outperforms baseline on default-syntax generation.</p>
 
     <div class="timeline-milestone complete">
       <div class="milestone-marker"></div>
@@ -386,8 +386,8 @@
           <span class="milestone-title">Language Extensions &amp; Default Syntax</span>
           <span class="phase-status complete">Complete</span>
         </div>
-        <p class="milestone-desc">Adopted the 56-character encoding as the default (&ldquo;toke&rdquo;) and the 80-character encoding as the legacy profile (<code>--legacy</code>). Expanded the standard library to 30+ modules covering security, networking, data processing, visualization, and LLM integration.</p>
-        <p class="milestone-technical">Decision 2026-04-04: 56-char is default, <code>$</code> type sigils, <code>@()</code> arrays, <code>[]</code> removed. 30+ stdlib modules with <code>.tki</code> interface contracts. <a href="https://github.com/karwalski/toke">toke</a></p>
+        <p class="milestone-desc">Adopted the 59-character encoding as the default (&ldquo;toke&rdquo;) and the 80-character encoding as the legacy profile (<code>--legacy</code>). Expanded the standard library to 30+ modules covering security, networking, data processing, visualization, and LLM integration.</p>
+        <p class="milestone-technical">Decision 2026-04-04: 59-char is default, <code>$</code> type sigils, <code>@()</code> arrays, <code>[]</code> removed. 30+ stdlib modules with <code>.tki</code> interface contracts. <a href="https://github.com/karwalski/toke">toke</a></p>
       </div>
     </div>
 
@@ -492,7 +492,7 @@
           <span class="milestone-title">Default Syntax Compiler Implementation</span>
           <span class="phase-status complete">Complete</span>
         </div>
-        <p class="milestone-desc">Full compiler support for the 56-character default syntax &mdash; lexer, parser, type checker, and LLVM backend updated. 172 conformance tests passing.</p>
+        <p class="milestone-desc">Full compiler support for the 59-character default syntax &mdash; lexer, parser, type checker, and LLVM backend updated. 172 conformance tests passing.</p>
       </div>
     </div>
 
