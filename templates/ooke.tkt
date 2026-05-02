@@ -85,7 +85,7 @@ ooke build
   </div>
   <div class="feature">
     <h3>Content type scaffolding</h3>
-    <p><code>ooke gen type</code>, <code>ooke gen page</code>, <code>ooke gen api</code>, <code>ooke gen island</code> scaffold common patterns instantly. toke's 56-char syntax means an LLM generates a complete ooke site in fewer tokens with higher correctness.</p>
+    <p><code>ooke gen type</code>, <code>ooke gen page</code>, <code>ooke gen api</code>, <code>ooke gen island</code> scaffold common patterns instantly. toke's 55-char syntax means an LLM generates a complete ooke site in fewer tokens with higher correctness.</p>
   </div>
   <div class="feature">
     <h3>Native binary output</h3>
@@ -128,10 +128,10 @@ ooke build
 <span class="kw">i</span>=store:ooke.store;
 
 <span class="cm"># Register API endpoints with function pointers</span>
-http.<span class="fn">get</span>(<span class="str">"/api/posts"</span>;<span class="fn">list_posts</span>);
-http.<span class="fn">post</span>(<span class="str">"/api/posts"</span>;<span class="fn">create_post</span>);
-http.<span class="fn">put</span>(<span class="str">"/api/posts/:id"</span>;<span class="fn">update_post</span>);
-http.<span class="fn">delete</span>(<span class="str">"/api/posts/:id"</span>;<span class="fn">delete_post</span>);
+http.<span class="fn">get</span>(<span class="str">"/api/posts"</span>;<span class="fn">listposts</span>);
+http.<span class="fn">post</span>(<span class="str">"/api/posts"</span>;<span class="fn">createpost</span>);
+http.<span class="fn">put</span>(<span class="str">"/api/posts/:id"</span>;<span class="fn">updatepost</span>);
+http.<span class="fn">delete</span>(<span class="str">"/api/posts/:id"</span>;<span class="fn">deletepost</span>);
 </div>
 
 <h2>SQLite store</h2>

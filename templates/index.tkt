@@ -244,7 +244,7 @@
   </div>
   <div class="feature-card">
     <h3>Designed for Correctness</h3>
-    <p>LL(1) grammar, 12 keywords, minimal character set (59 characters). No ambiguity, no implicit coercions, full static type checking. The compiler catches mistakes before code runs &mdash; critical when AI is writing the code.</p>
+    <p>LL(1) grammar, 13 keywords, minimal character set (55 characters). No ambiguity, no implicit coercions, full static type checking. The compiler catches mistakes before code runs &mdash; critical when AI is writing the code.</p>
   </div>
   <div class="feature-card">
     <h3>Standard Library with C Runtime</h3>
@@ -304,7 +304,7 @@
           <span class="phase-status complete">Complete</span>
         </div>
         <p class="milestone-desc">Defined the complete toke language &mdash; grammar, keywords, types, operators, and the character sets for both profiles.</p>
-        <p class="milestone-technical">LL(1) grammar, 12 keywords. Phase 1 (80 chars) for corpus generation. Phase 2 (59 chars) production encoding with <code>$</code> type sigils and <code>@()</code> arrays. Formal EBNF, RFC draft, mechanical transformation rules. <a href="https://github.com/karwalski/toke">toke</a></p>
+        <p class="milestone-technical">LL(1) grammar, 13 keywords. Phase 1 (80 chars) for corpus generation. Phase 2 (55 chars) production encoding with <code>$</code> type sigils and <code>@()</code> arrays. Formal EBNF, RFC draft, mechanical transformation rules. <a href="https://github.com/karwalski/toke">toke</a></p>
       </div>
     </div>
 
@@ -354,7 +354,7 @@
           <span class="milestone-title">Gate 1 Evaluation</span>
           <span class="phase-status complete">Complete</span>
         </div>
-        <p class="milestone-desc">Final benchmark on 1,000 held-out tasks. <strong>Gate 1: PASS (2026-04-03).</strong> Token reduction 12.5% (target &gt;10%). Pass@1 63.7% (target &ge;60%). Compilation rate 92.3%.</p>
+        <p class="milestone-desc">Final benchmark on 1,000 held-out tasks. <strong>Gate 1: PASS.</strong> Token reduction 12.5% (target &gt;10%). Pass@1 63.7% (target &ge;60%). Compilation rate 92.3%.</p>
         <p class="milestone-technical">1,000 held-out tasks, 120 test inputs each. Token reduction: 12.5% (8K vocab) / 13.1% (32K vocab) vs cl100k_base. Pass@1: 588/923 compilable tasks (63.7%) via Qwen 2.5 Coder 7B + QLoRA adapter. <a href="https://github.com/karwalski/toke-eval">toke-eval</a></p>
       </div>
     </div>
@@ -375,8 +375,8 @@
       <span class="phase-group-label">Phase 2</span>
       <span class="phase-group-title">Custom tokenizer &amp; first AI model</span>
     </div>
-    <p class="phase-summary">With the thesis validated, Phase 2 builds a tokenizer purpose-built for toke, expands the standard library, and works toward training a model on the production default syntax. A major syntax decision &mdash; adopting the 59-character encoding as the default &mdash; required regenerating the entire corpus in the new format.</p>
-    <p class="phase-technical">Epics 2.1&ndash;2.5. Profile 2 (59-char) BPE tokenizer. QLoRA fine-tuning of Qwen 2.5 Coder 7B. Gate 2 criteria: 7B model outperforms baseline on default-syntax generation.</p>
+    <p class="phase-summary">With the thesis validated, Phase 2 builds a tokenizer purpose-built for toke, expands the standard library, and works toward training a model on the production default syntax. A major syntax decision &mdash; adopting the 55-character encoding as the default &mdash; required regenerating the entire corpus in the new format.</p>
+    <p class="phase-technical">Epics 2.1&ndash;2.5. Profile 2 (55-char) BPE tokenizer. QLoRA fine-tuning of Qwen 2.5 Coder 7B. Gate 2 criteria: 7B model outperforms baseline on default-syntax generation.</p>
 
     <div class="timeline-milestone complete">
       <div class="milestone-marker"></div>
@@ -386,8 +386,8 @@
           <span class="milestone-title">Language Extensions &amp; Default Syntax</span>
           <span class="phase-status complete">Complete</span>
         </div>
-        <p class="milestone-desc">Adopted the 59-character encoding as the default (&ldquo;toke&rdquo;) and the 80-character encoding as the legacy profile (<code>--legacy</code>). Expanded the standard library to 30+ modules covering security, networking, data processing, visualization, and LLM integration.</p>
-        <p class="milestone-technical">Decision 2026-04-04: 59-char is default, <code>$</code> type sigils, <code>@()</code> arrays, <code>[]</code> removed. 30+ stdlib modules with <code>.tki</code> interface contracts. <a href="https://github.com/karwalski/toke">toke</a></p>
+        <p class="milestone-desc">Adopted the 55-character encoding as the default (&ldquo;toke&rdquo;) and the 80-character encoding as the legacy profile (<code>--legacy</code>). Expanded the standard library to 30+ modules covering security, networking, data processing, visualization, and LLM integration.</p>
+        <p class="milestone-technical">55-char is default, <code>$</code> type sigils, <code>@()</code> arrays, <code>[]</code> removed. 30+ stdlib modules with <code>.tki</code> interface contracts. <a href="https://github.com/karwalski/toke">toke</a></p>
       </div>
     </div>
 
@@ -426,7 +426,7 @@
           <span class="phase-status on-hold">On Hold</span>
         </div>
         <p class="milestone-desc">The entire Phase 1 corpus (46,754 programs) was mechanically transformed to the new default syntax and passes <code>tkc --check</code> at 90%. However, the 7B model trained on this corpus achieved 0% Pass@1 on default-syntax generation. The root cause: the mechanically transformed corpus contained semantic errors (wrong operator precedence, missing parentheses, algorithm bugs) that the compiler could not catch, and the 18,890 single-line training examples were insufficient to override the base model's pre-training on Python and Go &mdash; 97.5% of generated programs contained illegal characters (underscores, commas, uppercase) from other languages. Stdlib stubs (91 across 19 modules, since resolved) were a secondary factor &mdash; the few programs that did compile returned incorrect output from stub functions.</p>
-        <p class="milestone-technical">An LLM-driven refinement pipeline was built (Anthropic Sonnet, max 10 compile-feedback turns per program) that achieves 99% compilation and 98% output correctness at $0.03/record. Pilot runs validated the approach on 400 benchmark tasks with zero Python contamination. This pipeline addresses the root cause by generating fresh, high-quality default-syntax programs rather than mechanically transforming legacy code. Full-scale regeneration of ~18K training records is pending local compute availability. All stdlib stubs have been resolved (Epic 57.15, completed 2026-04-19). <a href="https://github.com/karwalski/toke-model">toke-model</a></p>
+        <p class="milestone-technical">An LLM-driven refinement pipeline was built (Anthropic Sonnet, max 10 compile-feedback turns per program) that achieves 99% compilation and 98% output correctness at $0.03/record. Pilot runs validated the approach on 400 benchmark tasks with zero Python contamination. This pipeline addresses the root cause by generating fresh, high-quality default-syntax programs rather than mechanically transforming legacy code. Full-scale regeneration of ~18K training records is pending local compute availability. All stdlib stubs have been resolved (Epic 57.15). <a href="https://github.com/karwalski/toke-model">toke-model</a></p>
 
         <div class="corpus-stage">
           <div class="stage-header"><span class="stage-label">Phase 2 Corpus</span><span class="stage-title">Default Syntax Programs</span></div>
@@ -492,7 +492,7 @@
           <span class="milestone-title">Default Syntax Compiler Implementation</span>
           <span class="phase-status complete">Complete</span>
         </div>
-        <p class="milestone-desc">Full compiler support for the 59-character default syntax &mdash; lexer, parser, type checker, and LLVM backend updated. 172 conformance tests passing.</p>
+        <p class="milestone-desc">Full compiler support for the 55-character default syntax &mdash; lexer, parser, type checker, and LLVM backend updated. 172 conformance tests passing.</p>
       </div>
     </div>
 
@@ -605,6 +605,85 @@
       <div class="gate-content">
         <span class="gate-label">Gate 4</span>
         <span class="gate-criteria">All benchmarks met, spec complete, consortium proposal ready</span>
+      </div>
+      <div class="gate-line"></div>
+    </div>
+  </div>
+
+  <!-- PHASE 5 -->
+  <div class="timeline-phase-group">
+    <div class="phase-group-header">
+      <span class="phase-group-label">Phase 5</span>
+      <span class="phase-group-title">1B purpose-built model</span>
+    </div>
+    <p class="phase-summary">Phase 5 replaces the fine-tuning approach with a 1B parameter model trained from scratch on toke programs. A smaller model purpose-built for toke is expected to outperform larger fine-tuned models on toke-specific code generation, because it learns toke as a native language rather than adapting from Python or C.</p>
+    <p class="phase-technical">Architecture design, corpus preparation (comment-free, 55-char default syntax), training infrastructure, full training run, and evaluation against fine-tuned 7B baseline.</p>
+
+    <div class="timeline-milestone planned">
+      <div class="milestone-marker"></div>
+      <div class="milestone-content">
+        <div class="milestone-header">
+          <span class="milestone-id">5.1</span>
+          <span class="milestone-title">1B Model Architecture Design</span>
+          <span class="phase-status planned">Planned</span>
+        </div>
+        <p class="milestone-desc">Design a 1B parameter transformer architecture optimised for toke code generation. Evaluate decoder-only vs encoder-decoder, context length, and attention patterns suited to toke's compact syntax.</p>
+      </div>
+    </div>
+
+    <div class="timeline-milestone planned">
+      <div class="milestone-marker"></div>
+      <div class="milestone-content">
+        <div class="milestone-header">
+          <span class="milestone-id">5.2</span>
+          <span class="milestone-title">Training Corpus Preparation</span>
+          <span class="phase-status planned">Planned</span>
+        </div>
+        <p class="milestone-desc">Prepare the from-scratch training corpus: comment-free, 55-character default syntax, matched to the purpose-built tokenizer. Includes deduplication, quality filtering, and curriculum ordering.</p>
+      </div>
+    </div>
+
+    <div class="timeline-milestone planned">
+      <div class="milestone-marker"></div>
+      <div class="milestone-content">
+        <div class="milestone-header">
+          <span class="milestone-id">5.3</span>
+          <span class="milestone-title">Training Infrastructure</span>
+          <span class="phase-status planned">Planned</span>
+        </div>
+        <p class="milestone-desc">Set up training infrastructure for a full from-scratch training run &mdash; hardware provisioning, distributed training framework, checkpointing, and monitoring.</p>
+      </div>
+    </div>
+
+    <div class="timeline-milestone planned">
+      <div class="milestone-marker"></div>
+      <div class="milestone-content">
+        <div class="milestone-header">
+          <span class="milestone-id">5.4</span>
+          <span class="milestone-title">1B Model Training</span>
+          <span class="phase-status planned">Planned</span>
+        </div>
+        <p class="milestone-desc">Train the 1B parameter model from scratch on the toke corpus. Multiple training runs with hyperparameter search. Target: the model learns toke as its native language.</p>
+      </div>
+    </div>
+
+    <div class="timeline-milestone planned">
+      <div class="milestone-marker"></div>
+      <div class="milestone-content">
+        <div class="milestone-header">
+          <span class="milestone-id">5.5</span>
+          <span class="milestone-title">1B Model Evaluation</span>
+          <span class="phase-status planned">Planned</span>
+        </div>
+        <p class="milestone-desc">Evaluate the 1B purpose-built model against the fine-tuned 7B baseline on toke code generation benchmarks. Target: 1B purpose-built outperforms 7B fine-tuned on Pass@1, compilation rate, and token efficiency.</p>
+      </div>
+    </div>
+
+    <div class="gate-marker">
+      <div class="gate-line"></div>
+      <div class="gate-content">
+        <span class="gate-label">Gate 5</span>
+        <span class="gate-criteria">1B purpose-built model outperforms fine-tuned 7B on toke generation benchmarks</span>
       </div>
       <div class="gate-line"></div>
     </div>

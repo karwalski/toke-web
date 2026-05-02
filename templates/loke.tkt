@@ -365,7 +365,7 @@ User Experience
 <div class="features">
   <div class="feature">
     <h3>toke</h3>
-    <p>The programming language. Designed for minimal token consumption &mdash; a 56-character syntax that LLMs can generate with fewer tokens and higher correctness. loke's core engine is written in toke.</p>
+    <p>The programming language. Designed for minimal token consumption &mdash; a 55-character syntax that LLMs can generate with fewer tokens and higher correctness. loke's core engine is written in toke.</p>
   </div>
   <div class="feature">
     <h3>ooke</h3>
