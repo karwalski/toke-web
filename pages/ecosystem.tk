@@ -2,6 +2,6 @@ m=page.ecosystem;
 i=http:std.http;
 i=tpl:ooke.template;
 
-f=get(req:http.$req):http.$res{
+f=get(req:i64):i64{
   <tpl.renderfile("templates/ecosystem.tkt"; @("page.title":"Ecosystem — toke"));
 };

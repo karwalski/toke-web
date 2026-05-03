@@ -3,7 +3,7 @@ i=http:std.http;
 i=tpl:ooke.template;
 i=store:ooke.store;
 
-f=get(req:http.$req):http.$res{
+f=get(req:i64):i64{
   let slug=req.param("slug");
   let result=store.slug("docs/getting-started"; slug);
   match result{
@@ -11,7 +11,7 @@ f=get(req:http.$req):http.$res{
       <tpl.renderfile("templates/docs/getting-started/[slug].tkt"; @("title":page.meta.get("title"); "description":page.meta.get("description"); "body":page.body; "slug":slug; "site.name":"toke"))
     };
     err(e){
-      <http.res_status(404; "<!DOCTYPE html><html><body><h1>404 Not Found</h1><p>No getting-started page for <code>"+slug+"</code>.</p></body></html>")
+      <http.resstatus(404; "<!DOCTYPE html><html><body><h1>404 Not Found</h1><p>No getting-started page for <code>"+slug+"</code>.</p></body></html>")
     }
   }
 };
