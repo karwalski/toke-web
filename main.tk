@@ -4,6 +4,7 @@ i=log:std.log;
 i=args:std.args;
 i=str:std.str;
 i=io:std.io;
+i=file:std.file;
 
 f=healthjson():$str{
   <"{\"status\":\"ok\",\"version\":\"0.1.0\",\"service\":\"toke-website\"}"
@@ -41,6 +42,10 @@ f=main():i64{
   http.getstatic("/api/version"; "{\"version\":\"0.1.0\"}");
 
   if(httpmode){
+    let indexhtml=mt file.read("sites/tokelang.dev/index.html") {$ok:v v;$err:e ""};
+    if(str.len(indexhtml)>0){
+      http.getstatic("/";indexhtml)
+    }el{};
     http.servedir("/"; "sites/tokelang.dev");
     io.println(str.concat("http mode on port "; str.fromint(port as i64)));
     http.serveworkers(port; 2)
