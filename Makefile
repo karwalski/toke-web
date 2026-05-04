@@ -43,7 +43,11 @@ certs/cert.pem certs/key.pem:
 
 certs: certs/cert.pem certs/key.pem
 
+dev: $(BIN)
+	@echo "Development server: http://localhost:3000"
+	$(BIN) --http --port 3000
+
 clean:
 	rm -f $(BIN) main.ll
 
-.PHONY: all run run-http certs clean
+.PHONY: all run run-http dev certs clean
