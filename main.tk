@@ -42,11 +42,15 @@ f=main():i64{
   http.getstatic("/api/version"; "{\"version\":\"0.1.0\"}");
 
   if(httpmode){
-    let indexhtml=mt file.read("sites/tokelang.dev/index.html") {$ok:v v;$err:e ""};
+    let indexhtml=mt file.read("build/index.html") {$ok:v v;$err:e ""};
     if(str.len(indexhtml)>0){
       http.getstatic("/";indexhtml)
     }el{};
-    http.servedir("/"; "sites/tokelang.dev");
+    let css=mt file.read("build/static/css/style.css") {$ok:v v;$err:e ""};
+    if(str.len(css)>0){
+      http.getstaticmime("/static/css/style.css";css;"text/css")
+    }el{};
+    http.servedir("/"; "build");
     io.println(str.concat("http mode on port "; str.fromint(port as i64)));
     http.serveworkers(port; 2)
   };
