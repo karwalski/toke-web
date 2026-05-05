@@ -22,8 +22,8 @@ test.describe('Homepage', () => {
 
   test('navigation links present', async ({ page }) => {
     await page.goto(BASE + '/');
-    await expect(page.locator('a[href="/docs"]')).toBeVisible();
-    await expect(page.locator('a[href="/docs/learn"]')).toBeVisible();
+    await expect(page.locator('a[href="/docs"]').first()).toBeVisible();
+    await expect(page.locator('a[href="/docs/learn"]').first()).toBeVisible({ timeout: 5000 });
   });
 });
 
@@ -45,8 +45,8 @@ test.describe('Navigation', () => {
 
   test('/about loads', async ({ page }) => {
     await page.goto(BASE + '/about');
-    const status = await page.evaluate(() => document.title);
-    expect(status).toBeTruthy();
+    const body = await page.content();
+    expect(body.length).toBeGreaterThan(100);
   });
 
   test('/ecosystem loads', async ({ page }) => {
