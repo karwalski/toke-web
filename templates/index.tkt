@@ -23,7 +23,7 @@
 <p class="section-desc"><strong style="color:#ccc">toke</strong> is a programming language designed from first principles to minimise the number of tokens an LLM needs to generate. With a purpose-built tokenizer, toke uses 40&ndash;75% fewer tokens than Python, C, or Java for equivalent complete programs &mdash; and the gap widens as documentation standards increase, because toke's LLM training corpus is comment-stripped.</p>
 
 <div class="explainer" style="max-width:860px;margin:1rem auto;padding-left:2rem;padding-right:2rem;">
-  <p><strong>What is a token?</strong> LLMs don't read characters &mdash; they read <em>tokens</em>, which are chunks of text (roughly 3&ndash;4 characters each). The statement <code>return 0;</code> costs 4 tokens every time an LLM writes it. In toke, the same statement is <code>&lt;0;</code> &mdash; and with a purpose-built tokenizer trained on toke programs, the entire return-and-close pattern <code>&lt;0};</code> becomes a single token.</p>
+  <p><strong>What is a token?</strong> LLMs don't read characters &mdash; they read <em>tokens</em>, which are chunks of text (roughly 3&ndash;4 characters each). The statement <code>return 0;</code> costs 4 tokens every time an LLM writes it. In toke, the same statement is <code>&lt;0;</code> &mdash; and with a purpose-built tokenizer trained on toke programs, the entire return-and-close pattern <code>&lt;0;};</code> becomes a single token.</p>
 </div>
 
 <!-- ================================================================== -->
@@ -43,7 +43,7 @@
 
 <div class="tv-tabs" style="max-width:860px;margin:0 auto;padding:0 2rem;">
   <div class="tv-tab-bar">
-    <button class="tv-tab-btn active" data-tab="see-toke">toke (~23 tokens)</button>
+    <button class="tv-tab-btn active" data-tab="see-toke">toke (~25 tokens)</button>
     <button class="tv-tab-btn" data-tab="see-python">Python (41)</button>
     <button class="tv-tab-btn" data-tab="see-c">C (59)</button>
     <button class="tv-tab-btn" data-tab="see-java">Java (62)</button>
@@ -51,13 +51,13 @@
 
   <div class="tv-tab-panel active" id="see-toke">
     <div class="token-viz toke-p2">
-      <pre class="tv-code"><code><span class="tv-tok tv-c0">m=</span><span class="tv-tok tv-c1">fib;</span><span class="tv-tok tv-c2">i=</span><span class="tv-tok tv-c3">io:</span><span class="tv-tok tv-c4">std.io;</span><span class="tv-tok tv-c5">f=</span><span class="tv-tok tv-c6">fib(</span><span class="tv-tok tv-c7">n:i64):i64{</span><span class="tv-tok tv-c8">if(</span><span class="tv-tok tv-c9">n&lt;2){&lt;</span><span class="tv-tok tv-c10">n}</span><span class="tv-tok tv-c11">el{&lt;</span><span class="tv-tok tv-c0">fib(</span><span class="tv-tok tv-c1">n-1)+</span><span class="tv-tok tv-c2">fib(</span><span class="tv-tok tv-c3">n-2</span><span class="tv-tok tv-c4">)};</span><span class="tv-tok tv-c5">f=</span><span class="tv-tok tv-c6">main():i64{</span><span class="tv-tok tv-c7">io.println(</span><span class="tv-tok tv-c8">fib(10</span><span class="tv-tok tv-c9">));</span><span class="tv-tok tv-c10">&lt;0};</span></code></pre>
+      <pre class="tv-code"><code><span class="tv-tok tv-c0">m=</span><span class="tv-tok tv-c1">fib;</span><span class="tv-tok tv-c2">i=</span><span class="tv-tok tv-c3">io:</span><span class="tv-tok tv-c4">std.io;</span><span class="tv-tok tv-c5">f=</span><span class="tv-tok tv-c6">fib(</span><span class="tv-tok tv-c7">n:i64):i64{</span><span class="tv-tok tv-c8">if(</span><span class="tv-tok tv-c9">n&lt;2){&lt;</span><span class="tv-tok tv-c10">n;}</span><span class="tv-tok tv-c11">el{&lt;</span><span class="tv-tok tv-c0">fib(</span><span class="tv-tok tv-c1">n-1)+</span><span class="tv-tok tv-c2">fib(</span><span class="tv-tok tv-c3">n-2</span><span class="tv-tok tv-c4">);}}</span><span class="tv-tok tv-c5">;</span><span class="tv-tok tv-c6">f=</span><span class="tv-tok tv-c7">main():i64{</span><span class="tv-tok tv-c8">io.println(</span><span class="tv-tok tv-c9">fib(10</span><span class="tv-tok tv-c10">));</span><span class="tv-tok tv-c11">&lt;0;};</span></code></pre>
       <div class="tv-footer">
-        <span class="token-badge toke-p2">~23 tokens &mdash; purpose-built toke tokenizer (estimated)</span>
+        <span class="token-badge toke-p2">~25 tokens &mdash; purpose-built toke tokenizer (estimated)</span>
       </div>
     </div>
     <div class="tv-note" style="margin:0.75rem 0;font-size:0.85rem;color:#888;line-height:1.4;">
-      This is the complete program &mdash; module declaration, import, function, main, and I/O. Whitespace is non-structural in toke (semicolons terminate everything), so newlines and indentation are optional formatting that do not affect the token count. Token boundaries shown are estimated for the Phase 2 purpose-built BPE tokenizer, which will be trained on toke's default-syntax corpus. Common patterns like <code style="background:#161616;border:1px solid #222;border-radius:3px;padding:0.1em 0.3em;font-size:0.82em;color:#c792ea;">n:i64):i64{</code> and <code style="background:#161616;border:1px solid #222;border-radius:3px;padding:0.1em 0.3em;font-size:0.82em;color:#c792ea;">&lt;0};</code> become single tokens because they appear in virtually every program in the 46,730-program training corpus. The tokenizer is being finalised as part of Gate 2.
+      This is the complete program &mdash; module declaration, import, function, main, and I/O. Whitespace is non-structural in toke (semicolons terminate everything), so newlines and indentation are optional formatting that do not affect the token count. Token boundaries shown are estimated for the Phase 2 purpose-built BPE tokenizer, which will be trained on toke's default-syntax corpus. Common patterns like <code style="background:#161616;border:1px solid #222;border-radius:3px;padding:0.1em 0.3em;font-size:0.82em;color:#c792ea;">n:i64):i64{</code> and <code style="background:#161616;border:1px solid #222;border-radius:3px;padding:0.1em 0.3em;font-size:0.82em;color:#c792ea;">&lt;0;};</code> become single tokens because they appear in virtually every program in the 46,730-program training corpus. The tokenizer is being finalised as part of Gate 2.
     </div>
   </div>
 
@@ -114,7 +114,7 @@
 </div>
 
 <div class="comparison-note">
-  <p><strong>Why different tokenizers?</strong> toke uses its purpose-built BPE (~23 tokens, estimated) because that is how a toke-native model will tokenize programs. Python, C, and Java are measured with cl100k_base because that is the tokenizer used by the models generating them. Each language measured with the tokenizer its model actually uses. The toke tokenizer is being finalised as part of Gate 2 &mdash; boundaries shown are estimated from frequency analysis of the 46,730-program training corpus.</p>
+  <p><strong>Why different tokenizers?</strong> toke uses its purpose-built BPE (~25 tokens, estimated) because that is how a toke-native model will tokenize programs. Python, C, and Java are measured with cl100k_base because that is the tokenizer used by the models generating them. Each language measured with the tokenizer its model actually uses. The toke tokenizer is being finalised as part of Gate 2 &mdash; boundaries shown are estimated from frequency analysis of the 46,730-program training corpus.</p>
 </div>
 
 <!-- ================================================================== -->
@@ -128,7 +128,7 @@
 
 <div class="tv-tabs" style="max-width:860px;margin:0 auto;padding:0 2rem;">
   <div class="tv-tab-bar">
-    <button class="tv-tab-btn active" data-tab="bp-toke">toke (~23 &mdash; unchanged)</button>
+    <button class="tv-tab-btn active" data-tab="bp-toke">toke (~25 &mdash; unchanged)</button>
     <button class="tv-tab-btn" data-tab="bp-python">Python (82)</button>
     <button class="tv-tab-btn" data-tab="bp-c">C (75)</button>
     <button class="tv-tab-btn" data-tab="bp-java">Java (102)</button>
@@ -136,9 +136,9 @@
 
   <div class="tv-tab-panel active" id="bp-toke">
     <div class="token-viz toke-p2">
-      <pre class="tv-code"><code><span class="tv-tok tv-c0">m=</span><span class="tv-tok tv-c1">fib;</span><span class="tv-tok tv-c2">i=</span><span class="tv-tok tv-c3">io:</span><span class="tv-tok tv-c4">std.io;</span><span class="tv-tok tv-c5">f=</span><span class="tv-tok tv-c6">fib(</span><span class="tv-tok tv-c7">n:i64):i64{</span><span class="tv-tok tv-c8">if(</span><span class="tv-tok tv-c9">n&lt;2){&lt;</span><span class="tv-tok tv-c10">n}</span><span class="tv-tok tv-c11">el{&lt;</span><span class="tv-tok tv-c0">fib(</span><span class="tv-tok tv-c1">n-1)+</span><span class="tv-tok tv-c2">fib(</span><span class="tv-tok tv-c3">n-2</span><span class="tv-tok tv-c4">)};</span><span class="tv-tok tv-c5">f=</span><span class="tv-tok tv-c6">main():i64{</span><span class="tv-tok tv-c7">io.println(</span><span class="tv-tok tv-c8">fib(10</span><span class="tv-tok tv-c9">));</span><span class="tv-tok tv-c10">&lt;0};</span></code></pre>
+      <pre class="tv-code"><code><span class="tv-tok tv-c0">m=</span><span class="tv-tok tv-c1">fib;</span><span class="tv-tok tv-c2">i=</span><span class="tv-tok tv-c3">io:</span><span class="tv-tok tv-c4">std.io;</span><span class="tv-tok tv-c5">f=</span><span class="tv-tok tv-c6">fib(</span><span class="tv-tok tv-c7">n:i64):i64{</span><span class="tv-tok tv-c8">if(</span><span class="tv-tok tv-c9">n&lt;2){&lt;</span><span class="tv-tok tv-c10">n;}</span><span class="tv-tok tv-c11">el{&lt;</span><span class="tv-tok tv-c0">fib(</span><span class="tv-tok tv-c1">n-1)+</span><span class="tv-tok tv-c2">fib(</span><span class="tv-tok tv-c3">n-2</span><span class="tv-tok tv-c4">);}}</span><span class="tv-tok tv-c5">;</span><span class="tv-tok tv-c6">f=</span><span class="tv-tok tv-c7">main():i64{</span><span class="tv-tok tv-c8">io.println(</span><span class="tv-tok tv-c9">fib(10</span><span class="tv-tok tv-c10">));</span><span class="tv-tok tv-c11">&lt;0;};</span></code></pre>
       <div class="tv-footer">
-        <span class="token-badge toke-p2">~23 tokens &mdash; identical to above</span>
+        <span class="token-badge toke-p2">~25 tokens &mdash; identical to above</span>
       </div>
     </div>
     <div class="tv-note" style="margin:0.75rem 0;font-size:0.85rem;color:#888;line-height:1.4;">
@@ -226,7 +226,7 @@
 </div>
 
 <div class="comparison-note">
-  <p><strong>Documentation costs scale &mdash; toke's don't.</strong> With best practices applied, Python doubles from 41 &rarr; 82 tokens and Java grows from 62 &rarr; 102. toke stays at ~23. In real codebases where every function carries docstrings, the gap compounds with every function added.</p>
+  <p><strong>Documentation costs scale &mdash; toke's don't.</strong> With best practices applied, Python doubles from 41 &rarr; 82 tokens and Java grows from 62 &rarr; 102. toke stays at ~25. In real codebases where every function carries docstrings, the gap compounds with every function added.</p>
 </div>
 
 <!-- ================================================================== -->
@@ -240,7 +240,7 @@
 <div class="features">
   <div class="feature-card">
     <h3>40&ndash;75% Fewer Tokens</h3>
-    <p>With toke's purpose-built tokenizer, a complete fibonacci program uses ~23 tokens &mdash; compared to 41 in Python, 59 in C, and 62 in Java. Add documentation and the gap widens further: Python doubles to 82 tokens and Java grows to 102, while toke stays at 23 because LLMs are trained to write without comments. The savings range from 44% vs bare Python to 77% vs documented Java.</p>
+    <p>With toke's purpose-built tokenizer, a complete fibonacci program uses ~25 tokens &mdash; compared to 41 in Python, 59 in C, and 62 in Java. Add documentation and the gap widens further: Python doubles to 82 tokens and Java grows to 102, while toke stays at 25 because LLMs are trained to write without comments. The savings range from 39% vs bare Python to 75% vs documented Java.</p>
   </div>
   <div class="feature-card">
     <h3>Designed for Correctness</h3>

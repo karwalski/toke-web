@@ -50,4 +50,69 @@ dev: $(BIN)
 clean:
 	rm -f $(BIN) main.ll
 
-.PHONY: all run run-http dev certs clean
+# --- Documentation checks ---
+
+DOCS_DIR = /Users/matthew.watt/tk/docs
+EXAMPLES_DIR = $(DOCS_DIR)/examples
+ifeq ($(UNAME), Darwin)
+  LINK_FRAMEWORKS = -framework Security -framework CoreFoundation
+endif
+
+check-docs: check-docs-examples check-docs-runtime
+	@echo ""; echo "=== Documentation check complete ==="
+
+check-docs-examples:
+	@echo "=== Checking doc examples compile (toke --check) ==="; \
+	pass=0; fail=0; total=0; \
+	for f in $(EXAMPLES_DIR)/*.tk; do \
+		[ -f "$$f" ] || continue; \
+		total=$$((total + 1)); \
+		base=$$(basename "$$f"); \
+		if $(TOKE) --check "$$f" >/dev/null 2>&1; then \
+			echo "  PASS  $$base"; \
+			pass=$$((pass + 1)); \
+		else \
+			echo "  FAIL  $$base"; \
+			fail=$$((fail + 1)); \
+		fi; \
+	done; \
+	echo ""; echo "Results: $$pass passed, $$fail failed ($$total total)"; \
+	[ $$fail -eq 0 ]
+
+check-docs-runtime:
+	@echo "=== Checking doc examples runtime output ==="; \
+	pass=0; fail=0; skip=0; total=0; \
+	for f in $(EXAMPLES_DIR)/*.tk; do \
+		[ -f "$$f" ] || continue; \
+		base=$$(basename "$$f" .tk); \
+		expected="$(EXAMPLES_DIR)/expected/$$base.expected"; \
+		if [ ! -f "$$expected" ]; then \
+			skip=$$((skip + 1)); \
+			continue; \
+		fi; \
+		total=$$((total + 1)); \
+		tmpll=$$(mktemp /tmp/toke-check-XXXXXX.ll); \
+		tmpbin=$$(mktemp /tmp/toke-check-XXXXXX); \
+		tmpout=$$(mktemp /tmp/toke-check-XXXXXX.out); \
+		if $(TOKE) --emit-llvm --out "$$tmpll" "$$f" 2>/dev/null && \
+		   clang $(CFLAGS) $(LDFLAGS) -x ir "$$tmpll" -x c $(STDLIB_C) $(VENDOR_C) \
+		     -o "$$tmpbin" $(LIBS) $(LINK_FRAMEWORKS) 2>/dev/null; then \
+			$$tmpbin > "$$tmpout" 2>&1; \
+			if diff -q "$$tmpout" "$$expected" >/dev/null 2>&1; then \
+				echo "  PASS  $$base"; \
+				pass=$$((pass + 1)); \
+			else \
+				echo "  FAIL  $$base (output mismatch)"; \
+				diff "$$tmpout" "$$expected" | head -10; \
+				fail=$$((fail + 1)); \
+			fi; \
+		else \
+			echo "  FAIL  $$base (compile error)"; \
+			fail=$$((fail + 1)); \
+		fi; \
+		rm -f "$$tmpll" "$$tmpbin" "$$tmpout"; \
+	done; \
+	echo ""; echo "Results: $$pass passed, $$fail failed, $$skip skipped (no .expected)"; \
+	[ $$fail -eq 0 ]
+
+.PHONY: all run run-http dev certs clean check-docs check-docs-examples check-docs-runtime
