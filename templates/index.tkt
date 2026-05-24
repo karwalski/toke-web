@@ -804,8 +804,65 @@
       <span style="color:#333;margin:0 0.5rem;">&middot;</span>
       <a href="https://github.com/karwalski/toke-mcp" style="color:#888;font-size:0.85rem;">MCP Server</a>
       <span style="color:#333;margin:0 0.5rem;">&middot;</span>
-      <a href="https://console.tokelang.dev/login" style="color:#888;font-size:0.85rem;">Login</a>
+      <a href="https://ollama.com/karwalski/toke" style="color:#888;font-size:0.85rem;">Ollama</a>
     </div>
+  </div>
+</div>
+
+<!-- ================================================================== -->
+<!-- Published Everywhere                                                -->
+<!-- ================================================================== -->
+
+<div class="section-heading">
+  <h2>Published Everywhere</h2>
+</div>
+<p class="section-desc">toke is available on every major platform. Pick the one that fits your workflow.</p>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;max-width:1100px;margin:1.5rem auto 3rem;">
+  <div style="background:#111;border:1px solid #222;border-radius:8px;padding:1.2rem;">
+    <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#c792ea;">Ollama</h3>
+    <p style="font-size:0.8rem;color:#888;margin:0 0 0.8rem;">Run locally. No cloud, no API key. 4.4GB download.</p>
+    <code style="display:block;background:#0a0a0a;padding:0.5rem 0.75rem;border-radius:4px;font-size:0.8rem;color:#82e0aa;">ollama run karwalski/toke</code>
+  </div>
+  <div style="background:#111;border:1px solid #222;border-radius:8px;padding:1.2rem;">
+    <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#c792ea;">VS Code</h3>
+    <p style="font-size:0.8rem;color:#888;margin:0 0 0.8rem;">Syntax highlighting, snippets, companion files, LSP diagnostics.</p>
+    <code style="display:block;background:#0a0a0a;padding:0.5rem 0.75rem;border-radius:4px;font-size:0.8rem;color:#82e0aa;">ext install tokelang.toke-language</code>
+  </div>
+  <div style="background:#111;border:1px solid #222;border-radius:8px;padding:1.2rem;">
+    <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#c792ea;">MCP Server</h3>
+    <p style="font-size:0.8rem;color:#888;margin:0 0 0.8rem;">15 tools for Claude Code, Codex, Cursor, and any MCP client.</p>
+    <code style="display:block;background:#0a0a0a;padding:0.5rem 0.75rem;border-radius:4px;font-size:0.8rem;color:#82e0aa;">npx @tokelang/mcp-server</code>
+  </div>
+  <div style="background:#111;border:1px solid #222;border-radius:8px;padding:1.2rem;">
+    <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#c792ea;">REST API</h3>
+    <p style="font-size:0.8rem;color:#888;margin:0 0 0.8rem;">Generate toke code from any language. Free tier available.</p>
+    <code style="display:block;background:#0a0a0a;padding:0.5rem 0.75rem;border-radius:4px;font-size:0.8rem;color:#82e0aa;">curl api.tokelang.dev/v1/generate</code>
+  </div>
+  <div style="background:#111;border:1px solid #222;border-radius:8px;padding:1.2rem;">
+    <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#c792ea;">Python Tokenizer</h3>
+    <p style="font-size:0.8rem;color:#888;margin:0 0 0.8rem;">Count tokens, measure compression. Pure Python, no deps.</p>
+    <code style="display:block;background:#0a0a0a;padding:0.5rem 0.75rem;border-radius:4px;font-size:0.8rem;color:#82e0aa;">pip install toke-tokenizer</code>
+  </div>
+  <div style="background:#111;border:1px solid #222;border-radius:8px;padding:1.2rem;">
+    <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#c792ea;">HuggingFace</h3>
+    <p style="font-size:0.8rem;color:#888;margin:0 0 0.8rem;">AWQ 4-bit model + BPE tokenizer. Fine-tune or self-host.</p>
+    <a href="https://huggingface.co/karwalski/toke" style="color:#82e0aa;font-size:0.8rem;text-decoration:none;">huggingface.co/karwalski/toke &rarr;</a>
+  </div>
+  <div style="background:#111;border:1px solid #222;border-radius:8px;padding:1.2rem;">
+    <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#c792ea;">Docker</h3>
+    <p style="font-size:0.8rem;color:#888;margin:0 0 0.8rem;">Self-host the full inference stack. GPU or CPU mode.</p>
+    <code style="display:block;background:#0a0a0a;padding:0.5rem 0.75rem;border-radius:4px;font-size:0.8rem;color:#82e0aa;">docker compose up</code>
+  </div>
+  <div style="background:#111;border:1px solid #222;border-radius:8px;padding:1.2rem;">
+    <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#c792ea;">LSP (any editor)</h3>
+    <p style="font-size:0.8rem;color:#888;margin:0 0 0.8rem;">Neovim, JetBrains, Helix, or any LSP-compatible editor.</p>
+    <code style="display:block;background:#0a0a0a;padding:0.5rem 0.75rem;border-radius:4px;font-size:0.8rem;color:#82e0aa;">npm i -g @tokelang/lsp</code>
+  </div>
+  <div style="background:#111;border:1px solid #222;border-radius:8px;padding:1.2rem;">
+    <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#c792ea;">Console</h3>
+    <p style="font-size:0.8rem;color:#888;margin:0 0 0.8rem;">API keys, usage stats, Try It playground. Free account.</p>
+    <a href="https://console.tokelang.dev/signup" style="color:#82e0aa;font-size:0.8rem;text-decoration:none;">console.tokelang.dev &rarr;</a>
   </div>
 </div>
 
@@ -819,7 +876,7 @@
     </div>
     <div class="cta-card">
       <h3>Install the compiler</h3>
-      <p>Build <code style="background:#161616;border:1px solid #222;border-radius:3px;padding:0.15em 0.35em;font-size:0.82em;color:#c792ea;">toke</code> from source and run your first program in under 5 minutes.</p>
+      <p>Build from source or use Homebrew (coming soon). Run your first program in under 5 minutes.</p>
       <a href="/docs/getting-started/install">Installation guide &rarr;</a>
     </div>
     <div class="cta-card">
