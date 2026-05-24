@@ -64,6 +64,88 @@
 
 </div>
 
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- Install & Packages                                              -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+
+<div class="install-section">
+  <h2>Install &amp; Packages</h2>
+  <p class="section-desc">Get toke tools from your preferred package manager. One-liner installs for every platform.</p>
+
+  <div class="install-grid">
+
+    <div class="install-card">
+      <div class="install-badge">compiler</div>
+      <h3>Build from Source</h3>
+      <pre><code>git clone https://github.com/karwalski/toke.git
+cd toke && make</code></pre>
+      <p class="install-note">Homebrew coming soon: <code>brew tap karwalski/toke &amp;&amp; brew install tkc</code></p>
+    </div>
+
+    <div class="install-card">
+      <div class="install-badge">ai model</div>
+      <h3>Ollama</h3>
+      <pre><code>ollama run karwalski/toke</code></pre>
+      <p class="install-note">Gate 2 model &mdash; 100% compilation Pass@1</p>
+    </div>
+
+    <div class="install-card">
+      <div class="install-badge">vs code</div>
+      <h3>VS Code Extension</h3>
+      <pre><code>ext install tokelang.toke-language</code></pre>
+      <p class="install-note">Also on <a href="https://open-vsx.org/extension/tokelang/toke-language">Open VSX</a></p>
+    </div>
+
+    <div class="install-card">
+      <div class="install-badge">mcp</div>
+      <h3>MCP Server</h3>
+      <pre><code>npx @tokelang/mcp-server</code></pre>
+      <p class="install-note">For Claude Code, Cursor, and MCP-compatible clients</p>
+    </div>
+
+    <div class="install-card">
+      <div class="install-badge">lsp</div>
+      <h3>Language Server</h3>
+      <pre><code>npm install -g @tokelang/lsp</code></pre>
+      <p class="install-note">Neovim, Helix, Emacs, any LSP editor</p>
+    </div>
+
+    <div class="install-card">
+      <div class="install-badge">python</div>
+      <h3>Tokenizer</h3>
+      <pre><code>pip install toke-tokenizer</code></pre>
+      <p class="install-note">Purpose-built BPE &mdash; 52% fewer tokens vs cl100k</p>
+    </div>
+
+    <div class="install-card">
+      <div class="install-badge">huggingface</div>
+      <h3>Model &amp; Tokenizer</h3>
+      <div class="install-links">
+        <a href="https://huggingface.co/karwalski/toke">karwalski/toke</a>
+        <a href="https://huggingface.co/karwalski/toke-tokenizer">karwalski/toke-tokenizer</a>
+      </div>
+      <p class="install-note">Apache 2.0 &mdash; download, fine-tune, self-host</p>
+    </div>
+
+    <div class="install-card">
+      <div class="install-badge">docker</div>
+      <h3>Self-Host</h3>
+      <pre><code>docker compose up</code></pre>
+      <p class="install-note">Full inference stack &mdash; see toke-model/docker/</p>
+    </div>
+
+    <div class="install-card">
+      <div class="install-badge">api</div>
+      <h3>REST API</h3>
+      <pre><code>curl -X POST https://api.tokelang.dev/v1/generate \
+  -H "X-Api-Key: YOUR_KEY" \
+  -d '{"description": "Sum an array"}'</code></pre>
+      <p class="install-note">Free tier at <a href="https://console.tokelang.dev">console.tokelang.dev</a></p>
+    </div>
+
+  </div>
+</div>
+
 <div class="ecosystem-note">
   <h3>The <em>*oke</em> naming convention</h3>
   <p>Every tool in the toke ecosystem uses a single consonant prefix followed by <code>oke</code>. Four characters, always pronounceable. The alphabetical ordering maps roughly to abstraction depth — <code>zoke</code> at the hardware layer, <code>aoke</code> at the human experience layer — giving the stack a built-in mnemonic.</p>
