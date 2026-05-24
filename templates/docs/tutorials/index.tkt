@@ -1,0 +1,10 @@
+{! layout("docs") !}
+{! block("title") !}Tutorials — toke docs{! end !}
+{! block("content") !}
+
+<h1>Tutorials</h1>
+<p class="lead">Hands-on tutorials for building real applications with toke and ooke.</p>
+
+<div>{= body | md =}</div>
+
+{! end !}

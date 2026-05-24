@@ -1,0 +1,14 @@
+{! layout("docs") !}
+{! block("title") !}{= title =} — toke docs{! end !}
+{! block("content") !}
+
+<h1>{= title =}</h1>
+
+<div>{= body | md =}</div>
+
+<nav style="margin-top:3rem;display:flex;justify-content:space-between;padding-top:1.5rem;border-top:1px solid #1a1a1a;">
+  <a href="/docs/tutorials/">&larr; Tutorials</a>
+  <a href="/docs">Docs &rarr;</a>
+</nav>
+
+{! end !}

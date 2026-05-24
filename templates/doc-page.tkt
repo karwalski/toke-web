@@ -19,7 +19,7 @@ f=main():i64{
 
 <h2>Compile and run</h2>
 
-<pre><code>./build/tkc hello.tk -o hello
+<pre><code>./toke hello.tk -o hello
 ./hello</code></pre>
 
 <p>Output:</p>

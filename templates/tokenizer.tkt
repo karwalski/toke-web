@@ -1,0 +1,419 @@
+{! layout("base") !}
+{! block("title") !}toke Tokenizer — Live Demo{! end !}
+{! block("content") !}
+
+<style>
+/* ── Tokenizer page ── */
+.tokenizer-page { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+.tokenizer-page a { color: #c792ea; text-decoration: none; }
+.tokenizer-page a:hover { text-decoration: underline; }
+.tokenizer-page h1 { font-size: 2rem; margin-bottom: 0.3rem; }
+.tokenizer-page h2 { font-size: 1.3rem; margin: 2.5rem 0 1rem; color: #c792ea; }
+.tokenizer-page .subtitle { color: #888; margin-bottom: 1.5rem; font-size: 0.95rem; }
+
+/* ── Stats row ── */
+.tokenizer-page .stats { display: flex; gap: 1.5rem; margin: 1.5rem 0; flex-wrap: wrap; }
+.tokenizer-page .stat { background: #111; border: 1px solid #222; border-radius: 8px; padding: 1rem 1.5rem; min-width: 120px; text-align: center; }
+.tokenizer-page .stat .num { font-size: 2rem; font-weight: 700; }
+.tokenizer-page .stat .lbl { font-size: 0.7rem; color: #888; margin-top: 0.25rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.tokenizer-page .green .num { color: #82e0aa; }
+.tokenizer-page .amber .num { color: #f0c040; }
+.tokenizer-page .purple .num { color: #c792ea; }
+.tokenizer-page .red .num { color: #e07070; }
+
+/* ── Input area ── */
+.tokenizer-page .input-section { margin-bottom: 1rem; }
+.tokenizer-page .input-section label { display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 0.4rem; }
+.tokenizer-page textarea { width: 100%; height: 130px; background: #111; border: 1px solid #333; color: #e0e0e0;
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace; font-size: 0.85rem;
+  padding: 1rem; border-radius: 6px; resize: vertical; line-height: 1.6; }
+.tokenizer-page textarea:focus { outline: none; border-color: #c792ea; }
+
+/* ── Preset buttons ── */
+.tokenizer-page .presets { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.tokenizer-page .presets button { background: #1a1a1a; border: 1px solid #333; color: #aaa; padding: 0.35rem 0.7rem;
+  border-radius: 4px; cursor: pointer; font-size: 0.75rem; transition: all 0.15s; }
+.tokenizer-page .presets button:hover { border-color: #c792ea; color: #e0e0e0; }
+.tokenizer-page .presets button.active { border-color: #c792ea; color: #c792ea; background: #1a1030; }
+.tokenizer-page .shuffle-btn { background: #2a1a3a !important; border-color: #c792ea !important; color: #c792ea !important; font-weight: 600; }
+
+/* ── Token display ── */
+.tokenizer-page .compare-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+.tokenizer-page .panel { background: #111; border: 1px solid #222; border-radius: 8px; padding: 1.2rem; }
+.tokenizer-page .panel h3 { font-size: 0.8rem; color: #888; margin-bottom: 0.8rem; display: flex; justify-content: space-between; }
+.tokenizer-page .panel h3 .count { color: #c792ea; font-weight: 700; }
+.tokenizer-page .token-display { font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace; font-size: 0.85rem;
+  line-height: 1.8; min-height: 40px; white-space: pre-wrap; word-break: break-all; }
+.tokenizer-page .token-display span { border-radius: 3px; padding: 1px 0; cursor: default; transition: opacity 0.1s; }
+.tokenizer-page .token-display span:hover { opacity: 0.7; }
+.tokenizer-page .t0 { background: #1a3a2a; } .tokenizer-page .t1 { background: #2a1a3a; } .tokenizer-page .t2 { background: #1a2a3a; } .tokenizer-page .t3 { background: #3a2a1a; }
+.tokenizer-page .t4 { background: #2a3a1a; } .tokenizer-page .t5 { background: #3a1a2a; } .tokenizer-page .t6 { background: #1a3a3a; } .tokenizer-page .t7 { background: #3a3a1a; }
+
+/* ── Normalised view ── */
+.tokenizer-page .norm-section { margin-top: 1.5rem; }
+.tokenizer-page .norm-label { font-size: 0.8rem; color: #666; margin-bottom: 0.4rem; }
+.tokenizer-page .norm-code { background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 6px; padding: 0.8rem 1rem;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #82e0aa;
+  white-space: pre-wrap; word-break: break-all; max-height: 80px; overflow-y: auto; }
+
+/* ── Comparison table ── */
+.tokenizer-page .compare-table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.85rem; }
+.tokenizer-page .compare-table th { text-align: left; padding: 0.6rem; border-bottom: 1px solid #333; color: #888; font-weight: 500; }
+.tokenizer-page .compare-table td { padding: 0.6rem; border-bottom: 1px solid #1a1a1a; }
+.tokenizer-page .compare-table .lang { color: #aaa; }
+.tokenizer-page .compare-table .tokens { color: #c792ea; font-weight: 600; text-align: right; font-family: monospace; }
+.tokenizer-page .compare-table .pct { text-align: right; font-family: monospace; }
+.tokenizer-page .compare-table .pct.better { color: #82e0aa; }
+.tokenizer-page .compare-table .pct.worse { color: #e07070; }
+.tokenizer-page .bar-cell { width: 200px; }
+.tokenizer-page .bar-bg { background: #1a1a1a; height: 18px; border-radius: 3px; position: relative; }
+.tokenizer-page .bar-fill { height: 100%; border-radius: 3px; position: absolute; left: 0; top: 0; }
+.tokenizer-page .bar-toke { background: #c792ea; }
+.tokenizer-page .bar-other { background: #444; }
+
+/* ── Links ── */
+.tokenizer-page .links { margin-top: 2rem; display: flex; gap: 1.5rem; flex-wrap: wrap; }
+.tokenizer-page .links a { background: #1a1a1a; border: 1px solid #333; padding: 0.8rem 1.2rem; border-radius: 6px;
+  font-size: 0.85rem; transition: all 0.15s; }
+.tokenizer-page .links a:hover { border-color: #c792ea; text-decoration: none; }
+.tokenizer-page .tokenizer-footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #1a1a1a; color: #555; font-size: 0.75rem; text-align: center; line-height: 1.8; }
+@media (max-width: 700px) { .tokenizer-page .compare-row { grid-template-columns: 1fr; } .tokenizer-page .stats { gap: 0.8rem; } .tokenizer-page .bar-cell { display: none; } }
+</style>
+
+<div class="tokenizer-page">
+
+<h1>toke Tokenizer</h1>
+<p class="subtitle">See how toke's purpose-built BPE tokenizer compresses code vs general-purpose tokenizers. Type or paste toke code, or try an example.</p>
+
+<div class="presets">
+  <button class="shuffle-btn" onclick="shuffle()">Shuffle 5 examples</button>
+  <button onclick="setPreset('hello')">Hello World</button>
+  <button onclick="setPreset('fib')">Fibonacci</button>
+  <button onclick="setPreset('sum')">Sum Array</button>
+  <button onclick="setPreset('sort')">Bubble Sort</button>
+  <button onclick="setPreset('http')">HTTP Server</button>
+  <button onclick="setPreset('struct')">Struct</button>
+  <button onclick="setPreset('prime')">Is Prime</button>
+  <button onclick="setPreset('fizz')">FizzBuzz</button>
+  <button onclick="setPreset('gcd')">GCD</button>
+  <button onclick="setPreset('json')">JSON Parse</button>
+  <button onclick="setPreset('search')">Binary Search</button>
+  <button onclick="setPreset('merge')">Merge Arrays</button>
+</div>
+
+<div class="input-section">
+  <label>Write or paste toke code (multi-line is fine — it will be normalised automatically)</label>
+  <textarea id="input" spellcheck="false">m=fib;
+i=io:std.io;
+f=fib(n:i64):i64{
+  if(n<2){<n;}
+  el{<fib(n-1)+fib(n-2);}
+};
+f=main():i64{
+  io.println(fib(10));
+  <0;
+};</textarea>
+</div>
+
+<div class="stats">
+  <div class="stat green"><div class="num" id="toke-count">—</div><div class="lbl">toke BPE</div></div>
+  <div class="stat purple"><div class="num" id="cl100k-count">—</div><div class="lbl">cl100k est.</div></div>
+  <div class="stat amber"><div class="num" id="reduction">—</div><div class="lbl">reduction</div></div>
+  <div class="stat"><div class="num" id="char-raw">—</div><div class="lbl">chars (raw)</div></div>
+  <div class="stat"><div class="num" id="char-norm">—</div><div class="lbl">chars (clean)</div></div>
+</div>
+
+<div class="norm-section">
+  <div class="norm-label">Normalised (single-line, no comments, no extra whitespace):</div>
+  <div class="norm-code" id="norm-output"></div>
+</div>
+
+<div class="compare-row">
+  <div class="panel">
+    <h3>toke BPE <span class="count" id="toke-badge">—</span></h3>
+    <div class="token-display" id="toke-tokens"><em style="color:#555">Loading tokenizer...</em></div>
+  </div>
+  <div class="panel">
+    <h3>cl100k_base (estimated) <span class="count" id="cl100k-badge">—</span></h3>
+    <div class="token-display" id="cl100k-tokens"><em style="color:#555">Loading...</em></div>
+  </div>
+</div>
+
+<!-- Cross-language comparison (shown when a preset with known comparisons is active) -->
+<div id="comparison-section" style="display:none;">
+  <h2>Cross-Language Comparison</h2>
+  <p style="color:#888;font-size:0.85rem;margin-bottom:1rem;">Same program in different languages, all tokenized with cl100k_base (the tokenizer used by GPT-4 and Claude). toke additionally shown with its purpose-built BPE.</p>
+  <table class="compare-table" id="compare-table">
+    <thead><tr><th>Language</th><th>Tokens</th><th class="bar-cell">Relative</th><th>vs toke BPE</th></tr></thead>
+    <tbody id="compare-body"></tbody>
+  </table>
+</div>
+
+<div class="links">
+  <a href="/tokens">Token Visualisation Gallery &rarr;</a>
+  <a href="/docs/reference/token-comparison">Full 42-Example Comparison &rarr;</a>
+  <a href="/">Back to tokelang.dev &rarr;</a>
+</div>
+
+<div class="tokenizer-footer">
+  The toke BPE tokenizer (16,384 tokens) runs entirely in your browser — no data leaves your machine.<br>
+  Trained on 25,953 toke programs + 698 loke production modules. cl100k count is estimated client-side.<br>
+  Average reduction: <strong>52%</strong> fewer tokens vs cl100k on normalised toke code.
+</div>
+
+</div>
+
+<script>
+// ── Presets with cross-language comparisons ──
+const PRESETS = {
+  hello: {
+    code: 'm=hello;\ni=io:std.io;\nf=main():i64{\n  io.println("hello world");\n  <0\n};',
+    langs: { Python: 'print("hello world")', Go: 'package main\nimport "fmt"\nfunc main() { fmt.Println("hello world") }', JavaScript: 'console.log("hello world")' }
+  },
+  fib: {
+    code: 'm=fib;\ni=io:std.io;\nf=fib(n:i64):i64{\n  if(n<2){<n;}\n  el{<fib(n-1)+fib(n-2);}\n};\nf=main():i64{\n  io.println(fib(10));\n  <0;\n};',
+    langs: { Python: 'def fib(n):\n    if n < 2: return n\n    return fib(n-1) + fib(n-2)\nprint(fib(10))', Go: 'package main\nimport "fmt"\nfunc fib(n int) int { if n < 2 { return n }; return fib(n-1) + fib(n-2) }\nfunc main() { fmt.Println(fib(10)) }' }
+  },
+  sum: {
+    code: 'm=sum;\ni=j:std.json;\ni=s:std.str;\nf=main():i64{\n  let arr=j.parse(s.argv(1));\n  let r=mut.0;\n  lp(let i=0;i<arr.len;i=i+1){\n    r=r+arr.get(i)\n  };\n  j.print(r);\n  <0\n};',
+    langs: { Python: 'import json, sys\narr = json.loads(sys.argv[1])\nprint(json.dumps(sum(arr)))', Go: 'package main\nimport ("encoding/json";"fmt";"os")\nfunc main() { var a []int; json.Unmarshal([]byte(os.Args[1]),&a); s:=0; for _,v:=range a{s+=v}; b,_:=json.Marshal(s); fmt.Println(string(b)) }' }
+  },
+  sort: {
+    code: 'm=bs;\nf=bs(arr:@i64):@i64{\n  let n=arr.len;\n  lp(let i=0;i<n;i=i+1){\n    lp(let j=0;j<n-i-1;j=j+1){\n      if(arr.get(j)>arr.get(j+1)){\n        let t=arr.get(j);\n        arr.set(j;arr.get(j+1));\n        arr.set(j+1;t)\n      }\n    }\n  };\n  <arr\n};',
+    langs: { Python: 'def bubble_sort(arr):\n    n = len(arr)\n    for i in range(n):\n        for j in range(n-i-1):\n            if arr[j] > arr[j+1]:\n                arr[j], arr[j+1] = arr[j+1], arr[j]\n    return arr', Go: 'func bubbleSort(arr []int) []int { n := len(arr); for i := 0; i < n; i++ { for j := 0; j < n-i-1; j++ { if arr[j] > arr[j+1] { arr[j], arr[j+1] = arr[j+1], arr[j] } } }; return arr }' }
+  },
+  http: {
+    code: 'm=api;\ni=http:std.http;\nf=hello(req:http.$req):http.$res{\n  <http.ok("hello")\n};\nf=main():i64{\n  http.get("/hello";&hello);\n  http.serve(8080);\n  <0\n};',
+    langs: { Python: 'from http.server import HTTPServer, BaseHTTPRequestHandler\nclass H(BaseHTTPRequestHandler):\n    def do_GET(self):\n        self.send_response(200)\n        self.end_headers()\n        self.wfile.write(b"hello")\nHTTPServer(("",8080),H).serve_forever()', Go: 'package main\nimport ("fmt";"net/http")\nfunc main() { http.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) { fmt.Fprint(w,"hello") }); http.ListenAndServe(":8080",nil) }' }
+  },
+  struct: {
+    code: 'm=pt;\nt=$point{x:i64;y:i64};\nf=dist(p:$point):i64{<p.x*p.x+p.y*p.y};\nf=add(a:$point;b:$point):$point{\n  <$point{x:a.x+b.x;y:a.y+b.y}\n};',
+    langs: { Python: 'class Point:\n    def __init__(self, x, y): self.x, self.y = x, y\n    def dist(self): return self.x**2 + self.y**2\n    def add(self, o): return Point(self.x+o.x, self.y+o.y)', Go: 'type Point struct { X, Y int }\nfunc (p Point) Dist() int { return p.X*p.X + p.Y*p.Y }\nfunc (p Point) Add(o Point) Point { return Point{p.X+o.X, p.Y+o.Y} }' }
+  },
+  prime: {
+    code: 'm=prime;\nf=isprime(n:i64):bool{\n  if(n<2){<false};\n  let i=mut.2;\n  lp(let k=0;i*i<n+1;k=k+1){\n    if(n-n/i*i=0){<false};\n    i=i+1\n  };\n  <true\n};',
+    langs: { Python: 'def is_prime(n):\n    if n < 2: return False\n    for i in range(2, int(n**0.5)+1):\n        if n % i == 0: return False\n    return True', Go: 'func isPrime(n int) bool { if n < 2 { return false }; for i := 2; i*i <= n; i++ { if n%i == 0 { return false } }; return true }' }
+  },
+  fizz: {
+    code: 'm=fb;\ni=io:std.io;\nf=fb(n:i64):i64{\n  lp(let i=1;i<n+1;i=i+1){\n    if(i-i/15*15=0){io.println("fizzbuzz")}\n    el{if(i-i/3*3=0){io.println("fizz")}\n    el{if(i-i/5*5=0){io.println("buzz")}\n    el{io.println(i)}}}\n  };\n  <0\n};',
+    langs: { Python: 'def fizzbuzz(n):\n    for i in range(1, n+1):\n        if i % 15 == 0: print("fizzbuzz")\n        elif i % 3 == 0: print("fizz")\n        elif i % 5 == 0: print("buzz")\n        else: print(i)', Go: 'func fizzbuzz(n int) { for i := 1; i <= n; i++ { switch { case i%15==0: fmt.Println("fizzbuzz"); case i%3==0: fmt.Println("fizz"); case i%5==0: fmt.Println("buzz"); default: fmt.Println(i) } } }' }
+  },
+  gcd: {
+    code: 'm=gcd;\nf=gcd(a:i64;b:i64):i64{\n  let x=mut.a;\n  let y=mut.b;\n  lp(let k=0;!(y=0);k=k+1){\n    let t=y;\n    y=x-x/y*y;\n    x=t\n  };\n  <x\n};',
+    langs: { Python: 'def gcd(a, b):\n    while b:\n        a, b = b, a % b\n    return a', Go: 'func gcd(a, b int) int { for b != 0 { a, b = b, a%b }; return a }' }
+  },
+  json: {
+    code: 'm=jsum;\ni=j:std.json;\ni=s:std.str;\nf=main():i64{\n  let arr=j.parse(s.argv(1));\n  let r=mut.0;\n  lp(let i=0;i<arr.len;i=i+1){\n    r=r+arr.get(i)\n  };\n  j.print(r);\n  <0\n};',
+    langs: { Python: 'import json, sys\narr = json.loads(sys.argv[1])\nprint(json.dumps(sum(arr)))', Go: 'package main\nimport ("encoding/json";"fmt";"os")\nfunc main() { var a []int; json.Unmarshal([]byte(os.Args[1]),&a); s:=0; for _,v:=range a{s+=v}; b,_:=json.Marshal(s); fmt.Println(string(b)) }' }
+  },
+  search: {
+    code: 'm=bs;\nf=bs(arr:@i64;target:i64):i64{\n  let lo=mut.0;\n  let hi=mut.arr.len-1;\n  lp(let k=0;lo<hi+1;k=k+1){\n    let mid=lo+(hi-lo)/2;\n    if(arr.get(mid)=target){<mid}\n    el{if(arr.get(mid)<target){lo=mid+1}\n    el{hi=mid-1}}\n  };\n  <0-1\n};',
+    langs: { Python: 'def binary_search(arr, target):\n    lo, hi = 0, len(arr)-1\n    while lo <= hi:\n        mid = (lo+hi)//2\n        if arr[mid] == target: return mid\n        elif arr[mid] < target: lo = mid+1\n        else: hi = mid-1\n    return -1', Go: 'func bsearch(arr []int, target int) int { lo, hi := 0, len(arr)-1; for lo <= hi { mid := (lo+hi)/2; if arr[mid] == target { return mid } else if arr[mid] < target { lo = mid+1 } else { hi = mid-1 } }; return -1 }' }
+  },
+  merge: {
+    code: 'm=mg;\nf=mg(a:@i64;b:@i64):@i64{\n  let r=mut.@();\n  let i=mut.0;\n  let j=mut.0;\n  lp(let k=0;i<a.len&&j<b.len;k=k+1){\n    if(a.get(i)<b.get(j)+1){r=r+@(a.get(i));i=i+1}\n    el{r=r+@(b.get(j));j=j+1}\n  };\n  lp(let k=0;i<a.len;k=k+1){r=r+@(a.get(i));i=i+1};\n  lp(let k=0;j<b.len;k=k+1){r=r+@(b.get(j));j=j+1};\n  <r\n};',
+    langs: { Python: 'def merge(a, b):\n    r, i, j = [], 0, 0\n    while i < len(a) and j < len(b):\n        if a[i] <= b[j]: r.append(a[i]); i += 1\n        else: r.append(b[j]); j += 1\n    return r + a[i:] + b[j:]', Go: 'func merge(a, b []int) []int { var r []int; i, j := 0, 0; for i < len(a) && j < len(b) { if a[i] <= b[j] { r = append(r, a[i]); i++ } else { r = append(r, b[j]); j++ } }; r = append(r, a[i:]...); r = append(r, b[j:]...); return r }' }
+  },
+};
+
+let currentPreset = null;
+
+function setPreset(name) {
+  currentPreset = name;
+  document.getElementById('input').value = PRESETS[name].code;
+  document.querySelectorAll('.presets button').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  tokenize();
+}
+
+function shuffle() {
+  const keys = Object.keys(PRESETS);
+  const picked = [];
+  while (picked.length < 5) {
+    const k = keys[Math.floor(Math.random() * keys.length)];
+    if (!picked.includes(k)) picked.push(k);
+  }
+  // Show shuffled set
+  const btn = document.querySelector('.shuffle-btn');
+  btn.textContent = 'Shuffled: ' + picked.join(', ');
+  setTimeout(() => btn.textContent = 'Shuffle 5 examples', 3000);
+  setPreset(picked[0]);
+}
+
+// ── Normaliser ──
+function normalizeToke(text) {
+  let s = text;
+  s = s.replace(/\(\*[\s\S]*?\*\)/g, '');
+  s = s.replace(/\/\/[^\n]*/g, '');
+  s = s.replace(/#[^\n]*/g, '');
+  // Collapse whitespace outside strings
+  let result = [], inStr = false;
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (c === '"' && (i === 0 || s[i-1] !== '\\')) { inStr = !inStr; result.push(c); }
+    else if (inStr) { result.push(c); }
+    else if (/\s/.test(c)) { if (result.length && result[result.length-1] !== ' ') result.push(' '); }
+    else { result.push(c); }
+  }
+  s = result.join('').trim();
+  for (const ch of [';','{','}','(',')','=',':','<','>']) {
+    s = s.split(' ' + ch).join(ch).split(ch + ' ').join(ch);
+  }
+  return s;
+}
+
+// ── BPE Tokenizer ──
+let tokVocab = null, tokMerges = null, tokReady = false;
+
+class BPETokenizer {
+  constructor(vocab, merges) {
+    this.vocab = vocab;
+    this.mergeRank = {};
+    for (let i = 0; i < merges.length; i++) {
+      this.mergeRank[merges[i][0] + '\x00' + merges[i][1]] = i;
+    }
+  }
+  encode(text) {
+    let symbols = text.split('');
+    while (symbols.length > 1) {
+      let bestRank = Infinity, bestIdx = -1;
+      for (let i = 0; i < symbols.length - 1; i++) {
+        const key = symbols[i] + '\x00' + symbols[i+1];
+        const rank = this.mergeRank[key];
+        if (rank !== undefined && rank < bestRank) { bestRank = rank; bestIdx = i; }
+      }
+      if (bestIdx === -1) break;
+      symbols.splice(bestIdx, 2, symbols[bestIdx] + symbols[bestIdx + 1]);
+    }
+    return { tokens: symbols, ids: symbols.map(s => this.vocab[s] ?? -1) };
+  }
+}
+
+// cl100k approximation (code-aware heuristic)
+function cl100kApprox(text) {
+  const tokens = []; let cur = '';
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i], isAn = /[a-zA-Z0-9_]/.test(c), prevAn = cur && /[a-zA-Z0-9_]/.test(cur[cur.length-1]);
+    if (!cur) { cur = c; }
+    else if (isAn && prevAn) { cur += c; if (cur.length >= 5 && i+1 < text.length && /[a-zA-Z0-9_]/.test(text[i+1])) { tokens.push(cur); cur = ''; } }
+    else if (!isAn && !prevAn && !/\s/.test(c) && !/\s/.test(cur[cur.length-1])) { if (cur.length < 2) cur += c; else { tokens.push(cur); cur = c; } }
+    else { tokens.push(cur); cur = c; }
+  }
+  if (cur) tokens.push(cur);
+  return { tokens, ids: tokens.map((_,i) => i) };
+}
+
+// ── Render ──
+const COLORS = ['t0','t1','t2','t3','t4','t5','t6','t7'];
+function renderTokens(result, containerId) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  result.tokens.forEach((t, i) => {
+    const span = document.createElement('span');
+    span.className = COLORS[i % 8];
+    span.textContent = t;
+    span.title = `Token ${i+1}/${result.tokens.length}: "${t}" (id: ${result.ids[i]})`;
+    el.appendChild(span);
+  });
+}
+
+function tokenize() {
+  const raw = document.getElementById('input').value;
+  const norm = normalizeToke(raw);
+
+  document.getElementById('char-raw').textContent = raw.length;
+  document.getElementById('char-norm').textContent = norm.length;
+  document.getElementById('norm-output').textContent = norm || '(empty)';
+
+  if (!norm) {
+    ['toke-count','cl100k-count','reduction'].forEach(id => document.getElementById(id).textContent = '—');
+    document.getElementById('toke-tokens').innerHTML = '';
+    document.getElementById('cl100k-tokens').innerHTML = '';
+    document.getElementById('comparison-section').style.display = 'none';
+    return;
+  }
+
+  let tokeCount = 0;
+  if (tokReady) {
+    const bpe = new BPETokenizer(tokVocab, tokMerges);
+    const result = bpe.encode(norm);
+    tokeCount = result.tokens.length;
+    document.getElementById('toke-count').textContent = tokeCount;
+    document.getElementById('toke-badge').textContent = tokeCount + ' tokens';
+    renderTokens(result, 'toke-tokens');
+  }
+
+  const clResult = cl100kApprox(raw);
+  const clCount = clResult.tokens.length;
+  document.getElementById('cl100k-count').textContent = clCount;
+  document.getElementById('cl100k-badge').textContent = clCount + ' tokens';
+  renderTokens(clResult, 'cl100k-tokens');
+
+  if (tokReady && clCount > 0) {
+    const pct = Math.round((1 - tokeCount / clCount) * 100);
+    document.getElementById('reduction').textContent = pct + '%';
+    document.getElementById('reduction').parentElement.className = pct > 0 ? 'stat amber' : 'stat red';
+  }
+
+  // Cross-language comparison
+  if (currentPreset && PRESETS[currentPreset] && PRESETS[currentPreset].langs) {
+    showComparison(norm, tokeCount);
+  } else {
+    document.getElementById('comparison-section').style.display = 'none';
+  }
+}
+
+function showComparison(tokeNorm, tokeCount) {
+  const langs = PRESETS[currentPreset].langs;
+  const rows = [{ lang: 'toke (BPE)', tokens: tokeCount, isToke: true }];
+
+  // toke with cl100k
+  const tokeCl = cl100kApprox(tokeNorm);
+  rows.push({ lang: 'toke (cl100k)', tokens: tokeCl.tokens.length, isToke: false });
+
+  for (const [lang, code] of Object.entries(langs)) {
+    rows.push({ lang: lang + ' (cl100k)', tokens: cl100kApprox(code).tokens.length, isToke: false });
+  }
+
+  const maxTokens = Math.max(...rows.map(r => r.tokens));
+  const body = document.getElementById('compare-body');
+  body.innerHTML = '';
+
+  rows.forEach(r => {
+    const pct = Math.round((1 - tokeCount / r.tokens) * 100);
+    const barWidth = Math.round(r.tokens / maxTokens * 100);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="lang">${r.lang}</td>
+      <td class="tokens">${r.tokens}</td>
+      <td class="bar-cell"><div class="bar-bg"><div class="bar-fill ${r.isToke ? 'bar-toke' : 'bar-other'}" style="width:${barWidth}%"></div></div></td>
+      <td class="pct ${r.isToke ? '' : (pct > 0 ? 'better' : 'worse')}">${r.isToke ? '—' : (pct > 0 ? '+' + pct + '% fewer' : pct + '%')}</td>
+    `;
+    body.appendChild(tr);
+  });
+
+  document.getElementById('comparison-section').style.display = 'block';
+}
+
+// ── Load tokenizer ──
+async function loadTokenizer() {
+  for (const path of ['/tokenizer_v03.json', './tokenizer_v03.json', '/static/tokenizer_v03.json']) {
+    try {
+      const resp = await fetch(path);
+      if (!resp.ok) continue;
+      const data = await resp.json();
+      tokVocab = data.model.vocab;
+      tokMerges = data.model.merges;
+      tokReady = true;
+      tokenize();
+      return;
+    } catch(e) { continue; }
+  }
+  document.getElementById('toke-tokens').innerHTML = '<em style="color:#e07070">Failed to load tokenizer. Serve this page from ooke or a local server.</em>';
+}
+
+document.getElementById('input').addEventListener('input', () => { currentPreset = null; tokenize(); });
+loadTokenizer();
+</script>
+
+{! end !}

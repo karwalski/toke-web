@@ -1,0 +1,7 @@
+m=page.tokenizer;
+i=http:std.http;
+i=tpl:ooke.template;
+
+f=get(req:i64):i64{
+  <tpl.renderfile("templates/tokenizer.tkt"; @("page.title":"toke Tokenizer — Live Demo"));
+};

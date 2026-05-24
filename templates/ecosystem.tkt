@@ -22,7 +22,7 @@
   <div class="oke-card">
     <div class="oke-badge">web framework</div>
     <h2><a href="/ooke">ooke</a></h2>
-    <p>A CMS and web framework built on toke. File-system routing, flat-file content store, template engine with Markdown, build and serve modes. Zero dependencies. Ships as a single binary.</p>
+    <p>A CMS and web framework built on toke. File-system routing, flat-file content store, template engine with Markdown, build and serve modes. Zero dependencies. Ships as a single binary. Serves tokelang.dev in production.</p>
     <div class="oke-links">
       <a href="/ooke">Project page</a>
       <a href="https://github.com/karwalski/ooke">GitHub</a>
@@ -32,7 +32,7 @@
   <div class="oke-card">
     <div class="oke-badge">intelligence layer</div>
     <h2><a href="/loke">loke</a></h2>
-    <p>A locally-run intelligence layer that sits between users, their data, and external LLMs. Minimises token spend, maximises privacy, and keeps sensitive data on the user's device. 60–80% token reduction.</p>
+    <p>A locally-run intelligence layer that sits between users, their data, and external LLMs. 172 modules, 80,000+ lines of toke. Multi-layer PII detection, token optimisation, intelligent routing. 60–80% token reduction, all processing on-device.</p>
     <div class="oke-links">
       <a href="/loke">Project page</a>
       <a href="https://github.com/karwalski/loke">GitHub</a>
@@ -54,10 +54,12 @@
   </div>
 
   <div class="oke-card">
-    <div class="oke-badge">playground</div>
+    <div class="oke-badge">demo application</div>
     <h2>moke</h2>
-    <p>The donkey. Demo environments, sandboxes, and experimental features. The thing you ride when you're just messing around. Originally a demo of loke.</p>
-    <div class="oke-meta">Internal</div>
+    <p>A data analysis demo exercising loke's privacy pipeline, governance controls, and LLM integration. 26-detector analysis engine, 9 Australian-themed datasets, client-side ML. Integrated into the loke project.</p>
+    <div class="oke-links">
+      <a href="https://github.com/karwalski/loke">GitHub (in loke)</a>
+    </div>
   </div>
 
 </div>
@@ -65,6 +67,124 @@
 <div class="ecosystem-note">
   <h3>The <em>*oke</em> naming convention</h3>
   <p>Every tool in the toke ecosystem uses a single consonant prefix followed by <code>oke</code>. Four characters, always pronounceable. The alphabetical ordering maps roughly to abstraction depth — <code>zoke</code> at the hardware layer, <code>aoke</code> at the human experience layer — giving the stack a built-in mnemonic.</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- The *oke Namespace                                             -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+
+<div class="namespace-section">
+  <h2>The <em>*oke</em> Namespace</h2>
+  <p class="namespace-intro">26 letters, one naming convention. The full <code>*oke</code> alphabet maps to a layered architecture — from hardware physics at the bottom to human experience at the top.</p>
+
+  <!-- Layer diagram -->
+  <div class="layer-diagram">
+    <div class="layer layer-top">
+      <div class="layer-name">aoke</div>
+      <div class="layer-desc">Human experience — perception, UX, light, sound</div>
+      <div class="layer-tag">topmost</div>
+    </div>
+    <div class="layer-connector"></div>
+    <div class="layer layer-mid">
+      <div class="layer-name">loke &nbsp; moke</div>
+      <div class="layer-desc">Intelligence — AI/ML, privacy, data analysis</div>
+    </div>
+    <div class="layer-connector"></div>
+    <div class="layer layer-mid">
+      <div class="layer-name">ooke</div>
+      <div class="layer-desc">Web and middleware — static sites, routing, content</div>
+    </div>
+    <div class="layer-connector"></div>
+    <div class="layer layer-core">
+      <div class="layer-name">toke</div>
+      <div class="layer-desc">Core language — compiler, runtime, stdlib</div>
+      <div class="layer-tag">core</div>
+    </div>
+    <div class="layer-connector"></div>
+    <div class="layer layer-mid">
+      <div class="layer-name">woke</div>
+      <div class="layer-desc">Governance — principles, licensing, values charter</div>
+    </div>
+    <div class="layer-connector"></div>
+    <div class="layer layer-bottom">
+      <div class="layer-name">zoke</div>
+      <div class="layer-desc">Hardware physics — silicon, electrons, circuits</div>
+      <div class="layer-tag">bottommost</div>
+    </div>
+  </div>
+
+  <!-- Full alphabet table -->
+  <h3 class="ns-table-heading">All 26 letters</h3>
+
+  <div class="ns-group">
+    <h4 class="ns-group-label"><span class="ns-badge ns-assigned">Assigned</span> 7 names in active use</h4>
+    <table class="ns-table">
+      <thead>
+        <tr><th>Name</th><th>Role</th><th>Traditional equivalent</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>aoke</code></td><td>Human experience physics</td><td>UX, design systems, accessibility</td></tr>
+        <tr><td><code class="ns-highlight">loke</code></td><td>Intelligence layer</td><td>LangChain, vector DB, RAG pipeline</td></tr>
+        <tr><td><code>moke</code></td><td>Demo application</td><td>Reference app, integration tests</td></tr>
+        <tr><td><code class="ns-highlight">ooke</code></td><td>Web framework and SSG</td><td>Next.js, Django, Rails</td></tr>
+        <tr><td><code class="ns-core">toke</code></td><td>Core programming language</td><td>Rust, Go, TypeScript</td></tr>
+        <tr><td><code>woke</code></td><td>Principles charter</td><td>OSS governance, Apache/CNCF</td></tr>
+        <tr><td><code>zoke</code></td><td>Fundamental compute physics</td><td>Hardware, drivers, ISA, FPGA</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="ns-group">
+    <h4 class="ns-group-label"><span class="ns-badge ns-reserved">Reserved</span> 12 names held for future use</h4>
+    <table class="ns-table">
+      <thead>
+        <tr><th>Name</th><th>Proposed role</th><th>Traditional equivalent</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>doke</code></td><td>Data / state management</td><td>Redux, Zustand, signals</td></tr>
+        <tr><td><code>hoke</code></td><td>Mock / test framework</td><td>Jest, Vitest, mocks</td></tr>
+        <tr><td><code>ioke</code></td><td>I/O and integrations</td><td>API clients, SDKs</td></tr>
+        <tr><td><code>joke</code></td><td>Easter eggs and fun</td><td>Developer experience / DX</td></tr>
+        <tr><td><code>koke</code></td><td>Performance and benchmarking</td><td>Profiling, APM, observability</td></tr>
+        <tr><td><code>noke</code></td><td>Networking / node layer</td><td>HTTP, service mesh, nginx</td></tr>
+        <tr><td><code>qoke</code></td><td>Queue / message layer</td><td>RabbitMQ, Kafka, SQS</td></tr>
+        <tr><td><code>roke</code></td><td>Caching / ephemeral storage</td><td>Redis, Memcached, CDN edge</td></tr>
+        <tr><td><code>soke</code></td><td>Auth / governance / permissions</td><td>OAuth, RBAC, JWT</td></tr>
+        <tr><td><code>voke</code></td><td>Virtualisation / containers</td><td>Docker, Wasm, VM isolation</td></tr>
+        <tr><td><code>xoke</code></td><td>Extensions / plugin system</td><td>LSP, WASI, kernel modules</td></tr>
+        <tr><td><code>yoke</code></td><td>Binding / orchestration</td><td>Kubernetes, Terraform, systemd</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="ns-group">
+    <h4 class="ns-group-label"><span class="ns-badge ns-open">Open</span> 3 names available</h4>
+    <table class="ns-table">
+      <thead>
+        <tr><th>Name</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>eoke</code></td><td>Clean. Could suit events or streaming.</td></tr>
+        <tr><td><code>foke</code></td><td>Clean. Sounds like "folk" — could suit community features.</td></tr>
+        <tr><td><code>uoke</code></td><td>Clean. Could suit utilities or stdlib.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="ns-group">
+    <h4 class="ns-group-label"><span class="ns-badge ns-avoided">Avoided</span> 4 names permanently excluded</h4>
+    <table class="ns-table">
+      <thead>
+        <tr><th>Name</th><th>Reason</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>boke</code></td><td>Japanese for "idiot/fool" — globally known via anime and manzai comedy.</td></tr>
+        <tr><td><code>coke</code></td><td>Coca-Cola trademark and drug slang. Both associations unusable.</td></tr>
+        <tr><td><code>goke</code></td><td>Too close to a serious racial slur. Proximity makes it unusable.</td></tr>
+        <tr><td><code>poke</code></td><td>Overloaded English verb, Facebook feature, Pokemon overlap. SEO-hostile.</td></tr>
+      </tbody>
+    </table>
+  </div>
 </div>
 
 {! end !}

@@ -1,0 +1,16 @@
+m=page.docs.tutorials;
+i=http:std.http;
+i=tpl:ooke.template;
+i=store:ooke.store;
+
+f=get(req:i64):i64{
+  let result=store.slug("docs/tutorials"; "index");
+  match result{
+    ok(page){
+      <tpl.renderfile("templates/docs/tutorials/index.tkt"; @("title":page.meta.get("title"); "body":page.body; "site.name":"toke"))
+    };
+    err(e){
+      <tpl.renderfile("templates/docs/tutorials/index.tkt"; @("title":"Tutorials"; "body":""; "site.name":"toke"))
+    }
+  }
+};

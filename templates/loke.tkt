@@ -385,6 +385,40 @@ User Experience
   <p>loke is part of the <a href="/ecosystem">toke ecosystem</a>. It is a separate project from toke the language. See the <a href="https://github.com/karwalski/loke">loke GitHub repository</a> for source, releases, and contribution guide.</p>
 </div>
 
+<!-- ── Agents & Memory ─────────────────────────────────────── -->
+
+<div class="section-heading"><h2>Agents &amp; Memory</h2></div>
+<p>loke includes a persistent memory system and lightweight agent framework for automated workflows.</p>
+
+<div class="features">
+  <div class="feature">
+    <h3>Memory Palace</h3>
+    <p>Semantic search over cross-session memory. Vector-store backed, sub-500ms retrieval for 100K entries. AAAK shorthand compresses context 5&ndash;30x for efficient recall.</p>
+  </div>
+  <div class="feature">
+    <h3>Agent Framework</h3>
+    <p>YAML/TOML agent definitions with cron, webhook, and MCP triggers. Sandboxed execution with overnight batch processing. Each agent runs through the full privacy pipeline.</p>
+  </div>
+</div>
+
+<!-- ── MCP Framework ───────────────────────────────────────── -->
+
+<div class="section-heading"><h2>MCP Framework</h2></div>
+<p>loke implements the Model Context Protocol for tool integration with per-server permissions, privacy pipeline on all tool call data, and an audit trail on every invocation.</p>
+
+<!-- ── Technology Stack ────────────────────────────────────── -->
+
+<div class="section-heading"><h2>Technology Stack</h2></div>
+<div class="code-block" style="text-align:left; line-height:1.8;">
+  <span class="kw">Language:</span>    toke &mdash; compiles to native binary
+  <span class="kw">Framework:</span>   ooke &mdash; single binary, no runtime dependencies
+  <span class="kw">Local LLMs:</span>  Ollama (REST), MLX (Apple Silicon), native inference
+  <span class="kw">Storage:</span>     SQLite + SQLCipher, vector store
+  <span class="kw">Privacy:</span>     Regex (toke), SLM NER (Ollama), Presidio (Python sidecar)
+  <span class="kw">Compression:</span> TOON (toke), LLMLingua (Python sidecar)
+  <span class="kw">Platform:</span>    macOS (Apple Silicon optimised) &middot; Windows (planned)
+</div>
+
 </div>
 
 {! end !}

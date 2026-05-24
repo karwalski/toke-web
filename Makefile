@@ -115,4 +115,15 @@ check-docs-runtime:
 	echo ""; echo "Results: $$pass passed, $$fail failed, $$skip skipped (no .expected)"; \
 	[ $$fail -eq 0 ]
 
-.PHONY: all run run-http dev certs clean check-docs check-docs-examples check-docs-runtime
+# --- Deployment ---
+
+deploy: ## Full deploy (rebuild binary + all content)
+	./scripts/deploy.sh full
+
+deploy-content: ## Content-only deploy (templates, static, sites — no rebuild)
+	./scripts/deploy.sh content
+
+deploy-auto: ## Auto-detect deploy mode based on git changes
+	./scripts/deploy.sh auto
+
+.PHONY: all run run-http dev certs clean check-docs check-docs-examples check-docs-runtime deploy deploy-content deploy-auto

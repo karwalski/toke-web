@@ -413,6 +413,50 @@ section { padding: 3rem 0; }
 /* Tab JS toggle helper — inline script toggles .active on click      */
 /* ================================================================== */
 
+/* ================================================================== */
+/* *oke Namespace section (ecosystem page)                             */
+/* ================================================================== */
+
+.namespace-section { max-width: 900px; margin: 3rem auto; padding: 0 2rem; }
+.namespace-section h2 { font-size: 1.6rem; font-weight: 600; color: #ccc; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+.namespace-section h2 em { color: #7c83fd; font-style: normal; }
+.namespace-intro { color: #777; font-size: 0.95rem; margin-bottom: 2rem; }
+
+/* Layer diagram */
+.layer-diagram { max-width: 580px; margin: 0 auto 2.5rem; }
+.layer {
+  display: flex; align-items: center; gap: 1rem;
+  background: #111; border: 1px solid #1e1e1e; border-radius: 8px;
+  padding: 0.85rem 1.25rem; position: relative;
+}
+.layer-name { font-family: "SF Mono", "Fira Code", monospace; font-size: 0.95rem; font-weight: 700; color: #c792ea; white-space: nowrap; min-width: 110px; }
+.layer-desc { font-size: 0.82rem; color: #666; flex: 1; }
+.layer-tag { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #555; background: #1a1a1a; padding: 0.15rem 0.5rem; border-radius: 3px; white-space: nowrap; }
+.layer-connector { width: 2px; height: 12px; background: #2a2a3e; margin: 0 auto; }
+.layer-top { border-color: #c792ea40; }
+.layer-core { border-color: #7c83fd60; background: #0d0d1a; }
+.layer-core .layer-name { color: #7c83fd; }
+.layer-core .layer-tag { color: #7c83fd; background: #13131f; }
+.layer-bottom { border-color: #c792ea40; }
+
+/* Namespace table groups */
+.ns-table-heading { font-size: 1.2rem; font-weight: 600; color: #aaa; margin: 2.5rem 0 1rem; }
+.ns-group { margin-bottom: 1.5rem; }
+.ns-group-label { font-size: 0.9rem; font-weight: 500; color: #888; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+.ns-badge { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.15rem 0.5rem; border-radius: 1rem; }
+.ns-assigned { background: #1a3a1a; color: #4ade80; }
+.ns-reserved { background: #1a2a3a; color: #60a5fa; }
+.ns-open { background: #2a2a1a; color: #facc15; }
+.ns-avoided { background: #3a1a1a; color: #f87171; }
+
+.ns-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-bottom: 0.5rem; }
+.ns-table th { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid #222; color: #555; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500; }
+.ns-table td { padding: 0.5rem 0.75rem; border-bottom: 1px solid #1a1a1a; color: #777; }
+.ns-table tr:last-child td { border-bottom: none; }
+.ns-table code { font-family: "SF Mono", "Fira Code", monospace; font-size: 0.82em; color: #c792ea; background: #161616; border: 1px solid #222; border-radius: 3px; padding: 0.1em 0.3em; }
+.ns-table code.ns-core { color: #7c83fd; font-weight: 700; }
+.ns-table code.ns-highlight { color: #c792ea; font-weight: 600; }
+
 @media (max-width: 600px) {
   .tv-tab-bar { flex-wrap: wrap; }
   .tv-tab-btn { font-size: 0.7rem; padding: 0.4rem 0.6rem; }
@@ -420,4 +464,10 @@ section { padding: 3rem 0; }
   .timeline-phase-group { padding: 0.75rem; }
   .phase-details { gap: 0.75rem; }
   .section-heading, .section-desc, .comparison-note, .prompt-box { padding-left: 1rem; padding-right: 1rem; }
+  .namespace-section { padding: 0 1rem; }
+  .layer { flex-wrap: wrap; gap: 0.4rem; padding: 0.65rem 0.85rem; }
+  .layer-name { min-width: auto; font-size: 0.85rem; }
+  .layer-desc { font-size: 0.75rem; }
+  .ns-table { font-size: 0.78rem; }
+  .ns-table th, .ns-table td { padding: 0.4rem 0.5rem; }
 }

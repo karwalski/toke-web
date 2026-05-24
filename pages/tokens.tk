@@ -1,0 +1,7 @@
+m=page.tokens;
+i=http:std.http;
+i=tpl:ooke.template;
+
+f=get(req:i64):i64{
+  <tpl.renderfile("templates/tokens.tkt"; @("page.title":"Token Visualisation — toke"));
+};
