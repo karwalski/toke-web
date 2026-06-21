@@ -6,8 +6,7 @@ language = "en"
 [build]
 output = "build/"
 minify = true
-inline_css = false
-image_optimize = false
+inlinecss = false
 
 [server]
 port = 8081
@@ -18,6 +17,6 @@ workers = 0
 backend = "flat"
 
 [log]
-access = "logs/access.log"
-max_lines = 10000
-max_age_days = 30
+accessformat = "combined"
+maxlines = 10000
+maxagedays = 30
