@@ -26,7 +26,7 @@
   <footer class="site-footer">
     <p>toke language — <a href="https://github.com/karwalski/toke">GitHub</a> — <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></p>
     <p style="font-size:0.8rem;opacity:0.6">© 2026 Matthew Watt</p>
-    <p style="margin-top:0.5rem">This site is built and served by <a href="/ooke">toke on ooke</a> — build light, ship fast.</p>
+    <p style="margin-top:0.5rem">Built and served by <a href="/ooke">toke on ooke</a> — a single native binary. Write less. Mean more.</p>
   </footer>
 </body>
 </html>
