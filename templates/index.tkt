@@ -3,8 +3,14 @@
 {! block("content") !}
 
 <section class="hero">
-  <h1>A Language Built for <span>AI</span></h1>
+  <div class="lockup"><span class="coin"></span><span class="wordmark">toke</span></div>
+  <h1>A language built for <span>AI</span>.</h1>
   <p>A programming language purpose-built for LLM code generation. 40&ndash;75% fewer tokens. Faster inference. Lower cost.</p>
+  <div class="pill-row">
+    <span class="pill pill-gold">&minus;42% tokens</span>
+    <span class="pill pill-ticket">admit one</span>
+    <span class="pill pill-neutral">v0.3 default</span>
+  </div>
   <div class="cta">
     <a href="/docs" class="btn btn-primary">Get started</a>
     <a href="/docs/learn/01-why-toke" class="btn btn-outline">Why toke?</a>
@@ -20,7 +26,7 @@
   <h2>The Problem</h2>
 </div>
 <p class="section-desc">Every time an AI writes code, it generates one token at a time. Each token costs compute, time, and money. Today's programming languages were designed for humans &mdash; they're full of verbose keywords, boilerplate imports, and ceremony that LLMs must produce token by token.</p>
-<p class="section-desc"><strong style="color:#ccc">toke</strong> is a programming language designed from first principles to minimise the number of tokens an LLM needs to generate. With a purpose-built tokenizer, toke uses 40&ndash;75% fewer tokens than Python, C, or Java for equivalent complete programs &mdash; and the gap widens as documentation standards increase, because toke's LLM training corpus is comment-stripped.</p>
+<p class="section-desc"><strong style="color:#f5efe2">toke</strong> is a programming language designed from first principles to minimise the number of tokens an LLM needs to generate. With a purpose-built tokenizer, toke uses 40&ndash;75% fewer tokens than Python, C, or Java for equivalent complete programs &mdash; and the gap widens as documentation standards increase, because toke's LLM training corpus is comment-stripped.</p>
 
 <div class="explainer" style="max-width:860px;margin:1rem auto;padding-left:2rem;padding-right:2rem;">
   <p><strong>What is a token?</strong> LLMs don't read characters &mdash; they read <em>tokens</em>, which are chunks of text (roughly 3&ndash;4 characters each). The statement <code>return 0;</code> costs 4 tokens every time an LLM writes it. In toke, the same statement is <code>&lt;0;</code> &mdash; and with a purpose-built tokenizer trained on toke programs, the entire return-and-close pattern <code>&lt;0;};</code> becomes a single token.</p>
@@ -56,8 +62,8 @@
         <span class="token-badge toke-p2">24 tokens &mdash; purpose-built toke BPE (16K vocab, measured)</span>
       </div>
     </div>
-    <div class="tv-note" style="margin:0.75rem 0;font-size:0.85rem;color:#888;line-height:1.4;">
-      This is the complete program &mdash; module declaration, import, function, main, and I/O. Token boundaries are measured using toke's purpose-built BPE tokenizer (16,384 tokens, trained on 25,953 toke programs). Patterns like <code style="background:#161616;border:1px solid #222;border-radius:3px;padding:0.1em 0.3em;font-size:0.82em;color:#c792ea;">;i=io:std.io</code> (entire import as 1 token) and <code style="background:#161616;border:1px solid #222;border-radius:3px;padding:0.1em 0.3em;font-size:0.82em;color:#c792ea;">(n:i64):i64{if(n</code> (signature + conditional in 1 token) emerge naturally from BPE training on real toke code. <a href="/tokenizer" style="color:#c792ea;">Try the live tokenizer &rarr;</a>
+    <div class="tv-note" style="margin:0.75rem 0;font-size:0.85rem;color:#9a9082;line-height:1.4;">
+      This is the complete program &mdash; module declaration, import, function, main, and I/O. Token boundaries are measured using toke's purpose-built BPE tokenizer (16,384 tokens, trained on 25,953 toke programs). Patterns like <code style="background:#2a2317;border:1px solid #2a2317;border-radius:3px;padding:0.1em 0.3em;font-size:0.82em;color:#f0c04a;">;i=io:std.io</code> (entire import as 1 token) and <code style="background:#2a2317;border:1px solid #2a2317;border-radius:3px;padding:0.1em 0.3em;font-size:0.82em;color:#f0c04a;">(n:i64):i64{if(n</code> (signature + conditional in 1 token) emerge naturally from BPE training on real toke code. <a href="/tokenizer" style="color:#f0c04a;">Try the live tokenizer &rarr;</a>
     </div>
   </div>
 
@@ -114,7 +120,7 @@
 </div>
 
 <div class="comparison-note">
-  <p><strong>Why different tokenizers?</strong> toke uses its purpose-built BPE (24 tokens, measured) because that is how a toke-native model tokenizes programs. Python, C, and Java are measured with cl100k_base because that is the tokenizer used by the models generating them. Each language measured with the tokenizer its model actually uses. The toke BPE (16,384 tokens) was trained on 25,953 toke programs and averages 52% fewer tokens than cl100k across 42 benchmarks. <a href="/tokenizer" style="color:#c792ea;">Try it yourself &rarr;</a></p>
+  <p><strong>Why different tokenizers?</strong> toke uses its purpose-built BPE (24 tokens, measured) because that is how a toke-native model tokenizes programs. Python, C, and Java are measured with cl100k_base because that is the tokenizer used by the models generating them. Each language measured with the tokenizer its model actually uses. The toke BPE (16,384 tokens) was trained on 25,953 toke programs and averages 52% fewer tokens than cl100k across 42 benchmarks. <a href="/tokenizer" style="color:#f0c04a;">Try it yourself &rarr;</a></p>
 </div>
 
 <!-- ================================================================== -->
@@ -141,8 +147,8 @@
         <span class="token-badge toke-p2">24 tokens &mdash; identical to above (toke has no comment syntax)</span>
       </div>
     </div>
-    <div class="tv-note" style="margin:0.75rem 0;font-size:0.85rem;color:#888;line-height:1.4;">
-      The program is identical. toke supports comments via <code style="background:#161616;border:1px solid #222;border-radius:3px;padding:0.1em 0.3em;font-size:0.82em;color:#c792ea;">(* ... *)</code> for human authors, but the LLM training corpus is comment-stripped &mdash; so AI-generated code carries zero documentation overhead. There are no docstrings to inflate, no boilerplate that grows with coding standards. The type signatures <em>are</em> the documentation.
+    <div class="tv-note" style="margin:0.75rem 0;font-size:0.85rem;color:#9a9082;line-height:1.4;">
+      The program is identical. toke supports comments via <code style="background:#2a2317;border:1px solid #2a2317;border-radius:3px;padding:0.1em 0.3em;font-size:0.82em;color:#f0c04a;">(* ... *)</code> for human authors, but the LLM training corpus is comment-stripped &mdash; so AI-generated code carries zero documentation overhead. There are no docstrings to inflate, no boilerplate that grows with coding standards. The type signatures <em>are</em> the documentation.
     </div>
   </div>
 
@@ -167,8 +173,8 @@
         <span class="token-badge other">82 tokens &mdash; cl100k_base &mdash; with docstrings and main guard</span>
       </div>
     </div>
-    <div class="tv-note" style="margin:0.75rem 0;font-size:0.85rem;color:#888;line-height:1.4;">
-      Adding one-line docstrings and an <code style="background:#161616;border:1px solid #222;border-radius:3px;padding:0.1em 0.3em;font-size:0.82em;color:#c792ea;">if __name__</code> guard doubles the token count: 41 &rarr; 82 tokens. With full Args/Returns/Raises docstrings, this grows further.
+    <div class="tv-note" style="margin:0.75rem 0;font-size:0.85rem;color:#9a9082;line-height:1.4;">
+      Adding one-line docstrings and an <code style="background:#2a2317;border:1px solid #2a2317;border-radius:3px;padding:0.1em 0.3em;font-size:0.82em;color:#f0c04a;">if __name__</code> guard doubles the token count: 41 &rarr; 82 tokens. With full Args/Returns/Raises docstrings, this grows further.
     </div>
   </div>
 
@@ -240,7 +246,7 @@
 <div class="features">
   <div class="feature-card">
     <h3>40&ndash;75% Fewer Tokens</h3>
-    <p>With toke's purpose-built BPE tokenizer, a complete fibonacci program uses 24 tokens &mdash; compared to 41 in Python, 52 in C, and 55 in Java (all cl100k_base). That is a 42% reduction vs Python and 56% vs Java. Add documentation and the gap widens further: Python doubles to 82 tokens and Java grows to 102, while toke stays at 24 because toke has no comment syntax &mdash; documentation lives in companion files. <a href="/tokenizer" style="color:#c792ea;">Try the live tokenizer &rarr;</a></p>
+    <p>With toke's purpose-built BPE tokenizer, a complete fibonacci program uses 24 tokens &mdash; compared to 41 in Python, 52 in C, and 55 in Java (all cl100k_base). That is a 42% reduction vs Python and 56% vs Java. Add documentation and the gap widens further: Python doubles to 82 tokens and Java grows to 102, while toke stays at 24 because toke has no comment syntax &mdash; documentation lives in companion files. <a href="/tokenizer" style="color:#f0c04a;">Try the live tokenizer &rarr;</a></p>
   </div>
   <div class="feature-card">
     <h3>Designed for Correctness</h3>
@@ -274,7 +280,7 @@
   <span class="kw">&lt;</span><span class="num">0</span>;
 };</pre>
 </div>
-<p class="section-desc">A complete toke program. <code style="background:#161616;border:1px solid #222;border-radius:3px;padding:0.15em 0.35em;font-size:0.82em;color:#c792ea;">m=</code> declares the module. <code style="background:#161616;border:1px solid #222;border-radius:3px;padding:0.15em 0.35em;font-size:0.82em;color:#c792ea;">i=</code> imports a library. <code style="background:#161616;border:1px solid #222;border-radius:3px;padding:0.15em 0.35em;font-size:0.82em;color:#c792ea;">f=</code> declares a function. <code style="background:#161616;border:1px solid #222;border-radius:3px;padding:0.15em 0.35em;font-size:0.82em;color:#c792ea;">&lt;</code> returns a value. Every statement ends with <code style="background:#161616;border:1px solid #222;border-radius:3px;padding:0.15em 0.35em;font-size:0.82em;color:#c792ea;">;</code>. No boilerplate, no ceremony.</p>
+<p class="section-desc">A complete toke program. <code style="background:#2a2317;border:1px solid #2a2317;border-radius:3px;padding:0.15em 0.35em;font-size:0.82em;color:#f0c04a;">m=</code> declares the module. <code style="background:#2a2317;border:1px solid #2a2317;border-radius:3px;padding:0.15em 0.35em;font-size:0.82em;color:#f0c04a;">i=</code> imports a library. <code style="background:#2a2317;border:1px solid #2a2317;border-radius:3px;padding:0.15em 0.35em;font-size:0.82em;color:#f0c04a;">f=</code> declares a function. <code style="background:#2a2317;border:1px solid #2a2317;border-radius:3px;padding:0.15em 0.35em;font-size:0.82em;color:#f0c04a;">&lt;</code> returns a value. Every statement ends with <code style="background:#2a2317;border:1px solid #2a2317;border-radius:3px;padding:0.15em 0.35em;font-size:0.82em;color:#f0c04a;">;</code>. No boilerplate, no ceremony.</p>
 
 <!-- ================================================================== -->
 <!-- Development Timeline                                               -->
@@ -287,39 +293,39 @@
 <!-- Compact horizontal timeline bar -->
 <div style="max-width:900px;margin:0 auto 1rem;padding:0 1rem;">
   <div style="display:flex;align-items:center;gap:0;position:relative;height:60px;">
-    <div style="position:absolute;top:50%;left:0;right:0;height:2px;background:#333;transform:translateY(-50%);"></div>
+    <div style="position:absolute;top:50%;left:0;right:0;height:2px;background:#6b6356;transform:translateY(-50%);"></div>
     <div style="flex:1;text-align:center;position:relative;z-index:1;">
-      <div style="width:12px;height:12px;background:#27ae60;border-radius:50%;margin:0 auto 4px;"></div>
-      <span style="font-size:0.65rem;color:#888;">Phase 1</span>
+      <div style="width:12px;height:12px;background:#f0c04a;border-radius:50%;margin:0 auto 4px;"></div>
+      <span style="font-size:0.65rem;color:#9a9082;">Phase 1</span>
     </div>
     <div style="flex:1;text-align:center;position:relative;z-index:1;">
-      <div style="width:12px;height:12px;background:#27ae60;border-radius:50%;margin:0 auto 4px;"></div>
-      <span style="font-size:0.65rem;color:#888;">Phase 2</span>
+      <div style="width:12px;height:12px;background:#f0c04a;border-radius:50%;margin:0 auto 4px;"></div>
+      <span style="font-size:0.65rem;color:#9a9082;">Phase 2</span>
     </div>
     <div style="flex:1;text-align:center;position:relative;z-index:1;">
-      <div style="width:14px;height:14px;background:#c792ea;border-radius:50%;margin:0 auto 4px;border:2px solid #c792ea;"></div>
-      <span style="font-size:0.65rem;color:#c792ea;font-weight:bold;">Phase 3</span>
+      <div style="width:14px;height:14px;background:#f0c04a;border-radius:50%;margin:0 auto 4px;border:2px solid #f0c04a;"></div>
+      <span style="font-size:0.65rem;color:#f0c04a;font-weight:bold;">Phase 3</span>
     </div>
     <div style="flex:1;text-align:center;position:relative;z-index:1;">
-      <div style="width:12px;height:12px;background:#333;border:2px solid #555;border-radius:50%;margin:0 auto 4px;"></div>
-      <span style="font-size:0.65rem;color:#555;">Phase 4</span>
+      <div style="width:12px;height:12px;background:#6b6356;border:2px solid #6b6356;border-radius:50%;margin:0 auto 4px;"></div>
+      <span style="font-size:0.65rem;color:#6b6356;">Phase 4</span>
     </div>
     <div style="flex:1;text-align:center;position:relative;z-index:1;">
-      <div style="width:12px;height:12px;background:#333;border:2px solid #555;border-radius:50%;margin:0 auto 4px;"></div>
-      <span style="font-size:0.65rem;color:#555;">Phase 5</span>
+      <div style="width:12px;height:12px;background:#6b6356;border:2px solid #6b6356;border-radius:50%;margin:0 auto 4px;"></div>
+      <span style="font-size:0.65rem;color:#6b6356;">Phase 5</span>
     </div>
   </div>
-  <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:#555;margin-top:-0.3rem;padding:0 1rem;">
+  <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:#6b6356;margin-top:-0.3rem;padding:0 1rem;">
     <span>Spec &amp; Compiler</span>
     <span>Training &amp; Eval</span>
-    <span style="color:#c792ea;">Publishing</span>
+    <span style="color:#f0c04a;">Publishing</span>
     <span>Ecosystem</span>
     <span>Standard</span>
   </div>
 </div>
 
 <details style="max-width:1100px;margin:0 auto 2rem;">
-  <summary style="cursor:pointer;text-align:center;color:#888;font-size:0.85rem;padding:0.75rem;border:1px solid #222;border-radius:6px;background:#0a0a0a;">
+  <summary style="cursor:pointer;text-align:center;color:#9a9082;font-size:0.85rem;padding:0.75rem;border:1px solid #2a2317;border-radius:6px;background:#14110b;">
     Expand full development timeline &darr;
   </summary>
 
@@ -758,35 +764,35 @@
 <!-- Token Efficiency: Real Numbers                                      -->
 <!-- ================================================================== -->
 
-<div class="section-alt" style="background:#0d0d0d;padding:3rem 2rem;margin:2rem 0;">
+<div class="section-alt" style="background:#1f1a11;padding:3rem 2rem;margin:2rem 0;">
   <div style="max-width:900px;margin:0 auto;">
     <h2 style="text-align:center;margin-bottom:0.5rem;">Token Efficiency: Measured, Not Claimed</h2>
-    <p style="text-align:center;color:#888;margin-bottom:2rem;font-size:0.9rem;">Purpose-built BPE tokenizer (16K vocab) trained on 25,953 toke programs. Compared against cl100k_base (100K vocab, used by GPT-4 and Claude).</p>
+    <p style="text-align:center;color:#9a9082;margin-bottom:2rem;font-size:0.9rem;">Purpose-built BPE tokenizer (16K vocab) trained on 25,953 toke programs. Compared against cl100k_base (100K vocab, used by GPT-4 and Claude).</p>
 
     <div style="display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;margin-bottom:2rem;">
-      <div style="text-align:center;padding:1.5rem 2rem;background:#111;border:1px solid #222;border-radius:8px;">
-        <div style="font-size:2.5rem;font-weight:700;color:#82e0aa;">52%</div>
-        <div style="font-size:0.75rem;color:#888;margin-top:0.3rem;">AVERAGE TOKEN REDUCTION</div>
-        <div style="font-size:0.7rem;color:#555;">vs cl100k on 42 benchmark programs</div>
+      <div style="text-align:center;padding:1.5rem 2rem;background:#1f1a11;border:1px solid #2a2317;border-radius:8px;">
+        <div style="font-size:2.5rem;font-weight:700;color:#6fc2b2;">52%</div>
+        <div style="font-size:0.75rem;color:#9a9082;margin-top:0.3rem;">AVERAGE TOKEN REDUCTION</div>
+        <div style="font-size:0.7rem;color:#6b6356;">vs cl100k on 42 benchmark programs</div>
       </div>
-      <div style="text-align:center;padding:1.5rem 2rem;background:#111;border:1px solid #222;border-radius:8px;">
-        <div style="font-size:2.5rem;font-weight:700;color:#c792ea;">24</div>
-        <div style="font-size:0.75rem;color:#888;margin-top:0.3rem;">TOKENS: FIBONACCI</div>
-        <div style="font-size:0.7rem;color:#555;">vs 61 in cl100k (61% reduction)</div>
+      <div style="text-align:center;padding:1.5rem 2rem;background:#1f1a11;border:1px solid #2a2317;border-radius:8px;">
+        <div style="font-size:2.5rem;font-weight:700;color:#f0c04a;">24</div>
+        <div style="font-size:0.75rem;color:#9a9082;margin-top:0.3rem;">TOKENS: FIBONACCI</div>
+        <div style="font-size:0.7rem;color:#6b6356;">vs 61 in cl100k (61% reduction)</div>
       </div>
-      <div style="text-align:center;padding:1.5rem 2rem;background:#111;border:1px solid #222;border-radius:8px;">
+      <div style="text-align:center;padding:1.5rem 2rem;background:#1f1a11;border:1px solid #2a2317;border-radius:8px;">
         <div style="font-size:2.5rem;font-weight:700;color:#f0c040;">9</div>
-        <div style="font-size:0.75rem;color:#888;margin-top:0.3rem;">TOKENS: HELLO WORLD</div>
-        <div style="font-size:0.7rem;color:#555;">vs 26 in cl100k (65% reduction)</div>
+        <div style="font-size:0.75rem;color:#9a9082;margin-top:0.3rem;">TOKENS: HELLO WORLD</div>
+        <div style="font-size:0.7rem;color:#6b6356;">vs 26 in cl100k (65% reduction)</div>
       </div>
     </div>
 
-    <p style="text-align:center;color:#888;font-size:0.85rem;">Patterns like <code style="background:#161616;border:1px solid #222;border-radius:3px;padding:0.15em 0.35em;font-size:0.82em;color:#c792ea;">f=main():i64{</code>, <code style="background:#161616;border:1px solid #222;border-radius:3px;padding:0.15em 0.35em;font-size:0.82em;color:#c792ea;">i=j:std.json</code>, and <code style="background:#161616;border:1px solid #222;border-radius:3px;padding:0.15em 0.35em;font-size:0.82em;color:#c792ea;">){&lt;n};&lt;</code> merge into single tokens because the BPE was trained on real toke code.</p>
+    <p style="text-align:center;color:#9a9082;font-size:0.85rem;">Patterns like <code style="background:#2a2317;border:1px solid #2a2317;border-radius:3px;padding:0.15em 0.35em;font-size:0.82em;color:#f0c04a;">f=main():i64{</code>, <code style="background:#2a2317;border:1px solid #2a2317;border-radius:3px;padding:0.15em 0.35em;font-size:0.82em;color:#f0c04a;">i=j:std.json</code>, and <code style="background:#2a2317;border:1px solid #2a2317;border-radius:3px;padding:0.15em 0.35em;font-size:0.82em;color:#f0c04a;">){&lt;n};&lt;</code> merge into single tokens because the BPE was trained on real toke code.</p>
 
     <div style="text-align:center;margin-top:1.5rem;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
-      <a href="/tokenizer" style="background:#2a1a3a;border:1px solid #c792ea;color:#c792ea;padding:0.6rem 1.2rem;border-radius:6px;text-decoration:none;font-size:0.85rem;font-weight:600;">Try the Live Tokenizer &rarr;</a>
-      <a href="/tokens" style="background:#1a1a1a;border:1px solid #333;color:#aaa;padding:0.6rem 1.2rem;border-radius:6px;text-decoration:none;font-size:0.85rem;">Token Visualisation Gallery</a>
-      <a href="/docs/reference/token-comparison" style="background:#1a1a1a;border:1px solid #333;color:#aaa;padding:0.6rem 1.2rem;border-radius:6px;text-decoration:none;font-size:0.85rem;">Full 42-Example Comparison</a>
+      <a href="/tokenizer" style="background:#2a2317;border:1px solid #f0c04a;color:#f0c04a;padding:0.6rem 1.2rem;border-radius:6px;text-decoration:none;font-size:0.85rem;font-weight:600;">Try the Live Tokenizer &rarr;</a>
+      <a href="/tokens" style="background:#2a2317;border:1px solid #6b6356;color:#9a9082;padding:0.6rem 1.2rem;border-radius:6px;text-decoration:none;font-size:0.85rem;">Token Visualisation Gallery</a>
+      <a href="/docs/reference/token-comparison" style="background:#2a2317;border:1px solid #6b6356;color:#9a9082;padding:0.6rem 1.2rem;border-radius:6px;text-decoration:none;font-size:0.85rem;">Full 42-Example Comparison</a>
     </div>
   </div>
 </div>
@@ -795,28 +801,28 @@
 <!-- Try the Model                                                        -->
 <!-- ================================================================== -->
 
-<div class="section-alt" style="background:#0d0d0d;padding:3rem 2rem;margin:2rem 0;">
+<div class="section-alt" style="background:#1f1a11;padding:3rem 2rem;margin:2rem 0;">
   <div style="max-width:900px;margin:0 auto;">
     <h2 style="text-align:center;margin-bottom:0.5rem;">Try the Model &mdash; Free API Access</h2>
-    <p style="text-align:center;color:#888;margin-bottom:2rem;font-size:0.9rem;">A fine-tuned 7B model that writes toke programs compiling correctly 100% of the time. Free tier &mdash; no credit card, no setup.</p>
+    <p style="text-align:center;color:#9a9082;margin-bottom:2rem;font-size:0.9rem;">A fine-tuned 7B model that writes toke programs compiling correctly 100% of the time. Free tier &mdash; no credit card, no setup.</p>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:2rem;">
-      <div style="background:#111;border:1px solid #222;border-radius:8px;padding:1.5rem;">
-        <h3 style="font-size:1rem;margin-bottom:0.8rem;color:#c792ea;">Developer Console</h3>
-        <p style="font-size:0.85rem;color:#aaa;margin-bottom:0.8rem;">Create a free account, get an API key, and start generating toke code. The console includes a playground to test prompts, API key management, and usage tracking with token counts.</p>
-        <ul style="font-size:0.8rem;color:#888;margin:0 0 1rem 1.2rem;line-height:1.8;">
+      <div style="background:#1f1a11;border:1px solid #2a2317;border-radius:8px;padding:1.5rem;">
+        <h3 style="font-size:1rem;margin-bottom:0.8rem;color:#f0c04a;">Developer Console</h3>
+        <p style="font-size:0.85rem;color:#9a9082;margin-bottom:0.8rem;">Create a free account, get an API key, and start generating toke code. The console includes a playground to test prompts, API key management, and usage tracking with token counts.</p>
+        <ul style="font-size:0.8rem;color:#9a9082;margin:0 0 1rem 1.2rem;line-height:1.8;">
           <li>Free tier: 1,000 tokens per 6 hours</li>
           <li>Request higher limits at no charge</li>
           <li>Opt in or out of data collection per key</li>
           <li>Track usage: tokens in, tokens out, toke BPE</li>
         </ul>
-        <a href="https://console.tokelang.dev/signup" style="background:#2a1a3a;border:1px solid #c792ea;color:#c792ea;padding:0.5rem 1rem;border-radius:4px;text-decoration:none;font-size:0.85rem;font-weight:600;">Create Free Account &rarr;</a>
+        <a href="https://console.tokelang.dev/signup" style="background:#2a2317;border:1px solid #f0c04a;color:#f0c04a;padding:0.5rem 1rem;border-radius:4px;text-decoration:none;font-size:0.85rem;font-weight:600;">Create Free Account &rarr;</a>
       </div>
 
-      <div style="background:#111;border:1px solid #222;border-radius:8px;padding:1.5rem;">
+      <div style="background:#1f1a11;border:1px solid #2a2317;border-radius:8px;padding:1.5rem;">
         <h3 style="font-size:1rem;margin-bottom:0.8rem;">API &amp; MCP</h3>
-        <p style="font-size:0.85rem;color:#aaa;margin-bottom:0.8rem;">Use the REST API directly or connect via MCP (Model Context Protocol) from Claude Code, Cursor, Codex, or any MCP-compatible client.</p>
-        <pre style="background:#0d0d0d;padding:0.8rem;border-radius:4px;font-size:0.75rem;overflow-x:auto;color:#82e0aa;margin-bottom:1rem;">curl -X POST api.tokelang.dev/v1/generate \
+        <p style="font-size:0.85rem;color:#9a9082;margin-bottom:0.8rem;">Use the REST API directly or connect via MCP (Model Context Protocol) from Claude Code, Cursor, Codex, or any MCP-compatible client.</p>
+        <pre style="background:#1f1a11;padding:0.8rem;border-radius:4px;font-size:0.75rem;overflow-x:auto;color:#6fc2b2;margin-bottom:1rem;">curl -X POST api.tokelang.dev/v1/generate \
   -H "X-Api-Key: YOUR_KEY" \
   -d '{"description": "Sum an array"}'
 
@@ -824,27 +830,27 @@
  "tokens_in": 159,
  "tokens_out": 28,
  "toke_bpe_out": 13}</pre>
-        <p style="font-size:0.8rem;color:#888;">The response includes three token counts: model input, model output (Qwen tokenizer), and the same output measured by toke's purpose-built BPE &mdash; showing the 52% efficiency gain a toke-native model would achieve.</p>
+        <p style="font-size:0.8rem;color:#9a9082;">The response includes three token counts: model input, model output (Qwen tokenizer), and the same output measured by toke's purpose-built BPE &mdash; showing the 52% efficiency gain a toke-native model would achieve.</p>
       </div>
     </div>
 
-    <div style="background:#111;border:1px solid #222;border-radius:8px;padding:1.5rem;margin-bottom:2rem;">
+    <div style="background:#1f1a11;border:1px solid #2a2317;border-radius:8px;padding:1.5rem;margin-bottom:2rem;">
       <h3 style="font-size:1rem;margin-bottom:0.8rem;">Model on HuggingFace</h3>
-      <p style="font-size:0.85rem;color:#aaa;margin-bottom:0.8rem;">The Gate 2 model is published on HuggingFace. Download it, run locally, or fine-tune for your own use case. Includes model card, tokenizer, and training details.</p>
+      <p style="font-size:0.85rem;color:#9a9082;margin-bottom:0.8rem;">The Gate 2 model is published on HuggingFace. Download it, run locally, or fine-tune for your own use case. Includes model card, tokenizer, and training details.</p>
       <div style="display:flex;gap:1rem;align-items:center;">
-        <a href="https://huggingface.co/karwalski/toke" style="background:#1a1a1a;border:1px solid #333;color:#aaa;padding:0.5rem 1rem;border-radius:4px;text-decoration:none;font-size:0.85rem;">View on HuggingFace &rarr;</a>
-        <span style="color:#555;font-size:0.8rem;">Qwen 2.5 Coder 7B + QLoRA &middot; Apache 2.0 &middot; 100% compilation Pass@1</span>
+        <a href="https://huggingface.co/karwalski/toke" style="background:#2a2317;border:1px solid #6b6356;color:#9a9082;padding:0.5rem 1rem;border-radius:4px;text-decoration:none;font-size:0.85rem;">View on HuggingFace &rarr;</a>
+        <span style="color:#6b6356;font-size:0.8rem;">Qwen 2.5 Coder 7B + QLoRA &middot; Apache 2.0 &middot; 100% compilation Pass@1</span>
       </div>
     </div>
 
     <div style="text-align:center;">
-      <a href="https://console.tokelang.dev" style="color:#c792ea;font-size:0.85rem;">console.tokelang.dev</a>
-      <span style="color:#333;margin:0 0.5rem;">&middot;</span>
-      <a href="https://huggingface.co/karwalski/toke" style="color:#888;font-size:0.85rem;">HuggingFace</a>
-      <span style="color:#333;margin:0 0.5rem;">&middot;</span>
-      <a href="https://github.com/karwalski/toke-mcp" style="color:#888;font-size:0.85rem;">MCP Server</a>
-      <span style="color:#333;margin:0 0.5rem;">&middot;</span>
-      <a href="https://ollama.com/karwalski/toke" style="color:#888;font-size:0.85rem;">Ollama</a>
+      <a href="https://console.tokelang.dev" style="color:#f0c04a;font-size:0.85rem;">console.tokelang.dev</a>
+      <span style="color:#6b6356;margin:0 0.5rem;">&middot;</span>
+      <a href="https://huggingface.co/karwalski/toke" style="color:#9a9082;font-size:0.85rem;">HuggingFace</a>
+      <span style="color:#6b6356;margin:0 0.5rem;">&middot;</span>
+      <a href="https://github.com/karwalski/toke-mcp" style="color:#9a9082;font-size:0.85rem;">MCP Server</a>
+      <span style="color:#6b6356;margin:0 0.5rem;">&middot;</span>
+      <a href="https://ollama.com/karwalski/toke" style="color:#9a9082;font-size:0.85rem;">Ollama</a>
     </div>
   </div>
 </div>
@@ -859,50 +865,50 @@
 <p class="section-desc">toke tooling is published on npm, PyPI, Ollama, HuggingFace, VS Code, and more. Pick the one that fits your workflow.</p>
 
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;max-width:1100px;margin:1.5rem auto 3rem;">
-  <div style="background:#111;border:1px solid #222;border-radius:8px;padding:1.2rem;">
-    <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#c792ea;">Ollama</h3>
-    <p style="font-size:0.8rem;color:#888;margin:0 0 0.8rem;">Run locally. No cloud, no API key. 4.4GB download.</p>
-    <code style="display:block;background:#0a0a0a;padding:0.5rem 0.75rem;border-radius:4px;font-size:0.8rem;color:#82e0aa;">ollama run karwalski/toke</code>
+  <div style="background:#1f1a11;border:1px solid #2a2317;border-radius:8px;padding:1.2rem;">
+    <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#f0c04a;">Ollama</h3>
+    <p style="font-size:0.8rem;color:#9a9082;margin:0 0 0.8rem;">Run locally. No cloud, no API key. 4.4GB download.</p>
+    <code style="display:block;background:#14110b;padding:0.5rem 0.75rem;border-radius:4px;font-size:0.8rem;color:#6fc2b2;">ollama run karwalski/toke</code>
   </div>
-  <div style="background:#111;border:1px solid #222;border-radius:8px;padding:1.2rem;">
-    <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#c792ea;">VS Code</h3>
-    <p style="font-size:0.8rem;color:#888;margin:0 0 0.8rem;">Syntax highlighting, snippets, companion files, LSP diagnostics.</p>
-    <code style="display:block;background:#0a0a0a;padding:0.5rem 0.75rem;border-radius:4px;font-size:0.8rem;color:#82e0aa;">ext install tokelang.toke-language</code>
+  <div style="background:#1f1a11;border:1px solid #2a2317;border-radius:8px;padding:1.2rem;">
+    <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#f0c04a;">VS Code</h3>
+    <p style="font-size:0.8rem;color:#9a9082;margin:0 0 0.8rem;">Syntax highlighting, snippets, companion files, LSP diagnostics.</p>
+    <code style="display:block;background:#14110b;padding:0.5rem 0.75rem;border-radius:4px;font-size:0.8rem;color:#6fc2b2;">ext install tokelang.toke-language</code>
   </div>
-  <div style="background:#111;border:1px solid #222;border-radius:8px;padding:1.2rem;">
-    <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#c792ea;">MCP Server</h3>
-    <p style="font-size:0.8rem;color:#888;margin:0 0 0.8rem;">15 tools for Claude Code, Codex, Cursor, and any MCP client.</p>
-    <code style="display:block;background:#0a0a0a;padding:0.5rem 0.75rem;border-radius:4px;font-size:0.8rem;color:#82e0aa;">npx @tokelang/mcp-server</code>
+  <div style="background:#1f1a11;border:1px solid #2a2317;border-radius:8px;padding:1.2rem;">
+    <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#f0c04a;">MCP Server</h3>
+    <p style="font-size:0.8rem;color:#9a9082;margin:0 0 0.8rem;">15 tools for Claude Code, Codex, Cursor, and any MCP client.</p>
+    <code style="display:block;background:#14110b;padding:0.5rem 0.75rem;border-radius:4px;font-size:0.8rem;color:#6fc2b2;">npx @tokelang/mcp-server</code>
   </div>
-  <div style="background:#111;border:1px solid #222;border-radius:8px;padding:1.2rem;">
-    <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#c792ea;">REST API</h3>
-    <p style="font-size:0.8rem;color:#888;margin:0 0 0.8rem;">Generate toke code from any language. Free tier available.</p>
-    <code style="display:block;background:#0a0a0a;padding:0.5rem 0.75rem;border-radius:4px;font-size:0.8rem;color:#82e0aa;">curl api.tokelang.dev/v1/generate</code>
+  <div style="background:#1f1a11;border:1px solid #2a2317;border-radius:8px;padding:1.2rem;">
+    <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#f0c04a;">REST API</h3>
+    <p style="font-size:0.8rem;color:#9a9082;margin:0 0 0.8rem;">Generate toke code from any language. Free tier available.</p>
+    <code style="display:block;background:#14110b;padding:0.5rem 0.75rem;border-radius:4px;font-size:0.8rem;color:#6fc2b2;">curl api.tokelang.dev/v1/generate</code>
   </div>
-  <div style="background:#111;border:1px solid #222;border-radius:8px;padding:1.2rem;">
-    <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#c792ea;">Python Tokenizer</h3>
-    <p style="font-size:0.8rem;color:#888;margin:0 0 0.8rem;">Count tokens, measure compression. Pure Python, no deps.</p>
-    <code style="display:block;background:#0a0a0a;padding:0.5rem 0.75rem;border-radius:4px;font-size:0.8rem;color:#82e0aa;">pip install toke-tokenizer</code>
+  <div style="background:#1f1a11;border:1px solid #2a2317;border-radius:8px;padding:1.2rem;">
+    <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#f0c04a;">Python Tokenizer</h3>
+    <p style="font-size:0.8rem;color:#9a9082;margin:0 0 0.8rem;">Count tokens, measure compression. Pure Python, no deps.</p>
+    <code style="display:block;background:#14110b;padding:0.5rem 0.75rem;border-radius:4px;font-size:0.8rem;color:#6fc2b2;">pip install toke-tokenizer</code>
   </div>
-  <div style="background:#111;border:1px solid #222;border-radius:8px;padding:1.2rem;">
-    <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#c792ea;">HuggingFace</h3>
-    <p style="font-size:0.8rem;color:#888;margin:0 0 0.8rem;">AWQ 4-bit model + BPE tokenizer. Fine-tune or self-host.</p>
-    <a href="https://huggingface.co/karwalski/toke" style="color:#82e0aa;font-size:0.8rem;text-decoration:none;">huggingface.co/karwalski/toke &rarr;</a>
+  <div style="background:#1f1a11;border:1px solid #2a2317;border-radius:8px;padding:1.2rem;">
+    <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#f0c04a;">HuggingFace</h3>
+    <p style="font-size:0.8rem;color:#9a9082;margin:0 0 0.8rem;">AWQ 4-bit model + BPE tokenizer. Fine-tune or self-host.</p>
+    <a href="https://huggingface.co/karwalski/toke" style="color:#6fc2b2;font-size:0.8rem;text-decoration:none;">huggingface.co/karwalski/toke &rarr;</a>
   </div>
-  <div style="background:#111;border:1px solid #222;border-radius:8px;padding:1.2rem;">
-    <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#c792ea;">Docker</h3>
-    <p style="font-size:0.8rem;color:#888;margin:0 0 0.8rem;">Self-host the full inference stack. GPU or CPU mode.</p>
-    <code style="display:block;background:#0a0a0a;padding:0.5rem 0.75rem;border-radius:4px;font-size:0.8rem;color:#82e0aa;">docker compose up</code>
+  <div style="background:#1f1a11;border:1px solid #2a2317;border-radius:8px;padding:1.2rem;">
+    <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#f0c04a;">Docker</h3>
+    <p style="font-size:0.8rem;color:#9a9082;margin:0 0 0.8rem;">Self-host the full inference stack. GPU or CPU mode.</p>
+    <code style="display:block;background:#14110b;padding:0.5rem 0.75rem;border-radius:4px;font-size:0.8rem;color:#6fc2b2;">docker compose up</code>
   </div>
-  <div style="background:#111;border:1px solid #222;border-radius:8px;padding:1.2rem;">
-    <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#c792ea;">LSP (any editor)</h3>
-    <p style="font-size:0.8rem;color:#888;margin:0 0 0.8rem;">Neovim, JetBrains, Helix, or any LSP-compatible editor.</p>
-    <code style="display:block;background:#0a0a0a;padding:0.5rem 0.75rem;border-radius:4px;font-size:0.8rem;color:#82e0aa;">npm i -g @tokelang/lsp</code>
+  <div style="background:#1f1a11;border:1px solid #2a2317;border-radius:8px;padding:1.2rem;">
+    <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#f0c04a;">LSP (any editor)</h3>
+    <p style="font-size:0.8rem;color:#9a9082;margin:0 0 0.8rem;">Neovim, JetBrains, Helix, or any LSP-compatible editor.</p>
+    <code style="display:block;background:#14110b;padding:0.5rem 0.75rem;border-radius:4px;font-size:0.8rem;color:#6fc2b2;">npm i -g @tokelang/lsp</code>
   </div>
-  <div style="background:#111;border:1px solid #222;border-radius:8px;padding:1.2rem;">
-    <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#c792ea;">Console</h3>
-    <p style="font-size:0.8rem;color:#888;margin:0 0 0.8rem;">API keys, usage stats, Try It playground. Free account.</p>
-    <a href="https://console.tokelang.dev/signup" style="color:#82e0aa;font-size:0.8rem;text-decoration:none;">console.tokelang.dev &rarr;</a>
+  <div style="background:#1f1a11;border:1px solid #2a2317;border-radius:8px;padding:1.2rem;">
+    <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#f0c04a;">Console</h3>
+    <p style="font-size:0.8rem;color:#9a9082;margin:0 0 0.8rem;">API keys, usage stats, Try It playground. Free account.</p>
+    <a href="https://console.tokelang.dev/signup" style="color:#6fc2b2;font-size:0.8rem;text-decoration:none;">console.tokelang.dev &rarr;</a>
   </div>
 </div>
 

@@ -10,33 +10,33 @@
   font-size: 2.2rem;
   font-weight: 700;
   letter-spacing: -0.03em;
-  color: #e8e8e8;
+  color: #f5efe2;
   margin-bottom: 0.5rem;
 }
-.tokens-page h1 span { color: #7c83fd; }
+.tokens-page h1 span { color: #f0c04a; }
 .tokens-page .subtitle {
   text-align: center;
-  color: #777;
+  color: #9a9082;
   font-size: 1rem;
   margin-bottom: 2rem;
 }
 .tokens-page .summary {
   max-width: 900px;
   margin: 0 auto 3rem;
-  background: #111;
-  border: 1px solid #1e1e1e;
+  background: #1f1a11;
+  border: 1px solid #2a2317;
   border-radius: 10px;
   padding: 1.5rem 2rem;
 }
 .tokens-page .summary h2 {
   font-size: 1.3rem;
-  color: #e8e8e8;
+  color: #f5efe2;
   margin-bottom: 0.5rem;
 }
 .tokens-page .avg-badge {
   display: inline-block;
-  background: #7c83fd;
-  color: #fff;
+  background: #f0c04a;
+  color: #f5efe2;
   padding: 0.3rem 0.9rem;
   border-radius: 20px;
   font-weight: 700;
@@ -73,18 +73,18 @@
 }
 .tokens-page .bar span {
   font-size: 0.65rem;
-  color: #fff;
+  color: #f5efe2;
   padding-left: 6px;
   white-space: nowrap;
 }
-.tokens-page .bar-toke { background: #7c83fd; }
-.tokens-page .bar-other { background: #444; }
+.tokens-page .bar-toke { background: #f0c04a; }
+.tokens-page .bar-other { background: #6b6356; }
 .tokens-page .legend {
   display: flex;
   gap: 1.5rem;
   margin-top: 0.75rem;
   font-size: 0.8rem;
-  color: #888;
+  color: #9a9082;
 }
 .tokens-page .legend span {
   display: inline-block;
@@ -97,14 +97,14 @@
 .tokens-page .comparison {
   max-width: 1100px;
   margin: 0 auto 2rem;
-  background: #111;
-  border: 1px solid #1e1e1e;
+  background: #1f1a11;
+  border: 1px solid #2a2317;
   border-radius: 10px;
   padding: 1.25rem 1.5rem;
 }
 .tokens-page .comparison h3 {
   font-size: 1.1rem;
-  color: #e8e8e8;
+  color: #f5efe2;
   margin-bottom: 0.75rem;
   font-weight: 600;
 }
@@ -119,17 +119,17 @@
   .tokens-page .side-by-side { grid-template-columns: 1fr; }
 }
 .tokens-page .code-panel {
-  background: #0d0d0d;
-  border: 1px solid #1a1a1a;
+  background: #1f1a11;
+  border: 1px solid #2a2317;
   border-radius: 8px;
   overflow: hidden;
 }
 .tokens-page .lang-label {
-  background: #161616;
+  background: #2a2317;
   padding: 0.4rem 0.75rem;
   font-size: 0.8rem;
-  color: #888;
-  border-bottom: 1px solid #1a1a1a;
+  color: #9a9082;
+  border-bottom: 1px solid #2a2317;
   font-family: "JetBrains Mono", "SF Mono", "Fira Code", monospace;
 }
 .tokens-page pre.tokens {
@@ -147,12 +147,12 @@
   cursor: default;
 }
 .tokens-page pre.tokens span:hover {
-  outline: 1px solid #7c83fd;
+  outline: 1px solid #f0c04a;
   z-index: 1;
   position: relative;
 }
 .tokens-page .t0 { background: #1a3a2a; }
-.tokens-page .t1 { background: #2a1a3a; }
+.tokens-page .t1 { background: #2a2317; }
 .tokens-page .t2 { background: #1a2a3a; }
 .tokens-page .t3 { background: #3a2a1a; }
 .tokens-page .t4 { background: #2a3a1a; }
@@ -163,17 +163,17 @@
   text-align: center;
   margin-top: 0.75rem;
   font-size: 0.9rem;
-  color: #7c83fd;
+  color: #f0c04a;
   font-weight: 600;
 }
 .tokens-page .stats-more {
-  color: #888;
+  color: #9a9082;
   font-weight: 400;
   font-size: 0.8rem;
 }
 .tokens-page .tokens-footer {
   text-align: center;
-  color: #444;
+  color: #6b6356;
   font-size: 0.75rem;
   margin-top: 3rem;
   padding-bottom: 2rem;
@@ -189,8 +189,8 @@
   <h2>Summary</h2>
   <div class="avg-badge">32% average reduction</div>
   <div class="legend">
-    <div><span style="background:#7c83fd"></span> toke BPE</div>
-    <div><span style="background:#444"></span> cl100k_base</div>
+    <div><span style="background:#f0c04a"></span> toke BPE</div>
+    <div><span style="background:#6b6356"></span> cl100k_base</div>
   </div>
   <div class="bar-chart">
         <div class="bar-row">

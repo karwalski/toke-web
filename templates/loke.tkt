@@ -269,7 +269,7 @@ projects=HDR[id|name]
 <div class="code-compare">
   <div class="code-pane">
     <div class="pane-label">Built</div>
-<pre style="color:#4ade80;">Foundation
+<pre style="color:#f0c04a;">Foundation
   Core engine and pipeline
   Configuration system
 
@@ -342,7 +342,7 @@ Application
   </div>
   <div class="code-pane">
     <div class="pane-label">Coming Next</div>
-<pre style="color:#60a5fa;">Policy and Compliance
+<pre style="color:#6fc2b2;">Policy and Compliance
   Policy loader (file-based rules)
   Regulatory defaults (AU, EU, US)
   Compliance feedback loop
@@ -377,7 +377,7 @@ User Experience
   </div>
 </div>
 
-<div class="ecosystem-note" style="border-left-color:#7c83fd;">
+<div class="ecosystem-note" style="border-left-color:#f0c04a;">
   <p><strong>toke on ooke &mdash; build light, ship fast.</strong> loke ships as a single native binary compiled from toke. No interpreter, no VM, no garbage collector, no runtime dependencies. Install one file and everything works.</p>
 </div>
 

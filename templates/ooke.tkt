@@ -156,7 +156,7 @@ tags  = { type = <span class="str">"list"</span> }
 draft = { type = <span class="str">"bool"</span>,   default = <span class="kw">false</span> }
 </div>
 
-<div class="ecosystem-note" style="border-left-color:#7c83fd;">
+<div class="ecosystem-note" style="border-left-color:#f0c04a;">
   <p><strong>You are looking at it.</strong> This website &mdash; tokelang.dev &mdash; is built and served by toke on ooke. The page you are reading was rendered by the same framework described above: toke code compiled to a native binary, <code>.tkt</code> templates, Markdown content, file-system routing. No Node.js, no Python, no nginx.</p>
 </div>
 

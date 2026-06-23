@@ -5,78 +5,78 @@
 <style>
 /* ── Tokenizer page ── */
 .tokenizer-page { max-width: 1100px; margin: 0 auto; padding: 2rem; }
-.tokenizer-page a { color: #c792ea; text-decoration: none; }
+.tokenizer-page a { color: #f0c04a; text-decoration: none; }
 .tokenizer-page a:hover { text-decoration: underline; }
 .tokenizer-page h1 { font-size: 2rem; margin-bottom: 0.3rem; }
-.tokenizer-page h2 { font-size: 1.3rem; margin: 2.5rem 0 1rem; color: #c792ea; }
-.tokenizer-page .subtitle { color: #888; margin-bottom: 1.5rem; font-size: 0.95rem; }
+.tokenizer-page h2 { font-size: 1.3rem; margin: 2.5rem 0 1rem; color: #f0c04a; }
+.tokenizer-page .subtitle { color: #9a9082; margin-bottom: 1.5rem; font-size: 0.95rem; }
 
 /* ── Stats row ── */
 .tokenizer-page .stats { display: flex; gap: 1.5rem; margin: 1.5rem 0; flex-wrap: wrap; }
-.tokenizer-page .stat { background: #111; border: 1px solid #222; border-radius: 8px; padding: 1rem 1.5rem; min-width: 120px; text-align: center; }
+.tokenizer-page .stat { background: #1f1a11; border: 1px solid #2a2317; border-radius: 8px; padding: 1rem 1.5rem; min-width: 120px; text-align: center; }
 .tokenizer-page .stat .num { font-size: 2rem; font-weight: 700; }
-.tokenizer-page .stat .lbl { font-size: 0.7rem; color: #888; margin-top: 0.25rem; text-transform: uppercase; letter-spacing: 0.05em; }
-.tokenizer-page .green .num { color: #82e0aa; }
+.tokenizer-page .stat .lbl { font-size: 0.7rem; color: #9a9082; margin-top: 0.25rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.tokenizer-page .green .num { color: #6fc2b2; }
 .tokenizer-page .amber .num { color: #f0c040; }
-.tokenizer-page .purple .num { color: #c792ea; }
+.tokenizer-page .purple .num { color: #f0c04a; }
 .tokenizer-page .red .num { color: #e07070; }
 
 /* ── Input area ── */
 .tokenizer-page .input-section { margin-bottom: 1rem; }
-.tokenizer-page .input-section label { display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 0.4rem; }
-.tokenizer-page textarea { width: 100%; height: 130px; background: #111; border: 1px solid #333; color: #e0e0e0;
+.tokenizer-page .input-section label { display: block; font-size: 0.8rem; color: #9a9082; margin-bottom: 0.4rem; }
+.tokenizer-page textarea { width: 100%; height: 130px; background: #1f1a11; border: 1px solid #6b6356; color: #f5efe2;
   font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace; font-size: 0.85rem;
   padding: 1rem; border-radius: 6px; resize: vertical; line-height: 1.6; }
-.tokenizer-page textarea:focus { outline: none; border-color: #c792ea; }
+.tokenizer-page textarea:focus { outline: none; border-color: #f0c04a; }
 
 /* ── Preset buttons ── */
 .tokenizer-page .presets { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1rem; }
-.tokenizer-page .presets button { background: #1a1a1a; border: 1px solid #333; color: #aaa; padding: 0.35rem 0.7rem;
+.tokenizer-page .presets button { background: #2a2317; border: 1px solid #6b6356; color: #9a9082; padding: 0.35rem 0.7rem;
   border-radius: 4px; cursor: pointer; font-size: 0.75rem; transition: all 0.15s; }
-.tokenizer-page .presets button:hover { border-color: #c792ea; color: #e0e0e0; }
-.tokenizer-page .presets button.active { border-color: #c792ea; color: #c792ea; background: #1a1030; }
-.tokenizer-page .shuffle-btn { background: #2a1a3a !important; border-color: #c792ea !important; color: #c792ea !important; font-weight: 600; }
+.tokenizer-page .presets button:hover { border-color: #f0c04a; color: #f5efe2; }
+.tokenizer-page .presets button.active { border-color: #f0c04a; color: #f0c04a; background: #1a1030; }
+.tokenizer-page .shuffle-btn { background: #2a2317 !important; border-color: #f0c04a !important; color: #f0c04a !important; font-weight: 600; }
 
 /* ── Token display ── */
 .tokenizer-page .compare-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
-.tokenizer-page .panel { background: #111; border: 1px solid #222; border-radius: 8px; padding: 1.2rem; }
-.tokenizer-page .panel h3 { font-size: 0.8rem; color: #888; margin-bottom: 0.8rem; display: flex; justify-content: space-between; }
-.tokenizer-page .panel h3 .count { color: #c792ea; font-weight: 700; }
+.tokenizer-page .panel { background: #1f1a11; border: 1px solid #2a2317; border-radius: 8px; padding: 1.2rem; }
+.tokenizer-page .panel h3 { font-size: 0.8rem; color: #9a9082; margin-bottom: 0.8rem; display: flex; justify-content: space-between; }
+.tokenizer-page .panel h3 .count { color: #f0c04a; font-weight: 700; }
 .tokenizer-page .token-display { font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace; font-size: 0.85rem;
   line-height: 1.8; min-height: 40px; white-space: pre-wrap; word-break: break-all; }
 .tokenizer-page .token-display span { border-radius: 3px; padding: 1px 0; cursor: default; transition: opacity 0.1s; }
 .tokenizer-page .token-display span:hover { opacity: 0.7; }
-.tokenizer-page .t0 { background: #1a3a2a; } .tokenizer-page .t1 { background: #2a1a3a; } .tokenizer-page .t2 { background: #1a2a3a; } .tokenizer-page .t3 { background: #3a2a1a; }
+.tokenizer-page .t0 { background: #1a3a2a; } .tokenizer-page .t1 { background: #2a2317; } .tokenizer-page .t2 { background: #1a2a3a; } .tokenizer-page .t3 { background: #3a2a1a; }
 .tokenizer-page .t4 { background: #2a3a1a; } .tokenizer-page .t5 { background: #3a1a2a; } .tokenizer-page .t6 { background: #1a3a3a; } .tokenizer-page .t7 { background: #3a3a1a; }
 
 /* ── Normalised view ── */
 .tokenizer-page .norm-section { margin-top: 1.5rem; }
-.tokenizer-page .norm-label { font-size: 0.8rem; color: #666; margin-bottom: 0.4rem; }
-.tokenizer-page .norm-code { background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 6px; padding: 0.8rem 1rem;
-  font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #82e0aa;
+.tokenizer-page .norm-label { font-size: 0.8rem; color: #9a9082; margin-bottom: 0.4rem; }
+.tokenizer-page .norm-code { background: #1f1a11; border: 1px solid #2a2317; border-radius: 6px; padding: 0.8rem 1rem;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #6fc2b2;
   white-space: pre-wrap; word-break: break-all; max-height: 80px; overflow-y: auto; }
 
 /* ── Comparison table ── */
 .tokenizer-page .compare-table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.85rem; }
-.tokenizer-page .compare-table th { text-align: left; padding: 0.6rem; border-bottom: 1px solid #333; color: #888; font-weight: 500; }
-.tokenizer-page .compare-table td { padding: 0.6rem; border-bottom: 1px solid #1a1a1a; }
-.tokenizer-page .compare-table .lang { color: #aaa; }
-.tokenizer-page .compare-table .tokens { color: #c792ea; font-weight: 600; text-align: right; font-family: monospace; }
+.tokenizer-page .compare-table th { text-align: left; padding: 0.6rem; border-bottom: 1px solid #6b6356; color: #9a9082; font-weight: 500; }
+.tokenizer-page .compare-table td { padding: 0.6rem; border-bottom: 1px solid #2a2317; }
+.tokenizer-page .compare-table .lang { color: #9a9082; }
+.tokenizer-page .compare-table .tokens { color: #f0c04a; font-weight: 600; text-align: right; font-family: monospace; }
 .tokenizer-page .compare-table .pct { text-align: right; font-family: monospace; }
-.tokenizer-page .compare-table .pct.better { color: #82e0aa; }
+.tokenizer-page .compare-table .pct.better { color: #6fc2b2; }
 .tokenizer-page .compare-table .pct.worse { color: #e07070; }
 .tokenizer-page .bar-cell { width: 200px; }
-.tokenizer-page .bar-bg { background: #1a1a1a; height: 18px; border-radius: 3px; position: relative; }
+.tokenizer-page .bar-bg { background: #2a2317; height: 18px; border-radius: 3px; position: relative; }
 .tokenizer-page .bar-fill { height: 100%; border-radius: 3px; position: absolute; left: 0; top: 0; }
-.tokenizer-page .bar-toke { background: #c792ea; }
-.tokenizer-page .bar-other { background: #444; }
+.tokenizer-page .bar-toke { background: #f0c04a; }
+.tokenizer-page .bar-other { background: #6b6356; }
 
 /* ── Links ── */
 .tokenizer-page .links { margin-top: 2rem; display: flex; gap: 1.5rem; flex-wrap: wrap; }
-.tokenizer-page .links a { background: #1a1a1a; border: 1px solid #333; padding: 0.8rem 1.2rem; border-radius: 6px;
+.tokenizer-page .links a { background: #2a2317; border: 1px solid #6b6356; padding: 0.8rem 1.2rem; border-radius: 6px;
   font-size: 0.85rem; transition: all 0.15s; }
-.tokenizer-page .links a:hover { border-color: #c792ea; text-decoration: none; }
-.tokenizer-page .tokenizer-footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #1a1a1a; color: #555; font-size: 0.75rem; text-align: center; line-height: 1.8; }
+.tokenizer-page .links a:hover { border-color: #f0c04a; text-decoration: none; }
+.tokenizer-page .tokenizer-footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #2a2317; color: #6b6356; font-size: 0.75rem; text-align: center; line-height: 1.8; }
 @media (max-width: 700px) { .tokenizer-page .compare-row { grid-template-columns: 1fr; } .tokenizer-page .stats { gap: 0.8rem; } .tokenizer-page .bar-cell { display: none; } }
 </style>
 
@@ -131,18 +131,18 @@ f=main():i64{
 <div class="compare-row">
   <div class="panel">
     <h3>toke BPE <span class="count" id="toke-badge">—</span></h3>
-    <div class="token-display" id="toke-tokens"><em style="color:#555">Loading tokenizer...</em></div>
+    <div class="token-display" id="toke-tokens"><em style="color:#6b6356">Loading tokenizer...</em></div>
   </div>
   <div class="panel">
     <h3>cl100k_base (estimated) <span class="count" id="cl100k-badge">—</span></h3>
-    <div class="token-display" id="cl100k-tokens"><em style="color:#555">Loading...</em></div>
+    <div class="token-display" id="cl100k-tokens"><em style="color:#6b6356">Loading...</em></div>
   </div>
 </div>
 
 <!-- Cross-language comparison (shown when a preset with known comparisons is active) -->
 <div id="comparison-section" style="display:none;">
   <h2>Cross-Language Comparison</h2>
-  <p style="color:#888;font-size:0.85rem;margin-bottom:1rem;">Same program in different languages, all tokenized with cl100k_base (the tokenizer used by GPT-4 and Claude). toke additionally shown with its purpose-built BPE.</p>
+  <p style="color:#9a9082;font-size:0.85rem;margin-bottom:1rem;">Same program in different languages, all tokenized with cl100k_base (the tokenizer used by GPT-4 and Claude). toke additionally shown with its purpose-built BPE.</p>
   <table class="compare-table" id="compare-table">
     <thead><tr><th>Language</th><th>Tokens</th><th class="bar-cell">Relative</th><th>vs toke BPE</th></tr></thead>
     <tbody id="compare-body"></tbody>
