@@ -7,63 +7,63 @@
 
 <h2>Core</h2>
 <div class="ref-grid">
-  <a href="/docs/reference/str" class="ref-card"><strong>str</strong><span>String operations</span></a>
-  <a href="/docs/reference/http" class="ref-card"><strong>http</strong><span>HTTP client and server</span></a>
-  <a href="/docs/reference/json" class="ref-card"><strong>json</strong><span>JSON parse and generate</span></a>
-  <a href="/docs/reference/log" class="ref-card"><strong>log</strong><span>Structured logging</span></a>
-  <a href="/docs/reference/env" class="ref-card"><strong>env</strong><span>Environment variables</span></a>
-  <a href="/docs/reference/file" class="ref-card"><strong>file</strong><span>File system I/O</span></a>
+  <a href="/docs/stdlib/str" class="ref-card"><strong>str</strong><span>String operations</span></a>
+  <a href="/docs/stdlib/http" class="ref-card"><strong>http</strong><span>HTTP client and server</span></a>
+  <a href="/docs/stdlib/json" class="ref-card"><strong>json</strong><span>JSON parse and generate</span></a>
+  <a href="/docs/stdlib/log" class="ref-card"><strong>log</strong><span>Structured logging</span></a>
+  <a href="/docs/stdlib/env" class="ref-card"><strong>env</strong><span>Environment variables</span></a>
+  <a href="/docs/stdlib/file" class="ref-card"><strong>file</strong><span>File system I/O</span></a>
 </div>
 
 <h2>Data and I/O</h2>
 <div class="ref-grid">
-  <a href="/docs/reference/csv" class="ref-card"><strong>csv</strong><span>CSV read and write</span></a>
-  <a href="/docs/reference/time" class="ref-card"><strong>time</strong><span>Time, dates, durations</span></a>
-  <a href="/docs/reference/db" class="ref-card"><strong>db</strong><span>SQLite database</span></a>
-  <a href="/docs/reference/process" class="ref-card"><strong>process</strong><span>Spawn child processes</span></a>
-  <a href="/docs/reference/encoding" class="ref-card"><strong>encoding</strong><span>Base64, hex, URL encoding</span></a>
+  <a href="/docs/stdlib/csv" class="ref-card"><strong>csv</strong><span>CSV read and write</span></a>
+  <a href="/docs/stdlib/time" class="ref-card"><strong>time</strong><span>Time, dates, durations</span></a>
+  <a href="/docs/stdlib/db" class="ref-card"><strong>db</strong><span>SQLite database</span></a>
+  <a href="/docs/stdlib/process" class="ref-card"><strong>process</strong><span>Spawn child processes</span></a>
+  <a href="/docs/stdlib/encoding" class="ref-card"><strong>encoding</strong><span>Base64, hex, URL encoding</span></a>
 </div>
 
 <h2>Web</h2>
 <div class="ref-grid">
-  <a href="/docs/reference/router" class="ref-card"><strong>router</strong><span>HTTP routing middleware</span></a>
-  <a href="/docs/reference/ws" class="ref-card"><strong>ws</strong><span>WebSocket server and client</span></a>
-  <a href="/docs/reference/sse" class="ref-card"><strong>sse</strong><span>Server-sent events</span></a>
-  <a href="/docs/reference/html" class="ref-card"><strong>html</strong><span>HTML builder</span></a>
-  <a href="/docs/reference/auth" class="ref-card"><strong>auth</strong><span>JWT and session auth</span></a>
-  <a href="/docs/reference/template" class="ref-card"><strong>template</strong><span>Template rendering</span></a>
+  <a href="/docs/stdlib/router" class="ref-card"><strong>router</strong><span>HTTP routing middleware</span></a>
+  <a href="/docs/stdlib/ws" class="ref-card"><strong>ws</strong><span>WebSocket server and client</span></a>
+  <a href="/docs/stdlib/sse" class="ref-card"><strong>sse</strong><span>Server-sent events</span></a>
+  <a href="/docs/stdlib/html" class="ref-card"><strong>html</strong><span>HTML builder</span></a>
+  <a href="/docs/stdlib/auth" class="ref-card"><strong>auth</strong><span>JWT and session auth</span></a>
+  <a href="/docs/stdlib/template" class="ref-card"><strong>template</strong><span>Template rendering</span></a>
 </div>
 
 <h2>Security</h2>
 <div class="ref-grid">
-  <a href="/docs/reference/crypto" class="ref-card"><strong>crypto</strong><span>Hashing and HMAC</span></a>
-  <a href="/docs/reference/encrypt" class="ref-card"><strong>encrypt</strong><span>Symmetric and asymmetric encryption</span></a>
+  <a href="/docs/stdlib/crypto" class="ref-card"><strong>crypto</strong><span>Hashing and HMAC</span></a>
+  <a href="/docs/stdlib/encrypt" class="ref-card"><strong>encrypt</strong><span>Symmetric and asymmetric encryption</span></a>
 </div>
 
 <h2>AI and Data Science</h2>
 <div class="ref-grid">
-  <a href="/docs/reference/llm" class="ref-card"><strong>llm</strong><span>LLM client (chat, stream, json_mode)</span></a>
-  <a href="/docs/reference/llm_tool" class="ref-card"><strong>llm_tool</strong><span>LLM tool-call loop</span></a>
-  <a href="/docs/reference/math" class="ref-card"><strong>math</strong><span>Statistics and linear algebra</span></a>
-  <a href="/docs/reference/dataframe" class="ref-card"><strong>dataframe</strong><span>Tabular data processing</span></a>
-  <a href="/docs/reference/analytics" class="ref-card"><strong>analytics</strong><span>Time-series and anomaly detection</span></a>
-  <a href="/docs/reference/ml" class="ref-card"><strong>ml</strong><span>Machine learning (k-means, etc.)</span></a>
+  <a href="/docs/stdlib/llm" class="ref-card"><strong>llm</strong><span>LLM client (chat, stream, json_mode)</span></a>
+  <a href="/docs/stdlib/llm_tool" class="ref-card"><strong>llm_tool</strong><span>LLM tool-call loop</span></a>
+  <a href="/docs/stdlib/math" class="ref-card"><strong>math</strong><span>Statistics and linear algebra</span></a>
+  <a href="/docs/stdlib/dataframe" class="ref-card"><strong>dataframe</strong><span>Tabular data processing</span></a>
+  <a href="/docs/stdlib/analytics" class="ref-card"><strong>analytics</strong><span>Time-series and anomaly detection</span></a>
+  <a href="/docs/stdlib/ml" class="ref-card"><strong>ml</strong><span>Machine learning (k-means, etc.)</span></a>
 </div>
 
 <h2>Media and Visualisation</h2>
 <div class="ref-grid">
-  <a href="/docs/reference/image" class="ref-card"><strong>image</strong><span>Image load, resize, convert</span></a>
-  <a href="/docs/reference/canvas" class="ref-card"><strong>canvas</strong><span>2D drawing canvas</span></a>
-  <a href="/docs/reference/svg" class="ref-card"><strong>svg</strong><span>SVG generation</span></a>
-  <a href="/docs/reference/chart" class="ref-card"><strong>chart</strong><span>Line, bar, scatter charts</span></a>
-  <a href="/docs/reference/dashboard" class="ref-card"><strong>dashboard</strong><span>Live widget dashboards</span></a>
+  <a href="/docs/stdlib/image" class="ref-card"><strong>image</strong><span>Image load, resize, convert</span></a>
+  <a href="/docs/stdlib/canvas" class="ref-card"><strong>canvas</strong><span>2D drawing canvas</span></a>
+  <a href="/docs/stdlib/svg" class="ref-card"><strong>svg</strong><span>SVG generation</span></a>
+  <a href="/docs/stdlib/chart" class="ref-card"><strong>chart</strong><span>Line, bar, scatter charts</span></a>
+  <a href="/docs/stdlib/dashboard" class="ref-card"><strong>dashboard</strong><span>Live widget dashboards</span></a>
 </div>
 
 <h2>Serialisation and Internationalisation</h2>
 <div class="ref-grid">
-  <a href="/docs/reference/toon" class="ref-card"><strong>toon</strong><span>TOON binary serialisation</span></a>
-  <a href="/docs/reference/yaml" class="ref-card"><strong>yaml</strong><span>YAML parse and emit</span></a>
-  <a href="/docs/reference/i18n" class="ref-card"><strong>i18n</strong><span>Internationalisation and localisation</span></a>
+  <a href="/docs/stdlib/toon" class="ref-card"><strong>toon</strong><span>TOON binary serialisation</span></a>
+  <a href="/docs/stdlib/yaml" class="ref-card"><strong>yaml</strong><span>YAML parse and emit</span></a>
+  <a href="/docs/stdlib/i18n" class="ref-card"><strong>i18n</strong><span>Internationalisation and localisation</span></a>
 </div>
 
 {! end !}

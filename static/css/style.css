@@ -34,6 +34,38 @@
   --maxw:      900px;
 }
 
+/* ---- Auto theme: follow the browser's prefers-color-scheme ---------- */
+/* body.theme-auto is dark by default (inherits :root); flips to the cream
+   palette when the OS/browser is in light mode. */
+@media (prefers-color-scheme: light) {
+  body.theme-auto {
+    --bg:        #FBF7EF;
+    --surface:   #FFFFFF;
+    --elevated:  #ECE5D7;
+    --hairline:  #ECE5D7;
+    --text:      #1A1712;
+    --muted:     #6B6356;
+    --faint:     #a39a88;
+    --gold:      #E0A82E;
+    --gold-deep: #C68A1A;
+    --on-gold:   #14110B;
+    --syn-kw:    #C68A1A;
+    --syn-type:  #2F8F7F;
+    --syn-punct: #a39a88;
+    --syn-base:  #3a352b;
+  }
+}
+
+/* ---- Theme toggle button -------------------------------------------- */
+.theme-toggle {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; margin-left: 1.5rem; padding: 0;
+  background: transparent; border: 1px solid var(--hairline); border-radius: 999px;
+  color: var(--muted); font-size: 0.95rem; line-height: 1; cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.theme-toggle:hover { color: var(--gold); border-color: var(--gold); }
+
 /* ---- Design tokens: light (cream) — opt-in via body.theme-light ----- */
 body.theme-light {
   --bg:        #FBF7EF;

@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body class="theme-light">
+  <script>(function(){try{var t=localStorage.getItem('toke-theme'),c=document.body.classList;if(t==='light'){c.add('theme-light')}else if(t==='dark'){c.remove('theme-light')}else if(t==='auto'){c.remove('theme-light');c.add('theme-auto')}}catch(e){}})();</script>
   <nav class="site-nav">
     <a href="/" class="logo">toke</a>
     <div class="nav-links">
@@ -19,6 +20,7 @@
       <a href="/docs/reference">Reference</a>
       <a href="/ecosystem">Ecosystem</a>
       <a href="https://github.com/karwalski/toke">GitHub</a>
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Theme">◐</button>
     </div>
   </nav>
   <div class="docs-layout">
@@ -150,5 +152,6 @@
     <p>toke language — <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> — <span>toke on ooke</span></p>
     <p style="margin-top:0.4rem;font-size:0.75rem;opacity:0.5">© 2026 Matthew Watt</p>
   </footer>
+  <script src="/static/js/theme.js" defer></script>
 </body>
 </html>
