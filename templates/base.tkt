@@ -19,6 +19,7 @@
       <a href="/docs">Docs</a>
       <a href="/docs/learn">Learn</a>
       <a href="/docs/reference">Reference</a>
+      <a href="/library.html">Library</a>
       <a href="/ecosystem">Ecosystem</a>
       <a href="https://github.com/karwalski/toke">GitHub</a>
       <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Theme">◐</button>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Program Library - toke</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0a0a0a; color: #e0e0e0; line-height: 1.6; padding: 2rem 1.5rem 4rem; }
+a { color: #7c83fd; text-decoration: none; }
+a:hover { text-decoration: underline; }
+.wrap { max-width: 1080px; margin: 0 auto; }
+h1 { text-align: center; font-size: 2.2rem; font-weight: 700; letter-spacing: -0.03em; color: #e8e8e8; margin-bottom: 0.4rem; }
+h1 span { color: #7c83fd; }
+.subtitle { text-align: center; color: #777; font-size: 1rem; margin-bottom: 2rem; }
+.stats { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin-bottom: 2.5rem; }
+.stat { background: #111; border: 1px solid #1e1e1e; border-radius: 10px; padding: 1rem 1.4rem; text-align: center; min-width: 150px; }
+.stat .num { font-size: 1.8rem; font-weight: 700; color: #7c83fd; }
+.stat .lbl { font-size: 0.8rem; color: #888; text-transform: uppercase; letter-spacing: 0.05em; }
+.tabs { display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 1.5rem; }
+.tab { background: #141414; border: 1px solid #222; color: #aaa; padding: 0.5rem 1.1rem; border-radius: 20px; cursor: pointer; font-size: 0.9rem; }
+.tab.active { background: #7c83fd; color: #fff; border-color: #7c83fd; }
+.toolbar { display: flex; gap: 0.75rem; margin-bottom: 1.5rem; align-items: center; }
+#search { flex: 1; background: #111; border: 1px solid #222; color: #e0e0e0; padding: 0.6rem 0.9rem; border-radius: 8px; font-size: 0.95rem; }
+.crumb { color: #888; margin-bottom: 1rem; font-size: 0.9rem; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1rem; }
+.card { background: #111; border: 1px solid #1e1e1e; border-radius: 10px; padding: 1.2rem; cursor: pointer; transition: border-color .15s, transform .15s; }
+.card:hover { border-color: #7c83fd; transform: translateY(-2px); }
+.card h3 { font-size: 1.05rem; color: #e8e8e8; margin-bottom: 0.4rem; }
+.card .meta { font-size: 0.82rem; color: #888; }
+.ratio { display: inline-block; background: #1a2e1a; color: #6cd06c; padding: 0.12rem 0.5rem; border-radius: 12px; font-weight: 600; font-size: 0.8rem; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 0.55rem 0.7rem; border-bottom: 1px solid #181818; font-size: 0.9rem; }
+th { color: #888; font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
+tr.prow { cursor: pointer; }
+tr.prow:hover td { background: #131313; }
+.diff { display: inline-block; width: 1.4rem; text-align: center; }
+.detail h2 { font-size: 1.5rem; color: #e8e8e8; margin-bottom: 0.3rem; }
+.detail .desc { color: #aaa; margin-bottom: 1.2rem; }
+.mods { margin-bottom: 1.2rem; }
+.mod { display: inline-block; background: #161616; border: 1px solid #242424; color: #9aa; padding: 0.12rem 0.55rem; border-radius: 6px; font-size: 0.78rem; margin: 0 0.3rem 0.3rem 0; font-family: ui-monospace, Menlo, monospace; }
+.section-h { font-size: 0.82rem; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin: 1.4rem 0 0.5rem; }
+pre { background: #0d0d0d; border: 1px solid #1e1e1e; border-radius: 8px; padding: 1rem; overflow-x: auto; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.85rem; color: #d4d4d4; white-space: pre; }
+.io { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 0.8rem; }
+.io .col .h { font-size: 0.75rem; color: #777; margin-bottom: 0.3rem; }
+.io pre { font-size: 0.82rem; }
+.cmp { background: #111; border: 1px solid #1e1e1e; border-radius: 10px; padding: 1.2rem; margin: 1rem 0; }
+.bar { height: 22px; border-radius: 5px; display: flex; align-items: center; padding-left: 0.6rem; font-size: 0.8rem; color: #fff; margin-bottom: 0.4rem; white-space: nowrap; }
+.bar.toke { background: #7c83fd; } .bar.py { background: #444; }
+.note { background: #1a1508; border: 1px solid #3a2e10; color: #d8b860; padding: 0.5rem 0.8rem; border-radius: 8px; font-size: 0.85rem; margin-bottom: 1rem; }
+.back { cursor: pointer; color: #7c83fd; margin-bottom: 1rem; display: inline-block; }
+.muted { color: #666; }
+footer { text-align: center; color: #555; font-size: 0.82rem; margin-top: 3rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>toke <span>program library</span></h1>
+  <p class="subtitle">Every verified toke program, by category — with inputs, expected outputs, and token efficiency vs Python.</p>
+  <div class="stats" id="stats"></div>
+  <div class="tabs">
+    <div class="tab active" data-tab="corpus" id="tab-corpus">Corpus</div>
+    <div class="tab" data-tab="examples" id="tab-examples">Language &amp; stdlib examples</div>
+  </div>
+  <div class="toolbar"><input id="search" placeholder="Search programs by id, title or description…"></div>
+  <div id="view"></div>
+</div>
+<footer>toke — token-efficient language for AI code generation · <a href="/tokens.html">token visualisation</a> · <a href="/docs">docs</a></footer>
+<script>
+const V = document.getElementById('view'), SEARCH = document.getElementById('search'), STATS = document.getElementById('stats');
+let INDEX=null, EXAMPLES=null, CURRENT={tab:'corpus', cat:null, prog:null};
+const esc = s => (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const ratioBadge = r => r ? `<span class="ratio">${r}× smaller</span>` : '';
+
+async function getJSON(u){ const r = await fetch(u); if(!r.ok) throw new Error(u); return r.json(); }
+
+async function init(){
+  INDEX = await getJSON('/library/index.json');
+  STATS.innerHTML = `
+    <div class="stat"><div class="num">${INDEX.total}</div><div class="lbl">Programs</div></div>
+    <div class="stat"><div class="num">${INDEX.categories.length}</div><div class="lbl">Categories</div></div>
+    <div class="stat"><div class="num">${INDEX.median_byte_ratio}×</div><div class="lbl">Median smaller</div></div>
+    <div class="stat"><div class="num">${INDEX.avg_byte_ratio}×</div><div class="lbl">Avg smaller vs Python</div></div>`;
+  route();
+}
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active'); CURRENT={tab:t.dataset.tab,cat:null,prog:null}; SEARCH.value=''; render();
+});
+SEARCH.oninput = render;
+
+function render(){
+  const q = SEARCH.value.trim().toLowerCase();
+  if(CURRENT.tab==='examples') return renderExamples(q);
+  if(CURRENT.prog) return; // detail rendered on demand
+  if(CURRENT.cat) return renderCategory(CURRENT.cat, q);
+  if(q) return renderSearch(q);
+  renderCategoryGrid();
+}
+
+function renderCategoryGrid(){
+  V.innerHTML = '<div class="grid">' + INDEX.categories.map(c=>`
+    <div class="card" onclick="openCategory('${c.key}')">
+      <h3>${esc(c.title)}</h3>
+      <div class="meta">${c.count} programs · ${ratioBadge(c.avg_byte_ratio)}</div>
+    </div>`).join('') + '</div>';
+}
+
+let CATCACHE={};
+async function openCategory(key){ CURRENT.cat=key; CURRENT.prog=null; SEARCH.value=''; await renderCategory(key,''); }
+async function renderCategory(key,q){
+  if(!CATCACHE[key]) CATCACHE[key] = await getJSON('/library/'+key+'.json');
+  const data = CATCACHE[key];
+  let progs = data.programs;
+  if(q) progs = progs.filter(p=>(p.id+' '+p.title+' '+p.description).toLowerCase().includes(q));
+  V.innerHTML = `<div class="crumb"><span class="back" onclick="goHome()">← all categories</span> / ${esc(data.title)} (${progs.length})</div>
+    <table><thead><tr><th>ID</th><th>Title</th><th>Diff</th><th>toke</th><th>Python</th><th>Saving</th></tr></thead><tbody>` +
+    progs.map((p,i)=>`<tr class="prow" onclick="openProg('${key}',${data.programs.indexOf(p)})">
+      <td><code>${esc(p.id)}</code></td><td>${esc(p.title)}</td>
+      <td><span class="diff">${'★'.repeat(p.difficulty||0)||'–'}</span></td>
+      <td class="muted">${p.toke_bytes||'–'}B</td><td class="muted">${p.python_bytes||'–'}B</td>
+      <td>${ratioBadge(p.byte_ratio)}</td></tr>`).join('') + '</tbody></table>';
+}
+function goHome(){ CURRENT.cat=null; CURRENT.prog=null; SEARCH.value=''; renderCategoryGrid(); }
+
+async function openProg(key,idx){
+  if(!CATCACHE[key]) CATCACHE[key] = await getJSON('/library/'+key+'.json');
+  const p = CATCACHE[key].programs[idx]; CURRENT.prog=p.id;
+  const tb=p.toke_bytes||0, pb=p.python_bytes||0, mx=Math.max(tb,pb)||1;
+  const io = (p.test_cases||[]).map((tc,i)=>`
+    <div class="section-h">Test case ${i+1}</div>
+    <div class="io">
+      <div class="col"><div class="h">stdin</div><pre>${esc(tc.input)||'<span class="muted">(no input)</span>'}</pre></div>
+      <div class="col"><div class="h">expected stdout</div><pre>${esc(tc.expected_output)}</pre></div>
+    </div>`).join('');
+  V.innerHTML = `<div class="detail">
+    <span class="back" onclick="openCategory('${key}')">← ${esc(CATCACHE[key].title)}</span>
+    <h2>${esc(p.title)} <span class="muted" style="font-size:1rem">${esc(p.id)}</span></h2>
+    <div class="desc">${esc(p.description)}</div>
+    <div class="mods">${(p.stdlib_modules||[]).map(m=>`<span class="mod">${esc(m)}</span>`).join('')}</div>
+    <div class="cmp">
+      <div class="section-h" style="margin-top:0">Token efficiency vs Python</div>
+      <div class="bar toke" style="width:${Math.max(8,100*tb/mx)}%">toke — ${tb} B</div>
+      <div class="bar py" style="width:${Math.max(8,100*pb/mx)}%">Python — ${pb} B</div>
+      <div style="margin-top:0.4rem">${ratioBadge(p.byte_ratio)}</div>
+    </div>
+    <div class="section-h">Source — solution.tk</div>
+    <pre>${esc(p.source)}</pre>
+    ${io}
+  </div>`;
+  window.scrollTo(0,0);
+}
+
+function renderSearch(q){
+  // search across all categories using index titles is limited; fetch lazily is heavy, so search within loaded + index meta
+  const hits = INDEX.categories.map(c=>`<div class="card" onclick="openCategory('${c.key}')"><h3>${esc(c.title)}</h3><div class="meta">${c.count} programs · ${ratioBadge(c.avg_byte_ratio)}</div></div>`).join('');
+  V.innerHTML = `<div class="crumb muted">Open a category to search its programs.</div><div class="grid">${hits}</div>`;
+}
+
+async function renderExamples(q){
+  if(!EXAMPLES) EXAMPLES = await getJSON('/library/examples.json');
+  let html = `<div class="crumb muted">${EXAMPLES.count} language &amp; standard-library example programs extracted from the docs &amp; tutorials.</div>`;
+  for(const t of EXAMPLES.topics){
+    let progs = t.programs;
+    if(q) progs = progs.filter(p=>(p.slug+' '+(p.source||'')).toLowerCase().includes(q));
+    if(!progs.length) continue;
+    html += `<div class="section-h">${esc(t.topic)} (${progs.length})</div><div class="grid">` +
+      progs.map((p,i)=>`<div class="card" onclick="openExample('${esc(t.topic)}',${t.programs.indexOf(p)})">
+        <h3 style="font-size:0.95rem">${esc(p.slug)}</h3>
+        <div class="meta">${p.status==='ran'?'<span class="ratio">runs ✓</span>':'<span class="muted">'+esc(p.status)+'</span>'}</div></div>`).join('') + '</div>';
+  }
+  V.innerHTML = html;
+}
+function openExample(topic,idx){
+  const t = EXAMPLES.topics.find(x=>x.topic===topic); const p = t.programs[idx];
+  V.innerHTML = `<div class="detail">
+    <span class="back" onclick="document.getElementById('tab-examples').click()">← examples</span>
+    <h2>${esc(p.slug)}</h2>
+    <div class="desc muted">from ${esc(p.source_doc)}</div>
+    ${p.note?`<div class="note">${esc(p.note)}</div>`:''}
+    <div class="section-h">Source</div><pre>${esc(p.source)}</pre>
+    ${p.expected_output!=null?`<div class="section-h">Output</div><pre>${esc(p.expected_output)}</pre>`:''}
+  </div>`;
+  window.scrollTo(0,0);
+}
+
+function route(){ render(); }
+init().catch(e=>{ V.innerHTML='<p class="muted">Failed to load library data: '+esc(e.message)+'</p>'; });
+</script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+{
+ "generated": "2026-06-26",
+ "scope": "passing",
+ "total": 1460,
+ "categories": [
+  {
+   "key": "ai-agents",
+   "title": "AI Agents",
+   "count": 106,
+   "avg_byte_ratio": 6.99,
+   "avg_toke_bytes": 478,
+   "avg_python_bytes": 2278
+  },
+  {
+   "key": "calculators-finance",
+   "title": "Calculators & Finance",
+   "count": 122,
+   "avg_byte_ratio": 1.42,
+   "avg_toke_bytes": 615,
+   "avg_python_bytes": 710
+  },
+  {
+   "key": "crypto-blockchain",
+   "title": "Crypto & Blockchain",
+   "count": 99,
+   "avg_byte_ratio": 3.3,
+   "avg_toke_bytes": 440,
+   "avg_python_bytes": 1150
+  },
+  {
+   "key": "data-processing",
+   "title": "Data Processing",
+   "count": 122,
+   "avg_byte_ratio": 3.6,
+   "avg_toke_bytes": 559,
+   "avg_python_bytes": 1571
+  },
+  {
+   "key": "devtools",
+   "title": "Developer Tools",
+   "count": 120,
+   "avg_byte_ratio": 3.6,
+   "avg_toke_bytes": 552,
+   "avg_python_bytes": 1621
+  },
+  {
+   "key": "education",
+   "title": "Education",
+   "count": 122,
+   "avg_byte_ratio": 1.52,
+   "avg_toke_bytes": 931,
+   "avg_python_bytes": 931
+  },
+  {
+   "key": "games",
+   "title": "Games",
+   "count": 91,
+   "avg_byte_ratio": 4.8,
+   "avg_toke_bytes": 484,
+   "avg_python_bytes": 1752
+  },
+  {
+   "key": "manufacturing-ml",
+   "title": "Manufacturing & ML",
+   "count": 97,
+   "avg_byte_ratio": 4.55,
+   "avg_toke_bytes": 474,
+   "avg_python_bytes": 1624
+  },
+  {
+   "key": "media-content",
+   "title": "Media & Content",
+   "count": 122,
+   "avg_byte_ratio": 1.75,
+   "avg_toke_bytes": 429,
+   "avg_python_bytes": 663
+  },
+  {
+   "key": "messaging",
+   "title": "Messaging",
+   "count": 110,
+   "avg_byte_ratio": 4.48,
+   "avg_toke_bytes": 504,
+   "avg_python_bytes": 1718
+  },
+  {
+   "key": "networking-rest",
+   "title": "Networking & REST",
+   "count": 7,
+   "avg_byte_ratio": 2.46,
+   "avg_toke_bytes": 500,
+   "avg_python_bytes": 1126
+  },
+  {
+   "key": "scientific-math",
+   "title": "Scientific & Math",
+   "count": 105,
+   "avg_byte_ratio": 3.03,
+   "avg_toke_bytes": 718,
+   "avg_python_bytes": 1372
+  },
+  {
+   "key": "security",
+   "title": "Security",
+   "count": 40,
+   "avg_byte_ratio": 7.04,
+   "avg_toke_bytes": 524,
+   "avg_python_bytes": 3228
+  },
+  {
+   "key": "social-media",
+   "title": "Social Media",
+   "count": 142,
+   "avg_byte_ratio": 5.06,
+   "avg_toke_bytes": 386,
+   "avg_python_bytes": 1105
+  },
+  {
+   "key": "system-tools",
+   "title": "System Tools",
+   "count": 55,
+   "avg_byte_ratio": 3.57,
+   "avg_toke_bytes": 505,
+   "avg_python_bytes": 1488
+  }
+ ],
+ "avg_byte_ratio": 3.71,
+ "median_byte_ratio": 2.4
+}
