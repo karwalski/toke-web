@@ -1,0 +1,201 @@
+{! layout("base") !}
+{! block("title") !}Program Library — toke{! end !}
+{! block("content") !}
+<style>
+/* ── Program library (scoped under .lib; inherits site theme vars) ── */
+.lib { max-width: 1080px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+.lib h1 { text-align: center; font-size: 2.2rem; font-weight: 700; letter-spacing: -0.03em; color: var(--text); margin-bottom: 0.4rem; }
+.lib h1 span { color: var(--gold); }
+.lib .subtitle { text-align: center; color: var(--muted); font-size: 1rem; margin-bottom: 1.2rem; }
+.lib .method { max-width: 760px; margin: 0 auto 2rem; background: var(--surface); border: 1px solid var(--elevated); border-left: 3px solid var(--gold); border-radius: var(--radius); padding: 0.7rem 1rem; color: var(--muted); font-size: 0.85rem; line-height: 1.5; }
+.lib .method b { color: var(--text); }
+.lib .legend { text-align: center; color: var(--faint); font-size: 0.8rem; margin-bottom: 2rem; }
+.lib .legend code { color: var(--syn-type); }
+.lib .stats { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin-bottom: 2.5rem; }
+.lib .stat { background: var(--surface); border: 1px solid var(--elevated); border-radius: var(--radius-lg); padding: 1rem 1.4rem; text-align: center; min-width: 150px; }
+.lib .stat .num { font-size: 1.8rem; font-weight: 700; color: var(--gold); }
+.lib .stat .lbl { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.lib .tabs { display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 1.5rem; }
+.lib .tab { background: var(--surface); border: 1px solid var(--elevated); color: var(--muted); padding: 0.5rem 1.1rem; border-radius: 20px; cursor: pointer; font-size: 0.9rem; }
+.lib .tab.active { background: var(--gold); color: var(--on-gold); border-color: var(--gold); }
+.lib .toolbar { display: flex; gap: 0.75rem; margin-bottom: 1.5rem; align-items: center; }
+.lib #search { flex: 1; background: var(--surface); border: 1px solid var(--elevated); color: var(--text); padding: 0.6rem 0.9rem; border-radius: var(--radius); font-size: 0.95rem; }
+.lib .crumb { color: var(--muted); margin-bottom: 1rem; font-size: 0.9rem; }
+.lib .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1rem; }
+.lib .card { background: var(--surface); border: 1px solid var(--elevated); border-radius: var(--radius-lg); padding: 1.2rem; cursor: pointer; transition: border-color .15s, transform .15s; }
+.lib .card:hover { border-color: var(--gold); transform: translateY(-2px); }
+.lib .card h3 { font-size: 1.05rem; color: var(--text); margin-bottom: 0.4rem; }
+.lib .card .meta { font-size: 0.82rem; color: var(--muted); }
+.lib .ratio { display: inline-block; background: rgba(111,194,178,0.12); color: var(--syn-type); padding: 0.12rem 0.5rem; border-radius: 12px; font-weight: 600; font-size: 0.8rem; }
+.lib .ratio.neg { background: rgba(229,83,60,0.14); color: var(--ticket-red); }
+.lib .ratio.same { background: var(--elevated); color: var(--muted); }
+.lib table { width: 100%; border-collapse: collapse; }
+.lib th, .lib td { text-align: left; padding: 0.55rem 0.7rem; border-bottom: 1px solid var(--elevated); font-size: 0.9rem; }
+.lib th { color: var(--muted); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.lib tr.prow { cursor: pointer; }
+.lib tr.prow:hover td { background: var(--elevated); }
+.lib .diff { display: inline-block; width: 1.4rem; text-align: center; }
+.lib .detail h2 { font-size: 1.5rem; color: var(--text); margin-bottom: 0.3rem; }
+.lib .detail .desc { color: var(--muted); margin-bottom: 1.2rem; }
+.lib .mods { margin-bottom: 1.2rem; }
+.lib .mod { display: inline-block; background: var(--surface); border: 1px solid var(--elevated); color: var(--syn-type); padding: 0.12rem 0.55rem; border-radius: 6px; font-size: 0.78rem; margin: 0 0.3rem 0.3rem 0; font-family: var(--font-mono); }
+.lib .section-h { font-size: 0.82rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin: 1.4rem 0 0.5rem; }
+.lib pre { background: var(--bg); border: 1px solid var(--elevated); border-radius: var(--radius); padding: 1rem; overflow-x: auto; font-family: var(--font-mono); font-size: 0.85rem; color: var(--syn-base); white-space: pre; }
+.lib .io { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 0.8rem; }
+.lib .io .col .h { font-size: 0.75rem; color: var(--faint); margin-bottom: 0.3rem; }
+.lib .io pre { font-size: 0.82rem; }
+.lib .cmp { background: var(--surface); border: 1px solid var(--elevated); border-radius: var(--radius-lg); padding: 1.2rem; margin: 1rem 0; }
+.lib .bar { height: 22px; border-radius: 5px; display: flex; align-items: center; padding-left: 0.6rem; font-size: 0.8rem; color: var(--on-gold); margin-bottom: 0.4rem; white-space: nowrap; }
+.lib .bar.toke { background: var(--gold); } .lib .bar.py { background: var(--faint); color: var(--text); }
+.lib .back { cursor: pointer; color: var(--gold); margin-bottom: 1rem; display: inline-block; }
+.lib .muted { color: var(--faint); }
+</style>
+
+<section class="lib">
+  <h1>toke <span>program library</span></h1>
+  <p class="subtitle">Every verified toke program, by category — with inputs, expected outputs, and a token comparison vs Python.</p>
+  <div class="method">
+    <b>How to read these numbers.</b> Token counts are real: toke source is measured with the
+    <b>toke BPE tokenizer (v03, 16,384 vocab)</b>, Python with <b>cl100k_base</b>. These corpus
+    programs are <b>generated and repaired for correctness</b>, not hand-optimised for tokens — so
+    many use more tokens than idiomatic toke would. The headline efficiency claims elsewhere on the
+    site come from the curated benchmark suite, not this corpus. Shown honestly: toke is the more
+    compact encoding in roughly a quarter of these programs.
+  </div>
+  <p class="legend">Units: <code>tok</code> = BPE tokens · <code>B</code> = source bytes. Ratio &gt; 1 = toke fewer; &lt; 1 = toke more.</p>
+  <div class="stats" id="stats"></div>
+  <div class="tabs">
+    <div class="tab active" data-tab="corpus" id="tab-corpus">Corpus</div>
+    <div class="tab" data-tab="examples" id="tab-examples">Language &amp; stdlib examples</div>
+  </div>
+  <div class="toolbar"><input id="search" placeholder="Search programs by id, title or description…"></div>
+  <div id="view"></div>
+</section>
+
+<script>
+const V = document.getElementById('view'), SEARCH = document.getElementById('search'), STATS = document.getElementById('stats');
+let INDEX=null, EXAMPLES=null, CURRENT={tab:'corpus', cat:null, prog:null};
+const esc = s => (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+// token_ratio = python_tokens / toke_tokens: >1 toke fewer (gold), <1 toke more (red, shown as inverse).
+const ratioBadge = r => {
+  if (r == null) return '';
+  if (r > 1) return `<span class="ratio">${(+r).toFixed(2)}× fewer tokens</span>`;
+  if (r < 1) return `<span class="ratio neg">${(1/r).toFixed(2)}× more tokens</span>`;
+  return `<span class="ratio same">same tokens</span>`;
+};
+
+async function getJSON(u){ const r = await fetch(u); if(!r.ok) throw new Error(u); return r.json(); }
+
+async function init(){
+  INDEX = await getJSON('/library/index.json');
+  STATS.innerHTML = `
+    <div class="stat"><div class="num">${INDEX.total}</div><div class="lbl">Programs</div></div>
+    <div class="stat"><div class="num">${INDEX.categories.length}</div><div class="lbl">Categories</div></div>
+    <div class="stat"><div class="num">${INDEX.median_token_ratio}×</div><div class="lbl">Median tokens (Py / toke)</div></div>
+    <div class="stat"><div class="num">${INDEX.toke_fewer_tokens_pct}%</div><div class="lbl">where toke uses fewer</div></div>`;
+  route();
+}
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active'); CURRENT={tab:t.dataset.tab,cat:null,prog:null}; SEARCH.value=''; render();
+});
+SEARCH.oninput = render;
+
+function render(){
+  const q = SEARCH.value.trim().toLowerCase();
+  if(CURRENT.tab==='examples') return renderExamples(q);
+  if(CURRENT.prog) return;
+  if(CURRENT.cat) return renderCategory(CURRENT.cat, q);
+  if(q) return renderSearch(q);
+  renderCategoryGrid();
+}
+
+function renderCategoryGrid(){
+  V.innerHTML = '<div class="grid">' + INDEX.categories.map(c=>`
+    <div class="card" onclick="openCategory('${c.key}')">
+      <h3>${esc(c.title)}</h3>
+      <div class="meta">${c.count} programs · ${ratioBadge(c.median_token_ratio!=null?c.median_token_ratio:c.avg_token_ratio)}</div>
+    </div>`).join('') + '</div>';
+}
+
+let CATCACHE={};
+async function openCategory(key){ CURRENT.cat=key; CURRENT.prog=null; SEARCH.value=''; await renderCategory(key,''); }
+async function renderCategory(key,q){
+  if(!CATCACHE[key]) CATCACHE[key] = await getJSON('/library/'+key+'.json');
+  const data = CATCACHE[key];
+  let progs = data.programs;
+  if(q) progs = progs.filter(p=>(p.id+' '+p.title+' '+p.description).toLowerCase().includes(q));
+  V.innerHTML = `<div class="crumb"><span class="back" onclick="goHome()">← all categories</span> / ${esc(data.title)} (${progs.length})</div>
+    <table><thead><tr><th>ID</th><th>Title</th><th>Diff</th><th>toke</th><th>Python</th><th>Ratio</th></tr></thead><tbody>` +
+    progs.map((p,i)=>`<tr class="prow" onclick="openProg('${key}',${data.programs.indexOf(p)})">
+      <td><code>${esc(p.id)}</code></td><td>${esc(p.title)}</td>
+      <td><span class="diff">${'★'.repeat(p.difficulty||0)||'–'}</span></td>
+      <td class="muted">${p.toke_tokens!=null?p.toke_tokens+' tok':'–'}</td><td class="muted">${p.python_tokens!=null?p.python_tokens+' tok':'–'}</td>
+      <td>${ratioBadge(p.token_ratio)}</td></tr>`).join('') + '</tbody></table>';
+}
+function goHome(){ CURRENT.cat=null; CURRENT.prog=null; SEARCH.value=''; renderCategoryGrid(); }
+
+async function openProg(key,idx){
+  if(!CATCACHE[key]) CATCACHE[key] = await getJSON('/library/'+key+'.json');
+  const p = CATCACHE[key].programs[idx]; CURRENT.prog=p.id;
+  const tt=p.toke_tokens||0, pt=p.python_tokens||0, mx=Math.max(tt,pt)||1;
+  const io = (p.test_cases||[]).map((tc,i)=>`
+    <div class="section-h">Test case ${i+1}</div>
+    <div class="io">
+      <div class="col"><div class="h">stdin</div><pre>${esc(tc.input)||'<span class="muted">(no input)</span>'}</pre></div>
+      <div class="col"><div class="h">expected stdout</div><pre>${esc(tc.expected_output)}</pre></div>
+    </div>`).join('');
+  V.innerHTML = `<div class="detail">
+    <span class="back" onclick="openCategory('${key}')">← ${esc(CATCACHE[key].title)}</span>
+    <h2>${esc(p.title)} <span class="muted" style="font-size:1rem">${esc(p.id)}</span></h2>
+    <div class="desc">${esc(p.description)}</div>
+    <div class="mods">${(p.stdlib_modules||[]).map(m=>`<span class="mod">${esc(m)}</span>`).join('')}</div>
+    <div class="cmp">
+      <div class="section-h" style="margin-top:0">Tokens — toke BPE v03 vs cl100k_base</div>
+      <div class="bar toke" style="width:${Math.max(8,100*tt/mx)}%">toke — ${tt} tok</div>
+      <div class="bar py" style="width:${Math.max(8,100*pt/mx)}%">Python — ${pt} tok</div>
+      <div style="margin-top:0.4rem">${ratioBadge(p.token_ratio)} <span class="muted" style="font-size:0.8rem">· ${p.toke_bytes||'–'} B vs ${p.python_bytes||'–'} B source</span></div>
+    </div>
+    <div class="section-h">Source — solution.tk</div>
+    <pre>${esc(p.source)}</pre>
+    ${io}
+  </div>`;
+  window.scrollTo(0,0);
+}
+
+function renderSearch(q){
+  const hits = INDEX.categories.map(c=>`<div class="card" onclick="openCategory('${c.key}')"><h3>${esc(c.title)}</h3><div class="meta">${c.count} programs · ${ratioBadge(c.median_token_ratio!=null?c.median_token_ratio:c.avg_token_ratio)}</div></div>`).join('');
+  V.innerHTML = `<div class="crumb muted">Open a category to search its programs.</div><div class="grid">${hits}</div>`;
+}
+
+async function renderExamples(q){
+  if(!EXAMPLES) EXAMPLES = await getJSON('/library/examples.json');
+  let html = `<div class="crumb muted">${EXAMPLES.count} language &amp; standard-library example programs extracted from the docs &amp; tutorials.</div>`;
+  for(const t of EXAMPLES.topics){
+    let progs = t.programs;
+    if(q) progs = progs.filter(p=>(p.slug+' '+(p.source||'')).toLowerCase().includes(q));
+    if(!progs.length) continue;
+    html += `<div class="section-h">${esc(t.topic)} (${progs.length})</div><div class="grid">` +
+      progs.map((p,i)=>`<div class="card" onclick="openExample('${esc(t.topic)}',${t.programs.indexOf(p)})">
+        <h3 style="font-size:0.95rem">${esc(p.slug)}</h3>
+        <div class="meta">${p.status==='ran'?'<span class="ratio">runs ✓</span>':'<span class="muted">'+esc(p.status)+'</span>'}</div></div>`).join('') + '</div>';
+  }
+  V.innerHTML = html;
+}
+function openExample(topic,idx){
+  const t = EXAMPLES.topics.find(x=>x.topic===topic); const p = t.programs[idx];
+  V.innerHTML = `<div class="detail">
+    <span class="back" onclick="document.getElementById('tab-examples').click()">← examples</span>
+    <h2>${esc(p.slug)}</h2>
+    <div class="desc muted">from ${esc(p.source_doc)}</div>
+    ${p.note?`<div class="note">${esc(p.note)}</div>`:''}
+    <div class="section-h">Source</div><pre>${esc(p.source)}</pre>
+    ${p.expected_output!=null?`<div class="section-h">Output</div><pre>${esc(p.expected_output)}</pre>`:''}
+  </div>`;
+  window.scrollTo(0,0);
+}
+
+function route(){ render(); }
+init().catch(e=>{ V.innerHTML='<p class="muted">Failed to load library data: '+esc(e.message)+'</p>'; });
+</script>
+{! end !}

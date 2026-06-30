@@ -1,129 +1,195 @@
 {
- "generated": "2026-06-26",
- "scope": "passing",
- "total": 1460,
- "categories": [
-  {
-   "key": "ai-agents",
-   "title": "AI Agents",
-   "count": 106,
-   "avg_byte_ratio": 6.99,
-   "avg_toke_bytes": 478,
-   "avg_python_bytes": 2278
-  },
-  {
-   "key": "calculators-finance",
-   "title": "Calculators & Finance",
-   "count": 122,
-   "avg_byte_ratio": 1.42,
-   "avg_toke_bytes": 615,
-   "avg_python_bytes": 710
-  },
-  {
-   "key": "crypto-blockchain",
-   "title": "Crypto & Blockchain",
-   "count": 99,
-   "avg_byte_ratio": 3.3,
-   "avg_toke_bytes": 440,
-   "avg_python_bytes": 1150
-  },
-  {
-   "key": "data-processing",
-   "title": "Data Processing",
-   "count": 122,
-   "avg_byte_ratio": 3.6,
-   "avg_toke_bytes": 559,
-   "avg_python_bytes": 1571
-  },
-  {
-   "key": "devtools",
-   "title": "Developer Tools",
-   "count": 120,
-   "avg_byte_ratio": 3.6,
-   "avg_toke_bytes": 552,
-   "avg_python_bytes": 1621
-  },
-  {
-   "key": "education",
-   "title": "Education",
-   "count": 122,
-   "avg_byte_ratio": 1.52,
-   "avg_toke_bytes": 931,
-   "avg_python_bytes": 931
-  },
-  {
-   "key": "games",
-   "title": "Games",
-   "count": 91,
-   "avg_byte_ratio": 4.8,
-   "avg_toke_bytes": 484,
-   "avg_python_bytes": 1752
-  },
-  {
-   "key": "manufacturing-ml",
-   "title": "Manufacturing & ML",
-   "count": 97,
-   "avg_byte_ratio": 4.55,
-   "avg_toke_bytes": 474,
-   "avg_python_bytes": 1624
-  },
-  {
-   "key": "media-content",
-   "title": "Media & Content",
-   "count": 122,
-   "avg_byte_ratio": 1.75,
-   "avg_toke_bytes": 429,
-   "avg_python_bytes": 663
-  },
-  {
-   "key": "messaging",
-   "title": "Messaging",
-   "count": 110,
-   "avg_byte_ratio": 4.48,
-   "avg_toke_bytes": 504,
-   "avg_python_bytes": 1718
-  },
-  {
-   "key": "networking-rest",
-   "title": "Networking & REST",
-   "count": 7,
-   "avg_byte_ratio": 2.46,
-   "avg_toke_bytes": 500,
-   "avg_python_bytes": 1126
-  },
-  {
-   "key": "scientific-math",
-   "title": "Scientific & Math",
-   "count": 105,
-   "avg_byte_ratio": 3.03,
-   "avg_toke_bytes": 718,
-   "avg_python_bytes": 1372
-  },
-  {
-   "key": "security",
-   "title": "Security",
-   "count": 40,
-   "avg_byte_ratio": 7.04,
-   "avg_toke_bytes": 524,
-   "avg_python_bytes": 3228
-  },
-  {
-   "key": "social-media",
-   "title": "Social Media",
-   "count": 142,
-   "avg_byte_ratio": 5.06,
-   "avg_toke_bytes": 386,
-   "avg_python_bytes": 1105
-  },
-  {
-   "key": "system-tools",
-   "title": "System Tools",
-   "count": 55,
-   "avg_byte_ratio": 3.57,
-   "avg_toke_bytes": 505,
-   "avg_python_bytes": 1488
-  }
- ],
- "avg_byte_ratio": 3.71,
- "median_byte_ratio": 2.4
+  "generated": "2026-06-26",
+  "scope": "passing",
+  "total": 1460,
+  "categories": [
+    {
+      "key": "ai-agents",
+      "title": "AI Agents",
+      "count": 106,
+      "avg_byte_ratio": 1.0002,
+      "avg_toke_bytes": 478,
+      "avg_python_bytes": 2278,
+      "avg_token_ratio": 0.6752,
+      "median_token_ratio": 0.5415,
+      "avg_toke_tokens": 922.2,
+      "avg_python_tokens": 508.4
+    },
+    {
+      "key": "calculators-finance",
+      "title": "Calculators & Finance",
+      "count": 122,
+      "avg_byte_ratio": 0.93,
+      "avg_toke_bytes": 615,
+      "avg_python_bytes": 710,
+      "avg_token_ratio": 0.828,
+      "median_token_ratio": 0.8228,
+      "avg_toke_tokens": 248.9,
+      "avg_python_tokens": 189.9
+    },
+    {
+      "key": "crypto-blockchain",
+      "title": "Crypto & Blockchain",
+      "count": 99,
+      "avg_byte_ratio": 1.2447,
+      "avg_toke_bytes": 440,
+      "avg_python_bytes": 1150,
+      "avg_token_ratio": 0.9499,
+      "median_token_ratio": 0.6619,
+      "avg_toke_tokens": 507.9,
+      "avg_python_tokens": 326.5
+    },
+    {
+      "key": "data-processing",
+      "title": "Data Processing",
+      "count": 122,
+      "avg_byte_ratio": 0.83,
+      "avg_toke_bytes": 559,
+      "avg_python_bytes": 1571,
+      "avg_token_ratio": 0.6431,
+      "median_token_ratio": 0.5278,
+      "avg_toke_tokens": 778.7,
+      "avg_python_tokens": 394.4
+    },
+    {
+      "key": "devtools",
+      "title": "Developer Tools",
+      "count": 120,
+      "avg_byte_ratio": 1.2445,
+      "avg_toke_bytes": 552,
+      "avg_python_bytes": 1621,
+      "avg_token_ratio": 0.9017,
+      "median_token_ratio": 0.5105,
+      "avg_toke_tokens": 663.8,
+      "avg_python_tokens": 364.0
+    },
+    {
+      "key": "education",
+      "title": "Education",
+      "count": 122,
+      "avg_byte_ratio": 0.6648,
+      "avg_toke_bytes": 931,
+      "avg_python_bytes": 931,
+      "avg_token_ratio": 0.5179,
+      "median_token_ratio": 0.3882,
+      "avg_toke_tokens": 530.2,
+      "avg_python_tokens": 228.2
+    },
+    {
+      "key": "games",
+      "title": "Games",
+      "count": 91,
+      "avg_byte_ratio": 1.473,
+      "avg_toke_bytes": 484,
+      "avg_python_bytes": 1752,
+      "avg_token_ratio": 1.2535,
+      "median_token_ratio": 0.8317,
+      "avg_toke_tokens": 541.4,
+      "avg_python_tokens": 499.2
+    },
+    {
+      "key": "manufacturing-ml",
+      "title": "Manufacturing & ML",
+      "count": 97,
+      "avg_byte_ratio": 1.2708,
+      "avg_toke_bytes": 474,
+      "avg_python_bytes": 1624,
+      "avg_token_ratio": 1.1268,
+      "median_token_ratio": 0.721,
+      "avg_toke_tokens": 541.7,
+      "avg_python_tokens": 466.0
+    },
+    {
+      "key": "media-content",
+      "title": "Media & Content",
+      "count": 122,
+      "avg_byte_ratio": 0.7711,
+      "avg_toke_bytes": 429,
+      "avg_python_bytes": 663,
+      "avg_token_ratio": 0.6533,
+      "median_token_ratio": 0.4814,
+      "avg_toke_tokens": 335.0,
+      "avg_python_tokens": 179.6
+    },
+    {
+      "key": "messaging",
+      "title": "Messaging",
+      "count": 110,
+      "avg_byte_ratio": 0.9036,
+      "avg_toke_bytes": 504,
+      "avg_python_bytes": 1718,
+      "avg_token_ratio": 0.7115,
+      "median_token_ratio": 0.5302,
+      "avg_toke_tokens": 687.8,
+      "avg_python_tokens": 368.1
+    },
+    {
+      "key": "networking-rest",
+      "title": "Networking & REST",
+      "count": 7,
+      "avg_byte_ratio": 2.9905,
+      "avg_toke_bytes": 500,
+      "avg_python_bytes": 1126,
+      "avg_token_ratio": 2.4345,
+      "median_token_ratio": 2.3404,
+      "avg_toke_tokens": 105,
+      "avg_python_tokens": 253.9
+    },
+    {
+      "key": "scientific-math",
+      "title": "Scientific & Math",
+      "count": 105,
+      "avg_byte_ratio": 1.4566,
+      "avg_toke_bytes": 718,
+      "avg_python_bytes": 1372,
+      "avg_token_ratio": 1.5594,
+      "median_token_ratio": 1.0,
+      "avg_toke_tokens": 371.7,
+      "avg_python_tokens": 468.0
+    },
+    {
+      "key": "security",
+      "title": "Security",
+      "count": 40,
+      "avg_byte_ratio": 7.1969,
+      "avg_toke_bytes": 524,
+      "avg_python_bytes": 3228,
+      "avg_token_ratio": 5.3817,
+      "median_token_ratio": 3.7472,
+      "avg_toke_tokens": 304.6,
+      "avg_python_tokens": 653.5
+    },
+    {
+      "key": "social-media",
+      "title": "Social Media",
+      "count": 142,
+      "avg_byte_ratio": 1.6635,
+      "avg_toke_bytes": 386,
+      "avg_python_bytes": 1105,
+      "avg_token_ratio": 1.0757,
+      "median_token_ratio": 0.8099,
+      "avg_toke_tokens": 294.6,
+      "avg_python_tokens": 236.6
+    },
+    {
+      "key": "system-tools",
+      "title": "System Tools",
+      "count": 55,
+      "avg_byte_ratio": 1.5847,
+      "avg_toke_bytes": 505,
+      "avg_python_bytes": 1488,
+      "avg_token_ratio": 1.3177,
+      "median_token_ratio": 0.8894,
+      "avg_toke_tokens": 415.4,
+      "avg_python_tokens": 374.9
+    }
+  ],
+  "avg_byte_ratio": 3.71,
+  "median_byte_ratio": 2.4,
+  "avg_token_ratio": 1.0405,
+  "median_token_ratio": 0.662,
+  "avg_toke_tokens": 515.6,
+  "avg_python_tokens": 351.6,
+  "toke_fewer_tokens_pct": 26.8,
+  "methodology": "toke BPE v03 (16,384 vocab) vs cl100k_base, measured on the actual solution.tk / solution.py sources. Corpus solutions are generated and repaired for correctness, not hand-optimised for tokens."
 }
