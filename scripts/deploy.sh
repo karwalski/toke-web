@@ -150,6 +150,14 @@ rsync_content() {
     "${REPO_ROOT}/static/" \
     "${REMOTE}:${DEPLOY_DIR}/static/"
   echo "    static/ synced"
+
+  # Rsync templates/ (.tkt pages — rendered dynamically by http.servepages).
+  # The server reads these per-request, so template edits ship on a content
+  # deploy with no rebuild/restart.
+  rsync -az --delete -e "ssh ${SSH_OPTS}" \
+    "${REPO_ROOT}/templates/" \
+    "${REMOTE}:${DEPLOY_DIR}/templates/"
+  echo "    templates/ synced"
 }
 
 # ── Content-only deploy ──────────────────────────────────────────────────
