@@ -15,8 +15,11 @@ import re
 import tempfile
 from pathlib import Path
 
-TKC = "/Users/matthew.watt/tk/toke/tkc"
-DOCS = "/Users/matthew.watt/tk/toke-web/src/content/docs"
+TKC = os.environ.get("TKC", os.path.expanduser("~/tk/toke/tkc"))
+# Docs source of truth is the compiler repo (~/tk/toke/docs). The old
+# ~/tk/toke-web/src/content/docs path no longer exists, and this repo's
+# content/docs/ symlinks dangle (they target a removed ~/tk/docs tree).
+DOCS = os.environ.get("TOKE_DOCS", os.path.expanduser("~/tk/toke/docs"))
 
 VERBOSE = "--verbose" in sys.argv or "-v" in sys.argv
 
