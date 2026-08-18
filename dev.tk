@@ -1,9 +1,0 @@
-m=website;
-i=http:std.http;
-
-f=main():i64{
-  http.getstatic("/health"; "{\"status\":\"ok\",\"version\":\"0.3.0\"}");
-  http.servedir("/";"build");
-  http.serve(3001);
-  <0;
-};

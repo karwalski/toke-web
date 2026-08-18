@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;}
+</style>
+</helmet>
+
+<div style="width:max-content; min-width:100%; min-height:100vh; box-sizing:border-box; padding:56px; background:#e7e5df; font-family:'Space Grotesk',sans-serif;">
+
+  <!-- INTRO -->
+  <div style="max-width:1120px; margin:0 0 40px 0;">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:#8a8378;">Brand colour exploration</div>
+    <div style="display:flex; align-items:baseline; gap:14px; margin-top:10px;">
+      <span style="font-family:'JetBrains Mono',monospace; font-size:46px; font-weight:800; letter-spacing:-2px; color:#1a1712;">toke</span>
+      <span style="font-size:18px; color:#5f594e; font-weight:500;">the token-frugal language for LLMs</span>
+    </div>
+    <p style="max-width:620px; font-size:15px; line-height:1.6; color:#5f594e; margin:16px 0 0 0;">Four gold-family directions, each shown in <strong>light</strong> and <strong>dark</strong>. The metaphor running through all of them: a token as currency — a coin, an arcade payout, an <em>admit&nbsp;one</em> ticket. Pick a favourite and I'll lock it into a full style guide.</p>
+  </div>
+
+  <!-- ============ OPTION A — COIN GOLD ============ -->
+  <div style="max-width:1120px; margin-bottom:40px;">
+    <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:12px;">
+      <span style="font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; color:#1a1712;">A</span>
+      <span style="font-size:20px; font-weight:600; color:#1a1712;">Coin Gold</span>
+      <span style="font-size:14px; color:#8a8378;">— classic minted gold on warm espresso. Valuable, timeless, premium.</span>
+    </div>
+    <div style="background:#fff; border-radius:3px; box-shadow:0 1px 3px rgba(0,0,0,.09); padding:28px;">
+      <!-- swatches -->
+      <div style="display:flex; gap:12px; margin-bottom:26px; flex-wrap:wrap;">
+        <div><div style="width:88px;height:52px;border-radius:4px;background:#E0A82E;"></div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6b6356;margin-top:6px;">#E0A82E</div><div style="font-size:10px;color:#9a9082;">gold</div></div>
+        <div><div style="width:88px;height:52px;border-radius:4px;background:#C68A1A;"></div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6b6356;margin-top:6px;">#C68A1A</div><div style="font-size:10px;color:#9a9082;">deep gold</div></div>
+        <div><div style="width:88px;height:52px;border-radius:4px;background:#14110B;"></div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6b6356;margin-top:6px;">#14110B</div><div style="font-size:10px;color:#9a9082;">espresso</div></div>
+        <div><div style="width:88px;height:52px;border-radius:4px;background:#FBF7EF;border:1px solid #e6e0d4;"></div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6b6356;margin-top:6px;">#FBF7EF</div><div style="font-size:10px;color:#9a9082;">cream</div></div>
+        <div><div style="width:88px;height:52px;border-radius:4px;background:#6B6356;"></div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6b6356;margin-top:6px;">#6B6356</div><div style="font-size:10px;color:#9a9082;">muted</div></div>
+      </div>
+      <!-- previews -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+        <!-- light -->
+        <div style="position:relative; background:#FBF7EF; border:1px solid #ece5d7; border-radius:8px; padding:30px; display:flex; flex-direction:column; gap:16px; min-height:300px;">
+          <span style="position:absolute; top:14px; right:16px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:1.5px; color:#b3a997;">LIGHT</span>
+          <div style="display:flex; align-items:center; gap:11px;">
+            <span style="width:15px;height:15px;border-radius:50%;background:#E0A82E;box-shadow:inset 0 0 0 2px rgba(0,0,0,.12);"></span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:36px; font-weight:800; color:#1a1712; letter-spacing:-2px;">toke</span>
+          </div>
+          <div style="font-size:14px; color:#6b6356;">Write less. Mean more.</div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:#14110B; background:#E0A82E; padding:5px 11px; border-radius:999px;">−42% tokens</span>
+          </div>
+          <div style="border-top:1px dashed #d8cfbd; margin:2px 0;"></div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#6b6356; background:#fff; border:1px solid #ece5d7; border-radius:6px; padding:11px 13px;">$ toke build <span style="color:#C68A1A;">app.tk</span> → 1,204 tok</div>
+          <a style="align-self:flex-start; font-family:'Space Grotesk'; font-size:13px; font-weight:600; color:#14110B; background:#E0A82E; padding:9px 18px; border-radius:7px; text-decoration:none; cursor:pointer;">Get started</a>
+        </div>
+        <!-- dark -->
+        <div style="position:relative; background:#14110B; border:1px solid #2a2317; border-radius:8px; padding:30px; display:flex; flex-direction:column; gap:16px; min-height:300px;">
+          <span style="position:absolute; top:14px; right:16px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:1.5px; color:#6b6044;">DARK</span>
+          <div style="display:flex; align-items:center; gap:11px;">
+            <span style="width:15px;height:15px;border-radius:50%;background:#F0C04A;box-shadow:0 0 14px rgba(240,192,74,.45);"></span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:36px; font-weight:800; color:#F5EFE2; letter-spacing:-2px;">toke</span>
+          </div>
+          <div style="font-size:14px; color:#9a9082;">Write less. Mean more.</div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:#14110B; background:#F0C04A; padding:5px 11px; border-radius:999px;">−42% tokens</span>
+          </div>
+          <div style="border-top:1px dashed #3a3221; margin:2px 0;"></div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#9a9082; background:#1f1a11; border:1px solid #2a2317; border-radius:6px; padding:11px 13px;">$ toke build <span style="color:#F0C04A;">app.tk</span> → 1,204 tok</div>
+          <a style="align-self:flex-start; font-family:'Space Grotesk'; font-size:13px; font-weight:600; color:#14110B; background:#F0C04A; padding:9px 18px; border-radius:7px; text-decoration:none; cursor:pointer;">Get started</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ OPTION B — ARCADE (ADMIT ONE) ============ -->
+  <div style="max-width:1120px; margin-bottom:40px;">
+    <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:12px;">
+      <span style="font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; color:#1a1712;">B</span>
+      <span style="font-size:20px; font-weight:600; color:#1a1712;">Arcade · Admit One</span>
+      <span style="font-size:14px; color:#8a8378;">— punchy ticket-yellow with a redemption-red accent. Playful, energetic.</span>
+    </div>
+    <div style="background:#fff; border-radius:3px; box-shadow:0 1px 3px rgba(0,0,0,.09); padding:28px;">
+      <div style="display:flex; gap:12px; margin-bottom:26px; flex-wrap:wrap;">
+        <div><div style="width:88px;height:52px;border-radius:4px;background:#FFC91E;"></div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6b6356;margin-top:6px;">#FFC91E</div><div style="font-size:10px;color:#9a9082;">ticket yellow</div></div>
+        <div><div style="width:88px;height:52px;border-radius:4px;background:#E5533C;"></div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6b6356;margin-top:6px;">#E5533C</div><div style="font-size:10px;color:#9a9082;">stub red</div></div>
+        <div><div style="width:88px;height:52px;border-radius:4px;background:#100F08;"></div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6b6356;margin-top:6px;">#100F08</div><div style="font-size:10px;color:#9a9082;">ink</div></div>
+        <div><div style="width:88px;height:52px;border-radius:4px;background:#FFFDF5;border:1px solid #ece5d7;"></div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6b6356;margin-top:6px;">#FFFDF5</div><div style="font-size:10px;color:#9a9082;">paper</div></div>
+        <div><div style="width:88px;height:52px;border-radius:4px;background:#766F5E;"></div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6b6356;margin-top:6px;">#766F5E</div><div style="font-size:10px;color:#9a9082;">muted</div></div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+        <!-- light -->
+        <div style="position:relative; background:#FFFDF5; border:1px solid #efe8d6; border-radius:8px; padding:30px; display:flex; flex-direction:column; gap:16px; min-height:300px;">
+          <span style="position:absolute; top:14px; right:16px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:1.5px; color:#bcb39c;">LIGHT</span>
+          <div style="display:flex; align-items:center; gap:11px;">
+            <span style="width:26px;height:15px;border-radius:3px;background:#FFC91E;box-shadow:inset 0 0 0 1.5px rgba(0,0,0,.15);"></span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:36px; font-weight:800; color:#17150C; letter-spacing:-2px;">toke</span>
+          </div>
+          <div style="font-size:14px; color:#766F5E;">One ticket. Every token counts.</div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:#17150C; background:#FFC91E; padding:5px 11px; border-radius:999px;">−42% tokens</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:#fff; background:#E5533C; padding:5px 11px; border-radius:999px;">admit one</span>
+          </div>
+          <div style="border-top:1px dashed #ddd2bb; margin:2px 0;"></div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#766F5E; background:#fff; border:1px solid #efe8d6; border-radius:6px; padding:11px 13px;">$ toke build <span style="color:#E5533C;">app.tk</span> → 1,204 tok</div>
+          <a style="align-self:flex-start; font-family:'Space Grotesk'; font-size:13px; font-weight:600; color:#17150C; background:#FFC91E; padding:9px 18px; border-radius:7px; text-decoration:none; cursor:pointer;">Get started</a>
+        </div>
+        <!-- dark -->
+        <div style="position:relative; background:#100F08; border:1px solid #29261a; border-radius:8px; padding:30px; display:flex; flex-direction:column; gap:16px; min-height:300px;">
+          <span style="position:absolute; top:14px; right:16px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:1.5px; color:#6e6443;">DARK</span>
+          <div style="display:flex; align-items:center; gap:11px;">
+            <span style="width:26px;height:15px;border-radius:3px;background:#FFD23F;box-shadow:0 0 14px rgba(255,210,63,.5);"></span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:36px; font-weight:800; color:#FBF6E3; letter-spacing:-2px;">toke</span>
+          </div>
+          <div style="font-size:14px; color:#9c9484;">One ticket. Every token counts.</div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:#100F08; background:#FFD23F; padding:5px 11px; border-radius:999px;">−42% tokens</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:#fff; background:#FF6A4D; padding:5px 11px; border-radius:999px;">admit one</span>
+          </div>
+          <div style="border-top:1px dashed #36311f; margin:2px 0;"></div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#9c9484; background:#1b190f; border:1px solid #29261a; border-radius:6px; padding:11px 13px;">$ toke build <span style="color:#FF6A4D;">app.tk</span> → 1,204 tok</div>
+          <a style="align-self:flex-start; font-family:'Space Grotesk'; font-size:13px; font-weight:600; color:#100F08; background:#FFD23F; padding:9px 18px; border-radius:7px; text-decoration:none; cursor:pointer;">Get started</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ OPTION C — HONEY AMBER ============ -->
+  <div style="max-width:1120px; margin-bottom:40px;">
+    <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:12px;">
+      <span style="font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; color:#1a1712;">C</span>
+      <span style="font-size:20px; font-weight:600; color:#1a1712;">Honey Amber</span>
+      <span style="font-size:14px; color:#8a8378;">— warmer, rounder, more orange-gold. Friendly and approachable.</span>
+    </div>
+    <div style="background:#fff; border-radius:3px; box-shadow:0 1px 3px rgba(0,0,0,.09); padding:28px;">
+      <div style="display:flex; gap:12px; margin-bottom:26px; flex-wrap:wrap;">
+        <div><div style="width:88px;height:52px;border-radius:4px;background:#E89A2B;"></div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6b6356;margin-top:6px;">#E89A2B</div><div style="font-size:10px;color:#9a9082;">amber</div></div>
+        <div><div style="width:88px;height:52px;border-radius:4px;background:#C9781A;"></div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6b6356;margin-top:6px;">#C9781A</div><div style="font-size:10px;color:#9a9082;">deep amber</div></div>
+        <div><div style="width:88px;height:52px;border-radius:4px;background:#16100A;"></div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6b6356;margin-top:6px;">#16100A</div><div style="font-size:10px;color:#9a9082;">cocoa</div></div>
+        <div><div style="width:88px;height:52px;border-radius:4px;background:#FCF6EE;border:1px solid #ece5d7;"></div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6b6356;margin-top:6px;">#FCF6EE</div><div style="font-size:10px;color:#9a9082;">linen</div></div>
+        <div><div style="width:88px;height:52px;border-radius:4px;background:#736857;"></div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6b6356;margin-top:6px;">#736857</div><div style="font-size:10px;color:#9a9082;">muted</div></div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+        <!-- light -->
+        <div style="position:relative; background:#FCF6EE; border:1px solid #ece2d2; border-radius:8px; padding:30px; display:flex; flex-direction:column; gap:16px; min-height:300px;">
+          <span style="position:absolute; top:14px; right:16px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:1.5px; color:#b8ad97;">LIGHT</span>
+          <div style="display:flex; align-items:center; gap:11px;">
+            <span style="width:15px;height:15px;border-radius:50%;background:#E89A2B;"></span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:36px; font-weight:800; color:#1b1410; letter-spacing:-2px;">toke</span>
+          </div>
+          <div style="font-size:14px; color:#736857;">Fewer tokens, sweeter prompts.</div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:#1b1410; background:#E89A2B; padding:5px 11px; border-radius:999px;">−42% tokens</span>
+          </div>
+          <div style="border-top:1px dashed #dccfbb; margin:2px 0;"></div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#736857; background:#fff; border:1px solid #ece2d2; border-radius:6px; padding:11px 13px;">$ toke build <span style="color:#C9781A;">app.tk</span> → 1,204 tok</div>
+          <a style="align-self:flex-start; font-family:'Space Grotesk'; font-size:13px; font-weight:600; color:#1b1410; background:#E89A2B; padding:9px 18px; border-radius:7px; text-decoration:none; cursor:pointer;">Get started</a>
+        </div>
+        <!-- dark -->
+        <div style="position:relative; background:#16100A; border:1px solid #2c2316; border-radius:8px; padding:30px; display:flex; flex-direction:column; gap:16px; min-height:300px;">
+          <span style="position:absolute; top:14px; right:16px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:1.5px; color:#6f6244;">DARK</span>
+          <div style="display:flex; align-items:center; gap:11px;">
+            <span style="width:15px;height:15px;border-radius:50%;background:#F2A93E;box-shadow:0 0 14px rgba(242,169,62,.45);"></span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:36px; font-weight:800; color:#F6ECDD; letter-spacing:-2px;">toke</span>
+          </div>
+          <div style="font-size:14px; color:#9c9182;">Fewer tokens, sweeter prompts.</div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:#16100A; background:#F2A93E; padding:5px 11px; border-radius:999px;">−42% tokens</span>
+          </div>
+          <div style="border-top:1px dashed #38301f; margin:2px 0;"></div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#9c9182; background:#211910; border:1px solid #2c2316; border-radius:6px; padding:11px 13px;">$ toke build <span style="color:#F2A93E;">app.tk</span> → 1,204 tok</div>
+          <a style="align-self:flex-start; font-family:'Space Grotesk'; font-size:13px; font-weight:600; color:#16100A; background:#F2A93E; padding:9px 18px; border-radius:7px; text-decoration:none; cursor:pointer;">Get started</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ OPTION D — BRASS / SLATE ============ -->
+  <div style="max-width:1120px; margin-bottom:24px;">
+    <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:12px;">
+      <span style="font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; color:#1a1712;">D</span>
+      <span style="font-size:20px; font-weight:600; color:#1a1712;">Brass · Slate</span>
+      <span style="font-size:14px; color:#8a8378;">— muted brass against cool slate. Restrained, premium dev-tool feel.</span>
+    </div>
+    <div style="background:#fff; border-radius:3px; box-shadow:0 1px 3px rgba(0,0,0,.09); padding:28px;">
+      <div style="display:flex; gap:12px; margin-bottom:26px; flex-wrap:wrap;">
+        <div><div style="width:88px;height:52px;border-radius:4px;background:#C9A86A;"></div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6b6356;margin-top:6px;">#C9A86A</div><div style="font-size:10px;color:#9a9082;">brass</div></div>
+        <div><div style="width:88px;height:52px;border-radius:4px;background:#A98742;"></div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6b6356;margin-top:6px;">#A98742</div><div style="font-size:10px;color:#9a9082;">deep brass</div></div>
+        <div><div style="width:88px;height:52px;border-radius:4px;background:#0E1116;"></div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6b6356;margin-top:6px;">#0E1116</div><div style="font-size:10px;color:#9a9082;">slate black</div></div>
+        <div><div style="width:88px;height:52px;border-radius:4px;background:#F7F6F3;border:1px solid #e3e1da;"></div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6b6356;margin-top:6px;">#F7F6F3</div><div style="font-size:10px;color:#9a9082;">fog</div></div>
+        <div><div style="width:88px;height:52px;border-radius:4px;background:#6A6E76;"></div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6b6356;margin-top:6px;">#6A6E76</div><div style="font-size:10px;color:#9a9082;">muted</div></div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+        <!-- light -->
+        <div style="position:relative; background:#F7F6F3; border:1px solid #e6e4dd; border-radius:8px; padding:30px; display:flex; flex-direction:column; gap:16px; min-height:300px;">
+          <span style="position:absolute; top:14px; right:16px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:1.5px; color:#b0aea6;">LIGHT</span>
+          <div style="display:flex; align-items:center; gap:11px;">
+            <span style="width:15px;height:15px;border-radius:50%;background:#C9A86A;box-shadow:inset 0 0 0 2px rgba(0,0,0,.1);"></span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:36px; font-weight:800; color:#16181C; letter-spacing:-2px;">toke</span>
+          </div>
+          <div style="font-size:14px; color:#6A6E76;">Compile prompts, not bloat.</div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:#16181C; background:#C9A86A; padding:5px 11px; border-radius:999px;">−42% tokens</span>
+          </div>
+          <div style="border-top:1px dashed #d6d3ca; margin:2px 0;"></div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#6A6E76; background:#fff; border:1px solid #e6e4dd; border-radius:6px; padding:11px 13px;">$ toke build <span style="color:#A98742;">app.tk</span> → 1,204 tok</div>
+          <a style="align-self:flex-start; font-family:'Space Grotesk'; font-size:13px; font-weight:600; color:#16181C; background:#C9A86A; padding:9px 18px; border-radius:7px; text-decoration:none; cursor:pointer;">Get started</a>
+        </div>
+        <!-- dark -->
+        <div style="position:relative; background:#0E1116; border:1px solid #20242c; border-radius:8px; padding:30px; display:flex; flex-direction:column; gap:16px; min-height:300px;">
+          <span style="position:absolute; top:14px; right:16px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:1.5px; color:#5a6068;">DARK</span>
+          <div style="display:flex; align-items:center; gap:11px;">
+            <span style="width:15px;height:15px;border-radius:50%;background:#D4B57A;box-shadow:0 0 14px rgba(212,181,122,.4);"></span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:36px; font-weight:800; color:#EAEAEA; letter-spacing:-2px;">toke</span>
+          </div>
+          <div style="font-size:14px; color:#8b9098;">Compile prompts, not bloat.</div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:#0E1116; background:#D4B57A; padding:5px 11px; border-radius:999px;">−42% tokens</span>
+          </div>
+          <div style="border-top:1px dashed #262b33; margin:2px 0;"></div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#8b9098; background:#161a20; border:1px solid #20242c; border-radius:6px; padding:11px 13px;">$ toke build <span style="color:#D4B57A;">app.tk</span> → 1,204 tok</div>
+          <a style="align-self:flex-start; font-family:'Space Grotesk'; font-size:13px; font-weight:600; color:#0E1116; background:#D4B57A; padding:9px 18px; border-radius:7px; text-decoration:none; cursor:pointer;">Get started</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>
