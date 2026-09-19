@@ -13,7 +13,7 @@
 
   "claim": {
     "one_liner": "toke: a compiled language designed for LLM code generation, with a small grammar, one canonical form and compiler verification.",
-    "paragraph": "toke is a compiled programming language designed for LLM code generation. It has 14 keywords, a 55-character set, a backtrack-free grammar with bounded lookahead, and one canonical form per construct, chosen by measurement in a 46-pattern catalogue and reproduced by <code>tkc --min</code>. That makes generated code cheap to constrain during decoding, cheap for a compiler to verify afterwards, and compact to emit. Token efficiency is one measured property of toke, always reported with its tokenizer and its baseline, not the whole claim."
+    "paragraph": "toke is a compiled programming language designed for LLM code generation. It has 14 keywords, a 59-character set, a backtrack-free grammar with bounded lookahead, and one canonical form per construct, chosen by measurement in a 46-pattern catalogue and reproduced by <code>tkc --min</code>. That makes generated code cheap to constrain during decoding, cheap for a compiler to verify afterwards, and compact to emit. Token efficiency is one measured property of toke, always reported with its tokenizer and its baseline, not the whole claim."
   },
 
   "intro": "This page is the whole plan in one place: which gates have run, what is running now, what is waiting on compute, and — the part that is usually left out — <strong>the benchmark each stage is measured against</strong>. Every figure names its tokenizer (or says &ldquo;bytes&rdquo;) and its N, and every figure is taken from <code>docs/metrics-baseline.md</code>. Where the evidence is against us it is stated here first.",
@@ -199,7 +199,7 @@
       "<strong>One canonical form.</strong> Exact comparison, well-defined diffs and unambiguous rewards. None of that depends on tokenization.",
       "<strong>Byte compactness.</strong> Fewer bytes still costs less for a byte-level model &mdash; much less than fewer BPE tokens bought under a tokenizer, but not zero, and directly measurable in a lane we already carry."
     ],
-    "what_changes": "Nothing in the language. Not the 55-character set, not the 14 keywords, not the grammar, the semantics, the type system or the canonical <code>--min</code> form. What changes is measurement and training: the headline metric moves from tokens per program to bytes and byte-level patches per solved task, cost per solved task becomes the reported number, the grammar artefacts become the product, and the tokenizer programme is descoped &mdash; not the language."
+    "what_changes": "Nothing in the language. Not the 59-character set, not the 14 keywords, not the grammar, the semantics, the type system or the canonical <code>--min</code> form. What changes is measurement and training: the headline metric moves from tokens per program to bytes and byte-level patches per solved task, cost per solved task becomes the reported number, the grammar artefacts become the product, and the tokenizer programme is descoped &mdash; not the language."
   },
 
   "withdrawn": {

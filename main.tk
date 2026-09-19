@@ -3,6 +3,7 @@ i=http:std.http;
 i=log:std.log;
 i=args:std.args;
 i=str:std.str;
+i=file:std.file;
 
 f=healthjson():$str{
   <"{\"status\":\"ok\",\"version\":\"0.3.0\",\"service\":\"toke-website\"}"
@@ -24,6 +25,8 @@ f=main():i64{
     }
   };
   let hj=healthjson();
+  let llms=mt file.read("sites/tokelang.dev/llms.txt"){$ok:t t;$err:e ""};
+  http.getstaticmime("/llms.txt";llms;"text/plain; charset=utf-8");
   http.getstaticmime("/health";hj;"application/json");
   http.getstaticmime("/api/health";hj;"application/json");
   http.getstatic("/api/version";"{\"version\":\"0.3.0\"}");

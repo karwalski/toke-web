@@ -7,12 +7,14 @@
   <p class="tagline">A layered stack of tools, frameworks, and runtimes — each named with the <code>*oke</code> convention. Four characters, always pronounceable, always part of the family.</p>
 </div>
 
+<p class="section-desc" style="max-width:860px;margin:0 auto 2rem;">ooke, loke and moke are toke sub-projects, not separate products: ooke is toke&rsquo;s web framework and static site generator, and it serves tokelang.dev; loke is toke&rsquo;s local intelligence layer; moke is loke&rsquo;s data-analysis demo. All three are written in toke.</p>
+
 <div class="ecosystem-grid">
 
   <div class="oke-card oke-core">
     <div class="oke-badge">language</div>
     <h2><a href="/">toke</a></h2>
-    <p>The core programming language, purpose-built for LLM code generation. 55-character syntax, zero runtime, single binary. Compiles via LLVM to native code on any platform.</p>
+    <p>The core programming language, purpose-built for LLM code generation. 59-character syntax, zero runtime, single binary. Compiles via LLVM to native code on any platform.</p>
     <div class="oke-links">
       <a href="/docs">Docs</a>
       <a href="https://github.com/karwalski/toke">GitHub</a>
@@ -22,7 +24,7 @@
   <div class="oke-card">
     <div class="oke-badge">web framework</div>
     <h2><a href="/ooke">ooke</a></h2>
-    <p>A CMS and web framework built on toke. File-system routing, flat-file content store, template engine with Markdown, build and serve modes. Zero dependencies. Ships as a single binary. Serves tokelang.dev in production.</p>
+    <p>toke's web framework and static site generator, written in toke. File-system routing, flat-file content store, template engine with Markdown, build and serve modes. Zero dependencies. Ships as a single binary. Serves tokelang.dev in production.</p>
     <div class="oke-links">
       <a href="/ooke">Project page</a>
       <a href="https://github.com/karwalski/ooke">GitHub</a>
@@ -32,7 +34,7 @@
   <div class="oke-card">
     <div class="oke-badge">intelligence layer</div>
     <h2><a href="/loke">loke</a></h2>
-    <p>A locally-run intelligence layer that sits between users, their data, and external LLMs. 172 modules, 80,000+ lines of toke. Multi-layer PII detection, token optimisation, intelligent routing. 60–80% token reduction, all processing on-device.</p>
+    <p>toke's local intelligence layer, written in toke: it sits between users, their data, and external LLMs. Multi-layer PII detection, prompt and payload compression, intelligent routing &mdash; all processing on-device. The token-reduction figures that used to sit here had no measurement behind them and are withdrawn (story 132.16).</p>
     <div class="oke-links">
       <a href="/loke">Project page</a>
       <a href="https://github.com/karwalski/loke">GitHub</a>
@@ -56,7 +58,7 @@
   <div class="oke-card">
     <div class="oke-badge">demo application</div>
     <h2>moke</h2>
-    <p>A data analysis demo exercising loke's privacy pipeline, governance controls, and LLM integration. 26-detector analysis engine, 9 Australian-themed datasets, client-side ML. Integrated into the loke project.</p>
+    <p>loke's data-analysis demo, exercising its privacy pipeline, governance controls, and LLM integration. 26-detector analysis engine, 9 Australian-themed datasets, client-side ML. Integrated into the loke project.</p>
     <div class="oke-links">
       <a href="https://github.com/karwalski/loke">GitHub (in loke)</a>
     </div>

@@ -19,6 +19,16 @@
 </section>
 
 <!-- ================================================================== -->
+<!-- What toke is not (disambiguation — story 132.2)                    -->
+<!-- ================================================================== -->
+
+<div class="explainer" style="max-width:860px;margin:1.5rem auto 2.5rem;padding:1.1rem 1.4rem;border:1px solid #2a2317;border-left:3px solid #f0c04a;border-radius:8px;background:#14110b;">
+  <h2 style="font-size:1rem;margin:0 0 0.6rem;color:#f5efe2;">What toke is not</h2>
+  <p style="margin:0 0 0.7rem;">toke is a programming language. It is not the slang word for a draw on a cigarette, not the cannabis brands that use the name, not the TOKE crypto tokens, not Tokelau or its .tk country-code domain, and not tokelang.com, which is an unrelated third-party project. The language is at tokelang.dev and github.com/karwalski/toke.</p>
+  <p style="margin:0;font-size:0.84rem;color:#6b6356;">That last one is practical rather than decorative: a third party holds the .com, the matching GitHub organisation and the matching crates.io name. None of them is this project, and none of this project&rsquo;s package scopes, registry names or URLs is changing. The source is at <a href="https://github.com/karwalski/toke" style="color:#f0c04a;">github.com/karwalski/toke</a>.</p>
+</div>
+
+<!-- ================================================================== -->
 <!-- The Problem                                                        -->
 <!-- ================================================================== -->
 
@@ -26,7 +36,7 @@
   <h2>The Problem</h2>
 </div>
 <p class="section-desc">Every time an AI writes code, it generates one token at a time. Each token costs compute, time, and money. Today's programming languages were designed for humans &mdash; they're full of verbose keywords, boilerplate imports, and ceremony that LLMs must produce token by token.</p>
-<p class="section-desc"><strong style="color:#f5efe2">toke</strong> is a compiled programming language designed for LLM code generation. It has 14 keywords, a 55-character set, a backtrack-free grammar with bounded lookahead, and one canonical form per construct, chosen by measurement in a 46-pattern catalogue and reproduced by <code>tkc --min</code>. That makes generated code cheap to constrain during decoding, cheap for a compiler to verify afterwards, and compact to emit. Token efficiency is one measured property of toke, always reported with its tokenizer and its baseline, not the whole claim.</p>
+<p class="section-desc"><strong style="color:#f5efe2">toke</strong> is a compiled programming language designed for LLM code generation. It has 14 keywords, a 59-character set, a backtrack-free grammar with bounded lookahead, and one canonical form per construct, chosen by measurement in a 46-pattern catalogue and reproduced by <code>tkc --min</code>. That makes generated code cheap to constrain during decoding, cheap for a compiler to verify afterwards, and compact to emit. Token efficiency is one measured property of toke, always reported with its tokenizer and its baseline, not the whole claim.</p>
 
 <div class="explainer" style="max-width:860px;margin:1rem auto;padding-left:2rem;padding-right:2rem;border-left:2px solid #f0c04a;">
   <p><strong>Where toke stands on tokens today, stated plainly.</strong> Under <em>one shared tokenizer</em> (cl100k_base on both sides), toke currently costs <strong>more</strong> tokens than equivalent Python, not fewer: <strong>1.34&times;</strong> [1.22, 1.48] over the 60 Gate-1 tasks (4,787 vs 3,565; N&nbsp;=&nbsp;60) and <strong>1.30&times;</strong> on four execution-verified sample pairs (344 vs 264; N&nbsp;=&nbsp;4). In bytes &mdash; the one lane with no tokenizer assumption &mdash; toke runs <strong>0.92&times;</strong> Python (693 vs 753, N&nbsp;=&nbsp;4). The defensible win is toke against itself: rewriting those 60 tasks into canonical v0.4 cut them from 6,347 to <strong>4,787</strong> cl100k tokens, a <strong>24.6%</strong> reduction under one tokenizer. Earlier site copy claiming &ldquo;40&ndash;75% fewer tokens&rdquo; or &ldquo;a 42% reduction vs Python&rdquo; measured the toke side with a toke-trained tokenizer and the Python side with cl100k &mdash; two different tokenizers &mdash; and is withdrawn. Every figure here is sourced from <code>docs/metrics-baseline.md</code>; the <a href="/roadmap" style="color:#f0c04a;">roadmap</a> says what is being measured next and why.</p>
@@ -254,7 +264,7 @@
   </div>
   <div class="feature-card">
     <h3>Designed for Correctness</h3>
-    <p>A backtrack-free grammar with bounded lookahead (up to 3 tokens), 14 keywords, and a 55-character set. No ambiguity, no implicit coercions, full static type checking, and structured diagnostics with stable codes, machine-parseable spans and a fix field. That is what makes a constrained-decoding mask cheap and gives a repair loop something to consume. It is also demonstrably not sufficient on its own: the Gate 2 model reached 100% compile Pass@1 and <strong>55.6%</strong> functional correctness.</p>
+    <p>A backtrack-free grammar with bounded lookahead (up to 3 tokens), 14 keywords, and a 59-character set. No ambiguity, no implicit coercions, full static type checking, and structured diagnostics with stable codes, machine-parseable spans and a fix field. That is what makes a constrained-decoding mask cheap and gives a repair loop something to consume. It is also demonstrably not sufficient on its own: on the curated Gate 2 set the model reached 100% compile Pass@1 but only <strong>55.6%</strong> functional correctness, and across every program in the corpus the floor is 37.5% compile. <a href="/status" style="color:#f0c04a;">The numbers, with their caveats &rarr;</a></p>
   </div>
   <div class="feature-card">
     <h3>Standard Library with C Runtime</h3>
@@ -396,16 +406,16 @@
 <!-- ================================================================== -->
 
 <div class="built-with">
-  <h2>Built with toke</h2>
+  <h2>The sub-projects</h2>
+  <p class="section-desc" style="margin-bottom:1.5rem;">ooke, loke and moke are toke sub-projects, not separate products: ooke is toke's web framework and static site generator, and it serves tokelang.dev; loke is toke's local intelligence layer; moke is loke's data-analysis demo. All three are written in toke.</p>
   <div class="built-card">
-    <h3>ooke &mdash; CMS and Web Framework</h3>
-    <p>This website is built and served by <a href="/ooke">ooke</a> &mdash; toke's own CMS and web framework. File-system routing, flat-file Markdown content, a template engine, and a native HTTP server. No Node.js, no Python, no nginx. One compiled binary serves every page you are reading.</p>
+    <h3>ooke &mdash; toke's web framework</h3>
+    <p>toke's web framework and static site generator. File-system routing, flat-file Markdown content, a template engine, and a native HTTP server. No Node.js, no Python, no nginx &mdash; one compiled binary serves every page you are reading, including this one.</p>
     <a href="/ooke">Explore ooke &rarr;</a>
   </div>
   <div class="built-card">
-    <h3>loke &mdash; Local Intelligence Layer</h3>
-    <p>A locally-run intelligence layer that sits between users, their data, and external LLMs &mdash; minimising token spend, maximising privacy, and keeping sensitive data where it belongs: on your device.</p>
-    <p>The market has split into enterprise cloud gateways that need DevOps expertise, local model runners that don't optimise cloud-bound traffic, and multi-provider chat UIs that pass prompts through unchanged. loke occupies the empty quadrant at the centre &mdash; privacy, optimisation, and routing in one place, running locally.</p>
+    <h3>loke &mdash; toke's local intelligence layer</h3>
+    <p>A locally-run intelligence layer that sits between users, their data, and external LLMs &mdash; minimising token spend, maximising privacy, and keeping sensitive data where it belongs: on your device. Like ooke, it is written entirely in toke, which makes it one of the language's own stress tests as much as a sub-project.</p>
     <a href="/loke">Explore loke &rarr;</a>
   </div>
 </div>
@@ -458,7 +468,8 @@
 <div class="section-alt" style="background:#1f1a11;padding:3rem 2rem;margin:2rem 0;">
   <div style="max-width:900px;margin:0 auto;">
     <h2 style="text-align:center;margin-bottom:0.5rem;">Try the Model &mdash; Free API Access</h2>
-    <p style="text-align:center;color:#9a9082;margin-bottom:2rem;font-size:0.9rem;">A fine-tuned 7B model that writes toke programs compiling correctly 100% of the time. Free tier &mdash; no credit card, no setup.</p>
+    <p style="text-align:center;color:#9a9082;margin-bottom:0.6rem;font-size:0.9rem;">A fine-tuned 7B model that writes toke. Free tier &mdash; no credit card, no setup.</p>
+    <p style="text-align:center;color:#6b6356;margin-bottom:2rem;font-size:0.82rem;max-width:720px;margin-left:auto;margin-right:auto;line-height:1.6;">It is the <strong style="color:#9a9082;">Gate 2</strong> model of 2026-05-22 &mdash; Qwen&nbsp;2.5&nbsp;Coder&nbsp;7B + QLoRA, trained on <strong style="color:#9a9082;">v0.3</strong> syntax, which the breaking v0.4 change superseded. On the curated 500-hidden + 200-eval set it reached <strong style="color:#9a9082;">100% compile Pass@1</strong> and <strong style="color:#9a9082;">55.6% functional</strong> correctness (272/489); across every program in the corpus the honest floor is <strong style="color:#9a9082;">37.5% compile</strong> and about <strong style="color:#9a9082;">2.2% fully correct</strong>. No v0.4-native model has been trained. <a href="/status" style="color:#f0c04a;">The full numbers and their caveats &rarr;</a></p>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:2rem;">
       <div style="background:#1f1a11;border:1px solid #2a2317;border-radius:8px;padding:1.5rem;">
@@ -571,7 +582,7 @@
   <div class="cta-grid">
     <div class="cta-card">
       <h3>Generate toke code</h3>
-      <p>Create a free account and use the API to generate toke programs with AI. 100% compilation rate.</p>
+      <p>Create a free account and use the API to generate toke programs with AI. It is the v0.3-trained Gate 2 model; see <a href="/status">what it was measured on</a> before quoting a rate.</p>
       <a href="https://console.tokelang.dev/signup">Free API access &rarr;</a>
     </div>
     <div class="cta-card">

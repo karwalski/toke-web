@@ -59,7 +59,7 @@ With 16 workers, steady-state RSS was ~217 MB leaving insufficient headroom. Two
 
 ### Test methodology
 
-- Client: old Lightsail instance (52.64.71.36) running `soak_test.sh`
+- Client: a separate Lightsail instance running `soak_test.sh` (address deliberately not recorded here — no infrastructure addresses in a public repo)
 - Interval: every 30 seconds, 4 requests per cycle (`/health`, `/`, `/docs/learn/04-collections`, `/api/version`)
 - Hourly summary reports logged
 - 10-second curl timeout per request

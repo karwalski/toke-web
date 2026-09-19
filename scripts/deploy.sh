@@ -6,6 +6,11 @@
 #   full      Emit LLVM IR, cross-compile on server, rsync everything, restart
 #   auto      Detect which mode is needed based on git changes (default)
 #
+# Both modes rebuild build/ and re-check every gate BEFORE anything is synced
+# (story 132.17): build/ is gitignored, so without this a deploy from a clean
+# checkout published whatever stale tree happened to be on the deploying
+# machine, and a deploy after a template edit published the pre-edit render.
+#
 # Required env vars:
 #   TOKE_DEPLOY_HOST  — remote host (e.g. Lightsail IP)
 #   TOKE_DEPLOY_KEY   — path to SSH private key file
@@ -25,8 +30,8 @@
 #   ./scripts/deploy.sh full
 #
 # Environment shortcuts (source one before running):
-#   export TOKE_DEPLOY_HOST=52.64.71.36
-#   export TOKE_DEPLOY_KEY=~/.ssh/toke-website.pem
+#   export TOKE_DEPLOY_HOST=<host>          # never commit the real address
+#   export TOKE_DEPLOY_KEY=~/.ssh/<key>.pem
 
 set -euo pipefail
 
@@ -115,6 +120,26 @@ echo "  Target:      ${REMOTE}:${DEPLOY_DIR}"
 echo "=========================================="
 echo ""
 
+# ── Pre-deploy gates (story 132.17) ──────────────────────────────────────
+# Nothing leaves this machine until the site's own toke sources compile, the
+# generated pages match their sources, and build/ has been rebuilt and proven
+# newer than everything it is derived from.
+echo "==> [0/n] Pre-deploy gates"
+cd "${REPO_ROOT}"
+
+make TKC="${TKC}" check-toke
+make check-roadmap
+make check-llms
+
+echo "    rebuilding build/ before sync"
+./scripts/build_static.sh
+
+# Hard stop: build/ must not be older than static/, templates/ or content/.
+python3 scripts/check_build_fresh.py
+
+echo "    gates passed"
+echo ""
+
 # ── Helper: rsync content to server ──────────────────────────────────────
 rsync_content() {
   local step_prefix="$1"
@@ -125,11 +150,18 @@ rsync_content() {
   # shellcheck disable=SC2029
   ssh ${SSH_OPTS} "${REMOTE}" "mkdir -p ${DEPLOY_DIR}/build ${DEPLOY_DIR}/sites ${DEPLOY_DIR}/logs"
 
-  # Rsync build/ (the rendered HTML output served by http.servedir)
-  rsync -az --delete -e "ssh ${SSH_OPTS}" \
+  # Rsync build/ (the static tree served at / by http.servedir).
+  #
+  # Deliberately NOT --delete. `make build` reproduces every asset build/ owns,
+  # but the ~110 per-slug documentation pages under /docs/<section>/<slug> that
+  # the sitemap lists are served from an older render that no tool in the tree
+  # can currently regenerate (`ooke build` aborts with RT005). Deleting them
+  # here would take them off the site. Until they can be rebuilt, this sync adds
+  # and overwrites but never removes — see the report on story 132.17.
+  rsync -az -e "ssh ${SSH_OPTS}" \
     "${REPO_ROOT}/build/" \
     "${REMOTE}:${DEPLOY_DIR}/build/"
-  echo "    build/ synced"
+  echo "    build/ synced (additive: see the note above before adding --delete)"
 
   # Rsync sites/ (vhost content)
   rsync -az --delete -e "ssh ${SSH_OPTS}" \

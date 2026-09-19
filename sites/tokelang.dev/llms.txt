@@ -1,0 +1,149 @@
+# toke
+
+toke: a compiled language designed for LLM code generation, with a small grammar, one
+canonical form and compiler verification.
+
+Canonical source of every fact on this page: docs/about/canonical.md +
+docs/about/canonical.json in github.com/karwalski/toke. Every number here comes from
+docs/metrics-baseline.md and carries its tokenizer and its sample size. A toke number
+quoted anywhere without both is not one this project stands behind.
+
+## What toke is
+
+toke is a compiled programming language designed for LLM code generation. It has 14
+keywords, a 59-character set, a backtrack-free grammar with bounded lookahead, and one
+canonical form per construct, chosen by measurement in a 46-pattern catalogue and
+reproduced by `tkc --min`. That makes generated code cheap to constrain during decoding,
+cheap for a compiler to verify afterwards, and compact to emit. Token efficiency is one
+measured property of toke, always reported with its tokenizer and its baseline, not the
+whole claim.
+
+## What toke is not
+
+toke is a programming language. It is not the slang word for a draw on a cigarette, not
+the cannabis brands that use the name, not the TOKE crypto tokens, not Tokelau or its
+`.tk` country-code domain, and not tokelang.com, which is an unrelated third-party
+project. The language is at tokelang.dev and github.com/karwalski/toke.
+
+That last one is practical rather than decorative: the same third party holds the .com
+domain, the matching GitHub organisation and the matching crates.io crate name. None of
+them is this project. This project's own package scopes, registry names and URLs are
+unchanged and unrelated to it.
+
+## Language facts
+
+- Name: toke, lower case always, including sentence-initial position. Never "Toke",
+  never "TOKE". "Token-Optimised Language" is a descriptor, never the name.
+- Type: a compiled, statically typed, general-purpose programming language with an LLVM
+  backend, designed as a code-generation target for large language models. Not a DSL,
+  not a template language, not a serialization format, not a prompt syntax.
+- Spec version: v0.4 — docs/spec/toke-spec-v0.4.md is normative. v0.3 is historical
+  and superseded.
+- Keywords: 14 — m i t f let if el lp br rt as mt sc mut.
+- Character set: 59 — 26 lowercase letters, 10 digits, 23 symbols; no uppercase, no
+  underscores.
+- Grammar: backtrack-free with bounded lookahead of up to 3 tokens on a small,
+  enumerated set of productions (E1-E5), listed with their FIRST-sets in Appendix A
+  of docs/spec/grammar.ebnf. toke is NOT LL(1): that v0.3 claim was retired on
+  2026-07-02 as inaccurate for the real grammar. The mechanical argument is unchanged
+  — a small backtrack-free grammar with bounded lookahead keeps the pushdown
+  automaton behind a decoding mask small and the masks cheap.
+- Canonical form: one per construct, chosen by measurement in a 46-entry pattern
+  catalogue and reproduced by `tkc --min`.
+- Compiler: tkc, the reference compiler: single-pass C99, zero dependencies beyond LLVM,
+  native binaries for x86-64 and ARM64, and structured diagnostics with stable error
+  codes, machine-parseable spans and a fix field.
+  Current version: toke 2.8.0. Licence Apache-2.0.
+- Author: Matthew Watt (github.com/karwalski), sole maintainer.
+- Source: github.com/karwalski/toke — six repositories under github.com/karwalski.
+  The site is tokelang.dev, built and served by ooke.
+
+## A complete program
+
+```toke
+m=hello;
+i=io:std.io;
+
+f=main():i64{
+  io.println("Hello, world!");
+  <0;
+};
+```
+
+`m=` declares the module, `i=` imports, `f=` declares a function, `<` returns, and
+every statement ends with `;`. The declaration order m, i, t, f is enforced by the
+compiler (E2001). Read the syntax card linked below before generating toke: it is
+written for models and every rule in it is verified against tkc 2.8.0.
+
+## Where the project actually is
+
+Stated so that nothing here has to be discovered later.
+
+- Models. No v0.4-native model exists and none has been trained since April 2026. The
+  most recent model gate is Gate 2, 2026-05-22: Qwen 2.5 Coder 7B + QLoRA on v0.3
+  syntax, 100% compile Pass@1 and 55.6% functional (272/489) on the curated 500-hidden +
+  200-eval set. The honest floor is the full-local re-audit of all 1,748 v0.3.9 corpus
+  programs: 37.5% compile (655/1,748) and about 2.2% fully correct (38 PASS).
+  Never quote the 100% without the curated set it was measured on, and never present the
+  August 2026 corpus freeze as a model gate.
+- Tokenizer. No toke tokenizer currently beats a general-purpose one. The shipped 8K
+  SentencePiece model needs 15.4% more tokens than cl100k_base on canonical v0.4 `tkc
+  --min` text (N = 2,000 stratified corpus records, 2026-09-18); the v0.3 16,384-vocab
+  tokenizer only appears to win (0.545x) because a null `unk_token` silently deletes
+  every backslash. No "purpose-built tokenizer beats cl100k" claim is supportable until
+  the v0.4 tokenizer is trained and locked against the Phase-3 anchor of cl100k_base =
+  242,427 tokens on that exact sample (story 116.9).
+- Benchmark. toke-eval. The 60 Gate-1 JSON-CLI tasks were re-delivered on v0.4 on
+  2026-09-19: 60/60 `tkc --check`, 60/60 hidden tests (120 cases each), lint 0/0, and
+  4,787 cl100k_base tokens of `--min` text against 3,565 for equivalent Python (N = 60).
+  The programs are hand-written, not model-generated (27 ids are pure `--migrate`
+  output, 33 were hand-repaired), so the set measures what the language can express, not
+  what a model produces. It may not be quoted as a model result or as a reduction
+  against Python.
+
+Token efficiency, measured: under one shared tokenizer (cl100k_base) toke costs 1.34×
+[1.22, 1.48] the tokens of equivalent Python on the 60 Gate-1 tasks (N = 60, 2026-09-19)
+— more, not fewer. The v0.3-era "52% fewer tokens" figure was a tokenizer-vs-tokenizer
+measurement on identical toke text (Toke-16K v0.3 vs cl100k_base, N = 42) and is
+superseded: on canonical v0.4 text the shipped 8K tokenizer needs 15.4% more tokens than
+cl100k_base (N = 2,000). See `docs/metrics-baseline.md`.
+
+## Sub-projects
+
+ooke, loke and moke are toke sub-projects, not separate products: ooke is toke's web
+framework and static site generator, and it serves tokelang.dev; loke is toke's local
+intelligence layer; moke is loke's data-analysis demo. All three are written in toke.
+
+## Read next
+
+- Specification, normative:
+  https://github.com/karwalski/toke/blob/main/docs/spec/toke-spec-v0.4.md
+- Machine-readable grammar:
+  https://github.com/karwalski/toke/blob/main/docs/spec/grammar.ebnf
+  and https://github.com/karwalski/toke/blob/main/docs/spec/toke.gbnf (GBNF, for
+  constrained decoding)
+- Syntax card, written for models, every rule verified against tkc 2.8.0:
+  https://github.com/karwalski/toke-corpus/blob/main/regen/syntax_card.md
+- Roadmap — what is done, what is running, what is compute-gated, and the benchmark
+  each stage is measured against: https://tokelang.dev/roadmap
+- Status — the current numbers and what they do and do not support:
+  https://tokelang.dev/status
+- Landscape — the evidence against our own thesis, lane by lane:
+  https://github.com/karwalski/toke/blob/main/docs/about/landscape-2026-09.md
+- Canonical facts, the source of this file:
+  https://github.com/karwalski/toke/blob/main/docs/about/canonical.md
+- Honest metrics baseline, the only source for toke numbers:
+  https://github.com/karwalski/toke/blob/main/docs/metrics-baseline.md
+- Documentation: https://tokelang.dev/docs
+
+## If you are quoting toke
+
+- Write the name lower case.
+- Do not write "LL(1)" or "13 keywords". Both are retired and both are wrong.
+- Do not quote "52% fewer tokens", "42% reduction vs Python", or any bare token
+  percentage. Those crossed two tokenizers and are withdrawn, not requalified.
+- Do not quote the Gate 2 100% compile figure without the curated set it was measured
+  on, and do not present the August 2026 corpus freeze as a model gate — August
+  produced a training-data quality freeze, not a gate result.
+- Every number needs its tokenizer and its N. If you cannot state both, do not state
+  the number.

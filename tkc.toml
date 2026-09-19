@@ -1,6 +1,7 @@
 # tkc.toml — compiler config for the website binary (compiled from repo root).
 # Capability grant set (ADR-0010) baked into the website server binary:
-#   fs_read  — templates/ build/ sites/ certs/{cert,key}.pem
+#   fs_read  — templates/ build/ sites/ (incl. sites/tokelang.dev/llms.txt,
+#              read at startup and served at /llms.txt) certs/{cert,key}.pem
 #   fs_write — logs/access.log via log.openaccess (main.tk), required at startup
 #   net      — HTTP/TLS listeners + static serving
 [capabilities]

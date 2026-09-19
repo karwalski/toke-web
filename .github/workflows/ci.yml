@@ -7,72 +7,110 @@ on:
     branches: [main]
 
 jobs:
-  # Job 1: syntax check the toke source
-  check:
-    name: tkc --check
+  # Job 1: the site's own toke sources must compile under the pinned compiler.
+  #
+  # Story 132.17a: main.tk sat at HEAD for months written in v0.3 `=`-equality,
+  # which tkc 2.8.0 rejects, so the website could not be rebuilt from its own
+  # source until a worker migrated it by hand. Nothing caught it, because the
+  # only compile step in this workflow was a placeholder echo. `make check-toke`
+  # is that gate and it fails the build.
+  check-toke:
+    name: tkc --check (website toke sources)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      # TODO(48.1.4): tkc is not yet on a public registry.
-      # When a release is published to github.com/karwalski/toke, replace this
-      # step with a real download:
-      #
-      #   - name: Install tkc
-      #     run: |
-      #       curl -fsSL "${{ secrets.TKC_DOWNLOAD_URL }}" -o tkc
-      #       chmod +x tkc
-      #       sudo mv tkc /usr/local/bin/tkc
-      #
-      # Until then this step is a no-op placeholder so the job structure is
-      # ready to activate once the compiler binary is published.
-      - name: Install tkc (placeholder — compiler not yet on public registry)
-        run: |
-          echo "TODO: download tkc from \${{ secrets.TKC_DOWNLOAD_URL }} once published"
-          echo "Skipping tkc --check until compiler is available on CI runner"
+      # TODO(48.1.4): tkc is not yet published to a public registry, so CI has
+      # to build it from source. Replace with a release download once one
+      # exists:
+      #   curl -fsSL "${{ secrets.TKC_DOWNLOAD_URL }}" -o tkc && chmod +x tkc
+      - name: Check out the compiler
+        uses: actions/checkout@v4
+        with:
+          repository: karwalski/toke
+          path: .toke
+          token: ${{ secrets.TOKE_REPO_TOKEN }}
 
-      # Activate this step once tkc is installed above.
-      # - name: Check syntax
-      #   run: tkc --check main.tk
-
-  # Job 2: compile binary on Linux, start it, smoke-test /health, kill it
-  build-smoke:
-    name: Binary compile smoke test
-    runs-on: ubuntu-latest
-    needs: check
-    steps:
-      - uses: actions/checkout@v4
-
-      # Install LLVM/Clang for the final link step (IR → native binary).
-      # The toke compiler emits LLVM IR; clang links it with the C stdlib
-      # runtime sources.
-      - name: Install Clang
+      - name: Install LLVM/Clang
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y clang-15 lld
+          sudo apt-get install -y clang lld llvm-dev
 
-      # TODO(48.1.4): same blocker as the check job — tkc must be available
-      # to produce main.ll before clang can link the final binary.
-      # Once tkc is installed, uncomment the emit step below.
-      - name: Compile toke IR to native binary (placeholder)
+      - name: Build tkc
+        working-directory: .toke
+        run: make tkc
+
+      - name: Compile every toke source the site is built from
+        env:
+          TKC: ${{ github.workspace }}/.toke/tkc
+        run: make TKC="$TKC" check-toke
+
+      # /llms.txt is generated from docs/about/canonical.json in the compiler
+      # repo, which is checked out above. A hand-edit to either side fails here.
+      - name: /llms.txt matches the canonical facts block
+        env:
+          TOKE_DOCS: ${{ github.workspace }}/.toke/docs
+        run: make check-llms
+
+  # Job 2: generated content must match its source, and build/ must be
+  # reproducible from committed files (story 132.17b).
+  check-generated:
+    name: Generated content and build/
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # /roadmap and the home-page milestones block both come from
+      # content/roadmap.json; neither may be edited by hand.
+      - name: Roadmap is current
+        run: make check-roadmap
+
+      # build/ is gitignored but the deploy rsyncs it, so it has to be
+      # reproducible here from committed sources alone, and never stale.
+      - name: Rebuild build/ from committed sources
+        run: make build
+
+      - name: build/ is newer than everything it derives from
+        run: make check-build-fresh
+
+  # Job 3: compile the server binary on Linux, start it, and check that every
+  # route the repository defines answers 200.
+  build-smoke:
+    name: Binary compile and route smoke test
+    runs-on: ubuntu-latest
+    needs: [check-toke, check-generated]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check out the compiler
+        uses: actions/checkout@v4
+        with:
+          repository: karwalski/toke
+          path: .toke
+          token: ${{ secrets.TOKE_REPO_TOKEN }}
+
+      - name: Install build dependencies
         run: |
-          echo "TODO: run 'tkc --emit-llvm main.tk -o main.ll' once tkc is on PATH"
-          echo "Then: clang-15 main.ll stdlib/*.c -o website_server -lpthread -lm"
-          echo "Skipping binary compile until compiler is available on CI runner"
+          sudo apt-get update -qq
+          sudo apt-get install -y clang lld llvm-dev libssl-dev zlib1g-dev libsqlite3-dev
 
-      # The steps below are ready to activate once main.ll is produced.
-      # Uncomment this block after enabling tkc above:
-      #
-      # - name: Link binary
-      #   run: clang-15 main.ll stdlib/*.c -o website_server -lpthread -lm
-      #
-      # - name: Start server and smoke-test /health
-      #   run: |
-      #     ./website_server &
-      #     SERVER_PID=$!
-      #     # Give the server a moment to bind its port
-      #     sleep 2
-      #     # /health returns JSON {"status":"ok"} — verify HTTP 200
-      #     curl --fail --silent --max-time 5 http://localhost:8081/health
-      #     # Clean up
-      #     kill "$SERVER_PID" || true
+      - name: Build tkc
+        working-directory: .toke
+        run: make tkc
+
+      - name: Build the website binary
+        env:
+          TKC: ${{ github.workspace }}/.toke/tkc
+          TOKE_REPO: ${{ github.workspace }}/.toke
+        run: make TKC="$TKC" TOKE_REPO="$TOKE_REPO"
+
+      - name: Rebuild build/
+        run: make build
+
+      - name: Start the server and check every route
+        run: ./scripts/check_routes.sh 8099

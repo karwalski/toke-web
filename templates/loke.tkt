@@ -13,10 +13,9 @@
 </div>
 
 <div class="stat-row">
-  <div class="stat"><div class="num">60&ndash;80%</div><div class="lbl">Token reduction</div></div>
-  <div class="stat"><div class="num">&lt;1s</div><div class="lbl">Pipeline overhead</div></div>
-  <div class="stat"><div class="num">0</div><div class="lbl">Data leaves device</div></div>
+  <div class="stat"><div class="num">0</div><div class="lbl">Data leaves the device unreviewed</div></div>
   <div class="stat"><div class="num">local</div><div class="lbl">First</div></div>
+  <div class="stat"><div class="num">toke</div><div class="lbl">Written entirely in</div></div>
 </div>
 
 <div class="container">
@@ -69,7 +68,7 @@
 <div class="features">
   <div class="feature">
     <h3>TOON format</h3>
-    <p>Token-Optimised Object Notation &mdash; a data serialisation format designed for minimal token consumption. Strips quotes, colons, and redundant whitespace. Tabular data uses <code>HDR[col1|col2]</code> notation. 30&ndash;60% fewer tokens than equivalent JSON.</p>
+    <p>Token-Optimised Object Notation &mdash; a data serialisation format designed for minimal token consumption. Strips quotes, colons, and redundant whitespace. Tabular data uses <code>HDR[col1|col2]</code> notation. The example below is the measurement: on that one record, cl100k_base counts 59 tokens of JSON against 33 of TOON. That is one example (N&nbsp;=&nbsp;1), not a rate.</p>
   </div>
   <div class="feature">
     <h3>LLMLingua compression</h3>
@@ -77,17 +76,17 @@
   </div>
   <div class="feature">
     <h3>Semantic caching</h3>
-    <p>Responses are cached by semantic similarity, not exact string match. If you ask a question similar enough to a previous one, loke returns the cached response instantly. 73% cache hit rate in typical usage &mdash; three out of four queries never touch the API.</p>
+    <p>Responses are cached by semantic similarity, not exact string match. If you ask a question similar enough to a previous one, loke returns the cached response instantly instead of paying for it again. The hit rate depends entirely on the workload, and loke has no published measurement of it, so no figure is quoted here.</p>
   </div>
   <div class="feature">
     <h3>Combined savings</h3>
-    <p>TOON + LLMLingua + semantic caching + template reuse + local routing. Combined, these strategies achieve 60&ndash;80% reduction in tokens sent to external LLMs. The pipeline adds less than one second of overhead.</p>
+    <p>TOON + LLMLingua + semantic caching + template reuse + local routing, applied in one pipeline. <strong>The combined figure that used to sit here &mdash; and the pipeline-overhead figure beside it &mdash; had no measurement behind them and are withdrawn</strong> (story 132.16). They will return only as a benchmark with its tokenizer, its workload and its N, on the same terms as every other number this project publishes.</p>
   </div>
 </div>
 
 <div class="code-compare">
   <div class="code-pane">
-    <div class="pane-label">JSON (68 tokens)</div>
+    <div class="pane-label">JSON &mdash; 59 tokens (cl100k_base)</div>
 <pre>{
   <span class="str">"name"</span>: <span class="str">"Alice Chen"</span>,
   <span class="str">"role"</span>: <span class="str">"engineer"</span>,
@@ -99,7 +98,7 @@
 }</pre>
   </div>
   <div class="code-pane">
-    <div class="pane-label">TOON (29 tokens &mdash; 57% smaller)</div>
+    <div class="pane-label">TOON &mdash; 33 tokens (cl100k_base, 44% fewer on this one record)</div>
 <pre>name=Alice Chen
 role=engineer
 department=platform
@@ -225,7 +224,7 @@ projects=HDR[id|name]
   </div>
   <div class="feature">
     <h3>AAAK shorthand</h3>
-    <p>Memories are stored in AAAK &mdash; a compressed English shorthand that achieves 5&ndash;30x compression compared to full prose. Context that would cost thousands of tokens is loaded in dozens. The AI expands AAAK back to natural language when needed.</p>
+    <p>Memories are stored in AAAK &mdash; a compressed English shorthand designed so that context which would be expensive to carry as full prose can be carried as shorthand and expanded back to natural language when needed. The compression ratio that used to be quoted here was never measured against a named tokenizer on a named sample, so it is withdrawn (story 132.16).</p>
   </div>
 </div>
 
@@ -365,7 +364,7 @@ User Experience
 <div class="features">
   <div class="feature">
     <h3>toke</h3>
-    <p>The programming language. Designed for minimal token consumption &mdash; a 55-character syntax that LLMs can generate with fewer tokens and higher correctness. loke's core engine is written in toke.</p>
+    <p>toke is the programming language the whole stack is written in: a 59-character set, 14 keywords, one canonical form per construct, and a compiler that verifies what a model generates. loke's core engine is written in toke. See the <a href="/status">measured numbers</a> for what that does and does not buy in tokens.</p>
   </div>
   <div class="feature">
     <h3>ooke</h3>
@@ -393,7 +392,7 @@ User Experience
 <div class="features">
   <div class="feature">
     <h3>Memory Palace</h3>
-    <p>Semantic search over cross-session memory. Vector-store backed, sub-500ms retrieval for 100K entries. AAAK shorthand compresses context 5&ndash;30x for efficient recall.</p>
+    <p>Semantic search over cross-session memory, vector-store backed, with AAAK shorthand used to keep recalled context small. Retrieval-latency and compression figures are not quoted here: neither has a published measurement behind it.</p>
   </div>
   <div class="feature">
     <h3>Agent Framework</h3>

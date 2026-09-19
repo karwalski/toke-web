@@ -1,8 +1,11 @@
-TOKE = /Users/matthew.watt/tk/toke/toke
-TOKE_STDLIB = /Users/matthew.watt/tk/toke/src/stdlib
+# The reference compiler. Override with TKC=/path/to/tkc (CI does).
+TKC ?= $(HOME)/tk/toke/tkc
+TOKE = $(TKC)
+TOKE_REPO ?= $(HOME)/tk/toke
+TOKE_STDLIB = $(TOKE_REPO)/src/stdlib
 BIN = ./website
 
-TOKE_VENDOR = /Users/matthew.watt/tk/toke/stdlib/vendor
+TOKE_VENDOR = $(TOKE_REPO)/stdlib/vendor
 CFLAGS = -std=c99 -D_GNU_SOURCE -O1 -iquote $(TOKE_STDLIB) \
   -I$(TOKE_VENDOR)/cmark/src -I$(TOKE_VENDOR)/tomlc99 \
   -Wno-pedantic -DTK_HAVE_OPENSSL
@@ -50,6 +53,68 @@ dev: $(BIN)
 clean:
 	rm -f $(BIN) main.ll
 
+# --- Toke source gate (story 132.17a) ---
+
+# Every toke source the site is BUILT from must compile under the pinned
+# compiler. main.tk sat at HEAD for months as v0.3 `=`-equality that tkc 2.8.0
+# rejects, so the site could not be rebuilt from its own source until a worker
+# migrated it by hand. This target is the gate that stops that recurring; the CI
+# workflow and `make ci` both run it, and it fails the build.
+TOKE_SRC = main.tk
+
+# pages/*.tk is NOT built or served: main.tk routes with
+# http.servepages("templates";"templates"), which registers a route per
+# templates/*.tkt and never looks at pages/. The tree is left from an earlier
+# ooke routing model, most of it does not compile (pre-v0.3 `match`/`err(e)`
+# syntax, and an `ooke.template` import with no interface path), and it is
+# reported below rather than gated so the failure of dead code cannot mask a
+# real one. It should be restored or deleted — see the report on story 132.17.
+TOKE_SRC_UNUSED = $(shell find pages -name '*.tk' 2>/dev/null | sort)
+
+check-toke:
+	@if [ ! -x "$(TKC)" ] && ! command -v $(TKC) >/dev/null 2>&1; then \
+		echo "ERROR: tkc not found at '$(TKC)'. Set TKC=/path/to/tkc." >&2; \
+		exit 1; \
+	fi; \
+	echo "=== tkc --check: toke sources the site is built from ==="; \
+	fail=0; \
+	for f in $(TOKE_SRC); do \
+		if $(TKC) --check "$$f" >/dev/null 2>&1; then \
+			echo "  PASS  $$f"; \
+		else \
+			echo "  FAIL  $$f"; $(TKC) --check "$$f" 2>&1 | head -5 | sed 's/^/        /'; \
+			fail=$$((fail + 1)); \
+		fi; \
+	done; \
+	if [ -n "$(TOKE_SRC_UNUSED)" ]; then \
+		up=0; uf=0; \
+		for f in $(TOKE_SRC_UNUSED); do \
+			if $(TKC) --check "$$f" >/dev/null 2>&1; then up=$$((up + 1)); else uf=$$((uf + 1)); fi; \
+		done; \
+		echo ""; \
+		echo "  note: pages/ is not built or served by main.tk — $$up compile, $$uf do not."; \
+		echo "        Not gated. Restore or delete the tree (story 132.17)."; \
+	fi; \
+	echo ""; \
+	if [ $$fail -ne 0 ]; then echo "check-toke FAILED ($$fail source(s))"; exit 1; fi; \
+	echo "check-toke passed"
+
+# --- Static output (story 132.17b) ---
+
+# build/ is gitignored but the deploy rsyncs it, so it must be reproducible from
+# committed sources alone. This remakes it from scratch.
+build: ## Rebuild build/ from static/
+	./scripts/build_static.sh
+
+# Fail if build/ is older than the sources it is derived from. The deploy runs
+# this after rebuilding, so a stale tree can never be published.
+check-build-fresh:
+	@python3 scripts/check_build_fresh.py
+
+# Start the site and assert every route it defines answers 200.
+check-routes: $(BIN) build
+	@./scripts/check_routes.sh
+
 # --- Generated content ---
 
 # The /roadmap page and the home-page milestones block are generated from ONE
@@ -60,9 +125,20 @@ roadmap:
 check-roadmap:
 	python3 scripts/gen_roadmap.py --check
 
+# /llms.txt is generated from the canonical facts block so it cannot drift.
+llms:
+	python3 scripts/gen_llms.py
+
+check-llms:
+	python3 scripts/gen_llms.py --check
+
+# Everything a change to this repo must pass before it is deployed.
+ci: check-toke check-roadmap check-llms build check-build-fresh check-routes
+	@echo ""; echo "=== CI checks passed ==="
+
 # --- Documentation checks ---
 
-DOCS_DIR = /Users/matthew.watt/tk/docs
+DOCS_DIR ?= $(TOKE_REPO)/docs
 EXAMPLES_DIR = $(DOCS_DIR)/examples
 ifeq ($(UNAME), Darwin)
   LINK_FRAMEWORKS = -framework Security -framework CoreFoundation
@@ -136,4 +212,4 @@ deploy-content: ## Content-only deploy (templates, static, sites — no rebuild)
 deploy-auto: ## Auto-detect deploy mode based on git changes
 	./scripts/deploy.sh auto
 
-.PHONY: all run run-http dev certs clean roadmap check-roadmap check-docs check-docs-examples check-docs-runtime deploy deploy-content deploy-auto
+.PHONY: all run run-http dev certs clean roadmap check-roadmap llms check-llms ci check-toke build check-build-fresh check-routes check-docs check-docs-examples check-docs-runtime deploy deploy-content deploy-auto

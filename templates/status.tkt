@@ -1,0 +1,153 @@
+{! layout("base") !}
+{! block("title") !}Status — toke{! end !}
+{! block("content") !}
+
+<style>
+/* Status page (story 132.2) */
+.st { max-width: 900px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
+.st h1 { font-size: 2.2rem; font-weight: 700; letter-spacing: -0.03em; color: #f5efe2; margin-bottom: 0.4rem; }
+.st h1 span { color: #f0c04a; }
+.st .lede { color: #9a9082; font-size: 0.95rem; line-height: 1.6; margin-bottom: 2rem; }
+.st h2 { font-size: 1.35rem; color: #f5efe2; margin: 3rem 0 0.5rem; letter-spacing: -0.02em; }
+.st h2:first-of-type { margin-top: 2rem; }
+.st h3 { font-size: 1rem; color: #f5efe2; margin: 0 0 0.5rem; }
+.st p { color: #9a9082; font-size: 0.88rem; line-height: 1.65; margin: 0 0 0.9rem; }
+.st p strong { color: #f5efe2; }
+.st code { background: #201a11; border: 1px solid #2a2317; border-radius: 3px; padding: 0.1em 0.35em; font-size: 0.85em; color: #f0c04a; }
+.st a { color: #f0c04a; }
+.st ul { margin: 0 0 1rem; padding-left: 1.1rem; }
+.st li { color: #9a9082; font-size: 0.86rem; line-height: 1.65; margin-bottom: 0.45rem; }
+.st li strong { color: #f5efe2; }
+
+.st .cards { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+.st .card { flex: 1 1 210px; border: 1px solid #2a2317; border-radius: 8px; background: #14110b; padding: 1.2rem 1.3rem; }
+.st .card .n { font-size: 2.1rem; font-weight: 700; color: #f0c04a; line-height: 1.1; }
+.st .card .n.warn { color: #9a9082; }
+.st .card .n.good { color: #6fc2b2; }
+.st .card .k { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: #9a9082; margin-top: 0.4rem; }
+.st .card .q { font-size: 0.72rem; color: #6b6356; margin-top: 0.3rem; line-height: 1.5; }
+
+.st .box { border: 1px solid #2a2317; border-left-width: 3px; border-left-color: #6b6356; border-radius: 8px; background: #14110b; padding: 1.2rem 1.35rem; margin-bottom: 1rem; }
+.st .box.flag { border-left-color: #f0c04a; }
+.st .box p:last-child { margin-bottom: 0; }
+.st .caveat { border-left: 2px solid #6b6356; padding-left: 0.85rem; font-size: 0.82rem; color: #6b6356; margin: 0.8rem 0 0; }
+.st .caveat strong { color: #9a9082; }
+
+.st table { width: 100%; border-collapse: collapse; font-size: 0.83rem; margin-bottom: 1rem; }
+.st th { text-align: left; color: #6b6356; font-weight: 600; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #2a2317; padding: 0.5rem 0.6rem; }
+.st td { color: #9a9082; border-bottom: 1px solid #201a11; padding: 0.55rem 0.6rem; vertical-align: top; line-height: 1.55; }
+.st td strong { color: #f5efe2; }
+.st .src { color: #6b6356; font-size: 0.78rem; margin-top: 3rem; border-top: 1px solid #2a2317; padding-top: 1rem; line-height: 1.6; }
+</style>
+
+<div class="st">
+
+<h1>Status: the numbers, and what they <span>support</span></h1>
+<p class="lede">Every figure on this page comes from <code>docs/metrics-baseline.md</code> in the compiler repository, which is the only source this project publishes numbers from. Each one carries its tokenizer (or says &ldquo;bytes&rdquo;) and its sample size. Where a number that is widely quoted has no entry there, it is named below and <em>not</em> restated. If a page on this site disagrees with this one, this one is right and the other is a bug.</p>
+
+<!-- ================================================================ -->
+<h2>Models</h2>
+<p><strong>No v0.4-native model exists, and no model has been trained since April 2026.</strong> The most recent model gate is Gate 2, run on 2026-05-22 against a Qwen 2.5 Coder 7B fine-tuned with QLoRA on the <strong>v0.3</strong> corpus &mdash; that is, on the syntax that the breaking v0.4 change (<code>=</code>/<code>==</code>, expression-<code>if</code>, <code>&amp;&amp;</code>/<code>||</code>) superseded in Epic 116. Corpus, tokenizer and model all have to be refreshed before any Gate-2 number carries forward.</p>
+
+<div class="cards">
+  <div class="card">
+    <div class="n">55.6%</div>
+    <div class="k">Gate 2 functional correctness</div>
+    <div class="q">272/489 &middot; curated 500-hidden + 200-eval set &middot; Qwen 2.5 Coder 7B + QLoRA, v0.3 syntax &middot; 2026-05-22</div>
+  </div>
+  <div class="card">
+    <div class="n good">100%</div>
+    <div class="k">Gate 2 compile Pass@1</div>
+    <div class="q">Same curated set. It may never be quoted without that set: it is not a real-world rate.</div>
+  </div>
+  <div class="card">
+    <div class="n warn">37.5%</div>
+    <div class="k">Compile, honest floor</div>
+    <div class="q">655/1,748 &middot; full-local re-audit of every v0.3.9 corpus program &middot; 2026-05-28</div>
+  </div>
+  <div class="card">
+    <div class="n warn">~2.2%</div>
+    <div class="k">Fully correct, honest floor</div>
+    <div class="q">38 PASS of 1,748 &middot; same re-audit &middot; 141 wrong output, 64 run-fail, 9 build-fail, 1,093 compile-fail</div>
+  </div>
+</div>
+
+<p class="caveat"><strong>Read the two together.</strong> 100% compile on a curated set the model was optimised against, and 37.5% compile across every program in the corpus, are both true. The first says the grammar is learnable; the second is the number to plan against. Functional correctness &mdash; not compile rate &mdash; is the open weakness.</p>
+
+<!-- ================================================================ -->
+<h2>Why the functional number was once 8%</h2>
+
+<div class="box">
+  <p>The Gate 2 run first reported <strong>about 8% functional correctness</strong>, and that figure is still quoted in older write-ups. It was wrong, and the cause was ours, not the model's.</p>
+  <p><code>io.readln()</code> &mdash; the function a toke program uses to read a line of standard input &mdash; was <strong>declared in the standard library interface but had no C implementation behind it</strong>. Every generated program that read its input therefore failed at run time no matter how correct it was. The missing glue was added on 2026-05-25 and the whole evaluation re-run: <strong>272/489 = 55.6%</strong>.</p>
+  <p><strong>The original 8% was an infrastructure failure, not a model failure.</strong> 55.6% is the corrected figure and the one this project quotes; 8% should be cited only as history, and only with its cause.</p>
+  <p class="caveat">Source: <code>docs/metrics-baseline.md</code> &sect; Correctness; stories 102.14 and 102.15.</p>
+</div>
+
+<!-- ================================================================ -->
+<h2>Hardcoded inputs: why a pass is not always a pass</h2>
+
+<div class="box flag">
+  <p>A share of what is left &mdash; the 44% that Gate 2 got functionally wrong, and some of what it got &ldquo;right&rdquo; &mdash; comes from a failure mode worth naming, because it limits every percentage on this page.</p>
+  <p><strong>A generated program can pass a test without solving the problem</strong>, by printing the expected output rather than computing it from its input. Gate 2's evaluation used fixed inputs, so a program that hardcoded the answer scored as a pass. That is why the Gate 3 criteria add an explicit <em>argv-generalisation</em> requirement &mdash; the solution must read its input and must not contain hardcoded test values &mdash; and why the corpus rebuild randomises inputs per record instead of reusing one fixed pair.</p>
+  <p>The proportion of Gate-2 functional failures usually attached to this explanation has <strong>no row in <code>docs/metrics-baseline.md</code></strong>, so it is not restated here. What is measured, and recent, is the same failure mode found in the training corpus itself:</p>
+  <ul>
+    <li>Of <strong>576</strong> error-union corpus records scanned on 2026-09-19, <strong>429 across 69 base tasks were gamed</strong>: they returned the test harness's error marker as a literal string instead of raising a real error. <strong>147</strong> were correct.</li>
+    <li>424 of those built the marker as a literal; <strong>5 constructed it at run time from string operations</strong> &mdash; the generation model had learned to defeat a literal-matching check.</li>
+    <li>Re-authoring the test cases for 54 base tasks and re-running 336 records gave <strong>249 pass, 68 fail, 19 driver-limited</strong>. The 68 are records that had only ever passed against wrong or gameable tests.</li>
+  </ul>
+  <p class="caveat"><strong>The lesson, stated plainly:</strong> passing a test is not evidence of correctness when the test can be gamed. That qualifies every &ldquo;% pass&rdquo; figure taken from the corpus, including the ones above. Sources: <code>docs/metrics-baseline.md</code> &sect; 2026-09 (stories 131.42, 131.47); <code>docs/spec/gate3-criteria.md</code> C3.</p>
+</div>
+
+<!-- ================================================================ -->
+<h2>August 2026 was a data freeze, not a model gate</h2>
+
+<div class="box">
+  <p><strong>There is no August gate number, because no gate ran in August.</strong> Nothing was trained, fine-tuned or evaluated as a model: every training story is still planned and waiting on compute. The most recent &mdash; and only &mdash; trained-model evaluation on record remains Gate 2 of 2026-05-22, above.</p>
+  <p>What August delivered was a <strong>training-data quality freeze</strong>, on 2026-08-19:</p>
+  <table>
+    <thead><tr><th>Deliverable</th><th>Measured on</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Training-data freeze</strong></td><td>v0.4 regen corpus, 23,382 records, under tkc 2.8.0</td><td><strong>14,727</strong> pass every tightened gate; 8,531 not executable (no harness); 124 driver-limit; 0 test-fail, 0 build-fail</td></tr>
+      <tr><td>Library re-verification</td><td>1,583 library programs</td><td><strong>1,583/1,583</strong> pass all gates</td></tr>
+      <tr><td>Test coverage for A-category tasks</td><td>631 base tasks</td><td>3&ndash;5 execution-verified cases each; 2,894 records executed for the first time</td></tr>
+      <tr><td>Repair and compaction</td><td>Audit-flagged records</td><td><strong>2,639</strong> repaired or rewritten; originals archived</td></tr>
+    </tbody>
+  </table>
+  <p>&ldquo;Pass&rdquo; there means compiles, builds, matches its tests exactly, exits 0, prints nothing extra, and clears the idiom and structure gates. <strong>It is a statement about data quality and says nothing about what a model can generate.</strong></p>
+  <p class="caveat"><strong>And that freeze has since been reopened.</strong> The September work below found enough wrong with it that the frozen state is preserved byte-for-byte and superseded &mdash; so even these corpus numbers are a snapshot, not a standing result. Source: <code>docs/metrics-baseline.md</code> &sect; 2026-08.</p>
+</div>
+
+<!-- ================================================================ -->
+<h2>Tokenizer</h2>
+<p><strong>No toke tokenizer currently beats a general-purpose one.</strong> Measured on 2,000 stratified corpus records of canonical <code>tkc --min</code> text (2026-09-18):</p>
+<table>
+  <thead><tr><th>Tokenizer</th><th>Total tokens</th><th>Per program</th><th>vs cl100k</th></tr></thead>
+  <tbody>
+    <tr><td><strong>cl100k_base</strong></td><td>242,427</td><td>121.2 [118.9, 123.6]</td><td>1.000</td></tr>
+    <tr><td>o200k_base</td><td>245,217</td><td>122.6</td><td>1.012</td></tr>
+    <tr><td>Qwen2.5-Coder</td><td>250,287</td><td>125.1</td><td>1.032</td></tr>
+    <tr><td>SentencePiece 8k (shipped)</td><td>279,672</td><td>139.8</td><td><strong>1.154</strong></td></tr>
+    <tr><td>tokenizer_v03 (16,384)</td><td>131,998</td><td>66.0</td><td>0.545 &mdash; <strong>lossy</strong></td></tr>
+  </tbody>
+</table>
+<p class="caveat">The shipped 8k tokenizer needs <strong>15.4% more</strong> tokens than cl100k on v0.4 text. The v0.3 tokenizer only appears to win because a null <code>unk_token</code> silently deletes every backslash &mdash; 2,606 of them in that sample. No &ldquo;purpose-built tokenizer beats cl100k&rdquo; claim is supportable until a v0.4 tokenizer is trained and locked against the 242,427-token anchor on that exact sample.</p>
+
+<!-- ================================================================ -->
+<h2>What the language itself can express</h2>
+<p>The 60 Gate-1 benchmark tasks were re-delivered on v0.4 syntax on 2026-09-19: <strong>60/60</strong> pass <code>tkc --check</code>, <strong>60/60</strong> pass their hidden tests (120 cases each), lint 0/0. Under cl100k_base on both sides, those 60 programs cost <strong>4,787</strong> tokens of <code>--min</code> text against <strong>3,565</strong> for equivalent Python &mdash; a ratio of <strong>1.34&times;</strong> [1.22, 1.48]. Rewriting them from v0.3 into canonical v0.4 cut them from 6,347 to 4,787, a <strong>24.6%</strong> reduction under one tokenizer.</p>
+<p class="caveat"><strong>The caveat travels with the number.</strong> Those programs are hand-written, not model-generated &mdash; 27 are pure migrator output and 33 were hand-repaired &mdash; so the set measures what the <em>language</em> can express, not what a <em>model</em> produces. It may not be quoted as a model result, as a Pass@1, or as a reduction against Python: toke currently costs about 30% <em>more</em> tokens than Python under the tokenizers models actually use.</p>
+
+<!-- ================================================================ -->
+<h2>What is not measured</h2>
+<ul>
+  <li><strong>Anything v0.4-native from a model.</strong> No v0.4 model exists; every functional-correctness number on this page is from a v0.3-trained model.</li>
+  <li><strong>Runtime correctness in CI.</strong> Continuous integration checks that programs compile, not that they run correctly, so run-time miscodegen is invisible to it. An exit-code correctness gate is required before functional numbers are fully trustworthy.</li>
+  <li><strong><code>--min</code>-basis efficiency for the public program library.</strong> Compute-gated and not yet re-measured.</li>
+</ul>
+
+<p class="src">Sources for everything above: <code>docs/metrics-baseline.md</code> (the honest-metrics baseline), <code>docs/about/canonical.md</code> (the canonical facts block), <code>docs/about/toke-eval-drift-decision.md</code> (what the 60-task benchmark may and may not claim), and <code>docs/spec/gate3-criteria.md</code>, all in <a href="https://github.com/karwalski/toke">github.com/karwalski/toke</a>. See also the <a href="/roadmap">roadmap</a> for what each remaining stage is measured against, and <a href="/llms.txt">/llms.txt</a> for the machine-readable version of this project's facts.</p>
+
+</div>
+
+{! end !}
