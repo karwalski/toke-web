@@ -13,12 +13,20 @@
 
 <div class="stat-row">
   <div class="stat"><div class="num">0</div><div class="lbl">Runtime deps</div></div>
-  <div class="stat"><div class="num">&lt;5ms</div><div class="lbl">TTFB</div></div>
   <div class="stat"><div class="num">1</div><div class="lbl">Binary</div></div>
   <div class="stat"><div class="num">3</div><div class="lbl">Modes: build+serve+repair</div></div>
 </div>
 
 <div class="container">
+  <p class="caveat"><strong>The latency stat that used to sit in that row is withdrawn.</strong>
+  It read &ldquo;&lt;5ms TTFB&rdquo; with no method, machine or sample size beside it. A benchmark
+  has since been run (2026-09-19) and the number is not the problem &mdash; server-side time to
+  first byte on loopback is 0.14&ndash;0.42&nbsp;ms median, worst p95 0.583&nbsp;ms &mdash; but the
+  claim as published is: it was attributed to <code>ooke</code>, which could not serve this site at
+  all, and a bare &ldquo;TTFB&rdquo; reads as what a visitor experiences, which loopback cannot
+  measure. No replacement figure is quoted here until ooke itself can serve a real site and the
+  number can carry its method. Harness and data:
+  <code>toke-ooke/bench/serving/</code>; rows: <code>docs/metrics-baseline.md</code>.</p>
 
 <h2>Quick start</h2>
 <div class="code-block">

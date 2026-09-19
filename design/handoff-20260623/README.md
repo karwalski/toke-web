@@ -1,7 +1,19 @@
 # Handoff: toke — Website rebuild (Coin Gold identity)
 
+> **Claim withdrawal, 2026-09-19 (story 132.22).** This pack was written on
+> 2026-06-23 and quotes two token-efficiency figures — **"40–75% fewer than
+> Python, C, or Java"** and the **`−42% tokens`** pill — that have since been
+> **withdrawn, not requalified** (stories 132.6 and 132.13: every one of them
+> measured a toke-trained tokenizer against a cl100k baseline, which measures
+> the tokenizer's training bias and not the language). They have been struck
+> from this pack wherever they appeared, and nothing has been put in their
+> place, because this is a *design* handoff and it is not the source for any
+> number. **Epic 115 must take every published figure from
+> `toke/docs/metrics-baseline.md`, never from these files.** The two `.dc.html`
+> rendered references carry the same banner and the same strikes.
+
 ## Overview
-This package contains the locked **toke** brand identity ("Coin Gold") and a full style guide, prepared so you can rebuild the toke marketing/docs website to match. toke is a programming language designed from first principles to minimise the number of tokens an LLM has to generate — 40–75% fewer than Python, C, or Java for an equivalent program. The brand metaphor is **a token is currency**: a minted coin, an arcade payout, an "admit one" ticket — value, earned and not wasted.
+This package contains the locked **toke** brand identity ("Coin Gold") and a full style guide, prepared so you can rebuild the toke marketing/docs website to match. toke is a programming language designed for LLM code generation. (This sentence used to close with "— 40–75% fewer tokens than Python, C, or Java for an equivalent program"; that figure is withdrawn and no replacement belongs in a design handoff.) The brand metaphor is **a token is currency**: a minted coin, an arcade payout, an "admit one" ticket — value, earned and not wasted.
 
 ## About the design files
 The files in this bundle are **design references created in HTML** — they show the intended look, type, colour, and voice of the brand. They are **not** production code to copy verbatim. Your task is to **recreate this identity in the website's target environment** using its established patterns and component library. If no codebase exists yet, pick the most appropriate stack (e.g. Next.js + Tailwind, or Astro for a docs/marketing site) and implement the system there. Re-derive the tokens below into that stack's idioms (CSS variables, Tailwind theme, etc.) rather than pasting inline styles.
@@ -105,9 +117,9 @@ f=sum(arr:@i64):i64{
 Context: `<0;` is `return 0;` (4 tokens → 1), and the close pattern `<0;}` collapses to a single token under toke's purpose-built BPE tokenizer. Other real tokens: `m=` (module), `f=` (function), `$` type sigils, `@()` arrays, `.tki` interface contracts, `--legacy` flag (80-char profile vs the default 55-char "toke").
 
 ## Voice & persona
-**Terse. Exact. Dry.** A senior engineer who stopped trying to impress you and just tells you the number. Four principles: (1) Economical — cut every token that doesn't earn its place; (2) Exact — real numbers over adjectives (40–75%, not "tons"); (3) Confident — state it plainly, no hype, no exclamation marks; (4) Dry wit — a flat one-liner beats a slogan.
+**Terse. Exact. Dry.** A senior engineer who stopped trying to impress you and just tells you the number. Four principles: (1) Economical — cut every token that doesn't earn its place; (2) Exact — real numbers over adjectives (a figure with its method and sample size, not "tons"; the "40–75%" this line used to give as the example is withdrawn); (3) Confident — state it plainly, no hype, no exclamation marks; (4) Dry wit — a flat one-liner beats a slogan.
 
-- **Sounds like toke:** "40–75% fewer tokens than Python." · "`return 0;` is four tokens. We made it one." · "Compiles correctly 100% of the time. We checked."
+- **Sounds like toke:** ~~"40–75% fewer tokens than Python."~~ (withdrawn) · "`return 0;` is four tokens. We made it one." · "Compiles correctly 100% of the time. We checked." — the register is the point, not these numbers; both survivors are per-example claims that Epic 115 must re-source from `metrics-baseline.md` or drop.
 - **Not toke:** "The revolutionary, game-changing AI-first language!" · "Unleash unlimited productivity 🚀" · "honestly kind of a big deal you guys." (No emoji, no exclamation, no hype.)
 
 Approved descriptor line: **"A language built for AI."** Brand line: **"Write less. Mean more."** / "A token is currency. Spend it well."
@@ -116,14 +128,14 @@ Approved descriptor line: **"A language built for AI."** Brand line: **"Write le
 - **Primary button:** gold fill (`--gold` light / `#F0C04A` dark), `--on-gold` text, 8px radius, 11px × 20px padding, Space Grotesk 600/14px. Hover: darken ~6%.
 - **Secondary button:** transparent, 1.5px border (`--ink` light / `#4a4231` dark), matching text colour.
 - **Tertiary/link button:** `--gold-deep` (light) / `#F0C04A` (dark) text, trailing "→".
-- **Badge / pill:** 999px radius, JetBrains Mono. Gold filled (`−42% tokens`), neutral filled (`v0.3 default`), outline (`--legacy`), and the red `admit one` (ticket motif only).
+- **Badge / pill:** 999px radius, JetBrains Mono. Gold filled, neutral filled (`v0.3 default`), outline (`--legacy`), and the red `admit one` (ticket motif only). The gold pill's shipped exemplar was `−42% tokens` and is withdrawn; the rendered references now show `pill text` in its place. Its content is a content decision, not a design one — take it from `metrics-baseline.md`.
 - **Ticket motif:** espresso card split by a vertical dashed perforation (`2px dashed #3a3221`); left stub = `ADMIT ONE` eyebrow + gold value; right stub = vertical mono code (`<0;}`).
 - **Coin:** see logo section — also used solo as app icon / favicon.
 
 ## Screens to build (suggested site map)
 These weren't designed as final pages — recreate the *system* across the standard marketing/docs structure. Apply the tokens above.
-- **Home / hero** — dark espresso hero, big coin + wordmark, "A language built for AI." descriptor, the −42% / admit-one / version pills, primary + secondary CTA, a live code block showing token savings.
-- **Why toke / token economics** — the "token is currency" explainer, before/after token counts (Python `return 0;` vs `<0;`), the 40–75% stat.
+- **Home / hero** — dark espresso hero, big coin + wordmark, "A language built for AI." descriptor, a gold / admit-one / version pill trio (the −42% exemplar is withdrawn), primary + secondary CTA, a live code block. Whether it can show a "token saving" at all depends on what `metrics-baseline.md` supports on the day.
+- **Why toke / token economics** — the "token is currency" explainer, before/after token counts (Python `return 0;` vs `<0;`). ~~the 40–75% stat~~ — withdrawn, and deliberately left as a hole: this page has no headline figure until `metrics-baseline.md` carries one.
 - **Docs** — light cream surface, mono labels/eyebrows in gold-deep, three-colour code blocks, `.tki` interface contracts, stdlib (30+ modules).
 - **Playground / API** — console.tokelang.dev style: API key, free tier (1,000 tokens / 6 hrs), `api.tokelang.dev/v1/generate` example; `toke-7b-gate2` model.
 
