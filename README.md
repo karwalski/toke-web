@@ -83,7 +83,7 @@ This emits LLVM IR locally, rsyncs it to the server, compiles a native binary wi
 ## Related repositories
 
 - [toke](https://github.com/karwalski/toke) -- the toke language compiler and standard library (also the source of truth for the docs this site serves)
-- [toke-ooke](https://github.com/karwalski/toke-ooke) -- ooke web framework
+- [ooke](https://github.com/karwalski/ooke) -- ooke web framework
 - [toke-corpus](https://github.com/karwalski/toke-corpus) -- training-data generation for toke code models
 - [toke-model](https://github.com/karwalski/toke-models) -- model training and adapter merging
 - [toke-tokenizer](https://github.com/karwalski/toke-tokenizer) -- custom toke tokenizer
