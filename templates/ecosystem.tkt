@@ -86,7 +86,7 @@ cd toke && make</code></pre>
       <div class="install-badge">ai model</div>
       <h3>Ollama</h3>
       <pre><code>ollama run karwalski/toke</code></pre>
-      <p class="install-note">Gate 2 model &mdash; 100% compilation Pass@1</p>
+      <p class="install-note">Gate 2 model (2026-05-22, v0.3 syntax) &mdash; 100% compile Pass@1 and <strong>55.6% functional</strong> (272/489) on the curated 500-hidden + 200-eval set; Qwen&nbsp;2.5&nbsp;Coder&nbsp;7B + QLoRA. The honest floor over all 1,748 v0.3.9 corpus programs is 37.5% compile / ~2.2% fully correct. No v0.4-native model exists yet &mdash; see the <a href="/roadmap">roadmap</a>.</p>
     </div>
 
     <div class="install-card">
@@ -114,7 +114,7 @@ cd toke && make</code></pre>
       <div class="install-badge">python</div>
       <h3>Tokenizer</h3>
       <pre><code>pip install toke-tokenizer</code></pre>
-      <p class="install-note">Purpose-built BPE &mdash; 52% fewer tokens vs cl100k</p>
+      <p class="install-note">The v0.3 purpose-built BPE. The &ldquo;52% fewer tokens vs cl100k&rdquo; claim that used to sit here is <strong>withdrawn</strong>: it compared two tokenizers over the same toke text (N&nbsp;=&nbsp;42), not toke against Python, and it is not reproducible from the dataset it cited. On canonical v0.4 text the shipped 8K tokenizer needs <strong>15.4% more</strong> tokens than cl100k_base (N&nbsp;=&nbsp;2,000). A correct v0.4 tokenizer is still to be trained &mdash; see the <a href="/roadmap">roadmap</a>.</p>
     </div>
 
     <div class="install-card">

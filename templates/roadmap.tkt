@@ -1,0 +1,331 @@
+{! layout("base") !}
+{! block("title") !}Roadmap — toke{! end !}
+{! block("content") !}
+
+<!-- GENERATED FILE. Edit content/roadmap.json, then run: python3 scripts/gen_roadmap.py -->
+
+<style>
+/* Roadmap page (generated -- see scripts/gen_roadmap.py) */
+.rm { max-width: 900px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
+.rm h1 { font-size: 2.2rem; font-weight: 700; letter-spacing: -0.03em; color: #f5efe2; margin-bottom: 0.4rem; }
+.rm h1 span { color: #f0c04a; }
+.rm .lede { color: #9a9082; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem; }
+.rm .claim { border-left: 2px solid #f0c04a; padding: 0.2rem 0 0.2rem 1.1rem; margin: 0 0 2.5rem; }
+.rm .claim .one { color: #f5efe2; font-size: 1.05rem; font-weight: 600; line-height: 1.45; margin-bottom: 0.7rem; }
+.rm .claim .para { color: #9a9082; font-size: 0.87rem; line-height: 1.6; margin: 0; }
+.rm h2 { font-size: 1.35rem; color: #f5efe2; margin: 3rem 0 0.5rem; letter-spacing: -0.02em; }
+.rm h2:first-of-type { margin-top: 2rem; }
+.rm .sub { color: #9a9082; font-size: 0.88rem; line-height: 1.6; margin-bottom: 1.25rem; }
+.rm code { background: #201a11; border: 1px solid #2a2317; border-radius: 3px; padding: 0.1em 0.35em; font-size: 0.85em; color: #f0c04a; }
+.rm a { color: #f0c04a; }
+
+.rm .stage { border: 1px solid #2a2317; border-left-width: 3px; border-radius: 8px; background: #14110b; padding: 1.25rem 1.4rem; margin-bottom: 1rem; }
+.rm .stage.rm-done { border-left-color: #6fc2b2; }
+.rm .stage.rm-running { border-left-color: #f0c04a; }
+.rm .stage.rm-gated { border-left-color: #6b6356; }
+.rm .stage.rm-planned { border-left-color: #6b6356; }
+.rm .stage-head { display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+.rm .stage-label { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: #6b6356; }
+.rm .badge { font-size: 0.68rem; letter-spacing: 0.05em; text-transform: uppercase; border-radius: 20px; padding: 0.15rem 0.6rem; font-weight: 700; }
+.rm .rm-done .badge { background: #17322d; color: #6fc2b2; }
+.rm .rm-running .badge { background: #2a2317; color: #f0c04a; }
+.rm .rm-gated .badge, .rm .rm-planned .badge { background: #1f1a11; color: #9a9082; }
+.rm .stage-date { font-size: 0.72rem; color: #6b6356; margin-left: auto; font-family: 'JetBrains Mono', monospace; }
+.rm .stage h3 { font-size: 1.05rem; color: #f5efe2; margin: 0 0 0.5rem; }
+.rm .stage p { color: #9a9082; font-size: 0.87rem; line-height: 1.6; margin: 0 0 0.7rem; }
+.rm .stage ul { margin: 0 0 0.7rem; padding-left: 1.1rem; }
+.rm .stage li { color: #9a9082; font-size: 0.85rem; line-height: 1.6; margin-bottom: 0.4rem; }
+.rm .stage strong { color: #f5efe2; }
+.rm .caveat { border-left: 2px solid #6b6356; padding-left: 0.8rem; font-size: 0.82rem; color: #6b6356; margin: 0; }
+.rm .caveat strong { color: #9a9082; }
+
+.rm .bench { border: 1px solid #2a2317; border-radius: 8px; background: #14110b; padding: 1.1rem 1.3rem; margin-bottom: 0.9rem; }
+.rm .bench-head { display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.45rem; }
+.rm .bench-id { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #f0c04a; }
+.rm .bench-name { color: #f5efe2; font-weight: 600; font-size: 0.97rem; }
+.rm .bench-applies { margin-left: auto; font-size: 0.7rem; color: #6b6356; text-transform: uppercase; letter-spacing: 0.05em; }
+.rm .bench p { color: #9a9082; font-size: 0.85rem; line-height: 1.6; margin: 0 0 0.5rem; }
+.rm .bench .k { color: #6b6356; text-transform: uppercase; font-size: 0.68rem; letter-spacing: 0.06em; }
+.rm .bench .veto { border-left: 2px solid #f0c04a; padding-left: 0.8rem; color: #f5efe2; font-size: 0.86rem; margin: 0.6rem 0 0; }
+
+.rm .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+@media (max-width: 720px) { .rm .cols { grid-template-columns: 1fr; } }
+.rm .col { border: 1px solid #2a2317; border-radius: 8px; background: #14110b; padding: 1.1rem 1.3rem; }
+.rm .col h4 { font-size: 0.9rem; color: #f5efe2; margin: 0 0 0.6rem; }
+.rm .col ul { margin: 0; padding-left: 1.1rem; }
+.rm .col li { color: #9a9082; font-size: 0.84rem; line-height: 1.6; margin-bottom: 0.45rem; }
+
+.rm table { width: 100%; border-collapse: collapse; font-size: 0.83rem; margin-bottom: 1rem; }
+.rm th { text-align: left; color: #6b6356; font-weight: 600; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #2a2317; padding: 0.5rem 0.6rem; }
+.rm td { color: #9a9082; border-bottom: 1px solid #201a11; padding: 0.55rem 0.6rem; vertical-align: top; line-height: 1.55; }
+.rm td strong { color: #f5efe2; }
+.rm .rule { border-left: 2px solid #f0c04a; padding-left: 1rem; color: #f5efe2; font-size: 0.88rem; line-height: 1.6; }
+.rm .src { color: #6b6356; font-size: 0.78rem; margin-top: 3rem; border-top: 1px solid #2a2317; padding-top: 1rem; line-height: 1.6; }
+</style>
+
+<div class="rm">
+
+<h1>Roadmap, timeline and <span>plan</span></h1>
+<p class="lede">This page is the whole plan in one place: which gates have run, what is running now, what is waiting on compute, and — the part that is usually left out — <strong>the benchmark each stage is measured against</strong>. Every figure names its tokenizer (or says &ldquo;bytes&rdquo;) and its N, and every figure is taken from <code>docs/metrics-baseline.md</code>. Where the evidence is against us it is stated here first.</p>
+
+<div class="claim">
+  <p class="one">toke: a compiled language designed for LLM code generation, with a small grammar, one canonical form and compiler verification.</p>
+  <p class="para">toke is a compiled programming language designed for LLM code generation. It has 14 keywords, a 55-character set, a backtrack-free grammar with bounded lookahead, and one canonical form per construct, chosen by measurement in a 46-pattern catalogue and reproduced by <code>tkc --min</code>. That makes generated code cheap to constrain during decoding, cheap for a compiler to verify afterwards, and compact to emit. Token efficiency is one measured property of toke, always reported with its tokenizer and its baseline, not the whole claim.</p>
+</div>
+
+<h2>The gate sequence</h2>
+<p class="sub">Each stage carries what it actually produced, with the lane attached to every number, and the caveat that limits it.</p>
+
+  <div class="stage rm-done" id="gate-1">
+    <div class="stage-head">
+      <span class="stage-label">Gate 1</span>
+      <span class="badge">Done</span>
+      <span class="stage-date">2026-04-03</span>
+    </div>
+    <h3>Can an existing model write toke at all?</h3>
+    <p>The first gate asked whether an off-the-shelf model, fine-tuned, could write valid toke, and whether toke was measurably more compact. It passed on both criteria as they were written at the time.</p>
+    <ul>
+      <li><strong>63.7% Pass@1</strong> on the held-out benchmark (fine-tuned 7B; criterion was &ge;60%), with ~2.5% illegal characters and ~15 tok/s on an M4.</li>
+      <li><strong>12.5% token reduction</strong> &mdash; but read the lane: this is the 8K purpose-built BPE against cl100k_base <em>over the same toke text</em>. It is a tokenizer-vs-tokenizer figure, not a comparison with Python, and it is superseded (see &ldquo;What we withdrew&rdquo; below).</li>
+    </ul>
+    <p class="caveat"><strong>Caveat.</strong> Everything measured at this gate is v0.3 syntax, against a compiler that no longer exists.</p>
+  </div>
+
+  <div class="stage rm-done" id="gate-2">
+    <div class="stage-head">
+      <span class="stage-label">Gate 2</span>
+      <span class="badge">Done</span>
+      <span class="stage-date">2026-05-22</span>
+    </div>
+    <h3>Compile correctness solved; functional correctness not</h3>
+    <p>A Qwen 2.5 Coder 7B with a QLoRA adapter, trained on the v0.3 corpus. The headline is real and the caveat is bigger than the headline.</p>
+    <ul>
+      <li><strong>100% compile Pass@1</strong> and <strong>55.6% functional</strong> (272/489) on the curated 500-hidden + 200-eval set the model was optimised against.</li>
+      <li>The functional figure was <strong>~8% until 2026-05-25</strong>, when an <code>io.readln</code> stdlib linking bug was fixed; the corrected number is 55.6%. Any argument still built on the 8% figure is arguing from a bug.</li>
+      <li><strong>The honest floor:</strong> a full local re-audit of all 1,748 v0.3.9 corpus programs scored <strong>37.5% compile</strong> (655/1,748) and <strong>~2.2% fully correct</strong> (38 PASS). Never cite the 100% without this.</li>
+    </ul>
+    <p class="caveat"><strong>Caveat.</strong> Compile-checking removes one error class and leaves algorithmic correctness untouched. Functional correctness &mdash; not compile rate &mdash; is the open weakness, and closing it is what the training lanes below exist to do.</p>
+  </div>
+
+  <div class="stage rm-done" id="v04">
+    <div class="stage-head">
+      <span class="stage-label">v0.4</span>
+      <span class="badge">Done</span>
+      <span class="stage-date">2026-07</span>
+    </div>
+    <h3>The breaking syntax change, and what it cost</h3>
+    <p>Epic 116 shipped the breaking v0.4 change. It invalidated the corpus, the tokenizer and the model in one step, which is why no number above carries forward.</p>
+    <ul>
+      <li>Corpus after mechanical migration: <strong>84.3%</strong> compiling (1,781/2,112), <code>=</code>&rarr;<code>==</code> only, not yet idiomatic.</li>
+      <li><code>tkc --migrate</code> was improved rather than the files hand-edited: 784 &rarr; <strong>991</strong> of the 1,000 Gate-1 solutions migrating clean across four compiler stories.</li>
+      <li>The 60 KERN-benchmarked task ids were then hand-repaired and execution-verified: <strong>60/60 <code>tkc --check</code>, 60/60 hidden tests</strong> (120 cases each), lint clean.</li>
+    </ul>
+    <p class="caveat"><strong>Caveat.</strong> Those 60 programs are hand-written, not model-generated. They measure what the <em>language</em> can express, not what a <em>model</em> produces.</p>
+  </div>
+
+  <div class="stage rm-done" id="aug-freeze">
+    <div class="stage-head">
+      <span class="stage-label">Aug 2026</span>
+      <span class="badge">Done</span>
+      <span class="stage-date">2026-08-19</span>
+    </div>
+    <h3>A data-quality freeze — not a model gate</h3>
+    <p>No model was trained, fine-tuned or evaluated in August 2026. The plan called for a mid-August GO/NO-GO; what actually shipped was corpus quality. Both things are true and only one of them is a result.</p>
+    <ul>
+      <li><strong>23,382</strong> audited v0.4 corpus records; <strong>14,727</strong> pass every tightened gate (compiles, builds, exact test match, exit 0, no extra output, idiom &ge; 0.6, structure within rubric). test_fail 0, build_fail 0.</li>
+      <li>Library re-verification: <strong>1,583/1,583</strong> programs pass all gates. Of 597 orphan solutions outside the manifests, 239 (40%) compile-fail and were excluded from training.</li>
+      <li>A-category test coverage: <strong>631</strong> base tasks gained 3&ndash;5 execution-verified test cases each. Before this, all 10,116 A-category specs had <strong>zero</strong> test cases &mdash; they had never been verified at all.</li>
+      <li><strong>2,639</strong> records repaired or rewritten; idiom-below-floor 0.</li>
+    </ul>
+    <p class="caveat"><strong>Caveat.</strong> This is data quality, not model quality. It says nothing about what a model can generate. The most recent model gate remains Gate 2 of 2026-05-22.</p>
+  </div>
+
+  <div class="stage rm-running" id="reopened">
+    <div class="stage-head">
+      <span class="stage-label">Now</span>
+      <span class="badge">Running now</span>
+      <span class="stage-date">from 2026-09-18</span>
+    </div>
+    <h3>The freeze is reopened, and the re-measurement is honest</h3>
+    <p>Epic 131 reopened the freeze. The frozen state is preserved byte-for-byte and the successor freeze is in progress. The findings that forced it are the most useful thing on this page.</p>
+    <ul>
+      <li><strong>429 of 576</strong> error-union records across 69 base tasks were <em>gaming the test</em>: they build the harness's error marker as a literal string rather than returning an error union (147 correct; wrong return type 0). The generation model learned to defeat a literal-matching test. This is the project's clearest evidence that <strong>passing a test is not evidence of correctness when the test can be gamed</strong>, and it directly qualifies any &ldquo;% pass&rdquo; figure taken from the corpus.</li>
+      <li>After re-authoring 54 packed-arity test sets: <strong>249 pass, 68 fail, 19 driver-limited</strong> of 336 records; 40 previously-failing records resolved, 0 regressed. The 68 failures are the finding &mdash; records that only ever passed against wrong tests.</li>
+      <li>Pattern/conformance sweep over all 23,382 regen records + 1,583 library programs: 14,215 records need no change; 5,649 route to regeneration and 1,197 to an agent rewrite. Savings estimates are <code>proxy8k</code> on masked <code>--min</code> text &mdash; an internal rewrite backlog, not a published reduction.</li>
+      <li>Tokenizer baseline on 2,000 stratified v0.4 records: cl100k_base <strong>242,427</strong> tokens (121.2/program), o200k 1.012&times;, Qwen2.5-Coder 1.032&times;, the shipped SentencePiece 8K <strong>1.154&times;</strong>. The v0.3 16K tokenizer scores 0.545&times; only because its null <code>unk_token</code> silently deletes 2,606 backslashes.</li>
+    </ul>
+    <p class="caveat"><strong>Caveat.</strong> Every number in this block is a compiler-and-corpus measurement under tkc 2.8.0. None of it is a model evaluation.</p>
+  </div>
+
+  <div class="stage rm-running" id="measurement">
+    <div class="stage-head">
+      <span class="stage-label">Next</span>
+      <span class="badge">Running now</span>
+      <span class="stage-date">Epic 131.50–131.57</span>
+    </div>
+    <h3>Build the measurement before building the model</h3>
+    <p>The benchmarks below are being built first, deliberately. A claim without a lane is unpublishable, and a lane that does not exist cannot be reported. This is also the hedge: the measurement is designed so that a shift off BPE tokens costs a column, not a rewrite.</p>
+    <p class="caveat"><strong>Caveat.</strong> None of this requires training compute, which is why it is happening now.</p>
+  </div>
+
+  <div class="stage rm-gated" id="training">
+    <div class="stage-head">
+      <span class="stage-label">Compute-gated</span>
+      <span class="badge">Compute-gated</span>
+      <span class="stage-date">Epic 128</span>
+    </div>
+    <h3>Seven training lanes, one scorecard, one veto</h3>
+    <p>Seven lanes are scored against each other rather than argued about: prompt-only, RLVR/execution-feedback, tokenizer variants, byte-level, continued-pretrain/adapter, fine-tune, and from-scratch. All of them are blocked on compute.</p>
+    <ul>
+      <li><strong>Lane A, no training</strong> &mdash; a frontier model plus the syntax card plus the grammar artefacts. This is the baseline every other lane must beat, not a control we expect to lose.</li>
+      <li><strong>Lane B, RLVR</strong> &mdash; GRPO on compile &times; tests &times; length. The lane most likely to move the 55.6% functional number, which is the open weakness.</li>
+      <li><strong>Lane C, tokenizer variants</strong> &mdash; purpose-built BPE against a superword tokenizer, the base model's own tokenizer, and the base tokenizer plus added toke tokens; scored on correctness after an identical fine-tune, not on compression alone.</li>
+      <li><strong>Lane D, byte-level</strong> &mdash; a small tokenizer-free model, gated on the 131.51 spike reporting first. Explicitly a research lane.</li>
+      <li><strong>Lane E, continued pretraining and adapters</strong>, plus the existing fine-tune and from-scratch arms.</li>
+    </ul>
+    <p class="caveat"><strong>Caveat.</strong> If the no-training baseline wins on cost per solved task, the stated outcome is to ship the grammar, the compiler and the tooling and <strong>not train a model</strong>. That rule is pre-registered, not a face-saving option.</p>
+  </div>
+
+  <div class="stage rm-gated" id="tokenizer-v04">
+    <div class="stage-head">
+      <span class="stage-label">Gated</span>
+      <span class="badge">Compute-gated</span>
+      <span class="stage-date">Story 116.9</span>
+    </div>
+    <h3>The v0.4 tokenizer, and the number that decides it</h3>
+    <p>There is no supportable &ldquo;purpose-built tokenizer beats cl100k&rdquo; claim today. This story exists to settle the number, with the pass mark written down in advance.</p>
+    <ul>
+      <li>The gate: beat <strong>cl100k = 242,427</strong> tokens on the exact 2,000-record baseline sample, on canonical <code>--min</code> text with string bodies masked.</li>
+      <li>If it misses, the tokenizer half of the thesis is dead and every token-reduction claim is withdrawn from every surface &mdash; deleted rather than requalified.</li>
+    </ul>
+    <p class="caveat"><strong>Caveat.</strong> The language, the grammar and the compiler are unaffected either way. Only the tokenizer programme is at stake.</p>
+  </div>
+
+<h2>What each stage is measured against</h2>
+<p class="sub">These are the benchmarks, not the aspirations. They are being built before the training compute is spent, so that a result cannot be graded against criteria chosen after the fact &mdash; and so that a shift off BPE tokens costs a column rather than a rewrite.</p>
+
+  <div class="bench">
+    <div class="bench-head">
+      <span class="bench-id">131.50</span>
+      <span class="bench-name">Multi-lane token measurement</span>
+      <span class="bench-applies">every stage</span>
+    </div>
+    <p><span class="k">Measures</span><br>Every benchmark reports a superword (SuperBPE-class) lane and a raw-byte lane beside proxy8k, tokenizer_v03, Qwen2.5-Coder, cl100k_base and o200k_base.</p>
+    <p><span class="k">Why it is the benchmark</span><br>The tokenizer half of the thesis is being commoditised: a superword tokenizer delivers up to 33% fewer tokens at fixed vocabulary generically, inside ordinary model training. So no toke number may be quoted without its lane &mdash; an unlaned claim is unpublishable.</p>
+  </div>
+
+  <div class="bench">
+    <div class="bench-head">
+      <span class="bench-id">131.51</span>
+      <span class="bench-name">Byte-level durability spike</span>
+      <span class="bench-applies">the hedge, and Lane D</span>
+    </div>
+    <p><span class="k">Measures</span><br>toke against a mainstream language on the same tasks, in bytes and in byte-level patches, and whether byte-level generation constrained by toke's grammar is cheaper and more reliable.</p>
+    <p><span class="k">Why it is the benchmark</span><br>Under tokenizer-free architectures the model consumes bytes or learned chunks, &ldquo;tokens per program&rdquo; stops being a stable unit, and terse ASCII loses its tokenizer arbitrage. What plausibly survives is the small grammar, the compiler as an error filter, and byte compactness. This spike tests that rather than asserting it.</p>
+  </div>
+
+  <div class="bench">
+    <div class="bench-head">
+      <span class="bench-id">131.52</span>
+      <span class="bench-name">Constrained-decoding mask cost</span>
+      <span class="bench-applies">Lane A, and every trained lane</span>
+    </div>
+    <p><span class="k">Measures</span><br>Mask construction cost and per-token overhead for toke's grammar against a mainstream-language grammar, plus first-shot syntactic validity with and without constraints; the GBNF and EBNF artefacts are validated against the real grammar and the build breaks on drift.</p>
+    <p><span class="k">Why it is the benchmark</span><br>Grammar-constrained decoding reproduces &ldquo;syntactically valid by construction&rdquo; on <em>any</em> grammar, including Python's. That is simultaneously the biggest threat to the language argument and the cheapest thing to adopt. The advantage a purpose-built grammar has is one of degree, not of kind, and this measures the degree.</p>
+  </div>
+
+  <div class="bench">
+    <div class="bench-head">
+      <span class="bench-id">131.55</span>
+      <span class="bench-name">Cost per solved task</span>
+      <span class="bench-applies">every lane; the reported headline metric</span>
+    </div>
+    <p><span class="k">Measures</span><br>Cost-of-Pass accounting over the held-out set, pricing failed attempts, repair rounds and cache-aware input reads, for four arms: toke + our model, toke + frontier + constrained decoding, and the Python equivalents.</p>
+    <p><span class="k">Why it is the benchmark</span><br>No neutral benchmark compares a purpose-built language plus a bespoke model against a mainstream language plus constrained decoding on the same tasks, priced per <em>solved</em> task. It is also unit-agnostic by construction, so it survives a change of generation unit.</p>
+  </div>
+
+  <div class="bench">
+    <div class="bench-head">
+      <span class="bench-id">131.56</span>
+      <span class="bench-name">Agentic token decomposition</span>
+      <span class="bench-applies">the economic claim</span>
+    </div>
+    <p><span class="k">Measures</span><br>An instrumented real agentic session: what fraction of tokens is code, reasoning, tool schemas, logs and diffs; input against output; cached against uncached.</p>
+    <p><span class="k">Why it is the benchmark</span><br>The economic case turns on a split nobody has published. The working estimate is that a 30&ndash;52% cut in code tokens nets only single-digit to low-double-digit percent of total agentic spend once prompt caching and reasoning are priced. If cache-weighted code tokens are under 5% of billable spend, token efficiency stops being a headline property anywhere.</p>
+  </div>
+
+  <div class="bench">
+    <div class="bench-head">
+      <span class="bench-id">128.15</span>
+      <span class="bench-name">The lane scorecard</span>
+      <span class="bench-applies">every training lane</span>
+    </div>
+    <p><span class="k">Measures</span><br>One pre-registered scorecard applied at every stage: compile Pass@1, functional Pass@1 by execution, tokens per solved task in every 131.50 lane, cost and energy per solved task, repair-loop convergence within 3 rounds, and first-shot validity under constrained decoding.</p>
+    <p><span class="k">Why it is the benchmark</span><br>So that the comparison between lanes is mechanical rather than a matter of argument, and so that the criteria cannot be chosen after the results are in.</p>
+    <p class="veto"><strong>The veto:</strong> No lane advances without beating the no-training baseline &mdash; a frontier model with the syntax card and the grammar artefacts, and no training at all.</p>
+  </div>
+
+<h2>The hedge, stated plainly</h2>
+<p class="sub">The plan does not depend on the BPE token remaining the unit of account. If tokenizer-free architectures become how code is generated, here is exactly what is lost and what is left &mdash; written down now rather than defended later.</p>
+<div class="cols">
+  <div class="col">
+    <h4>What does not survive</h4>
+    <ul>
+      <li>Tokens per program as a figure of merit.</li>
+      <li>Any ranking of languages by tokenizer output &mdash; ours and other people's.</li>
+      <li>The economic argument that rests on counting tokens.</li>
+    </ul>
+  </div>
+  <div class="col">
+    <h4>What survives, and is arguably strengthened</h4>
+    <ul>
+      <li><strong>The grammar.</strong> A byte-level model still has to emit a syntactically valid program, and constraint machinery at byte granularity pays <em>more</em> for a large grammar, not less. A small backtrack-free grammar is arguably worth more there, not less &mdash; which is precisely what 131.51 exists to test rather than assert.</li>
+      <li><strong>The compiler.</strong> An error filter and a verifiable reward signal are architecture-independent. Whatever the model emits, the compiler either accepts it or returns a structured diagnostic with a stable code, a span and a fix field.</li>
+      <li><strong>One canonical form.</strong> Exact comparison, well-defined diffs and unambiguous rewards. None of that depends on tokenization.</li>
+      <li><strong>Byte compactness.</strong> Fewer bytes still costs less for a byte-level model &mdash; much less than fewer BPE tokens bought under a tokenizer, but not zero, and directly measurable in a lane we already carry.</li>
+    </ul>
+  </div>
+</div>
+<p class="rule" style="margin-top:1rem;"><strong>What would change in that world:</strong> Nothing in the language. Not the 55-character set, not the 14 keywords, not the grammar, the semantics, the type system or the canonical <code>--min</code> form. What changes is measurement and training: the headline metric moves from tokens per program to bytes and byte-level patches per solved task, cost per solved task becomes the reported number, the grammar artefacts become the product, and the tokenizer programme is descoped &mdash; not the language.</p>
+
+<h2>What we withdrew, and why</h2>
+<p class="sub">These claims were published on this site and are now withdrawn. They are listed rather than quietly deleted, because a project whose thesis is falsifiable research has to show its corrections.</p>
+<table>
+  <thead><tr><th>Withdrawn claim</th><th>Why it cannot be requalified</th><th>What replaced it</th></tr></thead>
+  <tbody>
+    <tr><td>&ldquo;42% reduction vs Python&rdquo; (and &ldquo;56% vs Java&rdquo;, 31%, 48%, and a 32% page average)</td><td>Measured the toke side with a <strong>toke-trained</strong> tokenizer and the Python or Java side with cl100k_base. Two different tokenizers, one per side: it measures the tokenizer's training bias, not the language. A methodology error, so it cannot be requalified.</td><td>Under cl100k_base on <em>both</em> sides, toke costs <strong>1.30&times;</strong> the tokens of equivalent Python (344 vs 264, N = 4 execution-verified pairs) and <strong>1.34&times;</strong> [1.22, 1.48] over the 60 Gate-1 tasks (4,787 vs 3,565, N = 60). In bytes, <strong>0.92&times;</strong> (693 vs 753, N = 4).</td></tr>
+    <tr><td>&ldquo;52% average token reduction vs cl100k&rdquo;</td><td>A <em>tokenizer-vs-tokenizer</em> measurement on identical toke text (Toke-16K v0.3 against cl100k_base, N = 42) &mdash; never a comparison with Python. It also cannot be reproduced from the dataset it cites, which re-aggregates to 61.6%, and it rests on a tokenizer whose null <code>unk_token</code> silently drops backslashes.</td><td>On canonical v0.4 <code>--min</code> text the shipped 8K tokenizer needs <strong>15.4% more</strong> tokens than cl100k_base (279,672 vs 242,427, N = 2,000). No &ldquo;purpose-built tokenizer beats cl100k&rdquo; claim is supportable until 116.9 reports.</td></tr>
+    <tr><td>&ldquo;Gate 2: 100% compilation Pass@1&rdquo; quoted alone, with ~8% functional</td><td>The 100% is on a curated set the model was optimised against, and the 8% was an <code>io.readln</code> stdlib bug corrected on 2026-05-25.</td><td><strong>100% compile / 55.6% functional</strong> (272/489) on the curated set, with the full-local re-audit floor of <strong>37.5% compile / ~2.2% fully correct</strong> over all 1,748 programs stated alongside it.</td></tr>
+    <tr><td>Per-example counts of the form &ldquo;N toke BPE tokens vs M for Python on cl100k&rdquo;</td><td>The same two-tokenizer error in per-example form.</td><td>Each panel now names the tokenizer that produced its count, and no percentage is read across two lanes.</td></tr>
+    <tr><td>&ldquo;LL(1) grammar&rdquo;</td><td>Retired by the v0.4 spec on 2026-07-02.</td><td><strong>Backtrack-free with bounded lookahead</strong> of up to 3 tokens, with the exceptions enumerated in the spec. The mechanical argument is unaffected: what makes a constrained-decoding mask cheap is a small grammar that never rescans input, not the literal lookahead constant.</td></tr>
+  </tbody>
+</table>
+<p class="rule">The rule now enforced on every surface: a tokenizer trained on one language is never applied to a baseline in another; every cross-language figure uses one tokenizer on both sides; and no percentage is published next to the word &ldquo;token&rdquo; without a tokenizer name and an N.</p>
+
+<h2>What would retire this</h2>
+<p class="sub">Each test below is scheduled work with a decision rule written in advance, so the answer is not a matter of argument when it arrives.</p>
+<table>
+  <thead><tr><th>Test</th><th>Result that falsifies it</th><th>Consequence</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Byte-level durability</strong><br><span style="font-family:'JetBrains Mono',monospace;font-size:0.9em;color:#6b6356;">131.51</span></td><td>Grammar-constrained byte-level generation on toke is within noise of the same setup on a mainstream grammar, with no byte-per-solved-task advantage.</td><td>The durability claim is <strong>retired</strong>, not softened. The language-level claim narrows to constrained decoding under BPE only.</td></tr>
+    <tr><td><strong>Terseness vs reliability</strong><br><span style="font-family:'JetBrains Mono',monospace;font-size:0.9em;color:#6b6356;">131.54</span></td><td>The canonical terse form scores lower on first-shot functional correctness than the most verbose measured form of the same pattern.</td><td>Terseness is demoted below reliability, the idiom standard is rewritten, and &ldquo;compact&rdquo; drops out of the headline claim.</td></tr>
+    <tr><td><strong>No-training baseline</strong><br><span style="font-family:'JetBrains Mono',monospace;font-size:0.9em;color:#6b6356;">128.15</span></td><td>No trained lane beats a frontier model with the syntax card and grammar artefacts on cost per solved task.</td><td>The bespoke-model programme <strong>stops</strong>. We ship the grammar, the compiler and the tooling, and say publicly that training was not justified.</td></tr>
+    <tr><td><strong>Cost per solved task</strong><br><span style="font-family:'JetBrains Mono',monospace;font-size:0.9em;color:#6b6356;">131.55</span></td><td>toke plus its best lane does not beat Python plus a frontier model plus type-constrained decoding, on the same tasks, with failed attempts and cache-aware pricing included.</td><td>The language-level claim fails on the metric we chose ourselves. toke becomes a research result about grammar design, not a production proposal, and the READMEs say so.</td></tr>
+    <tr><td><strong>v0.4 tokenizer gate</strong><br><span style="font-family:'JetBrains Mono',monospace;font-size:0.9em;color:#6b6356;">116.9</span></td><td>The retrained tokenizer does not beat cl100k = 242,427 tokens on the 2,000-record baseline sample.</td><td>The tokenizer half is dead. Every token-reduction claim is withdrawn from every surface.</td></tr>
+    <tr><td><strong>Agentic decomposition</strong><br><span style="font-family:'JetBrains Mono',monospace;font-size:0.9em;color:#6b6356;">131.56</span></td><td>Cache-weighted code tokens are under 5% of billable spend in an instrumented agentic session.</td><td>Token efficiency stops being a headline property anywhere. It stays a measured fact about the language and leaves the positioning entirely.</td></tr>
+  </tbody>
+</table>
+
+<h2>What is not measured yet</h2>
+<ul>
+  <li style="color:#9a9082;font-size:0.87rem;line-height:1.6;margin-bottom:0.5rem;"><strong>No v0.4-native model exists.</strong> No model has been trained since April 2026, and every functional-correctness number on this site is v0.3-era.</li>
+  <li style="color:#9a9082;font-size:0.87rem;line-height:1.6;margin-bottom:0.5rem;"><strong>No from-scratch model has been trained</strong> &mdash; the ~1B purpose-built model is a design, not a deliverable.</li>
+  <li style="color:#9a9082;font-size:0.87rem;line-height:1.6;margin-bottom:0.5rem;"><strong>Runtime correctness under a runtime gate.</strong> CI checks compilation only; runtime miscodegen is invisible to <code>--check</code>. An exit-code correctness gate is needed before functional numbers are fully trustworthy.</li>
+  <li style="color:#9a9082;font-size:0.87rem;line-height:1.6;margin-bottom:0.5rem;"><strong>Same-basis efficiency for the public program library.</strong> Its token counts are cross-tokenizer and are not displayed; a multi-lane recount is compute-gated.</li>
+</ul>
+
+<p class="src">Every figure on this page is sourced from <code>docs/metrics-baseline.md</code> in the toke repository, which is the single reference for quantitative claims about toke and carries the methodology and caveat for each one. This page and the milestones block on the <a href="/">home page</a> are generated from one file (<code>content/roadmap.json</code>) so that they cannot disagree. Last updated 2026-09-19.</p>
+
+</div>
+
+{! end !}

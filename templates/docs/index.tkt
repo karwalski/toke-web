@@ -29,7 +29,7 @@
 <h2>Reference</h2>
 <p>Precise specifications for the language and standard library.</p>
 <ul>
-  <li><a href="/docs/reference/grammar">Grammar</a> — the complete LL(1) grammar in BNF</li>
+  <li><a href="/docs/reference/grammar">Grammar</a> — the complete backtrack-free grammar in BNF</li>
   <li><a href="/docs/reference/types">Types</a> — the type system: primitives, structs, and enums</li>
   <li><a href="/docs/reference/errors">Error Codes</a> — machine-readable compiler error reference</li>
 </ul>

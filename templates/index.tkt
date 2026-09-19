@@ -5,11 +5,11 @@
 <section class="hero">
   <div class="lockup"><span class="coin"></span><span class="wordmark">toke</span></div>
   <h1>A language built for <span>AI</span>.</h1>
-  <p>A programming language purpose-built for LLM code generation. 40&ndash;75% fewer tokens. Faster inference. Lower cost.</p>
+  <p>toke: a compiled language designed for LLM code generation, with a small grammar, one canonical form and compiler verification.</p>
   <div class="pill-row">
-    <span class="pill pill-gold">&minus;42% tokens</span>
-    <span class="pill pill-ticket">admit one</span>
-    <span class="pill pill-neutral">v0.3 default</span>
+    <span class="pill pill-gold">14 keywords</span>
+    <span class="pill pill-ticket">one canonical form</span>
+    <span class="pill pill-neutral">v0.4 syntax</span>
   </div>
   <div class="cta">
     <a href="/docs" class="btn btn-primary">Get started</a>
@@ -26,7 +26,11 @@
   <h2>The Problem</h2>
 </div>
 <p class="section-desc">Every time an AI writes code, it generates one token at a time. Each token costs compute, time, and money. Today's programming languages were designed for humans &mdash; they're full of verbose keywords, boilerplate imports, and ceremony that LLMs must produce token by token.</p>
-<p class="section-desc"><strong style="color:#f5efe2">toke</strong> is a programming language designed from first principles to minimise the number of tokens an LLM needs to generate. With a purpose-built tokenizer, toke uses 40&ndash;75% fewer tokens than Python, C, or Java for equivalent complete programs &mdash; and the gap widens as documentation standards increase, because toke's LLM training corpus is comment-stripped.</p>
+<p class="section-desc"><strong style="color:#f5efe2">toke</strong> is a compiled programming language designed for LLM code generation. It has 14 keywords, a 55-character set, a backtrack-free grammar with bounded lookahead, and one canonical form per construct, chosen by measurement in a 46-pattern catalogue and reproduced by <code>tkc --min</code>. That makes generated code cheap to constrain during decoding, cheap for a compiler to verify afterwards, and compact to emit. Token efficiency is one measured property of toke, always reported with its tokenizer and its baseline, not the whole claim.</p>
+
+<div class="explainer" style="max-width:860px;margin:1rem auto;padding-left:2rem;padding-right:2rem;border-left:2px solid #f0c04a;">
+  <p><strong>Where toke stands on tokens today, stated plainly.</strong> Under <em>one shared tokenizer</em> (cl100k_base on both sides), toke currently costs <strong>more</strong> tokens than equivalent Python, not fewer: <strong>1.34&times;</strong> [1.22, 1.48] over the 60 Gate-1 tasks (4,787 vs 3,565; N&nbsp;=&nbsp;60) and <strong>1.30&times;</strong> on four execution-verified sample pairs (344 vs 264; N&nbsp;=&nbsp;4). In bytes &mdash; the one lane with no tokenizer assumption &mdash; toke runs <strong>0.92&times;</strong> Python (693 vs 753, N&nbsp;=&nbsp;4). The defensible win is toke against itself: rewriting those 60 tasks into canonical v0.4 cut them from 6,347 to <strong>4,787</strong> cl100k tokens, a <strong>24.6%</strong> reduction under one tokenizer. Earlier site copy claiming &ldquo;40&ndash;75% fewer tokens&rdquo; or &ldquo;a 42% reduction vs Python&rdquo; measured the toke side with a toke-trained tokenizer and the Python side with cl100k &mdash; two different tokenizers &mdash; and is withdrawn. Every figure here is sourced from <code>docs/metrics-baseline.md</code>; the <a href="/roadmap" style="color:#f0c04a;">roadmap</a> says what is being measured next and why.</p>
+</div>
 
 <div class="explainer" style="max-width:860px;margin:1rem auto;padding-left:2rem;padding-right:2rem;">
   <p><strong>What is a token?</strong> LLMs don't read characters &mdash; they read <em>tokens</em>, which are chunks of text (roughly 3&ndash;4 characters each). The statement <code>return 0;</code> costs 4 tokens every time an LLM writes it. In toke, the same statement is <code>&lt;0;</code> &mdash; and with a purpose-built tokenizer trained on toke programs, the entire return-and-close pattern <code>&lt;0;};</code> becomes a single token.</p>
@@ -45,21 +49,21 @@
   <p>"Write a complete program that prints the 10th Fibonacci number"</p>
 </div>
 
-<p class="section-desc">toke is measured with its purpose-built BPE tokenizer. Other languages use cl100k_base (GPT-4) &mdash; the tokenizer their models actually use. Every example is a complete, runnable program.</p>
+<p class="section-desc">Each panel shows how <em>that language's own tokenizer lane</em> segments a complete, runnable program: the toke panel under toke's v0.3 purpose-built BPE, the Python, C and Java panels under cl100k_base. <strong>The two lanes are different tokenizers, so no reduction may be read across the panels</strong> &mdash; doing so measures the toke tokenizer's training bias rather than the language, which is the error the old &ldquo;42% vs Python&rdquo; headline made. For the same-tokenizer numbers, see the box above.</p>
 
 <div class="tv-tabs" style="max-width:860px;margin:0 auto;padding:0 2rem;">
   <div class="tv-tab-bar">
-    <button class="tv-tab-btn active" data-tab="see-toke">toke (24 tokens)</button>
-    <button class="tv-tab-btn" data-tab="see-python">Python (41)</button>
-    <button class="tv-tab-btn" data-tab="see-c">C (52)</button>
-    <button class="tv-tab-btn" data-tab="see-java">Java (55)</button>
+    <button class="tv-tab-btn active" data-tab="see-toke">toke &mdash; 24 (toke BPE v03)</button>
+    <button class="tv-tab-btn" data-tab="see-python">Python &mdash; 41 (cl100k)</button>
+    <button class="tv-tab-btn" data-tab="see-c">C &mdash; 52 (cl100k)</button>
+    <button class="tv-tab-btn" data-tab="see-java">Java &mdash; 55 (cl100k)</button>
   </div>
 
   <div class="tv-tab-panel active" id="see-toke">
     <div class="token-viz toke-p2">
       <pre class="tv-code"><code><span class="tv-tok tv-c0">m=fib</span><span class="tv-tok tv-c1">;i=io:std.io</span><span class="tv-tok tv-c2">;f=</span><span class="tv-tok tv-c3">fib</span><span class="tv-tok tv-c4">(n:i64):i64{if(n</span><span class="tv-tok tv-c5">&lt;2){&lt;</span><span class="tv-tok tv-c6">n;</span><span class="tv-tok tv-c7">}el{&lt;</span><span class="tv-tok tv-c8">fib</span><span class="tv-tok tv-c9">(n</span><span class="tv-tok tv-c10">-1)+</span><span class="tv-tok tv-c11">fib</span><span class="tv-tok tv-c0">(n</span><span class="tv-tok tv-c1">-2</span><span class="tv-tok tv-c2">);</span><span class="tv-tok tv-c3">}};</span><span class="tv-tok tv-c4">f=main():</span><span class="tv-tok tv-c5">i64{</span><span class="tv-tok tv-c6">io.println</span><span class="tv-tok tv-c7">(</span><span class="tv-tok tv-c8">fib(</span><span class="tv-tok tv-c9">10</span><span class="tv-tok tv-c10">));&lt;</span><span class="tv-tok tv-c11">0;};</span></code></pre>
       <div class="tv-footer">
-        <span class="token-badge toke-p2">24 tokens &mdash; purpose-built toke BPE (16K vocab, measured)</span>
+        <span class="token-badge toke-p2">24 tokens &mdash; toke BPE v03 (16,384 vocab), v0.3 syntax &mdash; a different lane from the cl100k panels</span>
       </div>
     </div>
     <div class="tv-note" style="margin:0.75rem 0;font-size:0.85rem;color:#9a9082;line-height:1.4;">
@@ -120,7 +124,7 @@
 </div>
 
 <div class="comparison-note">
-  <p><strong>Why different tokenizers?</strong> toke uses its purpose-built BPE (24 tokens, measured) because that is how a toke-native model tokenizes programs. Python, C, and Java are measured with cl100k_base because that is the tokenizer used by the models generating them. Each language measured with the tokenizer its model actually uses. The toke BPE (16,384 tokens) was trained on 25,953 toke programs and averages 52% fewer tokens than cl100k across 42 benchmarks. <a href="/tokenizer" style="color:#f0c04a;">Try it yourself &rarr;</a></p>
+  <p><strong>Never cross the lanes.</strong> The toke panel is measured with a <em>toke-trained</em> tokenizer and the other panels with cl100k_base. Those counts belong to different lanes and must not be divided into one another: <code>proxy8k</code> and <code>tokenizer_v03</code> were trained on toke text, so applied to Python or Java they measure their own training bias, not the language. That is exactly the methodology error behind the withdrawn &ldquo;42% reduction vs Python&rdquo; and &ldquo;56% vs Java&rdquo; figures that used to appear here. <code>tokenizer_v03</code> is also lossy &mdash; its null <code>unk_token</code> silently drops every backslash. Any cross-language number on this site uses <strong>one</strong> tokenizer on both sides: under cl100k_base, toke costs <strong>1.30&ndash;1.34&times;</strong> the tokens of equivalent Python (N&nbsp;=&nbsp;4 and N&nbsp;=&nbsp;60). <a href="/tokenizer" style="color:#f0c04a;">Try the tokenizer yourself &rarr;</a></p>
 </div>
 
 <!-- ================================================================== -->
@@ -134,17 +138,17 @@
 
 <div class="tv-tabs" style="max-width:860px;margin:0 auto;padding:0 2rem;">
   <div class="tv-tab-bar">
-    <button class="tv-tab-btn active" data-tab="bp-toke">toke (24 &mdash; unchanged)</button>
-    <button class="tv-tab-btn" data-tab="bp-python">Python (82)</button>
-    <button class="tv-tab-btn" data-tab="bp-c">C (75)</button>
-    <button class="tv-tab-btn" data-tab="bp-java">Java (102)</button>
+    <button class="tv-tab-btn active" data-tab="bp-toke">toke &mdash; 24, unchanged (toke BPE v03)</button>
+    <button class="tv-tab-btn" data-tab="bp-python">Python &mdash; 82 (cl100k)</button>
+    <button class="tv-tab-btn" data-tab="bp-c">C &mdash; 75 (cl100k)</button>
+    <button class="tv-tab-btn" data-tab="bp-java">Java &mdash; 102 (cl100k)</button>
   </div>
 
   <div class="tv-tab-panel active" id="bp-toke">
     <div class="token-viz toke-p2">
       <pre class="tv-code"><code><span class="tv-tok tv-c0">m=</span><span class="tv-tok tv-c1">fib;</span><span class="tv-tok tv-c2">i=</span><span class="tv-tok tv-c3">io:</span><span class="tv-tok tv-c4">std.io;</span><span class="tv-tok tv-c5">f=</span><span class="tv-tok tv-c6">fib(</span><span class="tv-tok tv-c7">n:i64):i64{</span><span class="tv-tok tv-c8">if(</span><span class="tv-tok tv-c9">n&lt;2){&lt;</span><span class="tv-tok tv-c10">n;}</span><span class="tv-tok tv-c11">el{&lt;</span><span class="tv-tok tv-c0">fib(</span><span class="tv-tok tv-c1">n-1)+</span><span class="tv-tok tv-c2">fib(</span><span class="tv-tok tv-c3">n-2</span><span class="tv-tok tv-c4">);}}</span><span class="tv-tok tv-c5">;</span><span class="tv-tok tv-c6">f=</span><span class="tv-tok tv-c7">main():i64{</span><span class="tv-tok tv-c8">io.println(</span><span class="tv-tok tv-c9">fib(10</span><span class="tv-tok tv-c10">));</span><span class="tv-tok tv-c11">&lt;0;};</span></code></pre>
       <div class="tv-footer">
-        <span class="token-badge toke-p2">24 tokens &mdash; identical to above (toke has no comment syntax)</span>
+        <span class="token-badge toke-p2">24 tokens &mdash; toke BPE v03, identical to above (toke has no comment syntax)</span>
       </div>
     </div>
     <div class="tv-note" style="margin:0.75rem 0;font-size:0.85rem;color:#9a9082;line-height:1.4;">
@@ -232,7 +236,7 @@
 </div>
 
 <div class="comparison-note">
-  <p><strong>Documentation costs scale &mdash; toke's don't.</strong> With best practices applied, Python doubles from 41 &rarr; 82 tokens and Java grows from 62 &rarr; 102. toke stays at 24. In real codebases where every function carries docstrings, the gap compounds with every function added.</p>
+  <p><strong>Documentation costs scale within a lane; toke's don't.</strong> Under cl100k_base, adding docstrings and descriptive names takes this Python program from 41 to 82 tokens and this Java program from 62 to 102 &mdash; that growth is a same-tokenizer comparison and stands. The toke panel is unchanged at 24 toke-BPE tokens because toke has no comment syntax; documentation lives in companion files. The toke count is in a different tokenizer lane, so the toke figure is <em>not</em> subtracted from the others here: what this section shows is the shape of comment cost inside each language, not a cross-language reduction.</p>
 </div>
 
 <!-- ================================================================== -->
@@ -245,12 +249,12 @@
 
 <div class="features">
   <div class="feature-card">
-    <h3>40&ndash;75% Fewer Tokens</h3>
-    <p>With toke's purpose-built BPE tokenizer, a complete fibonacci program uses 24 tokens &mdash; compared to 41 in Python, 52 in C, and 55 in Java (all cl100k_base). That is a 42% reduction vs Python and 56% vs Java. Add documentation and the gap widens further: Python doubles to 82 tokens and Java grows to 102, while toke stays at 24 because toke has no comment syntax &mdash; documentation lives in companion files. <a href="/tokenizer" style="color:#f0c04a;">Try the live tokenizer &rarr;</a></p>
+    <h3>Compact in Bytes, Measured in Every Lane</h3>
+    <p>Over four execution-verified toke/Python pairs, toke is <strong>0.92&times;</strong> Python in raw bytes (693 vs 753) &mdash; the lane that assumes no tokenizer. Under cl100k_base on both sides it costs <strong>1.30&times;</strong> the tokens (344 vs 264), and <strong>1.34&times;</strong> [1.22, 1.48] over the 60 Gate-1 tasks. Rewriting those 60 tasks into canonical v0.4 cut them <strong>24.6%</strong> (6,347 &rarr; 4,787 cl100k tokens), which is the same-tokenizer win the language actually delivers. The old &ldquo;42% vs Python&rdquo; figure crossed two tokenizers and is withdrawn. <a href="/tokenizer" style="color:#f0c04a;">Try the live tokenizer &rarr;</a></p>
   </div>
   <div class="feature-card">
     <h3>Designed for Correctness</h3>
-    <p>LL(1) grammar, 13 keywords, minimal character set (55 characters). No ambiguity, no implicit coercions, full static type checking. The compiler catches mistakes before code runs &mdash; critical when AI is writing the code.</p>
+    <p>A backtrack-free grammar with bounded lookahead (up to 3 tokens), 14 keywords, and a 55-character set. No ambiguity, no implicit coercions, full static type checking, and structured diagnostics with stable codes, machine-parseable spans and a fix field. That is what makes a constrained-decoding mask cheap and gives a repair loop something to consume. It is also demonstrably not sufficient on its own: the Gate 2 model reached 100% compile Pass@1 and <strong>55.6%</strong> functional correctness.</p>
   </div>
   <div class="feature-card">
     <h3>Standard Library with C Runtime</h3>
@@ -282,460 +286,110 @@
 </div>
 <p class="section-desc">A complete toke program. <code style="background:#2a2317;border:1px solid #2a2317;border-radius:3px;padding:0.15em 0.35em;font-size:0.82em;color:#f0c04a;">m=</code> declares the module. <code style="background:#2a2317;border:1px solid #2a2317;border-radius:3px;padding:0.15em 0.35em;font-size:0.82em;color:#f0c04a;">i=</code> imports a library. <code style="background:#2a2317;border:1px solid #2a2317;border-radius:3px;padding:0.15em 0.35em;font-size:0.82em;color:#f0c04a;">f=</code> declares a function. <code style="background:#2a2317;border:1px solid #2a2317;border-radius:3px;padding:0.15em 0.35em;font-size:0.82em;color:#f0c04a;">&lt;</code> returns a value. Every statement ends with <code style="background:#2a2317;border:1px solid #2a2317;border-radius:3px;padding:0.15em 0.35em;font-size:0.82em;color:#f0c04a;">;</code>. No boilerplate, no ceremony.</p>
 
-<!-- ================================================================== -->
-<!-- Development Timeline                                               -->
-<!-- ================================================================== -->
+<!-- ROADMAP:BEGIN generated by scripts/gen_roadmap.py from content/roadmap.json -- do not edit by hand -->
 
 <div class="section-heading">
-  <h2>Development Timeline</h2>
+  <h2>Where the project actually is</h2>
+</div>
+<style>
+/* Milestones block (generated -- see scripts/gen_roadmap.py) */
+.ms { max-width: 900px; margin: 0 auto 2rem; padding: 0 2rem; }
+.ms-row { display: flex; gap: 1rem; padding: 0.9rem 0; border-bottom: 1px solid #201a11; align-items: baseline; }
+.ms-row:last-child { border-bottom: none; }
+.ms-key { flex: 0 0 8.5rem; }
+.ms-label { display: block; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: #f5efe2; }
+.ms-status { display: inline-block; margin-top: 0.25rem; font-size: 0.64rem; letter-spacing: 0.05em; text-transform: uppercase; border-radius: 20px; padding: 0.12rem 0.55rem; font-weight: 700; }
+.ms-done .ms-status { background: #17322d; color: #6fc2b2; }
+.ms-running .ms-status { background: #2a2317; color: #f0c04a; }
+.ms-gated .ms-status, .ms-planned .ms-status { background: #1f1a11; color: #9a9082; }
+.ms-body { color: #9a9082; font-size: 0.87rem; line-height: 1.55; }
+.ms-body strong { color: #f5efe2; }
+.ms-body code { background: #201a11; border: 1px solid #2a2317; border-radius: 3px; padding: 0.1em 0.35em; font-size: 0.85em; color: #f0c04a; }
+.ms-date { color: #6b6356; font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; }
+.ms-bench { margin-top: 1.5rem; border: 1px solid #2a2317; border-radius: 8px; background: #14110b; padding: 1.1rem 1.3rem; }
+.ms-bench h4 { font-size: 0.9rem; color: #f5efe2; margin: 0 0 0.6rem; }
+.ms-bench p { color: #9a9082; font-size: 0.85rem; line-height: 1.6; margin: 0 0 0.6rem; }
+.ms-bench .veto { border-left: 2px solid #f0c04a; padding-left: 0.8rem; color: #f5efe2; margin: 0; }
+.ms-cta { text-align: center; margin-top: 1.5rem; }
+</style>
+<div class="ms">
+  <div class="ms-row ms-done">
+    <div class="ms-key">
+      <span class="ms-label">Gate 1</span>
+      <span class="ms-status">Done</span><br>
+      <span class="ms-date">2026-04-03</span>
+    </div>
+    <div class="ms-body">Gate 1 PASS. A fine-tuned 7B reached 63.7% Pass@1 on held-out tasks, clearing the &ge;60% criterion.</div>
+  </div>
+  <div class="ms-row ms-done">
+    <div class="ms-key">
+      <span class="ms-label">Gate 2</span>
+      <span class="ms-status">Done</span><br>
+      <span class="ms-date">2026-05-22</span>
+    </div>
+    <div class="ms-body">Gate 2. 100% compile Pass@1 and <strong>55.6% functional</strong> on the curated set &mdash; the honest floor over all 1,748 corpus programs is 37.5% compile / ~2.2% fully correct.</div>
+  </div>
+  <div class="ms-row ms-done">
+    <div class="ms-key">
+      <span class="ms-label">v0.4</span>
+      <span class="ms-status">Done</span><br>
+      <span class="ms-date">2026-07</span>
+    </div>
+    <div class="ms-body">v0.4 shipped (<code>=</code>/<code>==</code>, expression-<code>if</code>, <code>&amp;&amp;</code>/<code>||</code>), invalidating every v0.3-era model number.</div>
+  </div>
+  <div class="ms-row ms-done">
+    <div class="ms-key">
+      <span class="ms-label">Aug 2026</span>
+      <span class="ms-status">Done</span><br>
+      <span class="ms-date">2026-08-19</span>
+    </div>
+    <div class="ms-body">August 2026 produced a <strong>training-data quality freeze</strong>, not a model gate: 23,382 audited v0.4 records, 14,727 passing every execution gate.</div>
+  </div>
+  <div class="ms-row ms-running">
+    <div class="ms-key">
+      <span class="ms-label">Now</span>
+      <span class="ms-status">Running now</span><br>
+      <span class="ms-date">from 2026-09-18</span>
+    </div>
+    <div class="ms-body"><strong>Running:</strong> the August freeze was reopened on 2026-09-18 after the corpus audits found tests that could be gamed, plus a full re-measurement of every token claim.</div>
+  </div>
+  <div class="ms-row ms-running">
+    <div class="ms-key">
+      <span class="ms-label">Next</span>
+      <span class="ms-status">Running now</span><br>
+      <span class="ms-date">Epic 131.50–131.57</span>
+    </div>
+    <div class="ms-body"><strong>Next:</strong> the measurement build-out &mdash; multi-lane token counting, byte-level durability, constrained-decoding mask cost, cost per solved task.</div>
+  </div>
+  <div class="ms-row ms-gated">
+    <div class="ms-key">
+      <span class="ms-label">Compute-gated</span>
+      <span class="ms-status">Compute-gated</span><br>
+      <span class="ms-date">Epic 128</span>
+    </div>
+    <div class="ms-body"><strong>Compute-gated:</strong> seven training lanes scored on one pre-registered scorecard &mdash; and none advances unless it beats a no-training constrained-decoding baseline.</div>
+  </div>
+  <div class="ms-row ms-gated">
+    <div class="ms-key">
+      <span class="ms-label">Gated</span>
+      <span class="ms-status">Compute-gated</span><br>
+      <span class="ms-date">Story 116.9</span>
+    </div>
+    <div class="ms-body"><strong>Compute-gated:</strong> retrain and lock the v0.4 tokenizer against a pre-registered anchor of cl100k = 242,427 tokens.</div>
+  </div>
+</div>
+<div class="ms" style="padding-top:0;">
+  <div class="ms-bench">
+    <h4>What each stage is measured against</h4>
+    <p>Six benchmarks (131.50, 131.51, 131.52, 131.55, 131.56, 128.15) cover multi-lane token counting, byte-level durability, constrained-decoding mask cost, cost per solved task, agentic token decomposition, and one pre-registered scorecard applied at every stage. They are being built before the training compute is spent.</p>
+    <p class="veto"><strong>The veto:</strong> No lane advances without beating the no-training baseline &mdash; a frontier model with the syntax card and the grammar artefacts, and no training at all.</p>
+  </div>
+  <div class="ms-cta">
+    <a href="/roadmap" style="background:#2a2317;border:1px solid #f0c04a;color:#f0c04a;padding:0.6rem 1.2rem;border-radius:6px;text-decoration:none;font-size:0.85rem;font-weight:600;">Full roadmap, benchmarks and withdrawn claims &rarr;</a>
+  </div>
 </div>
 
-<!-- Compact horizontal timeline bar -->
-<div style="max-width:900px;margin:0 auto 1rem;padding:0 1rem;">
-  <div style="display:flex;align-items:center;gap:0;position:relative;height:60px;">
-    <div style="position:absolute;top:50%;left:0;right:0;height:2px;background:#6b6356;transform:translateY(-50%);"></div>
-    <div style="flex:1;text-align:center;position:relative;z-index:1;">
-      <div style="width:12px;height:12px;background:#f0c04a;border-radius:50%;margin:0 auto 4px;"></div>
-      <span style="font-size:0.65rem;color:#9a9082;">Phase 1</span>
-    </div>
-    <div style="flex:1;text-align:center;position:relative;z-index:1;">
-      <div style="width:12px;height:12px;background:#f0c04a;border-radius:50%;margin:0 auto 4px;"></div>
-      <span style="font-size:0.65rem;color:#9a9082;">Phase 2</span>
-    </div>
-    <div style="flex:1;text-align:center;position:relative;z-index:1;">
-      <div style="width:14px;height:14px;background:#f0c04a;border-radius:50%;margin:0 auto 4px;border:2px solid #f0c04a;"></div>
-      <span style="font-size:0.65rem;color:#f0c04a;font-weight:bold;">Phase 3</span>
-    </div>
-    <div style="flex:1;text-align:center;position:relative;z-index:1;">
-      <div style="width:12px;height:12px;background:#6b6356;border:2px solid #6b6356;border-radius:50%;margin:0 auto 4px;"></div>
-      <span style="font-size:0.65rem;color:#6b6356;">Phase 4</span>
-    </div>
-    <div style="flex:1;text-align:center;position:relative;z-index:1;">
-      <div style="width:12px;height:12px;background:#6b6356;border:2px solid #6b6356;border-radius:50%;margin:0 auto 4px;"></div>
-      <span style="font-size:0.65rem;color:#6b6356;">Phase 5</span>
-    </div>
-  </div>
-  <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:#6b6356;margin-top:-0.3rem;padding:0 1rem;">
-    <span>Spec &amp; Compiler</span>
-    <span>Training &amp; Eval</span>
-    <span style="color:#f0c04a;">Publishing</span>
-    <span>Ecosystem</span>
-    <span>Standard</span>
-  </div>
-</div>
-
-<details style="max-width:1100px;margin:0 auto 2rem;">
-  <summary style="cursor:pointer;text-align:center;color:#9a9082;font-size:0.85rem;padding:0.75rem;border:1px solid #2a2317;border-radius:6px;background:#14110b;">
-    Expand full development timeline &darr;
-  </summary>
-
-<div class="dev-timeline" style="margin-top:1rem;">
-
-  <!-- PHASE 1 -->
-  <div class="timeline-phase-group">
-    <div class="phase-group-header">
-      <span class="phase-group-label">Phase 1 (legacy 80-character syntax)</span>
-      <span class="phase-group-title">Can AI write toke?</span>
-    </div>
-    <p class="phase-summary">The first phase answers a simple question: can existing AI models write valid toke programs, and does toke actually use fewer tokens than conventional languages? Everything built here is designed to prove &mdash; or disprove &mdash; the core thesis before investing further.</p>
-    <p class="phase-technical">Epics 1.1&ndash;1.10. Gate 1 criteria: &gt;10% token reduction vs Python/C/Java (cl100k_base) AND Pass@1 &ge; 60% on held-out benchmark.</p>
-
-    <div class="timeline-milestone complete">
-      <div class="milestone-marker"></div>
-      <div class="milestone-content">
-        <div class="milestone-header">
-          <span class="milestone-id">1.1</span>
-          <span class="milestone-title">Language Specification</span>
-          <span class="phase-status complete">Complete</span>
-        </div>
-        <p class="milestone-desc">Defined the complete toke language &mdash; grammar, keywords, types, operators, and the character sets for both profiles.</p>
-        <p class="milestone-technical">LL(1) grammar, 13 keywords. Phase 1 (80 chars) for corpus generation. Phase 2 (55 chars) production encoding with <code>$</code> type sigils and <code>@()</code> arrays. Formal EBNF, RFC draft, mechanical transformation rules. <a href="https://github.com/karwalski/toke">toke</a></p>
-      </div>
-    </div>
-
-    <div class="timeline-milestone complete">
-      <div class="milestone-marker"></div>
-      <div class="milestone-content">
-        <div class="milestone-header">
-          <span class="milestone-id">1.2</span>
-          <span class="milestone-title">Reference Compiler</span>
-          <span class="phase-status complete">Complete</span>
-        </div>
-        <p class="milestone-desc">Built the compiler that checks every toke program for correctness &mdash; type safety, syntax validity, and character set compliance.</p>
-        <p class="milestone-technical">Single-pass C99 compiler: lexer, LL(1) parser, name resolution, type inference, LLVM IR codegen (x86-64, ARM64). <code>--check</code> mode for corpus validation. Structured JSON diagnostics. 600+ conformance tests. <a href="https://github.com/karwalski/toke">toke</a></p>
-      </div>
-    </div>
-
-    <div class="timeline-milestone complete">
-      <div class="milestone-marker"></div>
-      <div class="milestone-content">
-        <div class="milestone-header">
-          <span class="milestone-id">1.3&ndash;1.9</span>
-          <span class="milestone-title">Standard Library, Security &amp; Infrastructure</span>
-          <span class="phase-status complete">Complete</span>
-        </div>
-        <p class="milestone-desc">6 core library modules (<code>std.str</code>, <code>std.http</code>, <code>std.db</code>, <code>std.json</code>, <code>std.file</code>, <code>std.net</code>), SAST analysis and fuzzing, corpus pipeline threat model, and monitoring dashboard.</p>
-      </div>
-    </div>
-
-    <div class="timeline-milestone complete">
-      <div class="milestone-marker"></div>
-      <div class="milestone-content">
-        <div class="milestone-header">
-          <span class="milestone-id">1.5</span>
-          <span class="milestone-title">Training Corpus</span>
-          <span class="phase-status complete">Complete</span>
-        </div>
-        <p class="milestone-desc">Built a library of 46,754 verified toke programs using three AI models in parallel (Haiku 4.5, GPT-4.1-mini, Grok-3-mini), each validated by the compiler and cross-checked against reference implementations in Python, C, and Java.</p>
-        <p class="milestone-technical">339 task templates, 50K generated tasks. 4 corpus stages: 26,978 single-function (Stage A), 9,776 multi-function (Stage B), 5,000 edge cases (Stage C), 5,000 application-level (Stage D). Auto-fixer rescues ~15% of programs at zero API cost. <a href="https://github.com/karwalski/toke-model">toke-model</a></p>
-      </div>
-    </div>
-
-    <div class="timeline-milestone complete">
-      <div class="milestone-marker"></div>
-      <div class="milestone-content">
-        <div class="milestone-header">
-          <span class="milestone-id">1.6</span>
-          <span class="milestone-title">Gate 1 Evaluation</span>
-          <span class="phase-status complete">Complete</span>
-        </div>
-        <p class="milestone-desc">Final benchmark on 1,000 held-out tasks. <strong>Gate 1: PASS.</strong> Token reduction 12.5% (target &gt;10%). Pass@1 63.7% (target &ge;60%). Compilation rate 92.3%.</p>
-        <p class="milestone-technical">1,000 held-out tasks, 120 test inputs each. Token reduction: 12.5% (8K vocab) / 13.1% (32K vocab) vs cl100k_base. Pass@1: 588/923 compilable tasks (63.7%) via Qwen 2.5 Coder 7B + QLoRA adapter. <a href="https://github.com/karwalski/toke-eval">toke-eval</a></p>
-      </div>
-    </div>
-
-    <div class="gate-marker">
-      <div class="gate-line"></div>
-      <div class="gate-content">
-        <span class="gate-label">Gate 1 &mdash; PASS</span>
-        <span class="gate-criteria">&gt;10% token reduction AND Pass@1 &ge; 60%</span>
-      </div>
-      <div class="gate-line"></div>
-    </div>
-  </div>
-
-  <!-- PHASE 2 -->
-  <div class="timeline-phase-group">
-    <div class="phase-group-header">
-      <span class="phase-group-label">Phase 2 (default 55-character syntax)</span>
-      <span class="phase-group-title">Custom tokenizer &amp; first AI model</span>
-    </div>
-    <p class="phase-summary">With the thesis validated, Phase 2 builds a tokenizer purpose-built for toke, expands the standard library, and works toward training a model on the production default syntax. A major syntax decision &mdash; adopting the 55-character encoding as the default &mdash; required regenerating the entire corpus in the new format.</p>
-    <p class="phase-technical">Epics 2.1&ndash;2.5. Profile 2 (55-char) BPE tokenizer. QLoRA fine-tuning of Qwen 2.5 Coder 7B. Gate 2 criteria: 7B model outperforms baseline on default-syntax generation.</p>
-
-    <div class="timeline-milestone complete">
-      <div class="milestone-marker"></div>
-      <div class="milestone-content">
-        <div class="milestone-header">
-          <span class="milestone-id">2.1</span>
-          <span class="milestone-title">Language Extensions &amp; Default Syntax</span>
-          <span class="phase-status complete">Complete</span>
-        </div>
-        <p class="milestone-desc">Adopted the 55-character encoding as the default (&ldquo;toke&rdquo;) and the 80-character encoding as the legacy profile (<code>--legacy</code>). Expanded the standard library to 30+ modules covering security, networking, data processing, visualization, and LLM integration.</p>
-        <p class="milestone-technical">55-char is default, <code>$</code> type sigils, <code>@()</code> arrays, <code>[]</code> removed. 30+ stdlib modules with <code>.tki</code> interface contracts. <a href="https://github.com/karwalski/toke">toke</a></p>
-      </div>
-    </div>
-
-    <div class="timeline-milestone complete">
-      <div class="milestone-marker"></div>
-      <div class="milestone-content">
-        <div class="milestone-header">
-          <span class="milestone-id">2.2</span>
-          <span class="milestone-title">Purpose-Built Tokenizer</span>
-          <span class="phase-status complete">Complete</span>
-        </div>
-        <p class="milestone-desc">BPE tokenizer retrained on the 25,953-record default-syntax corpus. 8,192 token vocabulary optimised for v0.3 patterns like <code>m=</code>, <code>f=</code>, <code>:i64):i64{</code>, and <code>&lt;0};</code>.</p>
-        <p class="milestone-technical">8K BPE on 25,953 v0.3 programs. Phase 2 result: trained and deployed. Phase 1 legacy: 13.1% token reduction (32K vocab). <a href="https://github.com/karwalski/toke-model">toke-model</a></p>
-      </div>
-    </div>
-
-    <div class="timeline-milestone complete">
-      <div class="milestone-marker"></div>
-      <div class="milestone-content">
-        <div class="milestone-header">
-          <span class="milestone-id">2.3</span>
-          <span class="milestone-title">First Fine-Tuned Model (Gate 1)</span>
-          <span class="phase-status complete">Complete</span>
-        </div>
-        <p class="milestone-desc">QLoRA fine-tune of Qwen 2.5 Coder 7B on the v0.3 default-syntax corpus. 25,953 training examples with canonical system prompt. Training in progress.</p>
-        <p class="milestone-technical">QLoRA rank 64, alpha 128, cosine schedule. ChatML format with v0.3 canonical prompt. Gate 1 baseline: 63.7% Pass@1 on legacy syntax. Gate 2 target: &gt;70% on default syntax. <a href="https://github.com/karwalski/toke-model">toke-model</a></p>
-      </div>
-    </div>
-
-    <div class="timeline-milestone complete">
-      <div class="milestone-marker"></div>
-      <div class="milestone-content">
-        <div class="milestone-header">
-          <span class="milestone-id">2.5</span>
-          <span class="milestone-title">Gate 2: Default Syntax Compilation</span>
-          <span class="phase-status complete">PASS</span>
-        </div>
-        <p class="milestone-desc"><strong>Gate 2: PASS (2026-05-22).</strong> 100% compilation Pass@1 on 700 benchmark tasks. The corpus was rebuilt from scratch: 25,953 records including 6,069 from the loke production codebase (698 files, 87K lines of working toke). A single canonical system prompt replaced three inconsistent variants. 22 foreign-keyword compiler hints and 6 <code>--migrate</code> transforms were added for common LLM patterns. Functional correctness (correct I/O) is ~8% &mdash; the model mastered syntax but algorithmic reasoning requires execution-verified reinforcement learning, which is the next phase.</p>
-        <p class="milestone-technical">Qwen 2.5 Coder 7B + QLoRA (rank 64, alpha 128), 37 hours on NVIDIA A10G. 16K BPE tokenizer trained on normalised v0.3 code achieves 52% token reduction vs cl100k. <a href="https://github.com/karwalski/toke-model">toke-model</a></p>
-
-        <div class="corpus-stage">
-          <div class="stage-header"><span class="stage-label">Gate 2 Corpus</span><span class="stage-title">Default Syntax, Verified</span></div>
-          <div class="phase-details">
-            <div class="phase-stat"><span class="stat-label">Training records</span><span class="stat-value">25,953</span></div>
-            <div class="phase-stat"><span class="stat-label">Compilation Pass@1</span><span class="stat-value">100%</span></div>
-            <div class="phase-stat"><span class="stat-label">Token reduction</span><span class="stat-value">52% vs cl100k</span></div>
-            <div class="phase-stat"><span class="stat-label">Functional Pass@1</span><span class="stat-value">~8% (next target)</span></div>
-          </div>
-          <div class="phase-bar"><div class="phase-bar-fill" style="width:100%"></div></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="gate-marker">
-      <div class="gate-line"></div>
-      <div class="gate-content">
-        <span class="gate-label">Gate 2 &mdash; PASS</span>
-        <span class="gate-criteria">100% compilation Pass@1 &mdash; 7B model outperforms Gate 1 baseline (63.7% &rarr; 100%)</span>
-      </div>
-      <div class="gate-line"></div>
-    </div>
-  </div>
-
-  <!-- PHASE 3 -->
-  <div class="timeline-phase-group">
-    <div class="phase-group-header">
-      <span class="phase-group-label">Phase 3</span>
-      <span class="phase-group-title">Multiple models &amp; self-improvement</span>
-    </div>
-    <p class="phase-summary">Phase 3 proves the approach works across different AI architectures and builds a self-improvement loop where AI models generate new training data autonomously.</p>
-    <p class="phase-technical">Epics 3.1&ndash;3.6. 7B + 32B models. Llama 3.1 family evaluation. Self-improvement: 500 programs/day. ~400 compute-hours total.</p>
-
-    <div class="timeline-milestone complete">
-      <div class="milestone-marker"></div>
-      <div class="milestone-content">
-        <div class="milestone-header">
-          <span class="milestone-id">3.1</span>
-          <span class="milestone-title">MCP Server &amp; Tooling Protocol</span>
-          <span class="phase-status complete">Complete</span>
-        </div>
-        <p class="milestone-desc">JSON-based tooling protocol server for editor and AI agent integration.</p>
-      </div>
-    </div>
-
-    <div class="timeline-milestone complete">
-      <div class="milestone-marker"></div>
-      <div class="milestone-content">
-        <div class="milestone-header">
-          <span class="milestone-id">3.2</span>
-          <span class="milestone-title">Research Review &amp; Remediation</span>
-          <span class="phase-status complete">Complete</span>
-        </div>
-        <p class="milestone-desc">Comprehensive research review across 8 teams covering compiler hardening, conformance, spec completeness, corpus quality, tokenizer validation, model reproducibility, and security. All findings remediated.</p>
-      </div>
-    </div>
-
-    <div class="timeline-milestone complete">
-      <div class="milestone-marker"></div>
-      <div class="milestone-content">
-        <div class="milestone-header">
-          <span class="milestone-id">3.3</span>
-          <span class="milestone-title">Default Syntax Compiler Implementation</span>
-          <span class="phase-status complete">Complete</span>
-        </div>
-        <p class="milestone-desc">Full compiler support for the 55-character default syntax &mdash; lexer, parser, type checker, and LLVM backend updated. 172 conformance tests passing.</p>
-      </div>
-    </div>
-
-    <div class="timeline-milestone in-progress">
-      <div class="milestone-marker"></div>
-      <div class="milestone-content">
-        <div class="milestone-header">
-          <span class="milestone-id">3.4</span>
-          <span class="milestone-title">Functional Correctness (Gate 3)</span>
-          <span class="phase-status in-progress">Next</span>
-        </div>
-        <p class="milestone-desc">Gate 2 achieved 100% compilation but ~8% functional correctness. Next phase: execution-verified RLVR training with randomised inputs, curriculum learning, and self-improvement loop using the Gate 2 model to generate candidate solutions. Target: &ge;35% functional Pass@1.</p>
-        <p class="milestone-technical">Plan: 200K+ execution-verified records via DeepSeek V3.2, GRPO/RLVR with compile+test reward, adaptive curriculum. See <a href="https://github.com/karwalski/toke/blob/main/docs/spec/training-next-phase.md">training-next-phase.md</a> and <a href="https://github.com/karwalski/toke/blob/main/docs/spec/research-feedback-request.md">research feedback request</a>.</p>
-      </div>
-    </div>
-
-    <div class="timeline-milestone planned">
-      <div class="milestone-marker"></div>
-      <div class="milestone-content">
-        <div class="milestone-header">
-          <span class="milestone-id">3.5</span>
-          <span class="milestone-title">Self-Improvement Loop</span>
-          <span class="phase-status planned">Planned</span>
-        </div>
-        <p class="milestone-desc">Autonomous corpus growth: 500 programs/day validated without human initiation.</p>
-      </div>
-    </div>
-
-    <div class="timeline-milestone planned">
-      <div class="milestone-marker"></div>
-      <div class="milestone-content">
-        <div class="milestone-header">
-          <span class="milestone-id">3.6</span>
-          <span class="milestone-title">Multi-Model Evaluation</span>
-          <span class="phase-status planned">Planned</span>
-        </div>
-        <p class="milestone-desc">Llama 3.1 family evaluation (8B, 70B). Cross-family Pass@1 comparison.</p>
-      </div>
-    </div>
-
-    <div class="gate-marker">
-      <div class="gate-line"></div>
-      <div class="gate-content">
-        <span class="gate-label">Gate 3</span>
-        <span class="gate-criteria">&ge;70% Pass@1 on 2+ model families, self-improvement loop running</span>
-      </div>
-      <div class="gate-line"></div>
-    </div>
-  </div>
-
-  <!-- PHASE 4 -->
-  <div class="timeline-phase-group">
-    <div class="phase-group-header">
-      <span class="phase-group-label">Phase 4</span>
-      <span class="phase-group-title">Standardisation &amp; ecosystem</span>
-    </div>
-    <p class="phase-summary">The final phase formalises toke into a publishable standard with a full conformance suite, package ecosystem, and governance structure.</p>
-    <p class="phase-technical">Epics 4.1&ndash;4.5. Complete EBNF + formal semantics. 900+ conformance tests. LSP stub, package registry. Consortium proposal.</p>
-
-    <div class="timeline-milestone complete">
-      <div class="milestone-marker"></div>
-      <div class="milestone-content">
-        <div class="milestone-header">
-          <span class="milestone-id">4.1</span>
-          <span class="milestone-title">Complete Language Specification</span>
-          <span class="phase-status complete">Complete</span>
-        </div>
-        <p class="milestone-desc">Full formal specification published &mdash; EBNF grammar, static semantics, runtime contract, memory model, error code registry, and machine-readable Tree-sitter grammar.</p>
-      </div>
-    </div>
-
-    <div class="timeline-milestone complete">
-      <div class="milestone-marker"></div>
-      <div class="milestone-content">
-        <div class="milestone-header">
-          <span class="milestone-id">4.2</span>
-          <span class="milestone-title">Conformance Suite</span>
-          <span class="phase-status complete">Complete</span>
-        </div>
-        <p class="milestone-desc">600+ conformance tests covering lexical, grammar, type/semantic, and diagnostic schema validation.</p>
-      </div>
-    </div>
-
-    <div class="timeline-milestone planned">
-      <div class="milestone-marker"></div>
-      <div class="milestone-content">
-        <div class="milestone-header">
-          <span class="milestone-id">4.3&ndash;4.4</span>
-          <span class="milestone-title">Tooling &amp; Self-Redesign</span>
-          <span class="phase-status planned">Planned</span>
-        </div>
-        <p class="milestone-desc">LSP editor integration, package registry, and a self-redesign pilot where AI proposes language improvements.</p>
-      </div>
-    </div>
-
-    <div class="timeline-milestone planned">
-      <div class="milestone-marker"></div>
-      <div class="milestone-content">
-        <div class="milestone-header">
-          <span class="milestone-id">4.5</span>
-          <span class="milestone-title">Consortium &amp; Adoption</span>
-          <span class="phase-status planned">Planned</span>
-        </div>
-        <p class="milestone-desc">Governance document, versioning, change process. Consortium proposal for standardisation and enterprise adoption.</p>
-      </div>
-    </div>
-
-    <div class="gate-marker">
-      <div class="gate-line"></div>
-      <div class="gate-content">
-        <span class="gate-label">Gate 4</span>
-        <span class="gate-criteria">All benchmarks met, spec complete, consortium proposal ready</span>
-      </div>
-      <div class="gate-line"></div>
-    </div>
-  </div>
-
-  <!-- PHASE 5 -->
-  <div class="timeline-phase-group">
-    <div class="phase-group-header">
-      <span class="phase-group-label">Phase 5</span>
-      <span class="phase-group-title">1B purpose-built model</span>
-    </div>
-    <p class="phase-summary">Phase 5 replaces the fine-tuning approach with a 1B parameter model trained from scratch on toke programs. A smaller model purpose-built for toke is expected to outperform larger fine-tuned models on toke-specific code generation, because it learns toke as a native language rather than adapting from Python or C.</p>
-    <p class="phase-technical">Architecture design, corpus preparation (comment-free, 55-char default syntax), training infrastructure, full training run, and evaluation against fine-tuned 7B baseline.</p>
-
-    <div class="timeline-milestone planned">
-      <div class="milestone-marker"></div>
-      <div class="milestone-content">
-        <div class="milestone-header">
-          <span class="milestone-id">5.1</span>
-          <span class="milestone-title">1B Model Architecture Design</span>
-          <span class="phase-status planned">Planned</span>
-        </div>
-        <p class="milestone-desc">Design a 1B parameter transformer architecture optimised for toke code generation. Evaluate decoder-only vs encoder-decoder, context length, and attention patterns suited to toke's compact syntax.</p>
-      </div>
-    </div>
-
-    <div class="timeline-milestone planned">
-      <div class="milestone-marker"></div>
-      <div class="milestone-content">
-        <div class="milestone-header">
-          <span class="milestone-id">5.2</span>
-          <span class="milestone-title">Training Corpus Preparation</span>
-          <span class="phase-status planned">Planned</span>
-        </div>
-        <p class="milestone-desc">Prepare the from-scratch training corpus: comment-free, 55-character default syntax, matched to the purpose-built tokenizer. Includes deduplication, quality filtering, and curriculum ordering.</p>
-      </div>
-    </div>
-
-    <div class="timeline-milestone planned">
-      <div class="milestone-marker"></div>
-      <div class="milestone-content">
-        <div class="milestone-header">
-          <span class="milestone-id">5.3</span>
-          <span class="milestone-title">Training Infrastructure</span>
-          <span class="phase-status planned">Planned</span>
-        </div>
-        <p class="milestone-desc">Set up training infrastructure for a full from-scratch training run &mdash; hardware provisioning, distributed training framework, checkpointing, and monitoring.</p>
-      </div>
-    </div>
-
-    <div class="timeline-milestone planned">
-      <div class="milestone-marker"></div>
-      <div class="milestone-content">
-        <div class="milestone-header">
-          <span class="milestone-id">5.4</span>
-          <span class="milestone-title">1B Model Training</span>
-          <span class="phase-status planned">Planned</span>
-        </div>
-        <p class="milestone-desc">Train the 1B parameter model from scratch on the toke corpus. Multiple training runs with hyperparameter search. Target: the model learns toke as its native language.</p>
-      </div>
-    </div>
-
-    <div class="timeline-milestone planned">
-      <div class="milestone-marker"></div>
-      <div class="milestone-content">
-        <div class="milestone-header">
-          <span class="milestone-id">5.5</span>
-          <span class="milestone-title">1B Model Evaluation</span>
-          <span class="phase-status planned">Planned</span>
-        </div>
-        <p class="milestone-desc">Evaluate the 1B purpose-built model against the fine-tuned 7B baseline on toke code generation benchmarks. Target: 1B purpose-built outperforms 7B fine-tuned on Pass@1, compilation rate, and token efficiency.</p>
-      </div>
-    </div>
-
-    <div class="gate-marker">
-      <div class="gate-line"></div>
-      <div class="gate-content">
-        <span class="gate-label">Gate 5</span>
-        <span class="gate-criteria">1B purpose-built model outperforms fine-tuned 7B on toke generation benchmarks</span>
-      </div>
-      <div class="gate-line"></div>
-    </div>
-  </div>
-
-</div>
-</details>
+<!-- ROADMAP:END -->
 
 <!-- ================================================================== -->
 <!-- Built with toke                                                    -->
@@ -766,33 +420,33 @@
 
 <div class="section-alt" style="background:#1f1a11;padding:3rem 2rem;margin:2rem 0;">
   <div style="max-width:900px;margin:0 auto;">
-    <h2 style="text-align:center;margin-bottom:0.5rem;">Token Efficiency: Measured, Not Claimed</h2>
-    <p style="text-align:center;color:#9a9082;margin-bottom:2rem;font-size:0.9rem;">Purpose-built BPE tokenizer (16K vocab) trained on 25,953 toke programs. Compared against cl100k_base (100K vocab, used by GPT-4 and Claude).</p>
+    <h2 style="text-align:center;margin-bottom:0.5rem;">Token Efficiency: Measured, With Its Lane</h2>
+    <p style="text-align:center;color:#9a9082;margin-bottom:2rem;font-size:0.9rem;">Every figure below names the metric type, the tokenizer, the baseline and N, per TEMSpec &sect;6.3. Nothing here is a bare percentage, and nothing here compares one tokenizer against another across two languages.</p>
 
     <div style="display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;margin-bottom:2rem;">
       <div style="text-align:center;padding:1.5rem 2rem;background:#1f1a11;border:1px solid #2a2317;border-radius:8px;">
-        <div style="font-size:2.5rem;font-weight:700;color:#6fc2b2;">52%</div>
-        <div style="font-size:0.75rem;color:#9a9082;margin-top:0.3rem;">AVERAGE TOKEN REDUCTION</div>
-        <div style="font-size:0.7rem;color:#6b6356;">vs cl100k on 42 benchmark programs</div>
+        <div style="font-size:2.5rem;font-weight:700;color:#6fc2b2;">24.6%</div>
+        <div style="font-size:0.75rem;color:#9a9082;margin-top:0.3rem;">FEWER TOKENS, toke v0.4 vs toke v0.3</div>
+        <div style="font-size:0.7rem;color:#6b6356;">cl100k_base on both sides &middot; 4,787 vs 6,347 &middot; N = 60 Gate-1 tasks</div>
       </div>
       <div style="text-align:center;padding:1.5rem 2rem;background:#1f1a11;border:1px solid #2a2317;border-radius:8px;">
-        <div style="font-size:2.5rem;font-weight:700;color:#f0c04a;">24</div>
-        <div style="font-size:0.75rem;color:#9a9082;margin-top:0.3rem;">TOKENS: FIBONACCI</div>
-        <div style="font-size:0.7rem;color:#6b6356;">vs 61 in cl100k (61% reduction)</div>
+        <div style="font-size:2.5rem;font-weight:700;color:#f0c04a;">1.34&times;</div>
+        <div style="font-size:0.75rem;color:#9a9082;margin-top:0.3rem;">toke COSTS MORE THAN PYTHON</div>
+        <div style="font-size:0.7rem;color:#6b6356;">[1.22, 1.48] &middot; cl100k_base on both sides &middot; 4,787 vs 3,565 &middot; N = 60</div>
       </div>
       <div style="text-align:center;padding:1.5rem 2rem;background:#1f1a11;border:1px solid #2a2317;border-radius:8px;">
-        <div style="font-size:2.5rem;font-weight:700;color:#f0c040;">9</div>
-        <div style="font-size:0.75rem;color:#9a9082;margin-top:0.3rem;">TOKENS: HELLO WORLD</div>
-        <div style="font-size:0.7rem;color:#6b6356;">vs 26 in cl100k (65% reduction)</div>
+        <div style="font-size:2.5rem;font-weight:700;color:#f0c040;">0.92&times;</div>
+        <div style="font-size:0.75rem;color:#9a9082;margin-top:0.3rem;">BYTES, toke vs PYTHON</div>
+        <div style="font-size:0.7rem;color:#6b6356;">raw UTF-8, no tokenizer &middot; 693 vs 753 &middot; N = 4 verified pairs</div>
       </div>
     </div>
 
-    <p style="text-align:center;color:#9a9082;font-size:0.85rem;">Patterns like <code style="background:#2a2317;border:1px solid #2a2317;border-radius:3px;padding:0.15em 0.35em;font-size:0.82em;color:#f0c04a;">f=main():i64{</code>, <code style="background:#2a2317;border:1px solid #2a2317;border-radius:3px;padding:0.15em 0.35em;font-size:0.82em;color:#f0c04a;">i=j:std.json</code>, and <code style="background:#2a2317;border:1px solid #2a2317;border-radius:3px;padding:0.15em 0.35em;font-size:0.82em;color:#f0c04a;">){&lt;n};&lt;</code> merge into single tokens because the BPE was trained on real toke code.</p>
+    <p style="text-align:center;color:#9a9082;font-size:0.85rem;max-width:760px;margin:0 auto;"><strong style="color:#f5efe2">What was withdrawn, and why.</strong> The &ldquo;52% average token reduction vs cl100k&rdquo; that used to headline this section compared <em>two tokenizers over one toke text</em> (Toke-16K v0.3 vs cl100k_base, N&nbsp;=&nbsp;42) &mdash; never a comparison with Python &mdash; and it cannot be reproduced from the dataset it cited. It is withdrawn, not requalified. On canonical v0.4 <code style="background:#2a2317;border:1px solid #2a2317;border-radius:3px;padding:0.15em 0.35em;font-size:0.82em;color:#f0c04a;">tkc --min</code> text the shipped 8K tokenizer needs <strong>15.4% more</strong> tokens than cl100k_base (279,672 vs 242,427; N&nbsp;=&nbsp;2,000). No &ldquo;purpose-built tokenizer beats cl100k&rdquo; claim is supportable until a correct v0.4 tokenizer is trained and locked. Source: <code style="background:#2a2317;border:1px solid #2a2317;border-radius:3px;padding:0.15em 0.35em;font-size:0.82em;color:#f0c04a;">docs/metrics-baseline.md</code>. See the <a href="/roadmap" style="color:#f0c04a;">roadmap</a> for what is measured next.</p>
 
     <div style="text-align:center;margin-top:1.5rem;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
       <a href="/tokenizer" style="background:#2a2317;border:1px solid #f0c04a;color:#f0c04a;padding:0.6rem 1.2rem;border-radius:6px;text-decoration:none;font-size:0.85rem;font-weight:600;">Try the Live Tokenizer &rarr;</a>
       <a href="/tokens" style="background:#2a2317;border:1px solid #6b6356;color:#9a9082;padding:0.6rem 1.2rem;border-radius:6px;text-decoration:none;font-size:0.85rem;">Token Visualisation Gallery</a>
-      <a href="/docs/reference/token-comparison" style="background:#2a2317;border:1px solid #6b6356;color:#9a9082;padding:0.6rem 1.2rem;border-radius:6px;text-decoration:none;font-size:0.85rem;">Full 42-Example Comparison</a>
+      <a href="/docs/reference/token-comparison" style="background:#2a2317;border:1px solid #6b6356;color:#9a9082;padding:0.6rem 1.2rem;border-radius:6px;text-decoration:none;font-size:0.85rem;">Token comparison reference</a>
     </div>
   </div>
 </div>
@@ -830,16 +484,16 @@
  "tokens_in": 159,
  "tokens_out": 28,
  "toke_bpe_out": 13}</pre>
-        <p style="font-size:0.8rem;color:#9a9082;">The response includes three token counts: model input, model output (Qwen tokenizer), and the same output measured by toke's purpose-built BPE &mdash; showing the 52% efficiency gain a toke-native model would achieve.</p>
+        <p style="font-size:0.8rem;color:#9a9082;">The response includes three token counts: model input and model output under the Qwen tokenizer, and the same output re-measured under toke's v0.3 purpose-built BPE. The third number is a <em>tokenizer-vs-tokenizer</em> reading of one text, not a reduction against any other language, and the v0.3 tokenizer it uses is lossy. It is reported so callers can see the lane, not as an efficiency claim.</p>
       </div>
     </div>
 
     <div style="background:#1f1a11;border:1px solid #2a2317;border-radius:8px;padding:1.5rem;margin-bottom:2rem;">
       <h3 style="font-size:1rem;margin-bottom:0.8rem;">Model on HuggingFace</h3>
-      <p style="font-size:0.85rem;color:#9a9082;margin-bottom:0.8rem;">The Gate 2 model is published on HuggingFace. Download it, run locally, or fine-tune for your own use case. Includes model card, tokenizer, and training details.</p>
+      <p style="font-size:0.85rem;color:#9a9082;margin-bottom:0.8rem;">The Gate 2 model (2026-05-22) is published on HuggingFace. Download it, run locally, or fine-tune for your own use case. Includes model card, tokenizer, and training details. It was trained on the <strong>v0.3</strong> corpus and predates the breaking v0.4 syntax change; no v0.4-native model has been trained yet. See the <a href="/roadmap" style="color:#f0c04a;">roadmap</a>.</p>
       <div style="display:flex;gap:1rem;align-items:center;">
         <a href="https://huggingface.co/karwalski/toke" style="background:#2a2317;border:1px solid #6b6356;color:#9a9082;padding:0.5rem 1rem;border-radius:4px;text-decoration:none;font-size:0.85rem;">View on HuggingFace &rarr;</a>
-        <span style="color:#6b6356;font-size:0.8rem;">Qwen 2.5 Coder 7B + QLoRA &middot; Apache 2.0 &middot; 100% compilation Pass@1</span>
+        <span style="color:#6b6356;font-size:0.8rem;">Qwen 2.5 Coder 7B + QLoRA &middot; Apache 2.0 &middot; v0.3 syntax &middot; 100% compile Pass@1 / 55.6% functional on the curated Gate-2 set (272/489)</span>
       </div>
     </div>
 

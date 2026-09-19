@@ -118,7 +118,7 @@ f=main():i64{
 <div class="stats">
   <div class="stat green"><div class="num" id="toke-count">—</div><div class="lbl">toke BPE</div></div>
   <div class="stat purple"><div class="num" id="cl100k-count">—</div><div class="lbl">cl100k est.</div></div>
-  <div class="stat amber"><div class="num" id="reduction">—</div><div class="lbl">reduction</div></div>
+  <div class="stat amber"><div class="num" id="reduction">—</div><div class="lbl" title="Two tokenizers over one text. Not a comparison with any other language, and superseded: on canonical v0.4 text the shipped 8K tokenizer needs 15.4% more tokens than cl100k (N = 2,000).">toke BPE vs cl100k, same text</div></div>
   <div class="stat"><div class="num" id="char-raw">—</div><div class="lbl">chars (raw)</div></div>
   <div class="stat"><div class="num" id="char-norm">—</div><div class="lbl">chars (clean)</div></div>
 </div>
@@ -142,23 +142,29 @@ f=main():i64{
 <!-- Cross-language comparison (shown when a preset with known comparisons is active) -->
 <div id="comparison-section" style="display:none;">
   <h2>Cross-Language Comparison</h2>
-  <p style="color:#9a9082;font-size:0.85rem;margin-bottom:1rem;">Same program in different languages, all tokenized with cl100k_base (the tokenizer used by GPT-4 and Claude). toke additionally shown with its purpose-built BPE.</p>
+  <p style="color:#9a9082;font-size:0.85rem;margin-bottom:1rem;">Same program in different languages, all tokenized with cl100k_base (the tokenizer used by GPT-4 and Claude). The percentage column compares <strong>cl100k against cl100k</strong> &mdash; one tokenizer on both sides. The <em>toke (BPE)</em> row is shown for interest only: it is a toke-trained tokenizer, so measuring it against a cl100k baseline in another language measures its training bias, not the language. No percentage is offered for it.</p>
   <table class="compare-table" id="compare-table">
-    <thead><tr><th>Language</th><th>Tokens</th><th class="bar-cell">Relative</th><th>vs toke BPE</th></tr></thead>
+    <thead><tr><th>Language</th><th>Tokens</th><th class="bar-cell">Relative</th><th>vs toke (cl100k)</th></tr></thead>
     <tbody id="compare-body"></tbody>
   </table>
 </div>
 
 <div class="links">
   <a href="/tokens">Token Visualisation Gallery &rarr;</a>
-  <a href="/docs/reference/token-comparison">Full 42-Example Comparison &rarr;</a>
+  <a href="/docs/reference/token-comparison">Token comparison reference &rarr;</a>
   <a href="/">Back to tokelang.dev &rarr;</a>
 </div>
 
 <div class="tokenizer-footer">
   The toke BPE tokenizer (16,384 tokens) runs entirely in your browser — no data leaves your machine.<br>
-  Trained on 25,953 toke programs + 698 loke production modules. cl100k count is estimated client-side.<br>
-  Average reduction: <strong>52%</strong> fewer tokens vs cl100k on normalised toke code.
+  Trained on 25,953 v0.3 toke programs + 698 loke production modules. cl100k count is estimated client-side.<br>
+  <strong>Withdrawn claim.</strong> This page used to state a &ldquo;52% average reduction vs cl100k&rdquo;. That figure
+  compared <em>two different tokenizers on the same toke text</em> (Toke-16K v0.3 vs cl100k_base, N&nbsp;=&nbsp;42,
+  2026-05-22) &mdash; never a comparison with Python &mdash; it cannot be reproduced from the dataset it cites, and it rests on a
+  tokenizer whose null <code>unk_token</code> silently drops every backslash. It is withdrawn, not requalified.
+  On canonical v0.4 <code>tkc&nbsp;--min</code> text the shipped 8K tokenizer needs <strong>15.4% more</strong> tokens
+  than cl100k_base (279,672 vs 242,427; N&nbsp;=&nbsp;2,000 stratified corpus records, 2026-09-18).
+  See the <a href="/roadmap">roadmap</a> for where the tokenizer work stands.
 </div>
 
 </div>
@@ -365,11 +371,11 @@ function tokenize() {
 
 function showComparison(tokeNorm, tokeCount) {
   const langs = PRESETS[currentPreset].langs;
-  const rows = [{ lang: 'toke (BPE)', tokens: tokeCount, isToke: true }];
+  const rows = [{ lang: 'toke (BPE, toke-trained)', tokens: tokeCount, isToke: true }];
 
-  // toke with cl100k
+  // toke with cl100k -- this is the reference for every percentage below.
   const tokeCl = cl100kApprox(tokeNorm);
-  rows.push({ lang: 'toke (cl100k)', tokens: tokeCl.tokens.length, isToke: false });
+  rows.push({ lang: 'toke (cl100k)', tokens: tokeCl.tokens.length, isToke: false, isRef: true });
 
   for (const [lang, code] of Object.entries(langs)) {
     rows.push({ lang: lang + ' (cl100k)', tokens: cl100kApprox(code).tokens.length, isToke: false });
@@ -379,15 +385,22 @@ function showComparison(tokeNorm, tokeCount) {
   const body = document.getElementById('compare-body');
   body.innerHTML = '';
 
+  // Story 132.13: every percentage on this page is same-tokenizer. The reference is
+  // toke measured with cl100k against the other languages measured with cl100k.
+  // The toke-BPE row gets no percentage at all: it is a toke-trained tokenizer, so
+  // scoring it against a non-toke baseline measures its training bias, not the language.
+  const refCl = tokeCl.tokens.length;
+
   rows.forEach(r => {
-    const pct = Math.round((1 - tokeCount / r.tokens) * 100);
+    const pct = Math.round((1 - refCl / r.tokens) * 100);
     const barWidth = Math.round(r.tokens / maxTokens * 100);
+    const noPct = r.isToke || r.isRef;
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td class="lang">${r.lang}</td>
       <td class="tokens">${r.tokens}</td>
       <td class="bar-cell"><div class="bar-bg"><div class="bar-fill ${r.isToke ? 'bar-toke' : 'bar-other'}" style="width:${barWidth}%"></div></div></td>
-      <td class="pct ${r.isToke ? '' : (pct > 0 ? 'better' : 'worse')}">${r.isToke ? '—' : (pct > 0 ? '+' + pct + '% fewer' : pct + '%')}</td>
+      <td class="pct ${noPct ? '' : (pct > 0 ? 'better' : 'worse')}"${r.isToke ? ' title="toke-trained tokenizer — not comparable with a cl100k baseline"' : ''}>${noPct ? '—' : (pct > 0 ? '+' + pct + '% fewer' : pct + '%')}</td>
     `;
     body.appendChild(tr);
   });

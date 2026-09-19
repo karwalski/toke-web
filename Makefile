@@ -50,6 +50,16 @@ dev: $(BIN)
 clean:
 	rm -f $(BIN) main.ll
 
+# --- Generated content ---
+
+# The /roadmap page and the home-page milestones block are generated from ONE
+# source (content/roadmap.json) so the two pages cannot disagree (story 132.9).
+roadmap:
+	python3 scripts/gen_roadmap.py
+
+check-roadmap:
+	python3 scripts/gen_roadmap.py --check
+
 # --- Documentation checks ---
 
 DOCS_DIR = /Users/matthew.watt/tk/docs
@@ -126,4 +136,4 @@ deploy-content: ## Content-only deploy (templates, static, sites — no rebuild)
 deploy-auto: ## Auto-detect deploy mode based on git changes
 	./scripts/deploy.sh auto
 
-.PHONY: all run run-http dev certs clean check-docs check-docs-examples check-docs-runtime deploy deploy-content deploy-auto
+.PHONY: all run run-http dev certs clean roadmap check-roadmap check-docs check-docs-examples check-docs-runtime deploy deploy-content deploy-auto
