@@ -30,13 +30,12 @@ f=main():i64{
   http.getstaticmime("/health";hj;"application/json");
   http.getstaticmime("/api/health";hj;"application/json");
   http.getstatic("/api/version";"{\"version\":\"0.3.0\"}");
+  (* Routing is host-independent: servepages registers a named route per
+     templates/*.tkt, and servedir("/") is the wildcard fallback over build/.
+     Every host the server answers for gets the same tree (story 132.21). *)
   http.servepages("templates";"templates");
   http.servedir("/";"build");
-  http.vhost("tokelang.dev";"sites/tokelang.dev");
-  http.vhost("www.tokelang.dev";"sites/tokelang.dev");
-  http.vhost("staging.tokelang.dev";"sites/tokelang.dev");
-  http.vhost("loke.tokelang.dev";"sites/loke.tokelang.dev");
   if(httpmode){http.serveworkers(port;2)};
-  if(httpmode==false){http.servevhoststls(port;"certs/cert.pem";"certs/key.pem")};
+  if(httpmode==false){http.servetls(port;"certs/cert.pem";"certs/key.pem")};
   <0
 };

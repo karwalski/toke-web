@@ -59,11 +59,12 @@ for f in library.html tokenizer.html tokens.html tokenizer_v03.json; do
   fi
 done
 
-# Site-root files that live in the vhost directory but have to be served for
-# every host. They were 404ing: main.tk registers http.servedir("/";"build")
-# before the vhost catch-all, and a wildcard route that matches wins, so
-# nothing under sites/ was ever reachable. Copying them here is what actually
-# publishes /robots.txt, /sitemap.xml and the favicons.
+# Site-root files that are authored under sites/ but have to be served at /.
+# sites/ is not a docroot: it was the vhost docroot, and the vhost catch-all
+# could never run because http.servedir("/";"build") registers its wildcard
+# first and the first matching wildcard wins. The vhost calls were removed in
+# story 132.21; copying these files into build/ is what publishes
+# /robots.txt, /sitemap.xml and the favicons.
 for f in robots.txt sitemap.xml favicon.ico favicon.svg; do
   if [[ -f "sites/tokelang.dev/${f}" ]]; then
     cp "sites/tokelang.dev/${f}" "build/${f}"

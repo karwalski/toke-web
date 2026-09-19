@@ -168,7 +168,9 @@ rsync_content() {
     "${REMOTE}:${DEPLOY_DIR}/build/"
   echo "    build/ synced (--delete: orphans are removed)"
 
-  # Rsync sites/ (vhost content)
+  # Rsync sites/. It is no longer a docroot the server reads per host — the
+  # vhost mechanism was removed in story 132.21 — but main.tk still reads
+  # sites/tokelang.dev/llms.txt at startup, so it must be present remotely.
   rsync -az --delete -e "ssh ${SSH_OPTS}" \
     "${REPO_ROOT}/sites/" \
     "${REMOTE}:${DEPLOY_DIR}/sites/"
