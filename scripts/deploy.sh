@@ -131,6 +131,9 @@ make TKC="${TKC}" check-toke
 make check-roadmap
 make check-llms
 
+echo "    materialising content/docs/ from the toke repo"
+./scripts/sync_docs_content.sh
+
 echo "    rebuilding build/ before sync"
 ./scripts/build_static.sh
 
@@ -152,16 +155,18 @@ rsync_content() {
 
   # Rsync build/ (the static tree served at / by http.servedir).
   #
-  # Deliberately NOT --delete. `make build` reproduces every asset build/ owns,
-  # but the ~110 per-slug documentation pages under /docs/<section>/<slug> that
-  # the sitemap lists are served from an older render that no tool in the tree
-  # can currently regenerate (`ooke build` aborts with RT005). Deleting them
-  # here would take them off the site. Until they can be rebuilt, this sync adds
-  # and overwrites but never removes — see the report on story 132.17.
-  rsync -az -e "ssh ${SSH_OPTS}" \
+  # --delete is correct again as of story 134.8. It was disabled because the
+  # ~110 per-slug /docs/<section>/<slug> pages were served from a May-era render
+  # that no tool in the tree could reproduce (`ooke build` aborted with RT005),
+  # so deleting them would have taken them off the site — at the cost of letting
+  # that stale render survive every deploy, still carrying claims Epic 132 had
+  # withdrawn. scripts/build_static.sh now renders those pages from
+  # content/docs/ on every build, so build/ owns every file it syncs and an
+  # orphan here is a real orphan.
+  rsync -az --delete -e "ssh ${SSH_OPTS}" \
     "${REPO_ROOT}/build/" \
     "${REMOTE}:${DEPLOY_DIR}/build/"
-  echo "    build/ synced (additive: see the note above before adding --delete)"
+  echo "    build/ synced (--delete: orphans are removed)"
 
   # Rsync sites/ (vhost content)
   rsync -az --delete -e "ssh ${SSH_OPTS}" \

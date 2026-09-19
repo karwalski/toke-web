@@ -52,6 +52,7 @@ dev: $(BIN)
 
 clean:
 	rm -f $(BIN) main.ll
+	rm -rf build-docs
 
 # --- Toke source gate (story 132.17a) ---
 
@@ -62,13 +63,14 @@ clean:
 # workflow and `make ci` both run it, and it fails the build.
 TOKE_SRC = main.tk
 
-# pages/*.tk is NOT built or served: main.tk routes with
-# http.servepages("templates";"templates"), which registers a route per
-# templates/*.tkt and never looks at pages/. The tree is left from an earlier
-# ooke routing model, most of it does not compile (pre-v0.3 `match`/`err(e)`
-# syntax, and an `ooke.template` import with no interface path), and it is
-# reported below rather than gated so the failure of dead code cannot mask a
-# real one. It should be restored or deleted — see the report on story 132.17.
+# pages/*.tk is not compiled, but it is no longer dead (story 134.8): `ooke
+# build` derives one route per pages/**/*.tk *filename* — pages/docs/about/
+# [slug].tk is what makes /docs/about/<slug> a page at all — so deleting the
+# tree would delete the ~195 documentation pages. Their bodies are still
+# pre-v0.3 (`match`/`err(e)` syntax, an `ooke.template` import with no interface
+# path) and most do not compile; that only matters for `ooke serve`/`ooke
+# compile`, which the site does not use, so it is reported below rather than
+# gated. Migrating the bodies is story 132.17 / 134.2 work.
 TOKE_SRC_UNUSED = $(shell find pages -name '*.tk' 2>/dev/null | sort)
 
 check-toke:
@@ -92,8 +94,8 @@ check-toke:
 			if $(TKC) --check "$$f" >/dev/null 2>&1; then up=$$((up + 1)); else uf=$$((uf + 1)); fi; \
 		done; \
 		echo ""; \
-		echo "  note: pages/ is not built or served by main.tk — $$up compile, $$uf do not."; \
-		echo "        Not gated. Restore or delete the tree (story 132.17)."; \
+		echo "  note: pages/ supplies the ooke build's route names only — $$up compile, $$uf do not."; \
+		echo "        Not gated: the static build reads filenames, not bodies (story 134.8)."; \
 	fi; \
 	echo ""; \
 	if [ $$fail -ne 0 ]; then echo "check-toke FAILED ($$fail source(s))"; exit 1; fi; \
@@ -103,8 +105,16 @@ check-toke:
 
 # build/ is gitignored but the deploy rsyncs it, so it must be reproducible from
 # committed sources alone. This remakes it from scratch.
-build: ## Rebuild build/ from static/
+build: ## Rebuild build/ from static/ and render /docs with ooke
 	./scripts/build_static.sh
+
+# content/docs/ is not authored here: it is the canonical documentation in the
+# toke repo, linked in per section. `make build` cannot render the ~195
+# /docs/<section>/<slug> pages without it (story 134.8).
+OOKE ?= $(HOME)/tk/toke-ooke/ooke-toke
+
+docs-content:
+	TOKE_REPO="$(TOKE_REPO)" ./scripts/sync_docs_content.sh
 
 # Fail if build/ is older than the sources it is derived from. The deploy runs
 # this after rebuilding, so a stale tree can never be published.
@@ -133,7 +143,7 @@ check-llms:
 	python3 scripts/gen_llms.py --check
 
 # Everything a change to this repo must pass before it is deployed.
-ci: check-toke check-roadmap check-llms build check-build-fresh check-routes
+ci: check-toke check-roadmap check-llms docs-content build check-build-fresh check-routes
 	@echo ""; echo "=== CI checks passed ==="
 
 # --- Documentation checks ---
@@ -212,4 +222,4 @@ deploy-content: ## Content-only deploy (templates, static, sites — no rebuild)
 deploy-auto: ## Auto-detect deploy mode based on git changes
 	./scripts/deploy.sh auto
 
-.PHONY: all run run-http dev certs clean roadmap check-roadmap llms check-llms ci check-toke build check-build-fresh check-routes check-docs check-docs-examples check-docs-runtime deploy deploy-content deploy-auto
+.PHONY: all run run-http dev certs clean roadmap check-roadmap llms check-llms ci check-toke build docs-content check-build-fresh check-routes check-docs check-docs-examples check-docs-runtime deploy deploy-content deploy-auto

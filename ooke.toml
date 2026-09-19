@@ -4,7 +4,12 @@ url = "https://tokelang.dev"
 language = "en"
 
 [build]
-output = "build/"
+# Story 134.8: `ooke build` renders the /docs/<section>/<slug> pages here, and
+# scripts/build_static.sh copies only the docs/ subtree into build/. It is NOT
+# "build/" because ooke also renders the pages that templates/*.tkt already
+# serve as named routes, and build_static.sh's rule is that a page served by a
+# route must never also be mirrored under build/ (story 132.17b).
+output = "build-docs/"
 minify = true
 inlinecss = false
 

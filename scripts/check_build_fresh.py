@@ -22,7 +22,13 @@ BUILD = ROOT / "build"
 
 # Directories whose contents build/ is derived from, or whose edits must at
 # least prompt a rebuild before a deploy.
-SOURCES = ["static", "templates", "content", "sites"]
+#
+# 134.8: `pages` joins the list because ooke derives one route per pages/*.tk,
+# and `content` now feeds the ~195 /docs pages. Note that content/docs/* are
+# symlinks into the toke repo and rglob does not descend symlinked directories,
+# so editing a doc there does not by itself trip this gate — scripts/deploy.sh
+# always rebuilds before syncing, which is what actually guarantees freshness.
+SOURCES = ["static", "templates", "content", "sites", "pages"]
 
 # Files the site links to directly, served out of build/.
 REQUIRED = [
@@ -35,6 +41,9 @@ REQUIRED = [
     "robots.txt",
     "sitemap.xml",
     "favicon.ico",
+    # One per-slug documentation page, so an ooke build that produced no /docs
+    # tree cannot pass this gate (story 134.8).
+    "docs/about/why/index.html",
 ]
 
 SKIP_NAMES = {".DS_Store"}
