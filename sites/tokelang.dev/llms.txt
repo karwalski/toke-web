@@ -55,7 +55,8 @@ unchanged and unrelated to it.
   codes, machine-parseable spans and a fix field.
   Current version: toke 2.8.0. Licence Apache-2.0.
 - Author: Matthew Watt (github.com/karwalski), sole maintainer.
-- Source: github.com/karwalski/toke — six repositories under github.com/karwalski.
+- Source: github.com/karwalski/toke — eleven public repositories under github.com/karwalski,
+  plus two private ones.
   The site is tokelang.dev, built and served by ooke.
 
 ## A complete program

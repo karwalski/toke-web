@@ -272,7 +272,7 @@
   </div>
   <div class="feature-card">
     <h3>Open Source</h3>
-    <p>MIT and Apache 2.0 licensed. Built in public. Every component &mdash; <a href="https://github.com/karwalski/toke">compiler</a>, <a href="https://github.com/karwalski/toke">spec</a>, <a href="https://github.com/karwalski/toke-model">corpus &amp; tokenizer</a>, <a href="https://github.com/karwalski/toke-eval">benchmarks</a>, <a href="https://github.com/karwalski/toke-web">docs</a>, <a href="https://github.com/karwalski/toke-mcp">MCP server</a> &mdash; is open for contribution and enterprise use.</p>
+    <p>MIT and Apache 2.0 licensed. Built in public. Every component &mdash; <a href="https://github.com/karwalski/toke">compiler</a>, <a href="https://github.com/karwalski/toke">spec</a>, <a href="https://github.com/karwalski/toke-corpus">corpus</a> &amp; <a href="https://github.com/karwalski/toke-tokenizer">tokenizer</a>, <a href="https://github.com/karwalski/toke-eval">benchmarks</a>, <a href="https://github.com/karwalski/toke-web">docs</a>, <a href="https://github.com/karwalski/toke-mcp">MCP server</a> &mdash; is open for contribution and enterprise use.</p>
   </div>
 </div>
 

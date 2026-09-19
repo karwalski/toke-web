@@ -105,7 +105,8 @@ def render(canon):
     w(bullet("Compiler:", canon["compiler"]["value"]))
     w("  Current version: %s. Licence %s." % (canon["compiler"]["version"], canon["compiler"]["licence"]))
     w("- Author: " + canon["author"]["value"])
-    w("- Source: github.com/karwalski/toke — six repositories under github.com/karwalski.")
+    w("- Source: github.com/karwalski/toke — eleven public repositories under github.com/karwalski,")
+    w("  plus two private ones.")
     w("  The site is tokelang.dev, built and served by ooke.\n")
 
     w("## A complete program\n")
