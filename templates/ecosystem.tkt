@@ -58,8 +58,9 @@
   <div class="oke-card">
     <div class="oke-badge">demo application</div>
     <h2>moke</h2>
-    <p>loke's data-analysis demo, exercising its privacy pipeline, governance controls, and LLM integration. 26-detector analysis engine, 9 Australian-themed datasets, client-side ML. Integrated into the loke project.</p>
+    <p>loke's data-analysis demo, exercising its privacy pipeline, governance controls, and LLM integration. A 26-detector type engine, a set of Australian-themed sample datasets, and client-side ML. <strong>No dataset count is given here:</strong> the one that used to be (9) disagreed with the repository, which lists them by category, so the repository is the count. There is no hosted moke, and it runs on your machine alongside loke.</p>
     <div class="oke-links">
+      <a href="/loke#run-it-locally">Run it locally</a>
       <a href="https://github.com/karwalski/loke">GitHub (in loke)</a>
     </div>
   </div>

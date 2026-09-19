@@ -2,20 +2,46 @@
 {! block("title") !}loke — toke ecosystem{! end !}
 {! block("content") !}
 
+<style>
+/* loke page: caveat register and status columns. Follows the pattern set by
+   templates/status.tkt: page-scoped rules built only from the existing theme
+   tokens, so both themes are covered without touching the stylesheet. */
+.caveat, .feature p.caveat { border-left: 2px solid var(--hairline); padding-left: 0.85rem; font-size: 0.82rem; color: var(--faint); margin: 0.8rem 0 0; line-height: 1.6; }
+.caveat strong, .feature p.caveat strong { color: var(--muted); }
+.ecosystem-note p + p { margin-top: 0.7rem; }
+.ecosystem-note strong { color: var(--text); }
+.ecosystem-note ul { margin: 0.7rem 0 0; padding-left: 1.1rem; }
+.ecosystem-note li { margin-bottom: 0.35rem; line-height: 1.6; }
+.ph-head { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.7rem; }
+.ph-head h3 { margin-bottom: 0 !important; }
+.feature ul { margin: 0; padding-left: 1.1rem; }
+.feature li { color: var(--muted); font-size: 0.86rem; line-height: 1.6; margin-bottom: 0.35rem; }
+.feature li strong { color: var(--text); }
+.run-steps { max-width: 860px; margin: 0 auto; padding: 0 2rem; }
+.shot-slot { max-width: 860px; margin: 1.5rem auto; padding: 2rem; border: 1px dashed var(--hairline); border-radius: var(--radius); background: var(--surface); text-align: center; color: var(--faint); font-family: var(--font-mono); font-size: 0.78rem; line-height: 1.7; }
+.shot-slot strong { color: var(--muted); }
+</style>
+
 <div class="page-hero">
   <h1>loke</h1>
-  <p class="tagline">A locally-run intelligence layer that sits between users, their data, and external LLMs &mdash; minimising token spend, maximising privacy, and keeping sensitive data on the user's device.</p>
+  <p class="tagline">A locally-run intelligence layer that sits between users, their data, and external LLMs: reducing what is disclosed to them, reducing what is spent on them, and keeping the data itself on the user's device.</p>
   <div class="hero-actions">
     <a href="https://github.com/karwalski/loke" class="btn btn-primary">GitHub</a>
-    <a href="/moke" class="btn btn-outline">Try moke</a>
+    <a href="#run-it-locally" class="btn btn-outline">Run it locally</a>
     <a href="/ecosystem" class="btn btn-secondary">&larr; Ecosystem</a>
   </div>
 </div>
 
 <div class="stat-row">
-  <div class="stat"><div class="num">0</div><div class="lbl">Data leaves the device unreviewed</div></div>
+  <div class="stat"><div class="num">none</div><div class="lbl">Hosted loke, now or planned</div></div>
   <div class="stat"><div class="num">local</div><div class="lbl">First</div></div>
   <div class="stat"><div class="num">toke</div><div class="lbl">Written entirely in</div></div>
+</div>
+
+<div class="container">
+  <div class="ecosystem-note" style="border-left-color:var(--gold);">
+    <p><strong>How figures work on this page.</strong> loke publishes numbers from one file only, <code>docs/metrics-baseline.md</code> in its repository, and that file currently records <strong>no published performance figures</strong>, because no benchmark harness exists yet. Several percentages that used to appear here (combined token reduction, cache-hit saving, AAAK compression, memory-search latency, intent-classification and pipeline-overhead timings) had no measurement behind them and are withdrawn. They return only as measurements with their workload, their tokenizer and their N. The same rule governs the rest of this site: see <a href="/status">Status</a>. <strong>If this page disagrees with <a href="/status">Status</a>, Status is right and this page is a bug.</strong></p>
+  </div>
 </div>
 
 <div class="container">
@@ -23,7 +49,7 @@
 <!-- ── Architecture ─────────────────────────────────────────── -->
 
 <div class="section-heading"><h2>How it works</h2></div>
-<p>loke sits as a transparent proxy between your tools and the LLM API. Applications point to <code>localhost:loke</code> instead of the API endpoint directly. Every request passes through a pipeline of privacy, optimisation, and routing stages before anything leaves your machine.</p>
+<p>loke is a local proxy that you point your tools at. You configure an application to send its requests to loke on <code>127.0.0.1</code> instead of straight to a provider, and requests that arrive there pass through privacy, optimisation, routing and governance stages before anything leaves the machine. Nothing is intercepted: loke installs no certificate authority, no proxy auto-configuration file and no packet filter, so an application addressed elsewhere never reaches it. What that does and does not let loke promise is set out under <a href="#enforcement">Enforcement, honestly</a>.</p>
 
 <div class="code-block" style="text-align:left; line-height:1.8;">
 <span class="cm">                       loke (local)</span>
@@ -36,19 +62,88 @@
   User/App &lt;── response restoration &lt;────────────┘
 </div>
 
+<!-- ── What leaves the machine ──────────────────────────────── -->
+
+<div class="section-heading" id="what-leaves"><h2>Where loke is going, and where it actually is</h2></div>
+<p>The architecture loke is being built towards, for analysis work, sends the <em>shape</em> of the data rather than the data: column names, types, cardinality and null-rate, plus your question. What comes back is an executable specification, which loke validates and then runs locally against data that never left the device. Redaction becomes a labelled fallback for prose tasks rather than the default.</p>
+
+<div class="ecosystem-note" style="border-left-color:var(--gold);">
+  <p><strong>That path is not built yet, and this page will not describe it as though it were.</strong> The epic is specified and every story in it is unstarted. Three specifics, because they are the ones that matter:</p>
+  <ul>
+    <li>The two profilers that build today's &ldquo;schema-first&rdquo; request <strong>embed three real sample values per column, plus real minimum, maximum and mean</strong>. So the request that looks like a schema currently ships real data.</li>
+    <li>The local execution engine exists and is complete, and <strong>has no production caller</strong>. Nothing routes through it yet.</li>
+    <li>The no-custody proposal path in the demo <strong>never executes</strong>: a contract mismatch between the page and the endpoint means the client silently falls back to local heuristics.</li>
+  </ul>
+  <p>The acceptance test for the first of those is written and specific: a profile built from a dataset containing a unique sentinel value must contain that value zero times. Until it passes, the redaction path below is what loke actually does.</p>
+</div>
+
+<div class="code-block" style="text-align:left; line-height:1.8;">
+<span class="cm">INTENDED PRIMARY PATH             PATH IN USE TODAY
+(no custody, not built yet)       (redact and send)</span>
+User input + local data           User input
+    |                                 |
+    v                                 v
+Schema profile                    Privacy filter (regex + NER + Presidio)
+(names, types, cardinality,           |
+ null-rate, no values)                v
+    |                             Token optimiser (TOON + LLMLingua)
+    v                                 |
+Router ──&gt; LLM provider               v
+    |                             Router ──&gt; LLM provider
+    v                                 |
+Executable artifact                   v
+    |                             Response restoration
+    v                             (placeholders back to values)
+Local execution against               |
+data that never left                  v
+    |                             User output
+    v
+User output
+</div>
+
+<div class="ecosystem-note">
+  <p><strong>This data flow is not novel, and loke does not claim it is.</strong> Schema out, execute locally is how every text-to-SQL benchmark has always worked (BIRD, Spider, Spider 2.0 all hand the model a schema and score by executing the returned query against a database the model never saw), and it ships commercially today in Vanna.AI, WrenAI, Snowflake Cortex Analyst and Databricks Genie. It is a published pattern with a published name.</p>
+  <p><strong>What is different is that nobody treats it as a security control.</strong> The products above get the data flow right incidentally and make no security claim about it: no threat model, no artifact validation, no injection resistance, no provenance, no audit obligation. The contribution loke is aiming at is the enforcement around the data flow, not the data flow. That is a claim about engineering discipline, it is unproven until the enforcement exists and has been tested, and the three panels below are the parts of it loke has already decided not to overstate.</p>
+</div>
+
+<div class="features">
+  <div class="feature">
+    <h3>Not &ldquo;low leakage&rdquo;</h3>
+    <p>A schema is itself worth attacking. Published work (<em>Zero-Knowledge Schema Inference Attacks</em>, Findings of NAACL 2025) reconstructs table names from a deployed text-to-SQL system at F1 up to 0.99 against generative models, and schemas encode business logic, regulatory scope and sometimes values in column names. The claim loke will make instead is <strong>bounded and auditable disclosure</strong>: what leaves is O(schema) rather than O(data), it is declared, and you can review the exact bytes. Bounded is not small, and auditable is not safe.</p>
+  </div>
+  <div class="feature">
+    <h3>Not &ldquo;the model never receives data&rdquo;</h3>
+    <p>That is true at the byte level and not necessarily at the information level. A returned query is itself a channel: an adversary able to shape queries and observe results across several turns can extract values a piece at a time without ever being sent a row. No published benchmark tests this. loke treats bounding that channel as an <strong>open problem tracked in its backlog</strong>, not as solved.</p>
+  </div>
+  <div class="feature">
+    <h3>The cost, stated up front</h3>
+    <p>Sending a schema instead of rows costs accuracy on some question classes. MaskSQL, which is more permissive than loke in that it sends masked values, still pays roughly 20 execution-accuracy points on BIRD. loke's plan is to quantify that cost rather than to argue it away, and no comparison has been run yet.</p>
+  </div>
+</div>
+
 <!-- ── Privacy Pipeline ────────────────────────────────────── -->
 
 <div class="section-heading"><h2>Privacy Pipeline</h2></div>
-<p>Before any prompt leaves your device, loke detects and handles sensitive data through multiple layers. You control exactly what reaches a remote model.</p>
+<p>This is the path loke uses today: detect sensitive values, replace them, send, then restore. It is the weaker of the two designs above and it is presented as such, shortcomings included.</p>
+
+<div class="ecosystem-note" style="border-left-color:var(--ticket-red);">
+  <p><strong>It currently fails open, and that is the most important sentence in this section.</strong> In the browser-mode pipeline endpoint, if the detection sidecar is not answering, the code falls back to five literal substring checks, counts them, <strong>does not redact anything</strong>, and still sends the prompt to the provider. A filter that fails open is worse than one that fails closed. The fix is specified (return 503 and never dispatch when no detection layer is healthy) and is not yet made, so if you are running loke today, check that the sidecar is up before you rely on redaction.</p>
+</div>
 
 <div class="features">
   <div class="feature">
     <h3>Multi-layer PII detection</h3>
-    <p>Three detection layers working in sequence: regex patterns for structured data (emails, phone numbers, ABNs), NLP entity recognition for names and addresses, and a small local language model for contextual PII that rules miss. 180+ entity types via Presidio integration.</p>
+    <p>A regex detector with 10 patterns (email, phone, credit card, TFN, SSN, IP address, API key), entity recognition by a small local model over Ollama, and an optional Python sidecar exposing Presidio's 180+ entity types. The Presidio and LLMLingua sidecars are not bundled, so they are inert until you run them.</p>
+    <p class="caveat"><strong>The composition is not finished.</strong> The consensus, layer-config, layer-health, entity-routing and per-layer-metrics modules are written but not wired into the pipeline orchestrator, which uses its own de-duplication instead. The four named consensus strategies are not implemented: the strategy argument is accepted and ignored.</p>
   </div>
   <div class="feature">
-    <h3>Reversible anonymisation</h3>
-    <p>Detected PII is replaced with consistent placeholders before the prompt is sent. When the response comes back, loke restores the original values. The LLM never sees real data, but you get a coherent answer with your actual names and details intact.</p>
+    <h3>Reversible placeholders, with a known defect</h3>
+    <p>Detected values are replaced with bracketed placeholders before the prompt is sent, and restored from a per-request map when the response comes back. <strong>The placeholders are not consistent across requests</strong>, and loke does not claim they are: the index is an ordinal assigned within a single request and shared across entity types, so the same value receives different tokens in different prompts.</p>
+    <p class="caveat"><strong>Worse, and live:</strong> both NER layers emit a hardcoded constant suffix, so every person detected in a request collapses to the same token and restoration can substitute the wrong person's name. This is a defect with a ticket, not a design choice, and it is stated here rather than waited out.</p>
+  </div>
+  <div class="feature">
+    <h3>Redaction is not de-identification</h3>
+    <p>Removing names reduces what is disclosed. It does not prevent identification. Peer-reviewed work establishes that models infer and re-identify obscured entities from the surrounding context, so a redacted prompt still carries identifying signal. loke therefore labels this path as the fallback, logs that it was used, and states the residual risk rather than describing the result as anonymous.</p>
   </div>
   <div class="feature">
     <h3>Guardian system prompt</h3>
@@ -56,14 +151,14 @@
   </div>
   <div class="feature">
     <h3>Dry-run mode</h3>
-    <p>Preview exactly what will be sent to the LLM before it goes. See the anonymised prompt, the detected entities, and the placeholder mapping. Nothing leaves your machine until you confirm.</p>
+    <p>Preview exactly what would be sent before it goes: the redacted prompt, the detected entities and the placeholder mapping. <strong>It is a mode you ask for</strong> (the <code>--dry-run</code> flag, or the confirm step in browser mode), not a gate on every request, and the page no longer implies that nothing leaves the machine until you confirm.</p>
   </div>
 </div>
 
 <!-- ── Token Optimisation ──────────────────────────────────── -->
 
 <div class="section-heading"><h2>Token Optimisation</h2></div>
-<p>loke combines multiple compression strategies to reduce the tokens you send to an LLM API. Less tokens means lower cost and faster responses, without sacrificing output quality.</p>
+<p>loke combines several compression strategies to reduce the tokens you send to an LLM API. Fewer tokens means lower cost. Whether it costs you output quality is exactly the kind of thing that needs measuring, and it has not been measured, so this page does not claim it is free.</p>
 
 <div class="features">
   <div class="feature">
@@ -72,7 +167,7 @@
   </div>
   <div class="feature">
     <h3>LLMLingua compression</h3>
-    <p>Prompt compression that removes redundant tokens while preserving meaning. Combined with TOON, prompts that would cost hundreds of tokens can often be expressed in dozens.</p>
+    <p>Prompt compression that removes redundant tokens while preserving meaning. The client is implemented, but it requires a sidecar service loke does not bundle, so the path is inert out of the box. No compression ratio is quoted: the &ldquo;up to 20x&rdquo; figure that used to appear here was unfalsifiable and is withdrawn.</p>
   </div>
   <div class="feature">
     <h3>Semantic caching</h3>
@@ -80,7 +175,7 @@
   </div>
   <div class="feature">
     <h3>Combined savings</h3>
-    <p>TOON + LLMLingua + semantic caching + template reuse + local routing, applied in one pipeline. <strong>The combined figure that used to sit here &mdash; and the pipeline-overhead figure beside it &mdash; had no measurement behind them and are withdrawn</strong> (story 132.16). They will return only as a benchmark with its tokenizer, its workload and its N, on the same terms as every other number this project publishes.</p>
+    <p>TOON + LLMLingua + semantic caching + template reuse + local routing, applied in one pipeline. <strong>The combined figure that used to sit here &mdash; and the pipeline-overhead figure beside it &mdash; had no measurement behind them and are withdrawn</strong> (story 132.16). They will return only as a benchmark with its tokenizer, its workload and its N, on the same terms as every other number this project publishes. See <a href="/status">Status</a> for those terms.</p>
   </div>
 </div>
 
@@ -116,35 +211,35 @@ projects=HDR[id|name]
 <div class="features">
   <div class="feature">
     <h3>Intent classification</h3>
-    <p>A lightweight local classifier analyses each prompt in under 10ms. Categories include code completion, creative writing, factual lookup, reasoning, and more. Classification drives routing and optimisation decisions.</p>
+    <p>A keyword and pattern cascade, deliberately cheap, and described that way rather than as semantic. Categories include code completion, creative writing, factual lookup and reasoning, and the classification drives routing and optimisation decisions. <strong>No latency figure is quoted:</strong> the &ldquo;under 10ms&rdquo; claim that used to sit here had no timing test behind it and is withdrawn (see <a href="/status">Status</a>).</p>
   </div>
   <div class="feature">
     <h3>Sensitivity scoring</h3>
     <p>Each prompt receives a sensitivity score based on detected PII, data categories, and configured policies. High-sensitivity prompts are routed to local models or blocked entirely. Low-sensitivity prompts are eligible for cost-optimised cloud routing.</p>
   </div>
   <div class="feature">
-    <h3>Cost-optimised model selection</h3>
-    <p>loke selects the cheapest model capable of handling each query. Simple lookups go to small fast models. Complex reasoning goes to larger models. You set the budget and quality floor; loke optimises within those constraints.</p>
+    <h3>Model selection</h3>
+    <p>One fixed selection path exists, choosing a destination from tier, sensitivity and configured cost limits. <strong>The four named strategies (cheapest-adequate, fastest, best-quality, local-first) are not implemented</strong>, and the intent is to ship them rather than to imply they are already there. Until they are, do not read &ldquo;cost-optimised&rdquo; as a solver.</p>
   </div>
 </div>
 
 <!-- ── Local Inference ──────────────────────────────────────── -->
 
 <div class="section-heading"><h2>Local Inference</h2></div>
-<p>loke runs models locally using a tiered system matched to your hardware. No data leaves the device for local inference &mdash; privacy is absolute.</p>
+<p>loke runs models locally using three tiers matched to your hardware. <strong>A request served by a local model does not cross the network to a provider at all</strong>, so for that request there is no provider disclosure to reason about. That is a property of local inference and nothing more: it says nothing about the requests that do go out, about what is written to disk, or about anything else running on the machine. loke does not describe any part of itself as absolutely private.</p>
 
 <div class="features">
   <div class="feature">
     <h3>Interactive tier</h3>
-    <p>Fast responses for real-time use: autocomplete, quick lookups, short answers. Small quantised models running at 25&ndash;55 tokens/second. Optimised for latency.</p>
+    <p>For real-time use: autocomplete, quick lookups, short answers. Small quantised models, all layers on the GPU where one is available, memory locked, 4K context. Optimised for latency. <strong>No throughput figure is quoted</strong>, because none has been measured on any named hardware.</p>
   </div>
   <div class="feature">
     <h3>Considered tier</h3>
-    <p>Mid-range models for tasks that can tolerate a few seconds of latency: code review, document summarisation, analysis. 5&ndash;15 tokens/second. Better quality than interactive, still fast enough for conversational use.</p>
+    <p>Mid-range models for tasks that tolerate a few seconds of latency: code review, document summarisation, analysis. Partial GPU offload, memory-mapped weights, 8K context.</p>
   </div>
   <div class="feature">
     <h3>Background tier</h3>
-    <p>Large models for batch processing, overnight analysis, and deep reasoning. 0.5&ndash;5 tokens/second. Queue jobs and collect results later. Disk-streaming for models that exceed RAM.</p>
+    <p>Large models for batch work, overnight analysis and deep reasoning. Minimal GPU offload, memory-mapped weights, 32K context, small batches. Queue jobs and collect results later.</p>
   </div>
   <div class="feature">
     <h3>MLX for Apple Silicon</h3>
@@ -154,53 +249,57 @@ projects=HDR[id|name]
 
 <!-- ── AI Governance ────────────────────────────────────────── -->
 
-<div class="section-heading"><h2>AI Governance</h2></div>
-<p>loke provides a governance framework that treats AI usage as a first-class compliance concern. Every AI interaction passes through a mandatory governance gateway.</p>
+<div class="section-heading" id="enforcement"><h2>Enforcement, honestly</h2></div>
+<p>loke treats AI usage as a compliance concern, and the governance gateway is where requests routed through loke are classified, checked and recorded. What follows is the claim loke will defend and the claim it withdraws, because the difference matters more than the feature list.</p>
+
+<div class="ecosystem-note" style="border-left-color:var(--gold);">
+  <p><strong>Withdrawn: &ldquo;no AI usage bypasses governance, it is architecturally impossible.&rdquo;</strong> That was the least defensible sentence on this site and it is gone. loke is a proxy that applications must be <em>reconfigured</em> to point at. There is no interception anywhere in the codebase: no certificate authority, no proxy auto-configuration file, no packet filtering. Traffic addressed straight at a provider never reaches loke, and loke's own help text advertises a privacy-off mode that disables the pipeline outright.</p>
+  <p><strong>The supportable claim:</strong> <em>when traffic is in path</em>, enforcement is ordered, recorded and inspectable. Stages run in a fixed order, the decision is written to a local record, and you can read the exact bytes that were sent.</p>
+  <p><strong>And the bypasses are enumerated rather than denied.</strong> Six classes are tracked as a test corpus, each with vendor or RFC authority behind it: default TLS do-not-decrypt exemptions, certificate pinning in native apps and SDKs, split tunnelling, browser extensions, encrypted transport metadata (TLS Encrypted Client Hello, RFC 9849, plus QUIC and DNS-over-HTTPS, against which SNI-based rules fail silently), and direct-to-API egress with the caller's own credentials. No vendor documents a reliable network-layer control for the last one. The honest form of this claim is &ldquo;enforced at N of 6, with these requiring endpoint or managed-policy co-deployment&rdquo;, and the N is not published yet because the corpus has not been run.</p>
+</div>
 
 <div class="features">
-  <div class="feature">
-    <h3>Governance gateway</h3>
-    <p>A mandatory chokepoint for all AI interactions. Every request is classified by risk tier, checked against policies, and logged. No AI usage bypasses governance &mdash; it is architecturally impossible.</p>
-  </div>
   <div class="feature">
     <h3>Risk classification</h3>
     <p>Each use case is assigned a risk tier with associated controls. High-risk use cases require additional approval, human review, or are blocked entirely. Risk tiers align with regulatory frameworks.</p>
   </div>
   <div class="feature">
     <h3>Kill switches</h3>
-    <p>Instant shutdown at multiple levels: global (all AI), per-provider, per-use-case, and per-agent. If something goes wrong, one switch stops it. Kill switches work even if the network is down.</p>
+    <p>Shutdown at three levels: global, per-provider and per-agent. The switch is evaluated locally, so it works with the network down. Like every other control here, it stops traffic that goes through loke and nothing else.</p>
   </div>
   <div class="feature">
-    <h3>Decision traces</h3>
-    <p>Full audit trail on every AI interaction: what was sent, what was received, which model, what privacy filtering was applied, what the governance decision was. Traces are stored locally and can be exported for compliance review.</p>
+    <h3>Interaction ledger</h3>
+    <p>An append-only local record per interaction: event type, use case, model, provider, sensitivity, risk tier, tokens in and out, cost and duration. <strong>Read it as a usage and cost account, not as evidence that a control operated over a period.</strong></p>
+    <p class="caveat"><strong>Two limits, stated.</strong> The ledger is <strong>not tamper-evident</strong>: the stored digest concatenates two non-secret fields instead of hashing, it does not chain to the previous record, and no verification routine exists. Separately, the richer decision-trace structure that would record what was sent, what came back and which filters fired is <strong>written but not in use</strong>: it has no caller, no table and no insert. There is no trace export, and the metrics export function returns an empty string. All of this is tracked; none of it is shipped.</p>
   </div>
   <div class="feature">
-    <h3>Compliance reporting</h3>
-    <p>Pre-built report templates for EU AI Act, Australian Privacy Act, HIPAA, and GDPR. Generate compliance documentation from actual usage data rather than self-assessment questionnaires.</p>
+    <h3>Regulatory presets</h3>
+    <p>Policy definitions loke ships for GDPR, HIPAA, the Australian Privacy Act and CCPA, plus report templates. <strong>They do not make a deployment compliant with any regulation, and loke does not claim they do.</strong></p>
+    <p class="caveat"><strong>Report generation does not currently work.</strong> The report engine queries columns that do not exist in the audit table, so the queries fail. The earlier claim that loke generates compliance documentation &ldquo;from actual usage data&rdquo; is withdrawn: there is no usage data path behind it yet.</p>
   </div>
   <div class="feature">
     <h3>Incident management</h3>
-    <p>Severity-tiered incident handling with post-incident review workflows. When an AI interaction produces an unexpected result, loke captures the full context for investigation and creates a traceable incident record.</p>
+    <p>Severity-tiered incident handling with post-incident review workflows. When an interaction produces an unexpected result, loke records an incident with the context it holds for that request, which is the ledger fields rather than the full decision trace, for the reason given above.</p>
   </div>
 </div>
 
 <!-- ── Agents ───────────────────────────────────────────────── -->
 
 <div class="section-heading"><h2>Agents</h2></div>
-<p>loke supports autonomous agents that run tasks on your behalf &mdash; scheduled, triggered, or on-demand. All agents operate within the same privacy and governance framework as interactive queries.</p>
+<p>loke supports agents that run tasks on your behalf, on a schedule or on demand. Agents go through the same privacy pipeline and the same governance checks as an interactive query. Event triggers are defined but not yet fired, so treat &ldquo;triggered&rdquo; as planned.</p>
 
 <div class="features">
   <div class="feature">
-    <h3>Scheduled and triggered</h3>
-    <p>Agents can run on a cron schedule (nightly report generation, weekly summarisation) or be triggered by events (new file, webhook, another agent completing). Define the trigger, the task, and the output destination.</p>
+    <h3>Scheduling</h3>
+    <p>Agents are defined in YAML or TOML: the schedule, the task, and the output destination. <strong>The scheduler recognises three fixed schedules rather than general cron expressions</strong>, and webhook and MCP event triggers are defined but not yet fired by it. General cron and event firing are planned, and named as planned here rather than implied.</p>
   </div>
   <div class="feature">
-    <h3>Sandbox execution</h3>
-    <p>Each agent runs in an isolated sandbox with defined permissions. An agent can read specific directories but not others, can call specific APIs but not others. Principle of least privilege, enforced at the runtime level.</p>
+    <h3>Capability scoping</h3>
+    <p>Each agent carries path, tool and cost limits, so an agent can read the directories it was granted and call the tools it was granted. <strong>This is capability scoping, not process isolation:</strong> agents are not run in a separate sandboxed process, and the page no longer says they are. Process isolation is a separate piece of work.</p>
   </div>
   <div class="feature">
     <h3>Agent-to-agent communication</h3>
-    <p>Agents can pass results to other agents, forming pipelines. A research agent gathers data, passes it to an analysis agent, which passes results to a reporting agent. Each stage is independently governed and auditable.</p>
+    <p>Agents can pass results to other agents, forming pipelines. A research agent gathers data, passes it to an analysis agent, which passes results to a reporting agent. Each stage goes through the same privacy and governance checks as any other request, with the ledger limits noted above.</p>
   </div>
   <div class="feature">
     <h3>Overnight batch</h3>
@@ -219,8 +318,8 @@ projects=HDR[id|name]
     <p>Memory is organised into Wings (broad domains like "work" or "personal"), Halls (projects or topics within a domain), and Rooms (specific conversations or task contexts). Navigate memory the way you think about your work.</p>
   </div>
   <div class="feature">
-    <h3>Semantic search</h3>
-    <p>Find relevant memories by meaning, not keywords. Ask "what did I decide about the database migration?" and loke retrieves the right context even if those exact words were never used. Embeddings are computed and stored locally.</p>
+    <h3>Keyword search, not semantic</h3>
+    <p>Cross-session search over an index table by <strong>keyword matching</strong>. It is not embedding-based retrieval, and loke does not describe it as semantic: a question phrased in words the memory does not contain will not find it. Embedding-based retrieval is planned. There is also a knowledge graph over stored memories and an MCP server that exposes memory to a client. No retrieval-latency figure is quoted, because none has been measured.</p>
   </div>
   <div class="feature">
     <h3>AAAK shorthand</h3>
@@ -239,127 +338,123 @@ projects=HDR[id|name]
     <p>loke acts as an MCP host (exposing tools to clients), an MCP client (connecting to external MCP servers), and a broker (routing between multiple MCP services). One local endpoint that unifies your MCP ecosystem.</p>
   </div>
   <div class="feature">
-    <h3>mDNS discovery</h3>
-    <p>MCP services on the local network are discovered automatically via mDNS. Companion devices running loke advertise their capabilities. No manual configuration &mdash; plug in a device and its models and tools become available.</p>
+    <h3>Discovery</h3>
+    <p>Two different mechanisms, and the page used to conflate them. <strong>MCP servers are found by scanning a fixed list of well-known local ports</strong> on the loopback interface, not by mDNS. <strong>mDNS is used only for loke companion devices</strong>, which advertise and browse a single service type. Anything on a port outside that list still needs configuring by hand.</p>
   </div>
 </div>
 
 <!-- ── Operating Modes ─────────────────────────────────────── -->
 
 <div class="section-heading"><h2>Operating Modes</h2></div>
-<p>loke works wherever you do &mdash; in the terminal or in the browser. Both modes share the same local policy engine, privacy pipeline, and governance framework.</p>
+<p>loke runs either as a local application with a web view or as a proxy in front of your own tools. Both share the same local policy engine, privacy pipeline and governance framework, and both require you to point something at loke: neither intercepts traffic you have not configured.</p>
 
 <div class="features">
   <div class="feature">
-    <h3>Terminal mode</h3>
-    <p>A background daemon that intercepts LLM API calls from CLI tools, IDEs, and scripts. Point any OpenAI-compatible client at <code>localhost:loke</code> and every request is automatically filtered, optimised, and routed. No code changes to your existing tools.</p>
+    <h3>Browser mode</h3>
+    <p>A native binary with a web view, serving loke's own interface on <code>127.0.0.1</code>. This is the mode where the pipeline actually runs end to end, and the one to use today. <strong>It is not a browser extension</strong>, and it does not sit inside ChatGPT or any other web UI: the earlier description of it as an extension was wrong, and no extension exists in the repository.</p>
   </div>
   <div class="feature">
-    <h3>Browser mode</h3>
-    <p>A browser extension that applies loke's pipeline to web-based LLM interfaces. Use ChatGPT, Claude, or any web UI and loke intercepts outbound prompts, applies privacy filtering, and logs everything through the governance gateway.</p>
+    <h3>Proxy mode</h3>
+    <p>An HTTP proxy for outbound requests to cloud LLM APIs, routed through the pipeline. You reconfigure the client to use it; it captures nothing on its own. Requests addressed straight at a provider bypass it, which is the first of the six enumerated bypass classes above.</p>
+  </div>
+  <div class="feature">
+    <h3>Terminal mode</h3>
+    <p>A CLI with working <code>doctor</code>, health, installer, policy and session commands. <strong>The flagship command is not connected:</strong> <code>loke ask</code> currently prints &ldquo;Pipeline not yet connected, use browser mode for full pipeline&rdquo; and returns. Several other subcommands are stubs that say so when you run them. Use browser mode until this lands.</p>
   </div>
 </div>
 
 <!-- ── Built vs Coming Next ────────────────────────────────── -->
 
-<div class="section-heading"><h2>Built vs Coming Next</h2></div>
-<p>loke is under active development. Here is what works today and what is specified and coming next.</p>
+<div class="section-heading" id="state-of-play"><h2>State of play</h2></div>
+<p>The list that used to sit here was a two-column &ldquo;Built&nbsp;/&nbsp;Coming Next&rdquo; split, and it put things in the Built column that are not shipped. Three columns, with each item placed by what the code actually does.</p>
 
-<div class="code-compare">
-  <div class="code-pane">
-    <div class="pane-label">Built</div>
-<pre style="color:#f0c04a;">Foundation
-  Core engine and pipeline
-  Configuration system
-
-Platform
-  Privacy pipeline (PII detection,
-    anonymisation, restoration)
-  Token optimisation (TOON, caching)
-  Intelligent routing
-  Local inference (tiered)
-  MCP integration (host/client/broker)
-  mDNS discovery
-
-Accountable AI
-  Governance gateway
-  Risk classification
-  Kill switches
-  Decision traces
-  Governance health dashboard
-  Value realisation dashboard
-  Provider scorecard
-  Cost forecasting
-  Tier utilisation dashboards
-
-Agents
-  Scheduled and triggered execution
-  Sandbox isolation
-  Agent-to-agent communication
-
-Memory
-  Wing/Hall/Room hierarchy
-  Semantic search
-  AAAK compression
-
-Companion Devices
-  mDNS auto-discovery
-  TLS 1.3 secure transport
-  Remote model execution
-  Exo distributed inference
-
-Desktop Distribution
-  Code signing (macOS, Windows)
-  Auto-update mechanism
-  Portable CLI binary
-
-Model Evaluation
-  Benchmarking suite
-  A/B testing framework
-  "Could this run locally?" analysis
-
-Internationalisation
-  Full i18n framework
-  Locale-aware formatting
-
-Integration Framework
-  OAuth 2.0 provider support
-  Retry with exponential backoff
-  Circuit-breaking
-
-Error Handling
-  Server/client/API error framework
-  Structured error reporting
-
-Feedback System
-  Thumbs up/down on every interaction
-  Feedback-driven model selection
-
-Application
-  Terminal mode (daemon)
-  Browser mode (extension)</pre>
+<div class="features">
+  <div class="feature">
+    <div class="ph-head"><h3>Built</h3><span class="phase-status complete">works today</span></div>
+    <ul>
+      <li>Regex detector, 10 patterns</li>
+      <li>Local NER over Ollama</li>
+      <li>Privacy Filter sidecar client</li>
+      <li>Placeholder replacement and restore</li>
+      <li>Guardian system prompt</li>
+      <li>Log redaction on all output</li>
+      <li>TOON serialisation</li>
+      <li>Semantic cache (vector similarity, 0.92 threshold)</li>
+      <li>Risk classification</li>
+      <li>Graduated warnings, four levels</li>
+      <li>Regulatory policy presets (definitions, not compliance)</li>
+      <li>Kill switch: global, per-provider, per-agent</li>
+      <li>Append-only interaction ledger</li>
+      <li>Agent capability scoping: path, tool and cost limits</li>
+      <li>Memory knowledge graph</li>
+      <li>Memory MCP server</li>
+      <li>MCP broker with per-server permissions</li>
+      <li>Three local inference tiers</li>
+      <li>The HTTP proxy</li>
+      <li>Browser mode: native binary with web view</li>
+    </ul>
   </div>
-  <div class="code-pane">
-    <div class="pane-label">Coming Next</div>
-<pre style="color:#6fc2b2;">Policy and Compliance
-  Policy loader (file-based rules)
-  Regulatory defaults (AU, EU, US)
-  Compliance feedback loop
-  Audit reporting and export
-
-User Experience
-  Setup wizard
-  Pipeline visibility panel
-  Savings dashboard (user-facing)
-  Prompt approval workflow
-  Issue reporting UI</pre>
+  <div class="feature">
+    <div class="ph-head"><h3>In progress</h3><span class="phase-status in-progress">written, not wired</span></div>
+    <ul>
+      <li><strong>Multi-layer composition.</strong> Consensus, layer config, layer health, entity routing and per-layer metrics exist as modules but are not wired into the orchestrator. The four consensus strategies are accepted and ignored</li>
+      <li><strong>Encryption at rest.</strong> Inert. The key is generated and stored in the OS keychain correctly, but the toolchain links plain SQLite, which silently ignores the encryption pragma and reports success. The database is plaintext on disk: rely on full-disk encryption. loke's own compliance check already reports this</li>
+      <li><strong>Decision traces.</strong> The structure is written and has no caller, no table and no insert</li>
+      <li><strong>Compliance reports.</strong> The engine queries columns the audit table does not have, so the queries fail</li>
+      <li><strong>The CLI's flagship command.</strong> <code>loke ask</code> routes to a stub that prints &ldquo;Pipeline not yet connected&rdquo;</li>
+      <li><strong>Placeholder correctness.</strong> The NER constant-token defect described above is a live bug with a ticket</li>
+    </ul>
   </div>
+  <div class="feature">
+    <div class="ph-head"><h3>Planned</h3><span class="phase-status planned">not started</span></div>
+    <ul>
+      <li>Tamper-evident audit chain: a real cryptographic hash, chained to the previous record, with a verification routine</li>
+      <li>The four router selection strategies (cheapest-adequate, fastest, best-quality, local-first)</li>
+      <li>Embedding-based memory retrieval, in place of keyword matching</li>
+      <li>General cron expressions, and webhook and MCP triggers actually fired by the scheduler</li>
+      <li>Metrics and trace export (the export function returns an empty string today)</li>
+      <li>The benchmark harness and per-request disclosure accounting, both of which must exist before any figure can be published</li>
+      <li>The proxy-specific injection corpus and the six-class bypass corpus, reported with paired utility and false-block rates</li>
+      <li>Windows</li>
+    </ul>
+  </div>
+</div>
+
+<p class="caveat run-steps"><strong>This is not the full inventory, and it is not meant to be read as one.</strong> A handful of items that the old Built column listed have been dropped from this page rather than reassigned, because the position of each needs checking against the code before it goes back up. <code>docs/features-loke.md</code> in the repository is the inventory; where this page and the repository disagree, the repository is right. Nothing absent from the Built column above should be assumed shipped.</p>
+
+<!-- ── Run it locally ──────────────────────────────────────── -->
+
+<div class="section-heading" id="run-it-locally"><h2>Run it locally</h2></div>
+<p><strong>There is no hosted loke, and there will not be one.</strong> That is not a gap in the roadmap, it is what the design means. loke exists so that your data stays on your machine and so that you can read the exact bytes that leave it. A hosted demo would require you to upload the data to somebody else's computer first, which is the thing loke is built to avoid, and it would make the central claim untestable: you could no longer inspect what was sent, because the inspecting would be happening somewhere you cannot see. So loke ships as a binary you run, and the only way to try it is to run it.</p>
+<p>This also has a consequence worth stating plainly: loke has nothing to store about you, because there is no server to store it on. There is no account, no telemetry endpoint and no early-access list.</p>
+
+<div class="code-block" style="text-align:left; line-height:1.8;">
+<span class="cm"># Build loke</span>
+git clone https://github.com/karwalski/loke.git
+cd loke &amp;&amp; ./scripts/build_loke.sh
+
+<span class="cm"># Start loke (serves 127.0.0.1:11430)</span>
+cd packages/browser &amp;&amp; ./build/loke . &amp;
+
+<span class="cm"># Start moke, the data-analysis demo (serves localhost:11432)</span>
+cd packages/moke &amp;&amp; ooke-toke serve . &amp;
+
+<span class="cm"># Run the tests</span>
+./scripts/run_tests.sh
+</div>
+
+<p class="run-steps">Open <code>http://127.0.0.1:11430</code> for loke itself and <code>http://localhost:11432</code> for moke. Both are on the loopback interface and neither is exposed to the network. Local model inference needs Ollama running; the Presidio and LLMLingua sidecars are optional and are not bundled, so the layers that depend on them stay inactive until you start them. Use browser mode rather than <code>loke ask</code>, for the reason given under Operating Modes.</p>
+
+<div class="shot-slot">
+  <strong>[ screenshots go here ]</strong><br>
+  Placeholder. Captures of the confirm modal (raw against redacted, side by side), the pipeline console and the governance page are a separate task and have not been taken yet.<br>
+  No image is referenced from this page until the files exist, so that nothing here renders as a broken image.
 </div>
 
 <!-- ── toke Ecosystem ──────────────────────────────────────── -->
 
 <div class="section-heading"><h2>toke Ecosystem</h2></div>
-<p>loke is built entirely within the toke ecosystem. Each piece is designed to work together, and each contributes to loke's core mission of minimising tokens and maximising privacy.</p>
+<p>loke is built entirely within the toke ecosystem. Each piece is designed to work together, and each serves the same two goals: reducing what is disclosed to an external model, and reducing what is spent on it.</p>
 
 <div class="features">
   <div class="feature">
@@ -372,38 +467,22 @@ User Experience
   </div>
   <div class="feature">
     <h3>loke</h3>
-    <p>The intelligence layer that ties it all together. Built on toke and ooke, loke leverages libraries like TOON (token-optimised serialisation) and AAAK (compressed context shorthand) to minimise token spend while maximising privacy. Build light, ship fast, keep data local.</p>
+    <p>The intelligence layer that ties it all together. Built on toke and ooke, loke uses libraries like TOON (token-optimised serialisation) and AAAK (compressed context shorthand) to reduce what is sent to an external model. Build light, ship fast, keep data local.</p>
   </div>
 </div>
 
 <div class="ecosystem-note" style="border-left-color:#f0c04a;">
-  <p><strong>toke on ooke &mdash; build light, ship fast.</strong> loke ships as a single native binary compiled from toke. No interpreter, no VM, no garbage collector, no runtime dependencies. Install one file and everything works.</p>
+  <p><strong>toke on ooke, build light and ship fast.</strong> loke ships as a single native binary compiled from toke. No interpreter, no VM, no garbage collector, no runtime dependencies. Local model inference needs Ollama, and the Presidio and LLMLingua layers need their sidecars, so &ldquo;one binary&rdquo; describes loke itself rather than the whole stack.</p>
 </div>
 
 <div class="ecosystem-note">
   <p>loke is part of the <a href="/ecosystem">toke ecosystem</a>. It is a separate project from toke the language. See the <a href="https://github.com/karwalski/loke">loke GitHub repository</a> for source, releases, and contribution guide.</p>
 </div>
 
-<!-- ── Agents & Memory ─────────────────────────────────────── -->
-
-<div class="section-heading"><h2>Agents &amp; Memory</h2></div>
-<p>loke includes a persistent memory system and lightweight agent framework for automated workflows.</p>
-
-<div class="features">
-  <div class="feature">
-    <h3>Memory Palace</h3>
-    <p>Semantic search over cross-session memory, vector-store backed, with AAAK shorthand used to keep recalled context small. Retrieval-latency and compression figures are not quoted here: neither has a published measurement behind it.</p>
-  </div>
-  <div class="feature">
-    <h3>Agent Framework</h3>
-    <p>YAML/TOML agent definitions with cron, webhook, and MCP triggers. Sandboxed execution with overnight batch processing. Each agent runs through the full privacy pipeline.</p>
-  </div>
-</div>
-
 <!-- ── MCP Framework ───────────────────────────────────────── -->
 
 <div class="section-heading"><h2>MCP Framework</h2></div>
-<p>loke implements the Model Context Protocol for tool integration with per-server permissions, privacy pipeline on all tool call data, and an audit trail on every invocation.</p>
+<p>loke implements the Model Context Protocol for tool integration, with per-server permissions in the broker, the privacy filter applied to tool-call arguments, and a local record written on every invocation. Those records are entries in the interaction ledger, so the two limits noted under <a href="#enforcement">Enforcement</a> apply to them as well: the ledger is not tamper-evident, and there is no export.</p>
 
 <!-- ── Technology Stack ────────────────────────────────────── -->
 
@@ -412,9 +491,10 @@ User Experience
   <span class="kw">Language:</span>    toke &mdash; compiles to native binary
   <span class="kw">Framework:</span>   ooke &mdash; single binary, no runtime dependencies
   <span class="kw">Local LLMs:</span>  Ollama (REST), MLX (Apple Silicon), native inference
-  <span class="kw">Storage:</span>     SQLite + SQLCipher, vector store
-  <span class="kw">Privacy:</span>     Regex (toke), SLM NER (Ollama), Presidio (Python sidecar)
-  <span class="kw">Compression:</span> TOON (toke), LLMLingua (Python sidecar)
+  <span class="kw">Storage:</span>     SQLite, vector store <span class="cm">(SQLCipher intended; the pragma is</span>
+<span class="cm">                ignored today, so the database is plaintext on disk)</span>
+  <span class="kw">Privacy:</span>     Regex (toke), SLM NER (Ollama), Presidio (optional sidecar)
+  <span class="kw">Compression:</span> TOON (toke), LLMLingua (optional sidecar, not bundled)
   <span class="kw">Platform:</span>    macOS (Apple Silicon optimised) &middot; Windows (planned)
 </div>
 
