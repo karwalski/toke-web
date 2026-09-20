@@ -329,7 +329,7 @@
       <span class="ms-status">Done</span><br>
       <span class="ms-date">2026-04-03</span>
     </div>
-    <div class="ms-body">Gate 1 PASS. A fine-tuned 7B reached 63.7% Pass@1 on held-out tasks, clearing the &ge;60% criterion.</div>
+    <div class="ms-body">Gate 1 verdict <strong>re-opened</strong>. A fine-tuned 7B reached <strong>58.8%</strong> Pass@1 on held-out tasks (588 of 1,000 generated) &mdash; below the &ge;60% criterion. The 63.7% published until 2026-09-19 was 588/923: it dropped the solutions that failed to compile out of the denominator. <a href="/roadmap#gate-1" style="color:#f0c04a;">How the correction works &rarr;</a></div>
   </div>
   <div class="ms-row ms-done">
     <div class="ms-key">
