@@ -53,7 +53,9 @@ REMOTE="${DEPLOY_USER}@${TOKE_DEPLOY_HOST}"
 # Paths local to this repo (script lives in scripts/, so repo root is one up)
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TKC="${TKC:-tkc}"
-STDLIB_SRC="/Users/matthew.watt/tk/toke/src/stdlib"
+# Root of the toke checkout the stdlib C sources come from. Override with
+# TOKE_ROOT when deploying from a different clone.
+TOKE_ROOT="${TOKE_ROOT:-$(cd "${REPO_ROOT}/../toke" && pwd)}"
 
 MODE="${1:-auto}"
 
@@ -226,32 +228,103 @@ cd "${REPO_ROOT}"
 "${TKC}" --emit-llvm --out main.ll main.tk
 echo "    main.ll written ($(wc -c < main.ll) bytes)"
 
-echo "==> [2/6] Rsyncing IR + stdlib C sources to server"
+# ── The stdlib source list, asked for rather than guessed (story 134.28) ──
+#
+# This used to be `rsync ${STDLIB_SRC}/` followed by `clang-15 main.ll
+# stdlib/*.c` — a shell glob over every .c file that happened to sit in toke's
+# stdlib directory. On 2026-09-20 that glob picked up two files carrying
+# duplicate definitions and the link aborted mid-deploy; the deploy only
+# finished because the two files were excluded by hand.
+#
+# Story 127.99 made `src/stdlib_deps.c` the authoritative manifest of which C
+# sources each import pulls in, and taught the compiler to print it. So the set
+# is now derived from main.tk's own imports: 68 sources for this program, not
+# the ~124 files in the directory.
+#
+# `tkc --emit-deps <program>` prints one absolute C source path per line, then
+# a line containing only `---`, then one linker flag per line.
+echo "==> [2/6] Resolving stdlib sources via --emit-deps"
 
-# Ensure remote deploy directory exists
+DEPS_RAW="$(mktemp)"
+trap 'rm -f "${DEPS_RAW}"' EXIT
+TKC_STDLIB_DIR="${TOKE_ROOT}/src/stdlib" "${TKC}" --emit-deps main.tk >"${DEPS_RAW}" 2>/dev/null
+
+# ── The one place the output is massaged for the Linux build ─────────────
+# Two transformations, and only these two:
+#
+#   1. Absolute -> repo-relative -> remote-relative. The compiler prints host
+#      absolute paths rooted at TOKE_ROOT. The remote build needs the same
+#      tree under ${DEPLOY_DIR}/toke/, because the stdlib .c files include
+#      their vendored dependencies by relative path ("../../stdlib/vendor/...")
+#      and so only compile if the layout around them matches.
+#   2. `..` segments collapsed. The vendor entries arrive spelled through the
+#      stdlib directory (src/stdlib/../../stdlib/vendor/tomlc99/toml.c);
+#      rsync --files-from will not accept that, so it is normalised to
+#      stdlib/vendor/tomlc99/toml.c.
+#
+# Nothing else is filtered, added, or reordered: the manifest is authoritative
+# and a deploy that disagrees with it is the bug this story removes.
+SRC_REL="$(mktemp)"; LINK_FLAGS="$(mktemp)"
+trap 'rm -f "${DEPS_RAW}" "${SRC_REL}" "${LINK_FLAGS}"' EXIT
+
+TOKE_ROOT="${TOKE_ROOT}" python3 - "${DEPS_RAW}" "${SRC_REL}" "${LINK_FLAGS}" <<'PYNORM'
+import os, posixpath, sys
+raw, srcs_out, flags_out = sys.argv[1], sys.argv[2], sys.argv[3]
+root = os.environ["TOKE_ROOT"].rstrip("/") + "/"
+lines = [l.strip() for l in open(raw) if l.strip()]
+sep = lines.index("---")
+srcs, flags = lines[:sep], lines[sep + 1:]
+rel = []
+for s in srcs:
+    if not s.startswith(root):
+        sys.exit("emit-deps path outside TOKE_ROOT: " + s)
+    rel.append(posixpath.normpath(s[len(root):]))   # collapses the ../..
+open(srcs_out, "w").write("".join(r + "\n" for r in rel))
+open(flags_out, "w").write(" ".join(flags) + "\n")
+PYNORM
+
+SRC_COUNT=$(wc -l < "${SRC_REL}" | tr -d ' ')
+echo "    ${SRC_COUNT} stdlib sources, link flags: $(cat "${LINK_FLAGS}")"
+
+echo "==> [2b/6] Rsyncing IR + those sources to server"
+
 # shellcheck disable=SC2029
-ssh ${SSH_OPTS} "${REMOTE}" "mkdir -p ${DEPLOY_DIR}/stdlib"
+ssh ${SSH_OPTS} "${REMOTE}" "mkdir -p ${DEPLOY_DIR}/toke"
 
-# Rsync LLVM IR
 rsync -az -e "ssh ${SSH_OPTS}" \
   main.ll \
   "${REMOTE}:${DEPLOY_DIR}/"
 
-# Rsync stdlib C sources
-rsync -az -e "ssh ${SSH_OPTS}" \
-  "${STDLIB_SRC}/" \
-  "${REMOTE}:${DEPLOY_DIR}/stdlib/"
+# Exactly the listed sources, plus the headers beside them that they include.
+rsync -az --files-from="${SRC_REL}" -e "ssh ${SSH_OPTS}" \
+  "${TOKE_ROOT}/" "${REMOTE}:${DEPLOY_DIR}/toke/"
+rsync -az --include='*/' --include='*.h' --exclude='*' -e "ssh ${SSH_OPTS}" \
+  "${TOKE_ROOT}/src/stdlib/" "${REMOTE}:${DEPLOY_DIR}/toke/src/stdlib/"
+rsync -az --include='*/' --include='*.h' --exclude='*' -e "ssh ${SSH_OPTS}" \
+  "${TOKE_ROOT}/stdlib/vendor/" "${REMOTE}:${DEPLOY_DIR}/toke/stdlib/vendor/"
 
-echo "    IR + stdlib synced"
+echo "    IR + ${SRC_COUNT} sources synced"
 
 rsync_content "[3/6]"
 
 echo "==> [4/6] Compiling website_server binary on remote (clang-15)"
 # shellcheck disable=SC2029
+REMOTE_SRCS="$(sed 's|^|toke/|' "${SRC_REL}" | tr '\n' ' ')"
+REMOTE_LFLAGS="$(cat "${LINK_FLAGS}")"
+# shellcheck disable=SC2029
 ssh ${SSH_OPTS} "${REMOTE}" bash <<ENDSSH
 set -euo pipefail
 cd "${DEPLOY_DIR}"
-clang-15 main.ll stdlib/*.c -o website_server -lpthread -lm
+# -x ir / -x c: clang would otherwise treat the .c files after main.ll as IR.
+# -iquote toke/src/stdlib so the sources find their own headers; -I tomlc99 for
+# the one vendored source in the list. Link flags come from --emit-deps, which
+# is why -lssl/-lcrypto/-lz appear without this script knowing what needs them.
+clang-15 -std=c99 -D_GNU_SOURCE -O1 \
+  -iquote toke/src/stdlib \
+  -I toke/stdlib/vendor/tomlc99 \
+  -Wno-pedantic -DTK_HAVE_OPENSSL \
+  -x ir main.ll -x c ${REMOTE_SRCS} \
+  -o website_server ${REMOTE_LFLAGS}
 echo "    Compiled OK: \$(ls -lh website_server | awk '{print \$5, \$9}')"
 ENDSSH
 
