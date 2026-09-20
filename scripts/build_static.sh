@@ -270,7 +270,15 @@ done
 while IFS= read -r d; do
   rel="${d#build/}"
   [[ -z "${rel}" ]] && continue
-  emit_stub "/${rel}"
+  # A docs section is SERVED FROM build/<rel>/index.html, so a stub there would
+  # redirect /docs/x to /docs/x — a loop. 134.9 emitted one for every directory
+  # and put 8 sections into exactly that state on the live site. Only emit where
+  # the non-slash form is answered by something OTHER than this directory, i.e.
+  # a named template route. A section with no index should 404 honestly; a 404
+  # is a worse page than content, but a self-redirect is a worse page than a 404.
+  if [[ -f "templates/${rel##*/}.tkt" ]]; then
+    emit_stub "/${rel}"
+  fi
 done < <(find build/docs -type d | sort)
 
 # Renamed and retired pages keep a redirect so existing links and search
