@@ -24,10 +24,12 @@ BUILD = ROOT / "build"
 # least prompt a rebuild before a deploy.
 #
 # 134.8: `pages` joins the list because ooke derives one route per pages/*.tk,
-# and `content` now feeds the ~195 /docs pages. Note that content/docs/* are
-# symlinks into the toke repo and rglob does not descend symlinked directories,
-# so editing a doc there does not by itself trip this gate — scripts/deploy.sh
-# always rebuilds before syncing, which is what actually guarantees freshness.
+# and `content` now feeds the /docs pages.
+#
+# 134.30: content/docs/* used to be absolute symlinks into another repository,
+# which rglob does not descend, so a changed doc could not trip this gate at all
+# and only scripts/deploy.sh's unconditional rebuild kept the tree honest. They
+# are now real tracked files, so an out-of-date doc page is caught here.
 SOURCES = ["static", "templates", "content", "sites", "pages"]
 
 # Files the site links to directly, served out of build/.

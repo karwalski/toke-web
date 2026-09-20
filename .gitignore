@@ -14,8 +14,20 @@ certs/
 # Logs
 logs/
 
-# Local content symlinks (point to machine-specific paths)
-content/docs/
+# NOTE (134.30): content/docs/ is NOT ignored. It is a build INPUT — `ooke
+# build` renders every /docs/<section>/<slug> page from it — and it used to be
+# excluded here as "local content symlinks", which left zero entries tracked and
+# no documentation source at all in a fresh clone. It is now a generated, tracked
+# copy; scripts/sync_docs_content.sh is the only thing that writes it.
+#
+# Everything ignored in this file is build OUTPUT, reproducible in a fresh clone
+# by `make` and `make build`, or a local secret:
+#   build/ build-docs/  rendered by scripts/build_static.sh + `ooke build`
+#   website main main.ll *.ll  compiled from main.tk by `make`
+#   certs/              self-signed dev certificates, made by `make certs`
+#   logs/ test-results/ runtime and test-run output
+# If a rule here ever covers something the build READS, that is the 127.85 /
+# 134.21 / 134.30 defect again — track the file instead of widening the rule.
 
 # macOS
 .DS_Store

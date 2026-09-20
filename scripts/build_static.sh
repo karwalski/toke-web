@@ -111,13 +111,38 @@ done
 # ── Per-slug documentation pages (story 134.8) ───────────────────────────
 #
 # `ooke build` reads pages/, templates/ and content/docs/ and renders every
-# /docs/<section>/<slug> page. content/docs/ is not authored here — run
-# scripts/sync_docs_content.sh first to materialise it from the toke repo.
+# /docs/<section>/<slug> page. content/docs/ is a TRACKED, generated copy of the
+# documentation authored in the toke repository (story 134.30) — it is a build
+# input and is present in every clone. scripts/sync_docs_content.sh is the only
+# thing that writes it.
 OOKE="${OOKE:-${HOME}/tk/toke-ooke/ooke-toke}"
 
-if [[ ! -d content/docs ]] || [[ -z "$(find -L content/docs -name '*.md' -print -quit 2>/dev/null)" ]]; then
-  echo "ERROR: content/docs/ is empty — run ./scripts/sync_docs_content.sh first." >&2
-  echo "       Without it the ~190 /docs/<section>/<slug> pages cannot be built." >&2
+# The sections this build expects. Derived from the same table
+# scripts/sync_docs_content.sh writes, so a section added there and forgotten
+# here fails loudly instead of silently publishing fewer pages.
+DOC_SECTIONS=(about compiler cookbook decisions learn reference spec stdlib tutorials)
+
+# 134.30 — name what is missing and how to restore it, rather than failing later
+# with an unrelated-looking error. Before this story content/docs/ was eleven
+# absolute symlinks into one machine's home directory, excluded by .gitignore, so
+# a fresh clone reached this point with the directory absent altogether.
+missing_sections=()
+for section in "${DOC_SECTIONS[@]}"; do
+  if [[ ! -d "content/docs/${section}" ]] ||      [[ -z "$(find -L "content/docs/${section}" -name '*.md' -print -quit 2>/dev/null)" ]]; then
+    missing_sections+=("content/docs/${section}")
+  fi
+done
+
+if (( ${#missing_sections[@]} )); then
+  echo "ERROR: the documentation source is missing — /docs pages cannot be built." >&2
+  echo "       ${#missing_sections[@]} of ${#DOC_SECTIONS[@]} section(s) are absent or contain no markdown:" >&2
+  printf '         %s\n' "${missing_sections[@]}" >&2
+  echo "" >&2
+  echo "       content/docs/ is TRACKED in git (story 134.30) — it is a build input," >&2
+  echo "       not output, and every clone has it. Restore it with:" >&2
+  echo "         git checkout -- content/docs" >&2
+  echo "       Or regenerate it from the documentation source (github.com/karwalski/toke):" >&2
+  echo "         TOKE_REPO=/path/to/toke ./scripts/sync_docs_content.sh" >&2
   exit 1
 fi
 
@@ -163,6 +188,59 @@ if (( docs_pages == 0 )); then
   exit 1
 fi
 echo "    ${docs_pages} /docs pages rendered from content/docs/"
+
+# ── Retired duplicate sections (story 134.30) ────────────────────────────
+#
+# /docs/community/ served the same markdown as /docs/about/, and
+# /docs/getting-started/ the same as /docs/learn/. 196 pages were published of
+# which only 159 were distinct; every build logged duplicate "no slug" warnings,
+# and both prefixes were indexed.
+#
+# Resolved as REDIRECTS, not deletions and not distinct sections:
+#   - distinct sections was never an option — nobody was maintaining two copies,
+#     they were two names for one directory in the toke repo;
+#   - deletion would 404 37 URLs that answer 200 on the live site today
+#     (checked, all 18 /docs/community/<slug> and all /docs/getting-started/
+#     <slug> URLs, not assumed);
+#   - /docs/learn wins over /docs/getting-started because it is the section in
+#     the site-wide nav (templates/base.tkt), it is the one with an index route
+#     (pages/docs/learn/index.tk), and it carries one more URL in the sitemap.
+#
+# The slug list is DERIVED from what ooke just rendered for the canonical
+# section — a hand-kept list is the recurring root cause in this repo (127.80,
+# 127.85, 134.21, 134.30).
+#
+# The section ROOTS point at /docs rather than at the canonical section root,
+# because /docs/<section> has no route and its stub currently redirects to
+# itself (see the trailing-slash block below) — sending a retired prefix into
+# that loop would be worse than sending it to the docs index.
+RETIRED_SECTIONS=(
+  "community:about"
+  "getting-started:learn"
+)
+
+emit_doc_redirect() {
+  local from="$1" to="$2" dir="build/${1#/}"
+  mkdir -p "${dir}"
+  printf '<!doctype html><meta charset="utf-8"><link rel="canonical" href="%s"><meta http-equiv="refresh" content="0; url=%s"><title>Moved</title><p>This page moved to <a href="%s">%s</a>.</p>\n' \
+    "${to}" "${to}" "${to}" "${to}" > "${dir}/index.html"
+}
+
+retired=0
+for entry in "${RETIRED_SECTIONS[@]}"; do
+  old="${entry%%:*}"; new="${entry##*:}"
+  rm -rf "build/docs/${old}"
+  emit_doc_redirect "/docs/${old}" "/docs"
+  retired=$((retired + 1))
+  while IFS= read -r d; do
+    slug="${d#build/docs/${new}/}"
+    [[ "${slug}" == "${d}" ]] && continue
+    [[ -f "${d}/index.html" ]] || continue
+    emit_doc_redirect "/docs/${old}/${slug}" "/docs/${new}/${slug}"
+    retired=$((retired + 1))
+  done < <(find "build/docs/${new}" -mindepth 1 -type d | sort)
+done
+echo "    ${retired} redirect(s) for the retired duplicate sections (${RETIRED_SECTIONS[*]})"
 
 # 134.9 — trailing-slash redirect stubs.
 #
