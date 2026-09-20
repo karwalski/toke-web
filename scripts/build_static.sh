@@ -129,4 +129,53 @@ if (( docs_pages == 0 )); then
 fi
 echo "    ${docs_pages} /docs pages rendered from content/docs/"
 
+# 134.9 — trailing-slash redirect stubs.
+#
+# A named route serves /docs but NOT /docs/, and 132.17b removes the mirrored
+# index.html that used to cover the trailing-slash form from build/. Without a
+# stub, 12 URLs that return 200 today would start returning 404 — measured
+# against the live server before this was added, not assumed.
+#
+# The list is DERIVED, never hand-maintained: every named template route, plus
+# every directory ooke rendered under build/docs/. A hand-written list is the
+# recurring root cause in this repo (127.80, 127.85, 134.21, 136.1).
+emit_stub() {
+  local path="$1" dir="build/${1#/}"
+  [[ -f "${dir}/index.html" ]] && return 0
+  mkdir -p "${dir}"
+  printf '<!doctype html><meta charset="utf-8"><link rel="canonical" href="%s"><meta http-equiv="refresh" content="0; url=%s"><title>Redirecting</title><p>Redirecting to <a href="%s">%s</a>.</p>\n' \
+    "${path}" "${path}" "${path}" "${path}" > "${dir}/index.html"
+  stubs=$((stubs+1))
+}
+
+stubs=0
+for t in templates/*.tkt; do
+  name="$(basename "${t}" .tkt)"
+  [[ "${name}" == "index" || "${name}" == _* ]] && continue
+  emit_stub "/${name}"
+done
+while IFS= read -r d; do
+  rel="${d#build/}"
+  [[ -z "${rel}" ]] && continue
+  emit_stub "/${rel}"
+done < <(find build/docs -type d | sort)
+
+# Renamed and retired pages keep a redirect so existing links and search
+# results do not 404. Verified against the live server, not assumed: these are
+# the only two paths that still differed after the derived stubs above.
+#   llm_tool -> llmtool  (136.17 renamed the module; the underscore form is
+#                         unlexable in toke, which is why it was renamed)
+#   reference/api        (retired; /docs/reference/ is the nearest equivalent)
+emit_redirect() {
+  local from="$1" to="$2" dir="build/${1#/}"
+  mkdir -p "${dir}"
+  printf '<!doctype html><meta charset="utf-8"><link rel="canonical" href="%s"><meta http-equiv="refresh" content="0; url=%s"><title>Moved</title><p>This page moved to <a href="%s">%s</a>.</p>\n' \
+    "${to}" "${to}" "${to}" "${to}" > "${dir}/index.html"
+}
+emit_redirect "/docs/stdlib/llm_tool" "/docs/stdlib/llmtool"
+emit_redirect "/docs/reference/api"   "/docs/reference"
+echo "    2 renamed-page redirect(s) emitted"
+
+echo "    ${stubs} trailing-slash redirect stub(s) emitted"
+
 echo "    build/ rebuilt ($(find build -type f | wc -l | tr -d ' ') files)"
