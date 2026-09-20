@@ -142,74 +142,61 @@ llms:
 check-llms:
 	python3 scripts/gen_llms.py --check
 
+# 132.44 — every toke program the site publishes must compile, and the green
+# tick on /tokens is WRITTEN from that compile result rather than typed by hand.
+# `--write` re-derives the badges; `--check` fails when a badge disagrees with
+# the compiler. The home page's cl100k_base counts are re-derived with tiktoken
+# at the same time.
+site-examples:
+	TKC="$(TKC)" python3 scripts/verify_site_examples.py --write
+
+check-site-examples:
+	TKC="$(TKC)" python3 scripts/verify_site_examples.py --check
+
+# 132.36 — the stdlib module count on the home page is copied from the fact
+# sheet the compiler repo derives from the tree, never typed.
+facts:
+	python3 scripts/sync_project_facts.py --write
+
+check-facts:
+	python3 scripts/sync_project_facts.py --check
+
 # Everything a change to this repo must pass before it is deployed.
-ci: check-toke check-roadmap check-llms docs-content build check-build-fresh check-routes
+ci: check-toke check-site-examples check-facts check-roadmap check-llms docs-content build check-build-fresh check-routes
 	@echo ""; echo "=== CI checks passed ==="
 
-# --- Documentation checks ---
+# --- Documentation checks (story 132.41) ---
 
-DOCS_DIR ?= $(TOKE_REPO)/docs
-EXAMPLES_DIR = $(DOCS_DIR)/examples
-ifeq ($(UNAME), Darwin)
-  LINK_FRAMEWORKS = -framework Security -framework CoreFoundation
-endif
-
-check-docs: check-docs-examples check-docs-runtime
-	@echo ""; echo "=== Documentation check complete ==="
-
-check-docs-examples:
-	@echo "=== Checking doc examples compile (toke --check) ==="; \
-	pass=0; fail=0; total=0; \
-	for f in $(EXAMPLES_DIR)/*.tk; do \
-		[ -f "$$f" ] || continue; \
-		total=$$((total + 1)); \
-		base=$$(basename "$$f"); \
-		if $(TOKE) --check "$$f" >/dev/null 2>&1; then \
-			echo "  PASS  $$base"; \
-			pass=$$((pass + 1)); \
-		else \
-			echo "  FAIL  $$base"; \
-			fail=$$((fail + 1)); \
-		fi; \
-	done; \
-	echo ""; echo "Results: $$pass passed, $$fail failed ($$total total)"; \
-	[ $$fail -eq 0 ]
-
-check-docs-runtime:
-	@echo "=== Checking doc examples runtime output ==="; \
-	pass=0; fail=0; skip=0; total=0; \
-	for f in $(EXAMPLES_DIR)/*.tk; do \
-		[ -f "$$f" ] || continue; \
-		base=$$(basename "$$f" .tk); \
-		expected="$(EXAMPLES_DIR)/expected/$$base.expected"; \
-		if [ ! -f "$$expected" ]; then \
-			skip=$$((skip + 1)); \
-			continue; \
-		fi; \
-		total=$$((total + 1)); \
-		tmpll=$$(mktemp /tmp/toke-check-XXXXXX.ll); \
-		tmpbin=$$(mktemp /tmp/toke-check-XXXXXX); \
-		tmpout=$$(mktemp /tmp/toke-check-XXXXXX.out); \
-		if $(TOKE) --emit-llvm --out "$$tmpll" "$$f" 2>/dev/null && \
-		   clang $(CFLAGS) $(LDFLAGS) -x ir "$$tmpll" -x c $(STDLIB_C) $(VENDOR_C) \
-		     -o "$$tmpbin" $(LIBS) $(LINK_FRAMEWORKS) 2>/dev/null; then \
-			$$tmpbin > "$$tmpout" 2>&1; \
-			if diff -q "$$tmpout" "$$expected" >/dev/null 2>&1; then \
-				echo "  PASS  $$base"; \
-				pass=$$((pass + 1)); \
-			else \
-				echo "  FAIL  $$base (output mismatch)"; \
-				diff "$$tmpout" "$$expected" | head -10; \
-				fail=$$((fail + 1)); \
-			fi; \
-		else \
-			echo "  FAIL  $$base (compile error)"; \
-			fail=$$((fail + 1)); \
-		fi; \
-		rm -f "$$tmpll" "$$tmpbin" "$$tmpout"; \
-	done; \
-	echo ""; echo "Results: $$pass passed, $$fail failed, $$skip skipped (no .expected)"; \
-	[ $$fail -eq 0 ]
+# There is no documentation gate in this repository, deliberately.
+#
+# Until 132.41 there was a `check-docs` target here that looped over
+# `$(TOKE_REPO)/docs/examples` — a directory that has never existed in any
+# revision of either repository. The loop ran zero times, printed
+# "0 passed, 0 failed (0 total)" and exited 0. It was not in `ci:` either, so
+# nothing ever read the lie. It has been deleted rather than pointed somewhere
+# real, because the documentation it claimed to check is NOT owned here.
+#
+# The real gate is in the compiler repository, where the docs live:
+#
+#   cd ~/tk/toke && make check-docs
+#     -> scripts/check_doc_examples.py --self-test   (negative control)
+#        scripts/check_doc_examples.py docs          (437 blocks, compiled AND linked)
+#
+# It runs in that repo's `make ci` and, since 132.41, in its GitHub workflow.
+# Duplicating it here would re-create the cross-repo read that 127.88 removed
+# and give the project two gates to drift apart; one gate, in the repo that
+# owns the files, is the whole point.
+#
+# scripts/validate_examples.py was a second, weaker copy of that gate (front
+# end only, an `<!-- skip-check -->` escape hatch in the prose, a header
+# comment naming two trees that no longer exist) referenced by no target, no
+# workflow and no script. Deleted by 132.41.
+#
+# What this repository DOES owe a gate is its own published toke: the samples
+# in `templates/` and `static/*.html`. That is `check-site-examples`
+# (scripts/verify_site_examples.py, story 132.44) — a different job needing an
+# extractor that understands `.tkt` interpolation and HTML entities, which is
+# why the deleted `for f in *.tk` loop could never have grown into it.
 
 # --- Deployment ---
 
@@ -222,4 +209,4 @@ deploy-content: ## Content-only deploy (templates, static, sites — no rebuild)
 deploy-auto: ## Auto-detect deploy mode based on git changes
 	./scripts/deploy.sh auto
 
-.PHONY: all run run-http dev certs clean roadmap check-roadmap llms check-llms ci check-toke build docs-content check-build-fresh check-routes check-docs check-docs-examples check-docs-runtime deploy deploy-content deploy-auto
+.PHONY: site-examples check-site-examples facts check-facts all run run-http dev certs clean roadmap check-roadmap llms check-llms ci check-toke build docs-content check-build-fresh check-routes deploy deploy-content deploy-auto

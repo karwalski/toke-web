@@ -2,6 +2,26 @@
 
 This is the source code for [tokelang.dev](https://tokelang.dev), the official website for the toke programming language. It contains all documentation, tutorials, and reference material for toke. The site is built using ooke, toke's native web framework, and compiles to a single binary that serves the site over HTTPS.
 
+## About toke
+
+> toke: a compiled language designed for LLM code generation, with a small grammar, one
+> canonical form and compiler verification.
+
+toke is a compiled programming language designed for LLM code generation. It has 14
+keywords, a 59-character set, a backtrack-free grammar with bounded lookahead, and one
+canonical form per construct, chosen by measurement in a 46-pattern catalogue and
+reproduced by `tkc --min`. That makes generated code cheap to constrain during decoding,
+cheap for a compiler to verify afterwards, and compact to emit. Token efficiency is one
+measured property of toke, always reported with its tokenizer and its baseline, not the
+whole claim.
+
+*The one-liner and the paragraph above are reproduced word for word from the canonical
+description,
+[`docs/about/canonical.md`](https://github.com/karwalski/toke/blob/main/docs/about/canonical.md).
+Every number published about toke comes from
+[`docs/metrics-baseline.md`](https://github.com/karwalski/toke/blob/main/docs/metrics-baseline.md)
+and nowhere else.*
+
 ## Website sections
 
 - **Getting started** -- installation, hello world, project setup
