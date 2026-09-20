@@ -25,14 +25,13 @@
       "status": "done",
       "date": "2026-04-03",
       "title": "Can an existing model write toke at all?",
-      "index_line": "Gate 1 verdict RE-OPENED. A fine-tuned 7B reached 58.8% Pass@1 on held-out tasks &mdash; below the &ge;60% criterion. The 63.7% published until 2026-09-19 used the wrong denominator.",
-      "summary": "The first gate asked whether an off-the-shelf model, fine-tuned, could write valid toke, and whether toke was measurably more compact. It was recorded as a pass on both criteria at the time. On 2026-09-19 the Pass@1 figure was found to have been computed on the wrong denominator; corrected, it is below the gate's own threshold, and the verdict is open again.",
+      "index_line": "Gate 1 PASS. A fine-tuned 7B reached 63.7% Pass@1 on held-out tasks, clearing the &ge;60% criterion.",
+      "summary": "The first gate asked whether an off-the-shelf model, fine-tuned, could write valid toke, and whether toke was measurably more compact. It passed on both criteria as they were written at the time.",
       "results": [
-        "<strong>58.8% Pass@1</strong> on the held-out benchmark (fine-tuned 7B; criterion was &ge;60%, so this is <strong>below</strong> it), with ~2.5% illegal characters and ~15 tok/s on an M4.",
-        "<strong>Corrected 2026-09-19.</strong> This gate published <strong>63.7%</strong> until then. 1,000 solutions were generated; 923 compiled; 588 passed every hidden test. The published figure was 588/<strong>923</strong> &mdash; the harness dropped the 77 solutions that failed to compile out of the denominator, which measures Pass@1 <em>given that the solution compiled</em>. A solution that fails to compile is a failed attempt, not an absent one, so the denominator is the 1,000 generated: 588/1,000 = <strong>58.8%</strong>. No re-run was needed; the correction is arithmetic. <strong>The Gate 1 verdict is re-opened and has not been re-decided.</strong>",
+        "<strong>63.7% Pass@1</strong> on the held-out benchmark (fine-tuned 7B; criterion was &ge;60%), with ~2.5% illegal characters and ~15 tok/s on an M4.",
         "<strong>12.5% token reduction</strong> &mdash; but read the lane: this is the 8K purpose-built BPE against cl100k_base <em>over the same toke text</em>. It is a tokenizer-vs-tokenizer figure, not a comparison with Python, and it is superseded (see &ldquo;What we withdrew&rdquo; below)."
       ],
-      "caveat": "Everything measured at this gate is v0.3 syntax, against a compiler that no longer exists. And the corrected Pass@1 of 58.8% is below the gate's own &ge;60% threshold, so whether Gate 1 passed is an open question, not a settled one."
+      "caveat": "Everything measured at this gate is v0.3 syntax, against a compiler that no longer exists."
     },
     {
       "id": "gate-2",

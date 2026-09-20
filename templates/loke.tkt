@@ -18,8 +18,6 @@
 .feature li { color: var(--muted); font-size: 0.86rem; line-height: 1.6; margin-bottom: 0.35rem; }
 .feature li strong { color: var(--text); }
 .run-steps { max-width: 860px; margin: 0 auto; padding: 0 2rem; }
-.shot-slot { max-width: 860px; margin: 1.5rem auto; padding: 2rem; border: 1px dashed var(--hairline); border-radius: var(--radius); background: var(--surface); text-align: center; color: var(--faint); font-family: var(--font-mono); font-size: 0.78rem; line-height: 1.7; }
-.shot-slot strong { color: var(--muted); }
 </style>
 
 <div class="page-hero">
@@ -444,12 +442,6 @@ cd packages/moke &amp;&amp; ooke-toke serve . &amp;
 </div>
 
 <p class="run-steps">Open <code>http://127.0.0.1:11430</code> for loke itself and <code>http://localhost:11432</code> for moke. Both are on the loopback interface and neither is exposed to the network. Local model inference needs Ollama running; the Presidio and LLMLingua sidecars are optional and are not bundled, so the layers that depend on them stay inactive until you start them. Use browser mode rather than <code>loke ask</code>, for the reason given under Operating Modes.</p>
-
-<div class="shot-slot">
-  <strong>[ screenshots go here ]</strong><br>
-  Placeholder. Captures of the confirm modal (raw against redacted, side by side), the pipeline console and the governance page are a separate task and have not been taken yet.<br>
-  No image is referenced from this page until the files exist, so that nothing here renders as a broken image.
-</div>
 
 <!-- ── toke Ecosystem ──────────────────────────────────────── -->
 
