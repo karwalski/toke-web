@@ -110,7 +110,7 @@ f=fib(n:i64):i64{
   el{<fib(n-1)+fib(n-2);}
 };
 f=main():i64{
-  io.println(fib(10));
+  io.printi(fib(10));
   <0;
 };</textarea>
 </div>
@@ -183,7 +183,7 @@ const PRESETS = {
     langs: { Python: 'print("hello world")', Go: 'package main\nimport "fmt"\nfunc main() { fmt.Println("hello world") }', JavaScript: 'console.log("hello world")' }
   },
   fib: {
-    code: 'm=fib;\ni=io:std.io;\nf=fib(n:i64):i64{\n  if(n<2){<n;}\n  el{<fib(n-1)+fib(n-2);}\n};\nf=main():i64{\n  io.println(fib(10));\n  <0;\n};',
+    code: 'm=fib;\ni=io:std.io;\nf=fib(n:i64):i64{\n  if(n<2){<n;}\n  el{<fib(n-1)+fib(n-2);}\n};\nf=main():i64{\n  io.printi(fib(10));\n  <0;\n};',
     langs: { Python: 'def fib(n):\n    if n < 2: return n\n    return fib(n-1) + fib(n-2)\nprint(fib(10))', Go: 'package main\nimport "fmt"\nfunc fib(n int) int { if n < 2 { return n }; return fib(n-1) + fib(n-2) }\nfunc main() { fmt.Println(fib(10)) }' }
   },
   sum: {
@@ -203,15 +203,15 @@ const PRESETS = {
     langs: { Python: 'class Point:\n    def __init__(self, x, y): self.x, self.y = x, y\n    def dist(self): return self.x**2 + self.y**2\n    def add(self, o): return Point(self.x+o.x, self.y+o.y)', Go: 'type Point struct { X, Y int }\nfunc (p Point) Dist() int { return p.X*p.X + p.Y*p.Y }\nfunc (p Point) Add(o Point) Point { return Point{p.X+o.X, p.Y+o.Y} }' }
   },
   prime: {
-    code: 'm=prime;\nf=isprime(n:i64):bool{\n  if(n<2){<false};\n  let i=mut.2;\n  lp(let k=0;i*i<n+1;k=k+1){\n    if(n-n/i*i=0){<false};\n    i=i+1\n  };\n  <true\n};',
+    code: 'm=prime;\nf=isprime(n:i64):bool{\n  if(n<2){<false};\n  let i=mut.2;\n  lp(let k=0;i*i<n+1;k=k+1){\n    if(n-n/i*i==0){<false};\n    i=i+1\n  };\n  <true\n};',
     langs: { Python: 'def is_prime(n):\n    if n < 2: return False\n    for i in range(2, int(n**0.5)+1):\n        if n % i == 0: return False\n    return True', Go: 'func isPrime(n int) bool { if n < 2 { return false }; for i := 2; i*i <= n; i++ { if n%i == 0 { return false } }; return true }' }
   },
   fizz: {
-    code: 'm=fb;\ni=io:std.io;\nf=fb(n:i64):i64{\n  lp(let i=1;i<n+1;i=i+1){\n    if(i-i/15*15=0){io.println("fizzbuzz")}\n    el{if(i-i/3*3=0){io.println("fizz")}\n    el{if(i-i/5*5=0){io.println("buzz")}\n    el{io.println(i)}}}\n  };\n  <0\n};',
+    code: 'm=fb;\ni=io:std.io;\nf=fb(n:i64):i64{\n  lp(let i=1;i<n+1;i=i+1){\n    if(i-i/15*15==0){io.println("fizzbuzz")}\n    el{if(i-i/3*3==0){io.println("fizz")}\n    el{if(i-i/5*5==0){io.println("buzz")}\n    el{io.println(i)}}}\n  };\n  <0\n};',
     langs: { Python: 'def fizzbuzz(n):\n    for i in range(1, n+1):\n        if i % 15 == 0: print("fizzbuzz")\n        elif i % 3 == 0: print("fizz")\n        elif i % 5 == 0: print("buzz")\n        else: print(i)', Go: 'func fizzbuzz(n int) { for i := 1; i <= n; i++ { switch { case i%15==0: fmt.Println("fizzbuzz"); case i%3==0: fmt.Println("fizz"); case i%5==0: fmt.Println("buzz"); default: fmt.Println(i) } } }' }
   },
   gcd: {
-    code: 'm=gcd;\nf=gcd(a:i64;b:i64):i64{\n  let x=mut.a;\n  let y=mut.b;\n  lp(let k=0;!(y=0);k=k+1){\n    let t=y;\n    y=x-x/y*y;\n    x=t\n  };\n  <x\n};',
+    code: 'm=gcd;\nf=gcd(a:i64;b:i64):i64{\n  let x=mut.a;\n  let y=mut.b;\n  lp(let k=0;!(y==0);k=k+1){\n    let t=y;\n    y=x-x/y*y;\n    x=t\n  };\n  <x\n};',
     langs: { Python: 'def gcd(a, b):\n    while b:\n        a, b = b, a % b\n    return a', Go: 'func gcd(a, b int) int { for b != 0 { a, b = b, a%b }; return a }' }
   },
   json: {
@@ -219,7 +219,7 @@ const PRESETS = {
     langs: { Python: 'import json, sys\narr = json.loads(sys.argv[1])\nprint(json.dumps(sum(arr)))', Go: 'package main\nimport ("encoding/json";"fmt";"os")\nfunc main() { var a []int; json.Unmarshal([]byte(os.Args[1]),&a); s:=0; for _,v:=range a{s+=v}; b,_:=json.Marshal(s); fmt.Println(string(b)) }' }
   },
   search: {
-    code: 'm=bs;\nf=bs(arr:@i64;target:i64):i64{\n  let lo=mut.0;\n  let hi=mut.arr.len-1;\n  lp(let k=0;lo<hi+1;k=k+1){\n    let mid=lo+(hi-lo)/2;\n    if(arr.get(mid)=target){<mid}\n    el{if(arr.get(mid)<target){lo=mid+1}\n    el{hi=mid-1}}\n  };\n  <0-1\n};',
+    code: 'm=bs;\nf=bs(arr:@i64;target:i64):i64{\n  let lo=mut.0;\n  let hi=mut.arr.len-1;\n  lp(let k=0;lo<hi+1;k=k+1){\n    let mid=lo+(hi-lo)/2;\n    if(arr.get(mid)==target){<mid}\n    el{if(arr.get(mid)<target){lo=mid+1}\n    el{hi=mid-1}}\n  };\n  <0-1\n};',
     langs: { Python: 'def binary_search(arr, target):\n    lo, hi = 0, len(arr)-1\n    while lo <= hi:\n        mid = (lo+hi)//2\n        if arr[mid] == target: return mid\n        elif arr[mid] < target: lo = mid+1\n        else: hi = mid-1\n    return -1', Go: 'func bsearch(arr []int, target int) int { lo, hi := 0, len(arr)-1; for lo <= hi { mid := (lo+hi)/2; if arr[mid] == target { return mid } else if arr[mid] < target { lo = mid+1 } else { hi = mid-1 } }; return -1 }' }
   },
   merge: {

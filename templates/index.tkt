@@ -71,7 +71,7 @@
 
   <div class="tv-tab-panel active" id="see-toke">
     <div class="token-viz toke-p2">
-      <pre class="tv-code"><code><span class="tv-tok tv-c0">m=fib</span><span class="tv-tok tv-c1">;i=io:std.io</span><span class="tv-tok tv-c2">;f=</span><span class="tv-tok tv-c3">fib</span><span class="tv-tok tv-c4">(n:i64):i64{if(n</span><span class="tv-tok tv-c5">&lt;2){&lt;</span><span class="tv-tok tv-c6">n;</span><span class="tv-tok tv-c7">}el{&lt;</span><span class="tv-tok tv-c8">fib</span><span class="tv-tok tv-c9">(n</span><span class="tv-tok tv-c10">-1)+</span><span class="tv-tok tv-c11">fib</span><span class="tv-tok tv-c0">(n</span><span class="tv-tok tv-c1">-2</span><span class="tv-tok tv-c2">);</span><span class="tv-tok tv-c3">}};</span><span class="tv-tok tv-c4">f=main():</span><span class="tv-tok tv-c5">i64{</span><span class="tv-tok tv-c6">io.println</span><span class="tv-tok tv-c7">(</span><span class="tv-tok tv-c8">fib(</span><span class="tv-tok tv-c9">10</span><span class="tv-tok tv-c10">));&lt;</span><span class="tv-tok tv-c11">0;};</span></code></pre>
+      <pre class="tv-code"><code><span class="tv-tok tv-c0">m=fib</span><span class="tv-tok tv-c1">;i=io:std.io</span><span class="tv-tok tv-c2">;f=</span><span class="tv-tok tv-c3">fib</span><span class="tv-tok tv-c4">(n:i64):i64{if(n</span><span class="tv-tok tv-c5">&lt;2){&lt;</span><span class="tv-tok tv-c6">n;</span><span class="tv-tok tv-c7">}el{&lt;</span><span class="tv-tok tv-c8">fib</span><span class="tv-tok tv-c9">(n</span><span class="tv-tok tv-c10">-1)+</span><span class="tv-tok tv-c11">fib</span><span class="tv-tok tv-c0">(n</span><span class="tv-tok tv-c1">-2</span><span class="tv-tok tv-c2">);</span><span class="tv-tok tv-c3">}};</span><span class="tv-tok tv-c4">f=main():</span><span class="tv-tok tv-c5">i64{</span><span class="tv-tok tv-c6">io.printi</span><span class="tv-tok tv-c7">(</span><span class="tv-tok tv-c8">fib(</span><span class="tv-tok tv-c9">10</span><span class="tv-tok tv-c10">));&lt;</span><span class="tv-tok tv-c11">0;};</span></code></pre>
       <div class="tv-footer">
         <span class="token-badge toke-p2">24 tokens &mdash; toke BPE v03 (16,384 vocab), v0.3 syntax &mdash; a different lane from the cl100k panels</span>
       </div>
@@ -156,7 +156,7 @@
 
   <div class="tv-tab-panel active" id="bp-toke">
     <div class="token-viz toke-p2">
-      <pre class="tv-code"><code><span class="tv-tok tv-c0">m=</span><span class="tv-tok tv-c1">fib;</span><span class="tv-tok tv-c2">i=</span><span class="tv-tok tv-c3">io:</span><span class="tv-tok tv-c4">std.io;</span><span class="tv-tok tv-c5">f=</span><span class="tv-tok tv-c6">fib(</span><span class="tv-tok tv-c7">n:i64):i64{</span><span class="tv-tok tv-c8">if(</span><span class="tv-tok tv-c9">n&lt;2){&lt;</span><span class="tv-tok tv-c10">n;}</span><span class="tv-tok tv-c11">el{&lt;</span><span class="tv-tok tv-c0">fib(</span><span class="tv-tok tv-c1">n-1)+</span><span class="tv-tok tv-c2">fib(</span><span class="tv-tok tv-c3">n-2</span><span class="tv-tok tv-c4">);}}</span><span class="tv-tok tv-c5">;</span><span class="tv-tok tv-c6">f=</span><span class="tv-tok tv-c7">main():i64{</span><span class="tv-tok tv-c8">io.println(</span><span class="tv-tok tv-c9">fib(10</span><span class="tv-tok tv-c10">));</span><span class="tv-tok tv-c11">&lt;0;};</span></code></pre>
+      <pre class="tv-code"><code><span class="tv-tok tv-c0">m=</span><span class="tv-tok tv-c1">fib;</span><span class="tv-tok tv-c2">i=</span><span class="tv-tok tv-c3">io:</span><span class="tv-tok tv-c4">std.io;</span><span class="tv-tok tv-c5">f=</span><span class="tv-tok tv-c6">fib(</span><span class="tv-tok tv-c7">n:i64):i64{</span><span class="tv-tok tv-c8">if(</span><span class="tv-tok tv-c9">n&lt;2){&lt;</span><span class="tv-tok tv-c10">n;}</span><span class="tv-tok tv-c11">el{&lt;</span><span class="tv-tok tv-c0">fib(</span><span class="tv-tok tv-c1">n-1)+</span><span class="tv-tok tv-c2">fib(</span><span class="tv-tok tv-c3">n-2</span><span class="tv-tok tv-c4">);}}</span><span class="tv-tok tv-c5">;</span><span class="tv-tok tv-c6">f=</span><span class="tv-tok tv-c7">main():i64{</span><span class="tv-tok tv-c8">io.printi(</span><span class="tv-tok tv-c9">fib(10</span><span class="tv-tok tv-c10">));</span><span class="tv-tok tv-c11">&lt;0;};</span></code></pre>
       <div class="tv-footer">
         <span class="token-badge toke-p2">24 tokens &mdash; toke BPE v03, identical to above (toke has no comment syntax)</span>
       </div>
@@ -227,7 +227,7 @@
 </span><span class="tv-tok tv-c10">    </span><span class="tv-tok tv-c11"> */&#x21B5;
 </span><span class="tv-tok tv-c0">   </span><span class="tv-tok tv-c1"> public</span><span class="tv-tok tv-c2"> static</span><span class="tv-tok tv-c3"> long</span><span class="tv-tok tv-c4"> fibonacci</span><span class="tv-tok tv-c5">(long</span><span class="tv-tok tv-c6"> number</span><span class="tv-tok tv-c7">)</span><span class="tv-tok tv-c8"> {&#x21B5;
 </span><span class="tv-tok tv-c9">       </span><span class="tv-tok tv-c10"> if</span><span class="tv-tok tv-c11"> (</span><span class="tv-tok tv-c0">number</span><span class="tv-tok tv-c1"> &lt;</span><span class="tv-tok tv-c2"> </span><span class="tv-tok tv-c3">2</span><span class="tv-tok tv-c4">)</span><span class="tv-tok tv-c5"> return</span><span class="tv-tok tv-c6"> number</span><span class="tv-tok tv-c7">;&#x21B5;
-</span><span class="tv-tok tv-c8">       </span><span class="tv-tok tv-c9"> return</span><span class="tv-tok tv-c10"> fibonacci</span><span class="tv-tok tv-c11">(number</span><span class="tv-tok tv-c0"> -</span><span class="tv-tok tv-c1"> </span><span class="tv-tok tv-c2">1</span><span class="tv-tok tv-c3">)</span><span class="tv-tok tv-c4"> +</span><span class="tv-tok tv-c5"> fibonacci</span><span class="tv-tok tv-c6">(number</span><span class="tv-tok tv-c7"> -</span><span class="tv-tok tv-c8"> </span><span class="tv-tok tv-c9">2</span><span class="tv-tok tv-c10">;&#x21B5;
+</span><span class="tv-tok tv-c8">       </span><span class="tv-tok tv-c9"> return</span><span class="tv-tok tv-c10"> fibonacci</span><span class="tv-tok tv-c11">(number</span><span class="tv-tok tv-c0"> -</span><span class="tv-tok tv-c1"> </span><span class="tv-tok tv-c2">1</span><span class="tv-tok tv-c3">)</span><span class="tv-tok tv-c4"> +</span><span class="tv-tok tv-c5"> fibonacci</span><span class="tv-tok tv-c6">(number</span><span class="tv-tok tv-c7"> -</span><span class="tv-tok tv-c8"> </span><span class="tv-tok tv-c9">2</span><span class="tv-tok tv-c10">);&#x21B5;
 </span><span class="tv-tok tv-c11">   </span><span class="tv-tok tv-c0"> }&#x21B5;
 &#x21B5;
 </span><span class="tv-tok tv-c1">   </span><span class="tv-tok tv-c2"> /**&#x21B5;
@@ -268,7 +268,7 @@
   </div>
   <div class="feature-card">
     <h3>Standard Library with C Runtime</h3>
-    <p>30+ standard library modules with C runtime implementations &mdash; strings, files, JSON, HTTP server, database, crypto, encoding, encryption, JWT auth, WebSocket, SSE, routing, templates, CSV, math, LLM integration, charting, dashboards, and machine learning. Common operations become single function calls.</p>
+    <p><!--fact:stdlib_modules-->57<!--/fact--> standard library modules with C runtime implementations &mdash; strings, files, JSON, HTTP server, database, crypto, encoding, encryption, JWT auth, WebSocket, SSE, routing, templates, CSV, math, LLM integration, charting, dashboards, and machine learning. Common operations become single function calls.</p>
   </div>
   <div class="feature-card">
     <h3>Open Source</h3>
@@ -479,35 +479,25 @@
 
 <div class="section-alt" style="background:#1f1a11;padding:3rem 2rem;margin:2rem 0;">
   <div style="max-width:900px;margin:0 auto;">
-    <h2 style="text-align:center;margin-bottom:0.5rem;">Try the Model &mdash; Free API Access</h2>
-    <p style="text-align:center;color:#9a9082;margin-bottom:0.6rem;font-size:0.9rem;">A fine-tuned 7B model that writes toke. Free tier &mdash; no credit card, no setup.</p>
+    <h2 style="text-align:center;margin-bottom:0.5rem;">Try the Model &mdash; Run It Locally</h2>
+    <p style="text-align:center;color:#9a9082;margin-bottom:0.6rem;font-size:0.9rem;">A fine-tuned 7B model that writes toke. Run it with Ollama, or take the weights from HuggingFace.</p>
+    <p style="text-align:center;color:#c9a227;margin-bottom:0.6rem;font-size:0.82rem;max-width:720px;margin-left:auto;margin-right:auto;line-height:1.6;"><strong>Withdrawn 2026-09-20:</strong> this section used to offer a hosted free tier and a runnable API example. The inference endpoint behind <code>api.tokelang.dev</code> was deleted on 2026-09-18 and <code>console.tokelang.dev</code> does not answer, so neither works. Saying so here rather than deleting the section: there is no hosted generation channel today, and no date for one.</p>
     <p style="text-align:center;color:#6b6356;margin-bottom:2rem;font-size:0.82rem;max-width:720px;margin-left:auto;margin-right:auto;line-height:1.6;">It is the <strong style="color:#9a9082;">Gate 2</strong> model of 2026-05-22 &mdash; Qwen&nbsp;2.5&nbsp;Coder&nbsp;7B + QLoRA, trained on <strong style="color:#9a9082;">v0.3</strong> syntax, which the breaking v0.4 change superseded. On the curated 500-hidden + 200-eval set it reached <strong style="color:#9a9082;">100% compile Pass@1</strong> and <strong style="color:#9a9082;">55.6% functional</strong> correctness (272/489); across every program in the corpus the honest floor is <strong style="color:#9a9082;">37.5% compile</strong> and about <strong style="color:#9a9082;">2.2% fully correct</strong>. No v0.4-native model has been trained. <a href="/status" style="color:#f0c04a;">The full numbers and their caveats &rarr;</a></p>
 
     <div class="two-col">
       <div style="background:#1f1a11;border:1px solid #2a2317;border-radius:8px;padding:1.5rem;">
-        <h3 style="font-size:1rem;margin-bottom:0.8rem;color:#f0c04a;">Developer Console</h3>
-        <p style="font-size:0.85rem;color:#9a9082;margin-bottom:0.8rem;">Create a free account, get an API key, and start generating toke code. The console includes a playground to test prompts, API key management, and usage tracking with token counts.</p>
-        <ul style="font-size:0.8rem;color:#9a9082;margin:0 0 1rem 1.2rem;line-height:1.8;">
-          <li>Free tier: 1,000 tokens per 6 hours</li>
-          <li>Request higher limits at no charge</li>
-          <li>Opt in or out of data collection per key</li>
-          <li>Track usage: tokens in, tokens out, toke BPE</li>
-        </ul>
-        <a href="https://console.tokelang.dev/signup" style="background:#2a2317;border:1px solid #f0c04a;color:#f0c04a;padding:0.5rem 1rem;border-radius:4px;text-decoration:none;font-size:0.85rem;font-weight:600;">Create Free Account &rarr;</a>
+        <h3 style="font-size:1rem;margin-bottom:0.8rem;color:#f0c04a;">Run it with Ollama</h3>
+        <p style="font-size:0.85rem;color:#9a9082;margin-bottom:0.8rem;">One command, no account, no key. Checked 2026-09-20: the manifest resolves and the model layer is 4.7&nbsp;GB.</p>
+        <pre style="background:#14110b;padding:0.8rem;border-radius:4px;font-size:0.8rem;color:#6fc2b2;margin-bottom:1rem;">ollama run karwalski/toke</pre>
+        <p style="font-size:0.8rem;color:#6b6356;margin-bottom:1rem;">The developer console that used to be advertised here &mdash; free tier, API keys, usage tracking &mdash; is <strong style="color:#c9a227;">withdrawn</strong>: <code>console.tokelang.dev</code> resolves but its origin does not answer.</p>
+        <a href="https://ollama.com/karwalski/toke" style="background:#2a2317;border:1px solid #f0c04a;color:#f0c04a;padding:0.5rem 1rem;border-radius:4px;text-decoration:none;font-size:0.85rem;font-weight:600;">View on Ollama &rarr;</a>
       </div>
 
       <div style="background:#1f1a11;border:1px solid #2a2317;border-radius:8px;padding:1.5rem;">
-        <h3 style="font-size:1rem;margin-bottom:0.8rem;">API &amp; MCP</h3>
-        <p style="font-size:0.85rem;color:#9a9082;margin-bottom:0.8rem;">Use the REST API directly or connect via MCP (Model Context Protocol) from Claude Code, Cursor, Codex, or any MCP-compatible client.</p>
-        <pre style="background:#1f1a11;padding:0.8rem;border-radius:4px;font-size:0.75rem;overflow-x:auto;color:#6fc2b2;margin-bottom:1rem;">curl -X POST api.tokelang.dev/v1/generate \
-  -H "X-Api-Key: YOUR_KEY" \
-  -d '{"description": "Sum an array"}'
-
-{"source": "m=sum;f=sum(arr:@i64)...",
- "tokens_in": 159,
- "tokens_out": 28,
- "toke_bpe_out": 13}</pre>
-        <p style="font-size:0.8rem;color:#9a9082;">The response includes three token counts: model input and model output under the Qwen tokenizer, and the same output re-measured under toke's v0.3 purpose-built BPE. The third number is a <em>tokenizer-vs-tokenizer</em> reading of one text, not a reduction against any other language, and the v0.3 tokenizer it uses is lossy. It is reported so callers can see the lane, not as an efficiency claim.</p>
+        <h3 style="font-size:1rem;margin-bottom:0.8rem;">MCP</h3>
+        <p style="font-size:0.85rem;color:#9a9082;margin-bottom:0.8rem;">Connect via MCP (Model Context Protocol) from Claude Code, Cursor, Codex, or any MCP-compatible client. Checked 2026-09-20: the package resolves on npm.</p>
+        <pre style="background:#14110b;padding:0.8rem;border-radius:4px;font-size:0.8rem;color:#6fc2b2;margin-bottom:1rem;">npx @tokelang/mcp-server</pre>
+        <p style="font-size:0.8rem;color:#9a9082;">A <code>curl</code> against <code>api.tokelang.dev/v1/generate</code> stood here, with a sample response carrying three token counts. It is <strong style="color:#c9a227;">withdrawn as of 2026-09-20</strong>: the endpoint behind the API was deleted on 2026-09-18, so a caller with a valid key is told <em>&ldquo;Endpoint not found. The SageMaker endpoint has not been deployed.&rdquo;</em> The gateway still answers, which is what made the failure read as a key problem instead of a withdrawn service.</p>
       </div>
     </div>
 
@@ -521,9 +511,7 @@
     </div>
 
     <div style="text-align:center;">
-      <a href="https://console.tokelang.dev" style="color:#f0c04a;font-size:0.85rem;">console.tokelang.dev</a>
-      <span style="color:#6b6356;margin:0 0.5rem;">&middot;</span>
-      <a href="https://huggingface.co/karwalski/toke" style="color:#9a9082;font-size:0.85rem;">HuggingFace</a>
+      <a href="https://huggingface.co/karwalski/toke" style="color:#f0c04a;font-size:0.85rem;">HuggingFace</a>
       <span style="color:#6b6356;margin:0 0.5rem;">&middot;</span>
       <a href="https://github.com/karwalski/toke-mcp" style="color:#9a9082;font-size:0.85rem;">MCP Server</a>
       <span style="color:#6b6356;margin:0 0.5rem;">&middot;</span>
@@ -558,9 +546,9 @@
     <code style="display:block;background:#14110b;padding:0.5rem 0.75rem;border-radius:4px;font-size:0.8rem;color:#6fc2b2;">npx @tokelang/mcp-server</code>
   </div>
   <div style="background:#1f1a11;border:1px solid #2a2317;border-radius:8px;padding:1.2rem;">
-    <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#f0c04a;">REST API</h3>
-    <p style="font-size:0.8rem;color:#9a9082;margin:0 0 0.8rem;">Generate toke code from any language. Free tier available.</p>
-    <code style="display:block;background:#14110b;padding:0.5rem 0.75rem;border-radius:4px;font-size:0.8rem;color:#6fc2b2;">curl api.tokelang.dev/v1/generate</code>
+    <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#6b6356;">REST API &mdash; withdrawn</h3>
+    <p style="font-size:0.8rem;color:#9a9082;margin:0 0 0.8rem;">Not published. The endpoint behind <code>api.tokelang.dev</code> was deleted on 2026-09-18; a valid key now returns &ldquo;endpoint not found&rdquo;.</p>
+    <code style="display:block;background:#14110b;padding:0.5rem 0.75rem;border-radius:4px;font-size:0.8rem;color:#6b6356;text-decoration:line-through;">curl api.tokelang.dev/v1/generate</code>
   </div>
   <div style="background:#1f1a11;border:1px solid #2a2317;border-radius:8px;padding:1.2rem;">
     <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#f0c04a;">Python Tokenizer</h3>
@@ -583,9 +571,9 @@
     <code style="display:block;background:#14110b;padding:0.5rem 0.75rem;border-radius:4px;font-size:0.8rem;color:#6fc2b2;">npm i -g @tokelang/lsp</code>
   </div>
   <div style="background:#1f1a11;border:1px solid #2a2317;border-radius:8px;padding:1.2rem;">
-    <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#f0c04a;">Console</h3>
-    <p style="font-size:0.8rem;color:#9a9082;margin:0 0 0.8rem;">API keys, usage stats, Try It playground. Free account.</p>
-    <a href="https://console.tokelang.dev/signup" style="color:#6fc2b2;font-size:0.8rem;text-decoration:none;">console.tokelang.dev &rarr;</a>
+    <h3 style="font-size:0.95rem;margin:0 0 0.5rem;color:#6b6356;">Console &mdash; withdrawn</h3>
+    <p style="font-size:0.8rem;color:#9a9082;margin:0 0 0.8rem;">Not published. <code>console.tokelang.dev</code> resolves but its origin does not answer, so there is no signup, no key and no playground.</p>
+    <span style="color:#6b6356;font-size:0.8rem;text-decoration:line-through;">console.tokelang.dev</span>
   </div>
 </div>
 
@@ -594,12 +582,12 @@
   <div class="cta-grid">
     <div class="cta-card">
       <h3>Generate toke code</h3>
-      <p>Create a free account and use the API to generate toke programs with AI. It is the v0.3-trained Gate 2 model; see <a href="/status">what it was measured on</a> before quoting a rate.</p>
-      <a href="https://console.tokelang.dev/signup">Free API access &rarr;</a>
+      <p>Run the model locally with <code>ollama run karwalski/toke</code>, or take the weights from HuggingFace. It is the v0.3-trained Gate 2 model; see <a href="/status">what it was measured on</a> before quoting a rate. The hosted free tier advertised here was withdrawn on 2026-09-20.</p>
+      <a href="https://ollama.com/karwalski/toke">Run it locally &rarr;</a>
     </div>
     <div class="cta-card">
       <h3>Install the compiler</h3>
-      <p>Build from source or use Homebrew (coming soon). Run your first program in under 5 minutes.</p>
+      <p>Build from source. Homebrew is not published yet &mdash; the tap returns 404 today. Run your first program in under 5 minutes.</p>
       <a href="/docs/getting-started/install">Installation guide &rarr;</a>
     </div>
     <div class="cta-card">

@@ -45,6 +45,23 @@ jobs:
           TKC: ${{ github.workspace }}/.toke/tkc
         run: make TKC="$TKC" check-toke
 
+      # Story 132.44: every toke program the SITE PUBLISHES must compile too —
+      # /tokens shipped two v0.3 `=`-equality programs under a green tick, and
+      # /tokenizer shipped five presets that the compiler rejects. The tick is
+      # written from this compile result, so this job is what makes it true.
+      - name: Every published toke program compiles, and the /tokens ticks are real
+        env:
+          TKC: ${{ github.workspace }}/.toke/tkc
+        run: make TKC="$TKC" check-site-examples
+
+      # Story 132.36: the stdlib module count on the home page is filled from the
+      # fact sheet the compiler repo derives from the tree. It drifted twice in
+      # one day while it was typed by hand.
+      - name: Published counts match the tree
+        env:
+          TOKE_REPO: ${{ github.workspace }}/.toke
+        run: make TOKE_REPO="$TOKE_REPO" check-facts
+
       # /llms.txt is generated from docs/about/canonical.json in the compiler
       # repo, which is checked out above. A hand-edit to either side fails here.
       - name: /llms.txt matches the canonical facts block

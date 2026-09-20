@@ -153,13 +153,18 @@ site-examples:
 check-site-examples:
 	TKC="$(TKC)" python3 scripts/verify_site_examples.py --check
 
-# 132.36 — the stdlib module count on the home page is copied from the fact
-# sheet the compiler repo derives from the tree, never typed.
+# 132.36 — the stdlib module count on the home page is FILLED from the fact sheet
+# the compiler repo derives from the tree, never typed. templates/index.tkt marks
+# it `<!--fact:stdlib_modules-->57<!--/fact-->`; the deriving script lives in the
+# toke repo, next to the tree it reads (the same arrangement as gen_llms.py, which
+# reads the canonical block from $(TOKE_REPO)/docs).
+FACTS_SCRIPT = $(TOKE_REPO)/scripts/verify_project_facts.py
+
 facts:
-	python3 scripts/sync_project_facts.py --write
+	python3 $(FACTS_SCRIPT) --sync $(CURDIR)/templates/index.tkt
 
 check-facts:
-	python3 scripts/sync_project_facts.py --check
+	python3 $(FACTS_SCRIPT) --sync-check $(CURDIR)/templates/index.tkt
 
 # Everything a change to this repo must pass before it is deployed.
 ci: check-toke check-site-examples check-facts check-roadmap check-llms docs-content build check-build-fresh check-routes

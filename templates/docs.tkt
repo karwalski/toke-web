@@ -74,6 +74,7 @@
       <a href="/docs/stdlib/encrypt">encrypt</a>
       <a href="/docs/stdlib/env">env</a>
       <a href="/docs/stdlib/file">file</a>
+      <a href="/docs/stdlib/fmt">fmt</a>
       <a href="/docs/stdlib/html">html</a>
       <a href="/docs/stdlib/http">http</a>
       <a href="/docs/stdlib/i18n">i18n</a>
@@ -81,7 +82,7 @@
       <a href="/docs/stdlib/json">json</a>
       <a href="/docs/stdlib/json_stream">json_stream</a>
       <a href="/docs/stdlib/llm">llm</a>
-      <a href="/docs/stdlib/llm_tool">llm_tool</a>
+      <a href="/docs/stdlib/llmtool">llmtool</a>
       <a href="/docs/stdlib/log">log</a>
       <a href="/docs/stdlib/math">math</a>
       <a href="/docs/stdlib/md">md</a>
@@ -100,6 +101,7 @@
       <a href="/docs/stdlib/toon">toon</a>
       <a href="/docs/stdlib/ws">ws</a>
       <a href="/docs/stdlib/yaml">yaml</a>
+      <a href="/docs/stdlib/zip">zip</a>
       <h4>Specification</h4>
       <a href="/docs/spec/toke-spec-v02">Language Spec</a>
       <a href="/docs/spec/semantics">Formal Semantics</a>
