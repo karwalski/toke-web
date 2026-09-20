@@ -38,6 +38,12 @@
 .st td { color: #9a9082; border-bottom: 1px solid #201a11; padding: 0.55rem 0.6rem; vertical-align: top; line-height: 1.55; }
 .st td strong { color: #f5efe2; }
 .st .src { color: #6b6356; font-size: 0.78rem; margin-top: 3rem; border-top: 1px solid #2a2317; padding-top: 1rem; line-height: 1.6; }
+
+/* 134.26 — mobile: the 210px card floor exceeds the content box on a phone. */
+@media (max-width: 640px) {
+  .st .card { flex: 1 1 100%; min-width: 0; }
+  .st { padding-left: 1rem; padding-right: 1rem; }
+}
 </style>
 
 <div class="st">

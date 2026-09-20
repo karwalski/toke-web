@@ -537,3 +537,23 @@ section { padding: 3rem 0; }
   .ns-table { font-size: 0.78rem; }
   .ns-table th, .ns-table td { padding: 0.4rem 0.5rem; }
 }
+
+/* 134.26 — global mobile safety net.
+   Four templates carried their own <style> block with no breakpoint at all,
+   so content ran past the viewport on phones. These rules catch the classes
+   that overflow by construction regardless of which template renders them.
+   Nothing here uses a hand-maintained list of page names: it targets the
+   shapes that overflow (fixed tracks, unbreakable strings, wide media). */
+@media (max-width: 640px) {
+  html, body { overflow-x: hidden; }
+  .docs-content, .ref-body, .ref-page { padding: 1.5rem 1rem; }
+  .comparison, .code-compare, .page-hero, .features, .ecosystem-grid,
+  .install-grid, .ref-grid, .cta-grid, .stat-row { padding-left: 1rem; padding-right: 1rem; }
+  .features, .ecosystem-grid, .install-grid, .cta-grid { grid-template-columns: 1fr; }
+  .ref-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+  table { display: block; overflow-x: auto; max-width: 100%; }
+  pre, code, .code-block { overflow-x: auto; max-width: 100%; }
+  img, svg, video, iframe { max-width: 100%; height: auto; }
+  /* long unbreakable tokens — hashes, URLs, symbol names */
+  p, li, td, th, dd, .desc, .detail { overflow-wrap: anywhere; }
+}

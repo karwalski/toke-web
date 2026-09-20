@@ -321,6 +321,18 @@
 .ms-bench p { color: #9a9082; font-size: 0.85rem; line-height: 1.6; margin: 0 0 0.6rem; }
 .ms-bench .veto { border-left: 2px solid #f0c04a; padding-left: 0.8rem; color: #f5efe2; margin: 0; }
 .ms-cta { text-align: center; margin-top: 1.5rem; }
+
+/* 134.26 — mobile. The two-column block above was an INLINE grid, which no
+   stylesheet rule can override, so it became .two-col. Everything else here
+   collapses fixed tracks that have no room on a phone. */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
+@media (max-width: 640px) {
+  .two-col { grid-template-columns: 1fr; gap: 1.25rem; }
+  .ms-key { flex: 0 0 auto; }
+  .ms-row { flex-wrap: wrap; }
+  .hero, .features, .comparison, .code-compare { padding-left: 1rem; padding-right: 1rem; }
+  pre, code { overflow-x: auto; max-width: 100%; }
+}
 </style>
 <div class="ms">
   <div class="ms-row ms-done">
@@ -471,7 +483,7 @@
     <p style="text-align:center;color:#9a9082;margin-bottom:0.6rem;font-size:0.9rem;">A fine-tuned 7B model that writes toke. Free tier &mdash; no credit card, no setup.</p>
     <p style="text-align:center;color:#6b6356;margin-bottom:2rem;font-size:0.82rem;max-width:720px;margin-left:auto;margin-right:auto;line-height:1.6;">It is the <strong style="color:#9a9082;">Gate 2</strong> model of 2026-05-22 &mdash; Qwen&nbsp;2.5&nbsp;Coder&nbsp;7B + QLoRA, trained on <strong style="color:#9a9082;">v0.3</strong> syntax, which the breaking v0.4 change superseded. On the curated 500-hidden + 200-eval set it reached <strong style="color:#9a9082;">100% compile Pass@1</strong> and <strong style="color:#9a9082;">55.6% functional</strong> correctness (272/489); across every program in the corpus the honest floor is <strong style="color:#9a9082;">37.5% compile</strong> and about <strong style="color:#9a9082;">2.2% fully correct</strong>. No v0.4-native model has been trained. <a href="/status" style="color:#f0c04a;">The full numbers and their caveats &rarr;</a></p>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:2rem;">
+    <div class="two-col">
       <div style="background:#1f1a11;border:1px solid #2a2317;border-radius:8px;padding:1.5rem;">
         <h3 style="font-size:1rem;margin-bottom:0.8rem;color:#f0c04a;">Developer Console</h3>
         <p style="font-size:0.85rem;color:#9a9082;margin-bottom:0.8rem;">Create a free account, get an API key, and start generating toke code. The console includes a playground to test prompts, API key management, and usage tracking with token counts.</p>

@@ -18,6 +18,12 @@
 .feature li { color: var(--muted); font-size: 0.86rem; line-height: 1.6; margin-bottom: 0.35rem; }
 .feature li strong { color: var(--text); }
 .run-steps { max-width: 860px; margin: 0 auto; padding: 0 2rem; }
+
+/* 134.26 — mobile: this template had no breakpoint of any kind. */
+@media (max-width: 640px) {
+  [class*="grid"], [class*="row"] { grid-template-columns: 1fr; }
+  pre, code { overflow-x: auto; max-width: 100%; }
+}
 </style>
 
 <div class="page-hero">

@@ -49,6 +49,17 @@
 .lib .bar.toke { background: var(--gold); } .lib .bar.py { background: var(--faint); color: var(--text); }
 .lib .back { cursor: pointer; color: var(--gold); margin-bottom: 1rem; display: inline-block; }
 .lib .muted { color: var(--faint); }
+
+/* 134.26 — mobile. .io was a hard 1fr 1fr and .stat carried a 150px floor,
+   so a row of stats and the input/output pair both ran past a phone width. */
+@media (max-width: 640px) {
+  .lib { padding: 1.25rem 1rem 3rem; }
+  .lib .io { grid-template-columns: 1fr; }
+  .lib .stat { min-width: 0; flex: 1 1 100%; }
+  .lib .cmp { grid-template-columns: 1fr; }
+  .lib pre, .lib code { overflow-x: auto; max-width: 100%; }
+  .lib .card { min-width: 0; }
+}
 </style>
 
 <section class="lib">
