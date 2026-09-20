@@ -557,3 +557,10 @@ section { padding: 3rem 0; }
   /* long unbreakable tokens — hashes, URLs, symbol names */
   p, li, td, th, dd, .desc, .detail { overflow-wrap: anywhere; }
 }
+
+/* 134.27 — asset URLs are content-hashed (style.<hash>.css) so a changed
+   stylesheet is a new URL and no cache can serve the old one. Path-based, not
+   a ?v= query string: the server does not strip query strings from static
+   paths, so a versioned query 404s (127.100).
+   Operational note: never request a hashed URL before the deploy that creates
+   it — a CDN will cache the 404 and the asset stays dead until it expires. */

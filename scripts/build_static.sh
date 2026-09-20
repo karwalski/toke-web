@@ -48,6 +48,41 @@ mkdir -p build
 
 cp -R static build/static
 
+# 134.27 — content-hashed asset filenames, so a changed stylesheet or script
+# is a NEW URL and no cache can serve the old one.
+#
+# PATH-based, not a ?v= query string: the server does not strip query strings
+# from static paths, so a versioned query 404s (story 127.100) — which briefly
+# left the site unstyled when it was tried. A hashed filename is a real file
+# at a real path, so it works with the server exactly as it is.
+#
+# The asset list is DERIVED from what the templates actually reference, never
+# hand-maintained — the recurring root cause in this workspace (127.80,
+# 127.85, 134.21, 136.1). The unhashed copy is kept alongside so any
+# reference this misses still resolves.
+declare -a hashed=()
+while IFS= read -r asset; do
+  [[ -f "${asset#/}" ]] || continue
+  src="${asset#/}"                      # static/css/style.css
+  h="$(shasum -a 256 "${src}" | cut -c1-10)"
+  base="${src##*/}"; stem="${base%.*}"; ext="${base##*.}"
+  dir="${src%/*}"                        # static/css
+  newrel="${dir}/${stem}.${h}.${ext}"    # static/css/style.<hash>.css
+  cp "${src}" "build/${newrel}"
+  # point every template at the hashed path
+  for t in templates/*.tkt; do
+    perl -pi -e "s{\Q${asset}\E}{/${newrel}}g; s{/${dir}/${stem}\.[0-9a-f]{10}\.${ext}}{/${newrel}}g" "${t}"
+  done
+  hashed+=("${base} -> ${stem}.${h}.${ext}")
+done < <(grep -ohE '(href|src)="/static/[^"]+\.(css|js)"' templates/*.tkt \
+         | sed -E 's/.*"(\/static\/[^"]+)".*/\1/' \
+         | sed -E 's/\/([^/]+)\.[0-9a-f]{10}\.(css|js)$/\/\1.\2/' \
+         | sort -u)
+
+if (( ${#hashed[@]} )); then
+  echo "    ${#hashed[@]} asset(s) content-hashed: ${hashed[*]}"
+fi
+
 # The library page fetches /library/<category>.json, not /static/library/...
 cp -R static/library build/library
 

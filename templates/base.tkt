@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700;800&display=swap">
-  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/style.7b2b0cf3f1.css">
 </head>
 <body>
   <script>(function(){try{var t=localStorage.getItem('toke-theme'),c=document.body.classList;if(t==='light'){c.add('theme-light')}else if(t==='dark'){c.remove('theme-light')}else if(t==='auto'){c.remove('theme-light');c.add('theme-auto')}}catch(e){}})();</script>
@@ -33,6 +33,6 @@
     <p style="font-size:0.8rem;opacity:0.6">© 2026 Matthew Watt</p>
     <p style="margin-top:0.5rem">Built and served by <a href="/ooke">toke on ooke</a> — a single native binary. Write less. Mean more.</p>
   </footer>
-  <script src="/static/js/theme.js" defer></script>
+  <script src="/static/js/theme.6bfc360dcd.js" defer></script>
 </body>
 </html>
