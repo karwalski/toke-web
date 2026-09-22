@@ -268,7 +268,7 @@
   </div>
   <div class="feature-card">
     <h3>Standard Library with C Runtime</h3>
-    <p><!--fact:stdlib_modules-->57<!--/fact--> standard library modules with C runtime implementations &mdash; strings, files, JSON, HTTP server, database, crypto, encoding, encryption, JWT auth, WebSocket, SSE, routing, templates, CSV, math, LLM integration, charting, dashboards, and machine learning. Common operations become single function calls.</p>
+    <p><!--fact:stdlib_modules-->65<!--/fact--> standard library modules with C runtime implementations &mdash; strings, files, JSON, HTTP server, database, crypto, encoding, encryption, JWT auth, WebSocket, SSE, routing, templates, CSV, math, LLM integration, charting, dashboards, and machine learning. Common operations become single function calls.</p>
   </div>
   <div class="feature-card">
     <h3>Open Source</h3>
