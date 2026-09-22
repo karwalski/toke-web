@@ -19,16 +19,6 @@
 </section>
 
 <!-- ================================================================== -->
-<!-- What toke is not (disambiguation — story 132.2)                    -->
-<!-- ================================================================== -->
-
-<div class="explainer" style="max-width:860px;margin:1.5rem auto 2.5rem;padding:1.1rem 1.4rem;border:1px solid #2a2317;border-left:3px solid #f0c04a;border-radius:8px;background:#14110b;">
-  <h2 style="font-size:1rem;margin:0 0 0.6rem;color:#f5efe2;">What toke is not</h2>
-  <p style="margin:0 0 0.7rem;">toke is a programming language. It is not the slang word for a draw on a cigarette, not the cannabis brands that use the name, not the TOKE crypto tokens, not Tokelau or its .tk country-code domain, and not tokelang.com, which is an unrelated third-party project. The language is at tokelang.dev and github.com/karwalski/toke.</p>
-  <p style="margin:0;font-size:0.84rem;color:#6b6356;">That last one is practical rather than decorative: a third party holds the .com, the matching GitHub organisation and the matching crates.io name. None of them is this project, and none of this project&rsquo;s package scopes, registry names or URLs is changing. The source is at <a href="https://github.com/karwalski/toke" style="color:#f0c04a;">github.com/karwalski/toke</a>.</p>
-</div>
-
-<!-- ================================================================== -->
 <!-- The Problem                                                        -->
 <!-- ================================================================== -->
 

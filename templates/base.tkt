@@ -10,6 +10,25 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700;800&display=swap">
   <link rel="stylesheet" href="/static/css/style.7b2b0cf3f1.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "toke",
+    "alternateName": "toke programming language",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "macOS, Linux",
+    "url": "https://tokelang.dev",
+    "description": "A compiled programming language designed for LLM code generation, with a small grammar, one canonical form and compiler verification.",
+    "disambiguatingDescription": "toke is a compiled programming language. It is unrelated to the slang term for smoking, to cannabis brands using the name, to the TOKE cryptocurrency tokens, to Tokelau or its .tk country-code domain, and to tokelang.com, which is an unrelated third-party project.",
+    "sameAs": [
+      "https://github.com/karwalski/toke",
+      "https://tokelang.dev"
+    ],
+    "license": "https://www.apache.org/licenses/LICENSE-2.0",
+    "softwareVersion": "3.0.0"
+  }
+  </script>
 </head>
 <body>
   <script>(function(){try{var t=localStorage.getItem('toke-theme'),c=document.body.classList;if(t==='light'){c.add('theme-light')}else if(t==='dark'){c.remove('theme-light')}else if(t==='auto'){c.remove('theme-light');c.add('theme-auto')}}catch(e){}})();</script>
