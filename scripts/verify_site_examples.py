@@ -235,6 +235,54 @@ def check_tab_labels():
     return findings, checked
 
 
+def report_tokens_page_counts():
+    """REPORTED, NOT ASSERTED: what /tokens publishes vs what the tokenizer says.
+
+    Story 132.48. Each gallery lang-label reads "toke &mdash; N tokens (toke
+    BPE v03)". None of those N reproduce. The page is internally consistent —
+    N equals the number of rendered spans — but the segmentation was not
+    produced by any tokenizer artefact in this project: the per-token ids are
+    wrong (every toke panel opens `m=` as "token 181", and 181 is `false` in
+    static/tokenizer_v03.json; `m=` is 144), and no artefact agrees on the
+    count either. For the FizzBuzz program the page says 42, the shipped
+    16,384 BPE says 68 under the page's own algorithm and 65 under the
+    `tokenizers` reference implementation, and the SentencePiece models say
+    110 (8K) and 104 (32K).
+
+    This is REPORTED rather than asserted, in the same spirit as
+    `make check-hardening`'s _FORTIFY_SOURCE line (AGENTS.md 14.3), because
+    the fix is not a number: story 116.13-H4 is explicit that the markup must
+    be REGENERATED and must not be hand-edited, since editing the count by
+    hand desyncs it from the per-token ids. Which tokenizer is canonical for
+    a published toke count is an open owner decision, and asserting one of
+    three candidate answers here would be re-guessing rather than deriving.
+
+    Turning this into an assertion is the correct follow-up the moment that
+    decision is made and the markup is regenerated.
+    """
+    text = open(TOKENS_TKT, encoding="utf-8").read()
+    enc = load_toke_bpe()
+    if enc is None:
+        return ["Reported, not asserted: static/tokenizer_v03.json missing — "
+                "/tokens counts not derived"]
+    lines, drift = [], 0
+    for m in re.finditer(r'<div class="lang-label">toke &mdash;\s*(?P<n>\d+) tokens'
+                         r'[^<]*</div>\s*<pre class="tokens">(?P<code>.*?)</pre>',
+                         text, re.S):
+        stated = int(m.group("n"))
+        source = strip_markup(m.group("code"))
+        derived = len(enc(source)[0])
+        if derived != stated:
+            drift += 1
+    if drift:
+        lines.append("Reported, not asserted (132.48): %d of the /tokens toke "
+                     "panels publish a count that static/tokenizer_v03.json "
+                     "does not reproduce. Not failed here: 116.13-H4 requires "
+                     "the markup be regenerated, not re-numbered, and the "
+                     "canonical tokenizer is an open owner decision." % drift)
+    return lines
+
+
 def check_home_panels():
     """The home page's side-by-side panels (story 132.44).
 
@@ -323,6 +371,7 @@ def main():
     findings += home_findings
     tab_findings, n_tabs = check_tab_labels()
     findings += tab_findings
+    reported = report_tokens_page_counts()
 
     if write and new_text is not None:
         with open(TOKENS_TKT, "w", encoding="utf-8") as fh:
@@ -332,6 +381,8 @@ def main():
     print("checked %d /tokens gallery programs, %d /tokenizer programs, "
           "%d home-page panels and %d tab labels"
           % (n_gallery, n_presets, n_home, n_tabs))
+    for line in reported:
+        print("  " + line)
     if not findings:
         print("OK: every published toke program compiles, and every badge on "
               "/tokens was written from that compile result.")
