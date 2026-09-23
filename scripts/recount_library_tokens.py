@@ -85,8 +85,7 @@ def main():
         a = agg(trs)
         if key in cat_meta:
             cm = cat_meta[key]
-            cm["avg_token_ratio"] = a["avg"]
-            cm["median_token_ratio"] = a["median"]
+            # 132.45: cross-tokenizer aggregates are not emitted — see above.
             cm["avg_toke_tokens"] = round(statistics.mean(tts), 1) if tts else 0
             cm["avg_python_tokens"] = round(statistics.mean(pts), 1) if pts else 0
             # keep a corrected byte ratio for reference
@@ -97,18 +96,25 @@ def main():
               f"median token_ratio {a['median']:.2f}  avg {a['avg']:.2f}")
 
     overall = agg(all_tr)
-    index["avg_token_ratio"] = overall["avg"]
-    index["median_token_ratio"] = overall["median"]
+    # 132.45: avg_token_ratio / median_token_ratio / toke_fewer_tokens_pct
+    # divide a toke-BPE count by a cl100k_base count. That ratio measures the
+    # toke tokenizer's training bias, not the language, and was withdrawn by
+    # story 132.13 — but only from the rendered page. The generator kept
+    # computing it and index.json kept serving it (toke_fewer_tokens_pct 26.8)
+    # to anyone fetching the JSON directly. It is no longer emitted. Per-side
+    # token counts stay, each labelled with the tokenizer that produced it;
+    # the byte ratio stays, being the one lane with no tokenizer assumption.
     index["avg_toke_tokens"] = round(statistics.mean(all_tt), 1) if all_tt else 0
     index["avg_python_tokens"] = round(statistics.mean(all_pt), 1) if all_pt else 0
-    index["toke_fewer_tokens_pct"] = round(100 * sum(1 for r in all_tr if r > 1) / len(all_tr), 1) if all_tr else 0
     index["methodology"] = ("toke BPE v03 (16,384 vocab) vs cl100k_base, measured on the actual "
                             "solution.tk / solution.py sources. Corpus solutions are generated and "
                             "repaired for correctness, not hand-optimised for tokens.")
     json.dump(index, open(LIB / "index.json", "w"), indent=2, ensure_ascii=False)
     print(f"\nTOTAL {total} programs, {paired} paired.")
-    print(f"Overall median token_ratio {overall['median']:.2f}, avg {overall['avg']:.2f}, "
-          f"toke fewer tokens in {index['toke_fewer_tokens_pct']:.0f}% of programs.")
+    print("Overall median BYTE ratio %s, avg %s. Cross-tokenizer ratios are "
+          "not emitted (132.13 withdrawal, 132.45)."
+          % (index.get("median_byte_ratio", "n/a"),
+             index.get("avg_byte_ratio", "n/a")))
 
 
 if __name__ == "__main__":

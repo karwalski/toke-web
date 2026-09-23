@@ -78,14 +78,29 @@
 
 <section class="lib">
   <h1>toke <span>program library</span></h1>
-  <p class="subtitle">Every verified toke program, by category — with inputs, expected outputs, and a same-basis byte comparison against Python.</p>
+  <p class="subtitle">A v0.3-era snapshot of the program corpus, by category — with inputs, expected outputs, and a same-basis byte comparison against Python.</p>
   <div class="method">
+    <b>This snapshot predates v0.4 and does not compile today (story 132.45).</b> The data on this
+    page was generated on <b>2026-06-26</b> and has not been regenerated since. It was captured before
+    the v0.4 equality split (Epic 116), and <b>969 of the 1,460 published programs</b> use the v0.3
+    single-<code>=</code> equality; the current compiler rejects them outright with
+    <code>E2002: `=` is assignment; use `==` for equality</code>. They are kept as the historical v0.3
+    record, and the word &ldquo;verified&rdquo; on them refers to that v0.3 run, not to the compiler
+    this site ships. Re-running the existing generator would not fix this &mdash; it recounts the same
+    v0.3 sources rather than migrating them &mdash; so the snapshot is left as it stands and labelled,
+    rather than refreshed into looking current. A correct v0.4 regeneration is scheduled work; see the
+    <a href="/roadmap">roadmap</a>.
+    <br><br>
     <b>How to read these numbers &mdash; and what was withdrawn.</b> This page used to rank programs by a
     <b>token</b> ratio built from two different tokenizers: the toke side measured with the toke-trained
     BPE (v03, 16,384 vocab), the Python side with cl100k_base. That ratio measures the tokenizer's
     training bias rather than the language, so it is <b>withdrawn</b> (story 132.13) and is no longer
     displayed. The per-program token counts are still in the underlying JSON, each labelled with the
-    tokenizer that produced it; they are not compared across languages.
+    tokenizer that produced it; they are not compared across languages. The cross-tokenizer aggregates
+    that survived in <code>/library/index.json</code> after that withdrawal &mdash;
+    <code>avg_token_ratio</code>, <code>median_token_ratio</code> and
+    <code>toke_fewer_tokens_pct</code> (26.8) &mdash; were still being served to anyone who fetched the
+    JSON directly, and have now been removed from it too (132.45).
     <br><br>
     The ratio shown here is now the <b>byte</b> ratio &mdash; raw source bytes on both sides, the one
     lane that carries no tokenizer assumption. These corpus programs are <b>generated and repaired for

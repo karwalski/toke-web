@@ -1,6 +1,6 @@
 {
   "generated": "2026-06-26",
-  "scope": "passing",
+  "scope": "generated 2026-06-26 against v0.3 syntax; NOT re-verified against v0.4",
   "total": 1460,
   "categories": [
     {
@@ -186,10 +186,17 @@
   ],
   "avg_byte_ratio": 3.71,
   "median_byte_ratio": 2.4,
-  "avg_token_ratio": 1.0405,
-  "median_token_ratio": 0.662,
   "avg_toke_tokens": 515.6,
   "avg_python_tokens": 351.6,
-  "toke_fewer_tokens_pct": 26.8,
-  "methodology": "toke BPE v03 (16,384 vocab) vs cl100k_base, measured on the actual solution.tk / solution.py sources. Corpus solutions are generated and repaired for correctness, not hand-optimised for tokens."
+  "methodology": "toke BPE v03 (16,384 vocab) vs cl100k_base, measured on the actual solution.tk / solution.py sources. Corpus solutions are generated and repaired for correctness, not hand-optimised for tokens.",
+  "stale": {
+    "story": "132.45",
+    "as_of": "2026-09-24",
+    "detail": "This snapshot predates the v0.4 equality split (Epic 116). 969 of 1460 published programs use v0.3 single-`=` equality and are rejected by the current compiler with E2002. The programs and their counts are kept as the historical v0.3 record and are not a claim about the current language.",
+    "withdrawn_fields": [
+      "avg_token_ratio",
+      "median_token_ratio",
+      "toke_fewer_tokens_pct"
+    ]
+  }
 }
