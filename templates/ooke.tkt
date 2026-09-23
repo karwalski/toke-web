@@ -165,7 +165,7 @@ draft = { type = <span class="str">"bool"</span>,   default = <span class="kw">f
 </div>
 
 <div class="ecosystem-note" style="border-left-color:#f0c04a;">
-  <p><strong>You are looking at it.</strong> This website &mdash; tokelang.dev &mdash; is built and served by toke on ooke. The page you are reading was rendered by the same framework described above: toke code compiled to a native binary, <code>.tkt</code> templates, Markdown content, file-system routing. No Node.js, no Python, no nginx.</p>
+  <p><strong>You are looking at it.</strong> This website &mdash; tokelang.dev &mdash; is built with ooke and served by toke. The /docs pages you can read here were rendered by the framework described above; the binary that serves them is compiled from <code>main.tk</code> and uses <code>std.http</code> directly, not ooke. Either way it is toke all the way down: no Node.js, no Python, no nginx.</p>
 </div>
 
 <h2>Coming soon</h2>

@@ -409,7 +409,7 @@
 
 <div class="built-with">
   <h2>The sub-projects</h2>
-  <p class="section-desc" style="margin-bottom:1.5rem;">ooke, loke and moke are toke sub-projects, not separate products: ooke is toke's web framework and static site generator, and it serves tokelang.dev; loke is toke's local intelligence layer; moke is loke's data-analysis demo. All three are written in toke.</p>
+  <p class="section-desc" style="margin-bottom:1.5rem;">ooke, loke and moke are toke sub-projects, not separate products: ooke is toke's web framework and static site generator, and it builds tokelang.dev (a toke binary on std.http serves it); loke is toke's local intelligence layer; moke is loke's data-analysis demo. All three are written in toke.</p>
   <div class="built-card">
     <h3>ooke &mdash; toke's web framework</h3>
     <p>toke's web framework and static site generator. File-system routing, flat-file Markdown content, a template engine, and a native HTTP server. No Node.js, no Python, no nginx &mdash; one compiled binary serves every page you are reading, including this one.</p>

@@ -43,6 +43,19 @@ def wrap(text, width=WIDTH, indent=""):
     return body
 
 
+def wrap_fact(prefix, value, width=92):
+    """A canonical fact rendered as a wrapped bullet, continuation lines indented.
+
+    Facts come from canonical.json so that correcting one there reaches
+    llms.txt; nothing about a canonical fact should be typed in this file.
+    """
+    import textwrap
+    body = plain(value)
+    lines = textwrap.wrap(prefix + body, width=width,
+                          subsequent_indent="  ")
+    return "\n".join(lines)
+
+
 def bullet(label, text):
     """A '- Label. body' bullet, wrapped and hanging-indented by two spaces."""
     return textwrap.fill("- %s %s" % (label, text), WIDTH, subsequent_indent="  ",
@@ -105,9 +118,14 @@ def render(canon):
     w(bullet("Compiler:", canon["compiler"]["value"]))
     w("  Current version: %s. Licence %s." % (canon["compiler"]["version"], canon["compiler"]["licence"]))
     w("- Author: " + canon["author"]["value"])
-    w("- Source: github.com/karwalski/toke — eleven public repositories under github.com/karwalski,")
-    w("  plus two private ones.")
-    w("  The site is tokelang.dev, built and served by ooke.\n")
+    # 132.39: these three lines used to be hand-written here, including the
+    # claim that ooke serves tokelang.dev. That is false — main.tk imports
+    # std.http and never ooke; ooke only renders the /docs pages at build
+    # time — and because the sentence was typed into the generator rather
+    # than read from canonical.json, correcting the canonical fact did not
+    # change llms.txt, and `--check` stayed green either way. A generator
+    # that hardcodes the fact it claims to derive cannot detect drift in it.
+    w(wrap_fact("- Source: ", canon["source_code"]["value"]) + "\n")
 
     w("## A complete program\n")
     w("```toke")

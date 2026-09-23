@@ -105,7 +105,7 @@ is the sentence every downstream surface quotes.*
 
 **tkc**, the reference compiler: single-pass C99, zero dependencies beyond LLVM, native
 binaries for x86-64 and ARM64, and structured diagnostics with stable error codes,
-machine-parseable spans and a fix field. Current version: **toke 2.8.0** (`tkc --version`).
+machine-parseable spans and a fix field. Current version: **toke 3.0.0** (`tkc --version`).
 Apache-2.0.
 
 *Source: `src/main.c` (`VERSION`); `docs/about/repos.md`.*
@@ -200,7 +200,8 @@ site once — in this line — and nowhere else in new content.*
 ### Sub-projects (one line)
 
 > ooke, loke and moke are toke sub-projects, not separate products: ooke is toke's web
-> framework and static site generator, and it serves tokelang.dev; loke is toke's local
+> framework and static site generator, and it builds tokelang.dev (a toke binary on
+> std.http serves it); loke is toke's local
 > intelligence layer; moke is loke's data-analysis demo. All three are written in toke.
 
 *Source: `docs/progress.md`, Epic 132 acceptance criterion 4; `docs/about/ecosystem.md`.*
@@ -209,8 +210,8 @@ site once — in this line — and nowhere else in new content.*
 
 **Source.** github.com/karwalski/toke — compiler, specification and standard library,
 Apache-2.0. The project is eleven public repositories under github.com/karwalski, plus
-two private ones (`docs/about/repos.md`); the site is tokelang.dev, built and served by
-ooke.
+two private ones (`docs/about/repos.md`); the site is tokelang.dev, built with ooke
+and served by a toke binary on std.http.
 
 **Author.** Matthew Watt (github.com/karwalski), sole maintainer.
 

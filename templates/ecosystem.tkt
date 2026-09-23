@@ -7,7 +7,7 @@
   <p class="tagline">A layered stack of tools, frameworks, and runtimes — each named with the <code>*oke</code> convention. Four characters, always pronounceable, always part of the family.</p>
 </div>
 
-<p class="section-desc" style="max-width:860px;margin:0 auto 2rem;">ooke, loke and moke are toke sub-projects, not separate products: ooke is toke&rsquo;s web framework and static site generator, and it serves tokelang.dev; loke is toke&rsquo;s local intelligence layer; moke is loke&rsquo;s data-analysis demo. All three are written in toke.</p>
+<p class="section-desc" style="max-width:860px;margin:0 auto 2rem;">ooke, loke and moke are toke sub-projects, not separate products: ooke is toke&rsquo;s web framework and static site generator, and it builds tokelang.dev (a toke binary on std.http serves it); loke is toke&rsquo;s local intelligence layer; moke is loke&rsquo;s data-analysis demo. All three are written in toke.</p>
 
 <div class="ecosystem-grid">
 
@@ -24,7 +24,7 @@
   <div class="oke-card">
     <div class="oke-badge">web framework</div>
     <h2><a href="/ooke">ooke</a></h2>
-    <p>toke's web framework and static site generator, written in toke. File-system routing, flat-file content store, template engine with Markdown, build and serve modes. Zero dependencies. Ships as a single binary. Serves tokelang.dev in production.</p>
+    <p>toke's web framework and static site generator, written in toke. File-system routing, flat-file content store, template engine with Markdown, build and serve modes. Zero dependencies. Ships as a single binary. Builds tokelang.dev in production; a std.http binary serves it.</p>
     <div class="oke-links">
       <a href="/ooke">Project page</a>
       <a href="https://github.com/karwalski/ooke">GitHub</a>

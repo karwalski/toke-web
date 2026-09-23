@@ -1,6 +1,6 @@
 # toke-website
 
-This is the source code for [tokelang.dev](https://tokelang.dev), the official website for the toke programming language. It contains all documentation, tutorials, and reference material for toke. The site is built using ooke, toke's native web framework, and compiles to a single binary that serves the site over HTTPS.
+This is the source code for [tokelang.dev](https://tokelang.dev), the official website for the toke programming language. It contains all documentation, tutorials, and reference material for toke. The site's /docs pages are rendered by ooke, toke's native web framework, at build time. The site itself is served by a single binary compiled from `main.tk`, which uses `std.http` directly (not ooke) and terminates TLS itself.
 
 ## About toke
 
@@ -55,7 +55,7 @@ make run-http
 ## Content structure
 
 ```
-main.tk            # Server entry point (ooke app) — the only toke source that is built
+main.tk            # Server entry point (std.http, not ooke) — the only toke source that is built
 ooke.toml          # Site configuration
 templates/         # Page templates (.tkt). One route per file: index.tkt -> /,
                    # roadmap.tkt -> /roadmap, docs/index.tkt -> /docs
