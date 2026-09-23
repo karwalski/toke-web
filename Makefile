@@ -116,6 +116,29 @@ OOKE ?= $(HOME)/tk/toke-ooke/ooke-toke
 docs-content:
 	TOKE_REPO="$(TOKE_REPO)" ./scripts/sync_docs_content.sh
 
+# 132.56a — /library freshness. recount_library_tokens.py was wired into no
+# make target at all, so nothing covered the published program library; that is
+# how a snapshot dated 2026-06-26 stayed up through the whole v0.4 break with
+# 969 of its 1,460 programs no longer compiling (132.45).
+#
+# `ci` runs the REPORT mode, not the strict one, and deliberately so: 132.45
+# chose to label the stale snapshot rather than regenerate it, pending an owner
+# decision on migrating the v0.3 sources. Failing `ci` on a state that was
+# chosen on purpose would just get the gate switched off. Flip `ci` to
+# check-library-strict once 132.45 lands.
+#
+# Neither mode writes. The writing mode stays available as `library-recount`
+# and must NOT be put in `ci`: per 132.45 a blind re-run restamps the same
+# stale picture with today's date, which is worse than the stale file.
+check-library:
+	@python3 scripts/recount_library_tokens.py --report
+
+check-library-strict:
+	@python3 scripts/recount_library_tokens.py --check
+
+library-recount:
+	@python3 scripts/recount_library_tokens.py
+
 # 132.57a — `ci` must VERIFY that content/docs/ matches the toke repo, not
 # silently rewrite it to match. `docs-content` runs the sync, so having it in
 # `ci` meant a drifted tree was swept in and reported as success: when this was
@@ -178,7 +201,7 @@ check-facts:
 	python3 $(FACTS_SCRIPT) --sync-check $(CURDIR)/templates/index.tkt
 
 # Everything a change to this repo must pass before it is deployed.
-ci: check-toke check-site-examples check-facts check-roadmap check-llms check-docs-content build check-build-fresh check-routes
+ci: check-toke check-site-examples check-facts check-roadmap check-llms check-docs-content build check-build-fresh check-routes check-library
 	@echo ""; echo "=== CI checks passed ==="
 
 # --- Documentation checks (story 132.41) ---
@@ -225,4 +248,4 @@ deploy-content: ## Content-only deploy (templates, static, sites — no rebuild)
 deploy-auto: ## Auto-detect deploy mode based on git changes
 	./scripts/deploy.sh auto
 
-.PHONY: site-examples check-site-examples facts check-facts all run run-http dev certs clean roadmap check-roadmap llms check-llms ci check-toke build docs-content check-docs-content check-build-fresh check-routes deploy deploy-content deploy-auto
+.PHONY: site-examples check-site-examples facts check-facts all run run-http dev certs clean roadmap check-roadmap llms check-llms ci check-toke build docs-content check-docs-content check-library check-library-strict library-recount check-build-fresh check-routes deploy deploy-content deploy-auto

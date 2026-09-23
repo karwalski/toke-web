@@ -20,6 +20,32 @@ that is intentional transparency (see the methodology note on the page).
 import sys, json, os, glob, statistics
 from pathlib import Path
 
+# 132.56a — until this was added, nothing ran this script: it was wired into no
+# make target, so no gate covered /library freshness. That is how a snapshot
+# dated 2026-06-26 stayed published through the entire v0.4 language break with
+# 969 of its 1,460 programs no longer compiling (132.45).
+#
+# The gate is --check, NOT a re-run. Wiring the WRITING mode into ci would
+# repeat 132.57a exactly -- a gate that repairs its own input cannot fail. And
+# per 132.45 a blind regeneration would be actively worse than the stale file:
+# the generator recounts the same v0.3 sources without migrating them, so it
+# would reproduce the identical stale picture under a fresh date, turning a
+# visibly old snapshot into an apparently current one.
+#
+# So --check recomputes in memory and reports where the published JSON differs
+# from what the corpus sources say today. It writes nothing.
+# Two non-writing modes, because the drift here is currently KNOWN and
+# accepted: 132.45 deliberately labelled the stale snapshot rather than
+# regenerating it, pending an owner decision on migrating the v0.3 sources.
+# A hard failure in `ci` would block every run on a state that was chosen on
+# purpose, and a gate that blocks on an accepted state is a gate that gets
+# switched off.
+#   --report  print the drift, exit 0   (what `ci` runs today)
+#   --check   print the drift, exit 1   (flip `ci` to this once 132.45 lands)
+CHECK = "--check" in sys.argv
+REPORT = "--report" in sys.argv
+DRY = CHECK or REPORT
+
 ROOT = Path(__file__).resolve().parent.parent          # toke-website/
 LIB = ROOT / "static" / "library"
 CORPUS = ROOT.parent / "toke-test-programs" / "results"
@@ -71,6 +97,18 @@ def main():
     all_tr, all_tt, all_pt = [], [], []
     total = 0
     paired = 0
+    drift = []
+
+    def emit(path, obj):
+        """Write the JSON, or under --check compare it with what is published."""
+        text = json.dumps(obj, indent=2, ensure_ascii=False)
+        if not DRY:
+            with open(path, "w") as fh:
+                fh.write(text)
+            return
+        published = open(path).read()
+        if published != text:
+            drift.append(os.path.basename(str(path)))
     for cf in cat_files:
         d = json.load(open(cf))
         key = os.path.basename(cf)[:-5]
@@ -81,7 +119,7 @@ def main():
             if tr is not None:
                 paired += 1
                 trs.append(tr); tts.append(p["toke_tokens"]); pts.append(p["python_tokens"])
-        json.dump(d, open(cf, "w"), indent=2, ensure_ascii=False)
+        emit(cf, d)
         a = agg(trs)
         if key in cat_meta:
             cm = cat_meta[key]
@@ -109,13 +147,32 @@ def main():
     index["methodology"] = ("toke BPE v03 (16,384 vocab) vs cl100k_base, measured on the actual "
                             "solution.tk / solution.py sources. Corpus solutions are generated and "
                             "repaired for correctness, not hand-optimised for tokens.")
-    json.dump(index, open(LIB / "index.json", "w"), indent=2, ensure_ascii=False)
+    emit(LIB / "index.json", index)
     print(f"\nTOTAL {total} programs, {paired} paired.")
     print("Overall median BYTE ratio %s, avg %s. Cross-tokenizer ratios are "
           "not emitted (132.13 withdrawal, 132.45)."
           % (index.get("median_byte_ratio", "n/a"),
              index.get("avg_byte_ratio", "n/a")))
 
+    if DRY:
+        if drift:
+            print(f"\nrecount-library: {len(drift)} published file(s) do not match "
+                  f"the corpus sources they are derived from:", file=sys.stderr)
+            for f in sorted(drift):
+                print(f"  {f}", file=sys.stderr)
+            print("\nRegenerating is NOT automatically the fix -- see 132.45: the\n"
+                  "generator recounts v0.3 sources without migrating them, so a\n"
+                  "re-run restamps a stale picture with today's date. Decide which\n"
+                  "it is, then either migrate the sources or run without --check.",
+                  file=sys.stderr)
+            if REPORT:
+                print("\nrecount-library: REPORTED, not asserted -- this drift is known "
+                      "and accepted under 132.45.", file=sys.stderr)
+                return 0
+            return 1
+        print("\nrecount-library: every published library file matches its corpus sources.")
+    return 0
+
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
