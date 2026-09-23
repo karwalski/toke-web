@@ -41,6 +41,7 @@ Usage:
 Exit: 0 clean, 1 on a compile failure or a badge that disagrees with the compiler.
 """
 import html
+import json
 import os
 import re
 import subprocess
@@ -53,6 +54,10 @@ TKC = os.environ.get("TKC", os.path.expanduser("~/tk/toke/tkc"))
 TOKENS_TKT = os.path.join(ROOT, "templates", "tokens.tkt")
 TOKENIZER_TKT = os.path.join(ROOT, "templates", "tokenizer.tkt")
 INDEX_TKT = os.path.join(ROOT, "templates", "index.tkt")
+# The tokenizer /tokenizer actually fetches and encodes with, in the browser
+# (templates/tokenizer.tkt:419). The toke-lane counts must come from this file
+# and nothing else, exactly as the cl100k lanes come from tiktoken (132.47).
+TOKENIZER_JSON = os.path.join(ROOT, "static", "tokenizer_v03.json")
 
 OK_BADGE = '<span class="check-ok">&#10003;</span>'
 FAIL_BADGE = '<span class="check-fail">&#10007;</span>'
@@ -73,6 +78,13 @@ PRESET = re.compile(r"^\s*(?P<name>[a-z][a-z0-9]*):\s*\{\s*$\s*"
 # A home-page side-by-side panel: <div class="tv-tab-panel…" id="…">…</div></div>
 PANEL = re.compile(r'<div class="tv-tab-panel[^"]*" id="(?P<id>[a-z-]+)">'
                    r'(?P<body>.*?)</div>\s*</div>', re.S)
+
+# A home-page tab button: <button class="tv-tab-btn…" data-tab="see-c">C &mdash; 52 (cl100k)</button>
+# These sit in a sibling <div class="tv-tab-bar"> BEFORE the panels, so PANEL
+# never sees them — which is how see-c/see-java published 52/55 against their
+# own tiktoken-verified footers of 59/62 with CI green (132.49).
+TAB_BTN = re.compile(r'<button class="tv-tab-btn[^"]*" data-tab="(?P<id>[a-z-]+)">'
+                     r'(?P<label>[^<]*)</button>')
 
 # The program the /tokenizer page is already showing when it loads.
 TEXTAREA = re.compile(r'<textarea id="input"[^>]*>(?P<code>.*?)</textarea>', re.S)
@@ -153,6 +165,76 @@ def check_tokenizer_presets():
     return findings, checked
 
 
+def load_toke_bpe():
+    """The vocab+merges /tokenizer loads, and the encoder it runs on them.
+
+    templates/tokenizer.tkt:280-301 defines BPETokenizer in the page itself:
+    split to characters, then repeatedly merge the single lowest-ranked
+    adjacent pair (first occurrence only) until no pair is in the merge table.
+    That is NOT textbook BPE — the reference implementation merges every
+    occurrence of the best pair per pass — so the page and the `tokenizers`
+    library disagree on the same artefact. Since the claim on the page is
+    about what the page shows, this mirrors the page's algorithm exactly.
+    Verified identical to the real JS under node: same count, same ids.
+    """
+    try:
+        with open(TOKENIZER_JSON, encoding="utf-8") as fh:
+            data = json.load(fh)
+    except Exception:
+        return None
+    vocab = data["model"]["vocab"]
+    rank = {}
+    for i, m in enumerate(data["model"]["merges"]):
+        a, b = m.split(" ", 1) if isinstance(m, str) else (m[0], m[1])
+        rank[(a, b)] = i
+
+    def encode(text):
+        syms = list(text)
+        while len(syms) > 1:
+            best, at = None, -1
+            for i in range(len(syms) - 1):
+                r = rank.get((syms[i], syms[i + 1]))
+                if r is not None and (best is None or r < best):
+                    best, at = r, i
+            if at < 0:
+                break
+            syms[at:at + 2] = [syms[at] + syms[at + 1]]
+        return syms, [vocab.get(x, -1) for x in syms]
+
+    return encode
+
+
+def check_tab_labels():
+    """Every tab label must agree with the panel it switches to (132.49).
+
+    The label and the footer are two published statements of one number. The
+    footer is already derived — tiktoken for the cl100k lanes — so pinning the
+    label to the footer transitively pins it to tiktoken. Nothing here is
+    self-consistency: the footer it is compared against was re-derived above.
+    """
+    text = open(INDEX_TKT, encoding="utf-8").read()
+    footers = {}
+    for m in PANEL.finditer(text):
+        bm = re.search(r"(?P<n>\d+) tokens &mdash; ", m.group("body"))
+        if bm:
+            footers[m.group("id")] = int(bm.group("n"))
+
+    findings, checked = [], 0
+    for m in TAB_BTN.finditer(text):
+        pid, label = m.group("id"), m.group("label")
+        if pid not in footers:
+            continue
+        lm = re.search(r"&mdash;\s*(\d+)", label)
+        if not lm:
+            continue
+        checked += 1
+        stated = int(lm.group(1))
+        if stated != footers[pid]:
+            findings.append(("TAB", pid, "tab label says %d; the panel it "
+                             "opens publishes %d" % (stated, footers[pid])))
+    return findings, checked
+
+
 def check_home_panels():
     """The home page's side-by-side panels (story 132.44).
 
@@ -169,6 +251,7 @@ def check_home_panels():
         enc = tiktoken.get_encoding("cl100k_base")
     except Exception:
         enc = None
+    toke_enc = load_toke_bpe()
 
     for m in PANEL.finditer(text):
         pid, body = m.group("id"), m.group("body")
@@ -187,11 +270,35 @@ def check_home_panels():
             ok, diag = compiles(source)
             if not ok:
                 findings.append(("FAIL", pid, diag))
+            # 132.47: derive the toke number from the shipped tokenizer, the
+            # same way the cl100k lanes are derived from tiktoken. Before this,
+            # a toke panel was only checked span-count == stated-number, which
+            # is self-consistency: a hand-written pair of numbers that agree
+            # with each other pass it, and 24/24 did, for as long as the panel
+            # had existed. A count that UNDERSTATES is invisible to every other
+            # gate here, and it still has to reproduce.
+            if toke_enc is not None:
+                toks, ids = toke_enc(source)
+                if len(toks) != stated:
+                    findings.append(("COUNT", pid,
+                                     "badge says %d toke BPE v03 tokens; "
+                                     "static/tokenizer_v03.json encodes the "
+                                     "panel's own source as %d"
+                                     % (stated, len(toks))))
+                unknown = [t for t, i in zip(toks, ids) if i < 0]
+                if unknown:
+                    findings.append(("VOCAB", pid,
+                                     "%d rendered token(s) are not in the "
+                                     "16,384 vocab, e.g. %r"
+                                     % (len(unknown), unknown[:3])))
         elif enc is not None and "cl100k" in bm.group("lane"):
             n = len(enc.encode(source))
             if n != stated:
                 findings.append(("COUNT", pid, "badge says %d cl100k_base "
                                  "tokens; tiktoken counts %d" % (stated, n)))
+    if toke_enc is None:
+        print("note: static/tokenizer_v03.json missing — the toke-lane counts "
+              "on the home page were NOT re-derived")
     if enc is None:
         print("note: tiktoken not installed — the cl100k_base counts on the "
               "home page were not re-derived (pip install tiktoken)")
@@ -214,14 +321,17 @@ def main():
     findings += preset_findings
     home_findings, n_home = check_home_panels()
     findings += home_findings
+    tab_findings, n_tabs = check_tab_labels()
+    findings += tab_findings
 
     if write and new_text is not None:
         with open(TOKENS_TKT, "w", encoding="utf-8") as fh:
             fh.write(new_text)
         print("wrote badges into templates/tokens.tkt")
 
-    print("checked %d /tokens gallery programs, %d /tokenizer programs and "
-          "%d home-page panels" % (n_gallery, n_presets, n_home))
+    print("checked %d /tokens gallery programs, %d /tokenizer programs, "
+          "%d home-page panels and %d tab labels"
+          % (n_gallery, n_presets, n_home, n_tabs))
     if not findings:
         print("OK: every published toke program compiles, and every badge on "
               "/tokens was written from that compile result.")

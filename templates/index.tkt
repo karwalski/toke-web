@@ -55,8 +55,8 @@
   <div class="tv-tab-bar">
     <button class="tv-tab-btn active" data-tab="see-toke">toke &mdash; 24 (toke BPE v03)</button>
     <button class="tv-tab-btn" data-tab="see-python">Python &mdash; 41 (cl100k)</button>
-    <button class="tv-tab-btn" data-tab="see-c">C &mdash; 52 (cl100k)</button>
-    <button class="tv-tab-btn" data-tab="see-java">Java &mdash; 55 (cl100k)</button>
+    <button class="tv-tab-btn" data-tab="see-c">C &mdash; 59 (cl100k)</button>
+    <button class="tv-tab-btn" data-tab="see-java">Java &mdash; 62 (cl100k)</button>
   </div>
 
   <div class="tv-tab-panel active" id="see-toke">
