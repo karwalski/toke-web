@@ -116,6 +116,17 @@ OOKE ?= $(HOME)/tk/toke-ooke/ooke-toke
 docs-content:
 	TOKE_REPO="$(TOKE_REPO)" ./scripts/sync_docs_content.sh
 
+# 132.57a — `ci` must VERIFY that content/docs/ matches the toke repo, not
+# silently rewrite it to match. `docs-content` runs the sync, so having it in
+# `ci` meant a drifted tree was swept in and reported as success: when this was
+# found, content/docs/ was 34 paths adrift, and one of those 34 was a page
+# still publishing `toke 2.8.0` after v3.0.0 was tagged (132.54a). A gate that
+# repairs its own input cannot fail, which is this project's most-repeated
+# defect class. sync_docs_content.sh already had --check; `ci` was simply
+# calling the wrong mode.
+check-docs-content:
+	TOKE_REPO="$(TOKE_REPO)" ./scripts/sync_docs_content.sh --check
+
 # Fail if build/ is older than the sources it is derived from. The deploy runs
 # this after rebuilding, so a stale tree can never be published.
 check-build-fresh:
@@ -167,7 +178,7 @@ check-facts:
 	python3 $(FACTS_SCRIPT) --sync-check $(CURDIR)/templates/index.tkt
 
 # Everything a change to this repo must pass before it is deployed.
-ci: check-toke check-site-examples check-facts check-roadmap check-llms docs-content build check-build-fresh check-routes
+ci: check-toke check-site-examples check-facts check-roadmap check-llms check-docs-content build check-build-fresh check-routes
 	@echo ""; echo "=== CI checks passed ==="
 
 # --- Documentation checks (story 132.41) ---
@@ -214,4 +225,4 @@ deploy-content: ## Content-only deploy (templates, static, sites — no rebuild)
 deploy-auto: ## Auto-detect deploy mode based on git changes
 	./scripts/deploy.sh auto
 
-.PHONY: site-examples check-site-examples facts check-facts all run run-http dev certs clean roadmap check-roadmap llms check-llms ci check-toke build docs-content check-build-fresh check-routes deploy deploy-content deploy-auto
+.PHONY: site-examples check-site-examples facts check-facts all run run-http dev certs clean roadmap check-roadmap llms check-llms ci check-toke build docs-content check-docs-content check-build-fresh check-routes deploy deploy-content deploy-auto
