@@ -60,7 +60,20 @@ cp -R static build/static
 # hand-maintained — the recurring root cause in this workspace (127.80,
 # 127.85, 134.21, 136.1). The unhashed copy is kept alongside so any
 # reference this misses still resolves.
+#
+# 132.63 — a build does NOT edit templates/. The templates are tracked and are
+# deployed from the checkout (deploy.sh rsyncs templates/, and the server
+# renders them), so they must carry the hashed names — but until 132.63 this
+# block rewrote them in place with perl on every build, so `make build` could
+# dirty the tree and a deploy could ship a template edit nobody committed.
+# Now the build only CHECKS: when an asset's content hash no longer matches
+# the name the templates reference, it stops and names the command that
+# rewrites them (`make asset-hashes`, i.e. this script with --rehash), whose
+# diff is then reviewed and committed like any other change.
+REHASH=0
+[[ "${1:-}" == "--rehash" ]] && REHASH=1
 declare -a hashed=()
+declare -a stale_refs=()
 while IFS= read -r asset; do
   [[ -f "${asset#/}" ]] || continue
   src="${asset#/}"                      # static/css/style.css
@@ -69,9 +82,17 @@ while IFS= read -r asset; do
   dir="${src%/*}"                        # static/css
   newrel="${dir}/${stem}.${h}.${ext}"    # static/css/style.<hash>.css
   cp "${src}" "build/${newrel}"
-  # point every template at the hashed path
   for t in templates/*.tkt; do
-    perl -pi -e "s{\Q${asset}\E}{/${newrel}}g; s{/${dir}/${stem}\.[0-9a-f]{10}\.${ext}}{/${newrel}}g" "${t}"
+    # a reference to this asset, unhashed or under any hash but the current one
+    if grep -qE "(href|src)=\"(${asset//./\\.}|/${dir}/${stem}\.[0-9a-f]{10}\.${ext})\"" "${t}" &&
+       grep -oE "(href|src)=\"(${asset//./\\.}|/${dir}/${stem}\.[0-9a-f]{10}\.${ext})\"" "${t}" \
+         | grep -qvF "\"/${newrel}\""; then
+      if (( REHASH )); then
+        perl -pi -e "s{\Q${asset}\E}{/${newrel}}g; s{/${dir}/${stem}\.[0-9a-f]{10}\.${ext}}{/${newrel}}g" "${t}"
+      else
+        stale_refs+=("${t} -> /${newrel}")
+      fi
+    fi
   done
   hashed+=("${base} -> ${stem}.${h}.${ext}")
 done < <(grep -ohE '(href|src)="/static/[^"]+\.(css|js)"' templates/*.tkt \
@@ -81,6 +102,18 @@ done < <(grep -ohE '(href|src)="/static/[^"]+\.(css|js)"' templates/*.tkt \
 
 if (( ${#hashed[@]} )); then
   echo "    ${#hashed[@]} asset(s) content-hashed: ${hashed[*]}"
+fi
+if (( ${#stale_refs[@]} )); then
+  echo "ERROR: templates reference an out-of-date asset hash (132.63):" >&2
+  printf '         %s\n' "${stale_refs[@]}" >&2
+  echo "       The build does not edit tracked templates. Run:" >&2
+  echo "         make asset-hashes      # rewrites templates/*.tkt" >&2
+  echo "       then review and commit the template diff, and build again." >&2
+  exit 1
+fi
+if (( REHASH )); then
+  echo "    --rehash: templates/*.tkt now reference the current asset hashes; review and commit:"
+  git -C "${REPO_ROOT}" diff --stat -- templates || true
 fi
 
 # The library page fetches /library/<category>.json, not /static/library/...

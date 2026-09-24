@@ -105,11 +105,21 @@
   <p class="caveat"><strong>The lesson, stated plainly:</strong> passing a test is not evidence of correctness when the test can be gamed. That qualifies every &ldquo;% pass&rdquo; figure taken from the corpus, including the ones above. Sources: <code>docs/metrics-baseline.md</code> &sect; 2026-09 (stories 131.42, 131.47); <code>docs/spec/gate3-criteria.md</code> C3.</p>
 </div>
 
+<h2>Gate 1: not passed</h2>
+<div class="cards">
+  <div class="card">
+    <div class="n warn">58.8%</div>
+    <div class="k">Gate 1 functional Pass@1 &mdash; criterion &ge;60%, not met</div>
+    <div class="q">588 of 1,000 solutions generated &middot; held-out benchmark &middot; fine-tuned 7B, v0.3 syntax &middot; 2026-04-03</div>
+  </div>
+</div>
+<p class="caveat"><strong>The verdict.</strong> Gate 1 was recorded as a pass on 2026-04-03 on a published Pass@1 of 63.7%. That figure was 588/923: it dropped the 77 solutions that failed to compile out of the denominator. Corrected on 2026-09-19 to 588/1,000 = 58.8%, below the gate&rsquo;s own &ge;60% minimum, and re-decided on 2026-09-22: <strong>Gate 1 is recorded as not passed</strong>. The other criterion, a token reduction of more than 10%, stands as met; see the roadmap for the lane that figure was measured in. Figures: <code>docs/metrics-baseline.md</code>; decision: story 128.19; derivation: <a href="/roadmap#gate-1">roadmap</a>.</p>
+
 <!-- ================================================================ -->
 <h2>August 2026 was a data freeze, not a model gate</h2>
 
 <div class="box">
-  <p><strong>There is no August gate number, because no gate ran in August.</strong> Nothing was trained, fine-tuned or evaluated as a model: every training story is still planned and waiting on compute. The most recent &mdash; and only &mdash; trained-model evaluation on record remains Gate 2 of 2026-05-22, above.</p>
+  <p><strong>There is no August gate number, because no gate ran in August.</strong> Nothing was trained, fine-tuned or evaluated as a model: every training story is still planned and waiting on compute. The most recent trained-model evaluation on record remains Gate 2 of 2026-05-22, above; the only earlier one is Gate 1 of 2026-04-03, also above.</p>
   <p>What August delivered was a <strong>training-data quality freeze</strong>, on 2026-08-19:</p>
   <table>
     <thead><tr><th>Deliverable</th><th>Measured on</th><th>Result</th></tr></thead>

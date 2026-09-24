@@ -218,7 +218,9 @@ if [[ "${MODE}" == "content" ]]; then
   if [[ -n "${HEALTH}" ]]; then
     echo "    ${HEALTH}"
     echo ""
-    echo "Content deploy complete. Server is running (no restart needed)."
+    echo "Content deploy complete. Server is running; edited templates and build/"
+    echo "files are live now. A template ADDED or REMOVED, llms.txt, or certs/ only"
+    echo "take effect after a restart (specs/production-config.md, 132.55a)."
   else
     echo "    WARNING: Health check failed or server not running."
     echo "    Content was synced but the server may need a restart:"

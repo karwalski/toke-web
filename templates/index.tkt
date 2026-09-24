@@ -300,6 +300,7 @@
 .ms-label { display: block; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: #f5efe2; }
 .ms-status { display: inline-block; margin-top: 0.25rem; font-size: 0.64rem; letter-spacing: 0.05em; text-transform: uppercase; border-radius: 20px; padding: 0.12rem 0.55rem; font-weight: 700; }
 .ms-done .ms-status { background: #17322d; color: #6fc2b2; }
+.ms-notpassed .ms-status { background: #3a1d16; color: #e07a5f; }
 .ms-running .ms-status { background: #2a2317; color: #f0c04a; }
 .ms-gated .ms-status, .ms-planned .ms-status { background: #1f1a11; color: #9a9082; }
 .ms-body { color: #9a9082; font-size: 0.87rem; line-height: 1.55; }
@@ -325,13 +326,13 @@
 }
 </style>
 <div class="ms">
-  <div class="ms-row ms-done">
+  <div class="ms-row ms-notpassed">
     <div class="ms-key">
       <span class="ms-label">Gate 1</span>
-      <span class="ms-status">Done</span><br>
+      <span class="ms-status">Not passed</span><br>
       <span class="ms-date">2026-04-03</span>
     </div>
-    <div class="ms-body">Gate 1 verdict <strong>re-opened</strong>. A fine-tuned 7B reached <strong>58.8%</strong> Pass@1 on held-out tasks (588 of 1,000 generated) &mdash; below the &ge;60% criterion. The 63.7% published until 2026-09-19 was 588/923: it dropped the solutions that failed to compile out of the denominator. <a href="/roadmap#gate-1" style="color:#f0c04a;">How the correction works &rarr;</a></div>
+    <div class="ms-body">Gate 1 <strong>not passed</strong> (decided 2026-09-22). A fine-tuned 7B reached <strong>58.8%</strong> Pass@1 on held-out tasks (588 of 1,000 generated) &mdash; below the &ge;60% criterion. The 12.5% token-reduction criterion stands as met. The 63.7% published until 2026-09-19 was 588/923: it dropped the solutions that failed to compile out of the denominator. <a href="/roadmap#gate-1" style="color:#f0c04a;">How the correction works &rarr;</a></div>
   </div>
   <div class="ms-row ms-done">
     <div class="ms-key">

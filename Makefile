@@ -108,6 +108,13 @@ check-toke:
 build: ## Rebuild build/ from static/ and render /docs with ooke
 	./scripts/build_static.sh
 
+# 132.63 — the ONLY target that edits tracked templates: it points
+# templates/*.tkt at the current content-hashed asset names (134.27), then
+# builds. `make build` checks those names and stops if they are stale; it never
+# rewrites a tracked file. Review and commit the template diff this produces.
+asset-hashes:
+	./scripts/build_static.sh --rehash
+
 # content/docs/ is not authored here: it is the canonical documentation in the
 # toke repo, linked in per section. `make build` cannot render the ~195
 # /docs/<section>/<slug> pages without it (story 134.8).
@@ -265,4 +272,4 @@ deploy-content: ## Content-only deploy (templates, static, sites — no rebuild)
 deploy-auto: ## Auto-detect deploy mode based on git changes
 	./scripts/deploy.sh auto
 
-.PHONY: site-examples check-site-examples facts check-facts all run run-http dev certs clean roadmap check-roadmap llms check-llms ci check-toke build docs-content check-docs-content check-library check-library-strict library-recount check-build-fresh check-routes deploy deploy-content deploy-auto
+.PHONY: site-examples check-site-examples facts check-facts all run run-http dev certs clean roadmap check-roadmap llms check-llms ci check-toke build docs-content check-docs-content check-library check-library-strict library-recount check-build-fresh check-routes asset-hashes deploy deploy-content deploy-auto
