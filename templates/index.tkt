@@ -578,7 +578,7 @@
     <div class="cta-card">
       <h3>Install the compiler</h3>
       <p>Build from source. Homebrew is not published yet &mdash; the tap returns 404 today. Run your first program in under 5 minutes.</p>
-      <a href="/docs/getting-started/install">Installation guide &rarr;</a>
+      <a href="/docs/learn/install">Installation guide &rarr;</a>
     </div>
     <div class="cta-card">
       <h3>Try the tokenizer</h3>
