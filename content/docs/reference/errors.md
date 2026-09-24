@@ -428,16 +428,24 @@ Triggers E3011.
 | Severity | error           |
 | Stage    | name_resolution |
 
-A second declaration of the same name in the same scope. Shadowing across scope boundaries is allowed; duplicate declaration within one scope is not.
+A second declaration of the same name in the same scope, for a kind that may
+not be redeclared: `f=` functions, `t=` types, `i=` imports, consts and
+parameters.
+
+`let` and `let mut` are **excluded**: story 75.1.7 chose "allow same-scope
+and cross-scope shadowing", and §11.8.1 of the spec publishes
+`let x = 1; let x = x + 1;` as a valid program that yields 2. A re-binding
+`let` never triggers E3012; a cross-scope one raises the W3013 warning.
 <!-- skip-check -->
 ```text
 m=test;
-f=bad(): i64 { let x = 1; let x = 2; < x };
+t=box{n: i64};
+t=box{m: i64};
 ```
 
-Triggers E3012.
+Triggers E3012 on the second `t=box`.
 
-**Fix:** Use a different name for the second binding, or remove the duplicate.
+**Fix:** Use a different name for the second declaration, or remove the duplicate.
 
 ---
 
@@ -522,6 +530,23 @@ A field access expression (`expr.field`) references a field name that does not e
 The workhorse type error. Emitted for mismatched operands in binary expressions, mismatched function arguments, mismatched binding annotations, mismatched assignment sides, and mismatched return values.
 
 The diagnostic may include a fix suggestion such as `"cast RHS to i64 using 'as'"`.
+
+**Composite types print structurally** (127.54). `expected` and `got` render an
+array as `@(elem)`, a map as `@(key:value)` and a function as `func->ret`, so
+two types the checker treats as different always read as different. They used
+to print as the bare kind, which produced diagnostics like
+`type mismatch: expected 'array', got 'array'` — a mismatch reported between a
+type and itself, which an automated repair loop cannot act on. An element type
+the compiler has not established prints as `?`, as in `@(?)`.
+
+**`str + str` is not reported as a mismatch between `str` and `str`** (127.140).
+`+` is numeric-only in toke (ADR-0004), so the mismatch is between what the
+operator requires and what both operands are: `expected` is `a numeric type`
+and `got` is `str`. Its `fix` names the four canonical string-building
+patterns, and the argument order in each has been executed rather than read —
+`str.join` takes the **separator as its receiver**, so the call is
+`s.join(sep;arr)`. Until 127.140 this field recommended `s.join(arr;sep)`,
+which passes `--check`, builds, and exits 139.
 
 **Fix:** Ensure both sides of the operation have matching types. Use `as` for explicit casts.
 
@@ -614,7 +639,9 @@ Emitted when a call passes too few or too many arguments.
 
 Since 136.1 this also covers a call through an import alias, `alias.member(...)`. Such a call is judged against the *implementation* where the compiler knows the glue symbol — that is what decides whether the call corrupts — and against the `.tki` interface otherwise. The message names the function and, for the interface case, the declared signature, because a bare count does not say which side is wrong: an interface and its implementation can be the two things that disagree.
 
-**Fix:** Match the call to the declaration, or reconcile the interface with the implementation if they disagree.
+Since 127.1 it also covers a member call on a VALUE receiver, `recv.member(args)`. The receiver counts as the method's first argument, and the arity is read from the compiler's record of the native side — but only when every glue symbol that member may lower to agrees on it, since the symbol chosen depends on the receiver's kind (`contains` is a hash lookup on a map, a linear scan on an array and a substring search on a string). Where they disagree the compiler has no established arity and says nothing. Before this, surplus arguments were **discarded in silence** on the method path: `a.concat("A";"B")` on `a="xx"` compiled clean and returned `"xxA"`, and `a.len(1;2;3)` returned the length.
+
+**Fix:** Match the call to the declaration, or reconcile the interface with the implementation if they disagree. For a receiver method, the receiver is the first argument.
 
 ### E4027
 
@@ -628,6 +655,29 @@ Since 136.1 this also covers a call through an import alias, `alias.member(...)`
 Emitted for `alias.member(...)` when neither the imported module's `.tki` interface nor the runtime declares `member`. Before 136.1 such a call was lowered to a symbol name anyway and surfaced as an E9003 link failure naming a mangled symbol, with no file and no line.
 
 The check is deliberately narrow. A `std.*` member that the hand-written interface omits but the runtime does provide (`str.equals`, `test.eq`, `json.getobj`, …) is accepted: the call works and the interface is the incomplete side. A member of a module whose `.tki` is machine-generated is enforced in full, because `--emit-interface` writes one record per top-level `f=` and that export list is complete by construction.
+
+E4036 is the receiver-call form of the same question: `recv.member(...)` where `recv` is a value rather than an import alias.
+
+**An alias that collides with a type the module exports is still checked**
+(136.63). The check skips a call whose base names a module-scope function,
+const or binding, because then the identifier is not the module. A *type* of
+that name is not a skip reason: toke has no value of a type's name (see
+E4033), so `alias.member(...)` in call position must be the import. Treating a
+type as a shadow silently disabled this whole check for any module exporting a
+type named like its own alias — the most natural alias a user would pick.
+`i=canvas:std.canvas;` plus `canvas.nosuchmemberatall(c)` passed `--check` and
+died at the linker, while the identical program aliased `cv` was diagnosed
+correctly.
+
+**The `fix` names a candidate when there is one** (127.122). When the misspelled
+member is within edit distance 2 of a real export of that same alias, and
+exactly one export is that close, the fix reads `did you mean 'str.concat'?`
+instead of the generic text. All four guards matter and are deliberate: the
+candidate is always a recorded export rather than a name invented from the
+spelling; a tie between two equally close exports means the compiler does not
+know which was meant and keeps the generic text; and names shorter than four
+characters are not scored at all. AGENTS.md §3.1 forbids a `fix` that is a
+guess.
 
 **Fix:** Check the module's interface for the correct member name.
 
@@ -644,16 +694,62 @@ Emitted when a `\(expr)` interpolates an array, struct, or map. Convert it to a 
 
 ### E4033
 
-**Member access on a type name rather than a value**
+**A type name used where a value is required**
 
 | Field    | Value |
 |----------|-------|
 | Severity | error |
 | Stage    | typecheck |
 
-Emitted for `Type.member` where `Type` names a struct type rather than an instance of it. There is no value to take a field of, so the expression has no meaning. Before 127.90 it type-checked and lowered to a field load off a null base, producing a plausible-looking `0`.
+Emitted when a declared type's name stands in a value position. Three spellings
+reach it, from three stages:
 
-**Fix:** Bind an instance first and take the field of that.
+- **`$Type.member`** (typecheck, 127.90) — member access on a type rather than
+  an instance. There is no value to take a field of, so the expression has no
+  meaning. Before 127.90 it type-checked and lowered to a field load off a null
+  base, producing a plausible-looking `0`.
+- **a bare `Type` in any value position** (name resolution, 137.4) — a call
+  argument, the right-hand side of a `let`, an operand, a condition, a
+  return value, or a field-access base. toke keeps type names and value names
+  in one namespace, and `resolve_ident` used to accept whatever the scope
+  lookup returned without inspecting its kind, so these resolved clean,
+  type-checked clean, and failed at clang as `use of undefined value '%Type'`
+  — naming an LLVM temporary rather than the program. In the 137 migration
+  this hid a genuinely missing parameter and three functions referencing a
+  binding declared nowhere.
+- **`keyword.member(...)` on a PRIMITIVE type keyword** (typecheck, 127.135) —
+  `str`, `i64`, `u64`, `f64`, `bool` and `void`, when no module is imported
+  under that alias and no binding of that name is in scope. The bullet above
+  keys on a user `DECL_TYPE`; the primitives are seeded as `DECL_PREDEFINED`
+  and so were exempt from it. The commonest way in is a forgotten import:
+  `str.concat("a";"b")` without `i=str:std.str;` passed `--check` **and**
+  `--lint` in silence and then failed at clang as `use of undefined value
+  '%str'`, naming a temporary `.ll` file the author never saw. For `str` the
+  `fix` names the import, because that repair is deterministic. For the
+  others no module of that name exists, so the field is absent (§3.1).
+
+  Note the shape of the old hole: whether a diagnostic appeared depended on
+  whether the member was **real**. `str.nosuchmember(...)` already produced a
+  clean `E9004` naming the missing import, so the one case with no diagnostic
+  at all was the correct-looking mistake — calling a real member of a module
+  you forgot to import.
+
+A name that is not also a type is still `E3011` (undefined identifier), and
+the legitimate bare-type positions — `as Type` casts, `$Type{…}` struct
+literals, `:Type` annotations, sum-type variant constructors and module
+aliases — are unaffected.
+
+<!-- skip-check -->
+```text
+m=test;
+t=thing{n:i64};
+f=take(v:i64):i64{<v};
+f=main():i64{ <take(thing) };
+```
+
+Triggers E4033 on `thing`.
+
+**Fix:** Bind an instance of that type and use the binding.
 
 ### E4034
 
@@ -670,6 +766,104 @@ Codegen used to answer both cases with a guess that looked like data: `struct_fi
 
 No `fix` is supplied: the obvious instruction — annotate the binding — is not correct for every shape.
 
+### E4035
+
+**Map has no property with that name**
+
+| Field    | Value |
+|----------|-------|
+| Severity | error |
+| Stage    | typecheck (also codegen) |
+
+Emitted for `m.name` on a map where `name` is not one of the two map
+properties, `len` and `keys`. A map has no fields, so there is no layout to
+resolve `name` against.
+
+Before 127.106 the checker returned "unknown" for such an access and said
+nothing, after which lowering took the struct-field path with no layout
+established, `struct_field_index()` returned its `0` fallback, and the program
+loaded word 0 of the map's runtime block and printed it. `m.values` — the
+spelling that was reported — came out as a pointer rendered as a decimal at
+exit 0 with no diagnostic; `m.size`, `m.count`, `m.entries`, `m.items` and any
+misspelling were the same undefined read. The value that a given build
+happened to print was not stable, which is why the earlier record of this
+defect as a loud runtime trap and the later record of it as silent wrong output
+are two observations of one bug rather than a regression between them.
+
+The checker reports it, so `tkc --check` sees it. Lowering reports it too, for
+a map whose type the checker cannot recover — `let m2 = m.set(k;v)` is typed by
+the backend's map tag and by nothing in the checker.
+
+No `fix` is supplied. There is no deterministic repair: `values` has no method
+form and no runtime support, so "add the parentheses" would be wrong — the
+lesson of 131.78 — and a did-you-mean for an arbitrary misspelling is a guess.
+The two property names that do exist are reported in `expected`.
+
+Note that `m.values()`, the CALL form, is E4036 rather than this diagnostic:
+it is a member call, and the receiver dispatch is what refuses it.
+
+### E4036
+
+**Receiver has no method with that name**
+
+| Field    | Value |
+|----------|-------|
+| Severity | error |
+| Stage    | typecheck |
+
+Emitted for `recv.member(args)` where `recv` is a value rather than an import
+alias and `member` is not a member the receiver dispatch lowers.
+
+Until 127.115 this was checked by nothing at all. The type checker reads a
+call's callee name from the callee node's own token; for a field-access callee
+that token is the `.`, so the module-scope lookup failed, the call fell into
+the unresolved branch, and both checks that live there are gated on the base
+resolving to an imported module — which it cannot, because the base is a
+value. Code generation then emitted a call to a **bare, unmangled** symbol
+named after the member. A toke function is mangled `<module>_<name>`, so that
+symbol never existed:
+
+```
+f=pair(a:str;b:str):str{ ... };
+let y = x.pair("A");        (* correct arity *)
+```
+
+passed `tkc --check` at exit 0 and then failed at `ld` with `Undefined
+symbols: "_pair"`. So did `x.pair()` and `x.pair("A";"B")` — the arity was
+never the point, because the receiver path does not resolve user functions at
+all. toke has no uniform-function-call syntax: `x.pair(a)` is not `pair(x;a)`.
+The same fallback swallowed `a.nosuch()` on an array, `s.nosuch()` on a
+string, `m.values()` on a map, `p.nosuch()` on a user-declared struct, and any
+member call on a receiver the checker could not type.
+
+The set of members the receiver dispatch lowers is a table in the code
+generator, and it is the gate the emitter itself dispatches on, so the checker
+and the emitter cannot disagree about which member names exist.
+
+The `fix` is **conditional** (127.153). In general there is no deterministic
+repair: the member may be a misspelling, a method that exists on no receiver
+type, or a function the author meant to call directly, and a did-you-mean for
+an arbitrary name is a guess (the 127.106 / 131.78 lesson). In those cases the
+field is absent, and when a function of that name is declared in the module
+the message says so — a statement of fact, not an instruction.
+
+One case is not a guess: a module function of that name whose **declared arity
+equals the receiver plus the supplied arguments**. The direct call is then
+guaranteed well-formed, the receiver is a genuine candidate first argument,
+and toke admits no other transformation — so the field is filled, and it
+states the two numbers that justify it so a consumer can check the reasoning
+rather than trust it. Where the arities disagree the rewrite would not
+compile, and the field stays absent.
+
+Note what is still refused: filling this field *unconditionally* with
+`pair(x;"A")`. The compiler knows such a function exists; it does not know it
+was meant. toke has no uniform-function-call syntax, so `x.pair(a)` and
+`pair(x;a)` share a name and nothing else.
+
+Related: E4027 is the module-member form of the same question
+(`str.nosuchfn(...)`), and E4026 is raised instead when the member does exist
+and the call disagrees with its arity.
+
 ### E4070
 
 **Assignment to immutable binding**
@@ -680,6 +874,70 @@ No `fix` is supplied: the obvious instruction — annotate the binding — is no
 | Stage    | typecheck |
 
 Emitted when code assigns to a `let` binding that was not declared mutable.
+
+### E4071
+
+**Function body ends in a value expression with no `<`**
+
+| Field    | Value |
+|----------|-------|
+| Severity | error |
+| Stage    | typecheck |
+
+`<` is toke's return operator. A function body that ends in a *value*
+expression without one computes the value, discards it, and returns `0` —
+so this is a hard error, not an implicit tail return.
+
+<!-- skip-check -->
+```text
+m=test;
+f=arith(): i64 { 1+2+3 };
+```
+
+Until 127.113 that program compiled clean, `--lint` said nothing, and
+`arith()` returned **0** while `<1+2+3` returned **6**. The IR showed the
+shape exactly: the exit block loaded the computed value and then threw it
+away — `%t16 = load i64, i64* %t0` followed by `ret i64 0 ; implicit return`.
+The same held for `if(x>0){7}el{9}`, for a tail `mt`, and for `str`. 56.10.2
+diagnosed this in 2026-05 for pointers ("all content items stored as NULL
+pointers"), worked around it at the call site with `let r=...; <r`, and
+logged the codegen bug; this is the diagnostic that should have been written
+then.
+
+The repair is to say what the function returns:
+
+<!-- skip-check -->
+```text
+m=test;
+f=arith(): i64 { <1+2+3 };
+f=tailif(x: i64): i64 { if(x>0){<7}el{<9} };
+```
+
+**Scope.** The check fires only on a discarded *value*, where the silent `0`
+is a wrong answer:
+
+* the function's return type is neither `void` nor unresolved, **and**
+* the last statement of the body is an expression statement, a complete
+  `if`/`el`, or a `mt`, **and**
+* that statement evaluates to a value — either a type the checker resolved,
+  or an expression whose only possible effect is to compute one.
+
+A tail call returning `void` (`io.println(..)`) discards nothing and is not
+this diagnostic. Neither is a non-void function that simply never returns at
+all; that is a separate defect.
+
+**`fix` field.** Populated only where prefixing `<` is the sole reading the
+source can have: arithmetic, a literal, a binding, a field or index read, a
+cast, or a composite literal. It is deliberately **absent** for
+
+* a **call** — the result may be discarded on purpose, and `<` would change
+  behaviour rather than restore it;
+* a **`!` propagation** — it reads as error handling, not a return value;
+* an **`if`/`mt`** — the repair is a `<` inside each arm, not one in front of
+  the construct, and the two are not interchangeable.
+
+Per `AGENTS.md` §3.1 an incorrect `fix` breaks the automated repair loop, and
+131.78 is the standing example of an "obvious" suggested fix that was wrong.
 
 ## Arena Errors (E5xxx)
 
@@ -757,6 +1015,26 @@ The clang/linker sub-process returned a non-zero exit status.
 
 A `module.fn()` call refers to a stdlib module that was not imported.
 
+### E9005
+
+**Match on a value whose sum type is not established**
+
+| Field    | Value |
+|----------|-------|
+| Severity | error |
+| Stage    | codegen |
+
+A `mt` of three or more arms was written over a value whose sum type the
+compiler could not determine. Two arms lower to the result-match form
+(`$ok`/`$err`), which dispatches once on the error flag; three or more arms
+need the value's sum type so the tag can be switched on. Annotate the matched
+value with its sum type, or match it inside a function that takes it as a
+typed parameter.
+
+Before story 137.2 this shape emitted LLVM IR with a duplicated basic-block
+label and was rejected by clang with "Terminator found in the middle of a
+basic block!" — a backend crash rather than a diagnostic.
+
 ### E9010
 
 **Compiler limit exceeded**
@@ -790,7 +1068,7 @@ The compiler could not write the `.tkir` artifact.
 
 The compiler could not read a `.tkir` artifact.
 
-## Semantic Warnings (W2xxx / W5xxx / W8xxx)
+## Semantic Warnings (W2xxx / W3xxx / W5xxx / W8xxx)
 
 Non-fatal diagnostics from later stages.
 
@@ -837,6 +1115,40 @@ A construct idiomatic to another language was detected.
 | Stage    | parse |
 
 A module name was normalised from a non-canonical capitalisation.
+
+### W3013
+
+**`let` shadows a binding in an enclosing scope**
+
+| Field    | Value           |
+|----------|-----------------|
+| Severity | warning         |
+| Stage    | name_resolution |
+
+A `let` (or `let mut`, or a `lp` loop variable) introduces a name that is
+already bound by an enclosing scope — an outer block, or a parameter.
+
+This is **legal**: story 75.1.7 chose "allow same-scope and cross-scope
+shadowing", and §11.8.1 of the spec publishes `let x = x + 1;` as a valid
+program. The warning exists because the same source also reads exactly like
+an assignment that it is not: a `let x = …` inside an `if` or a `lp` body
+declares a *second* x, and the outer one is unchanged when the block ends.
+
+Same-scope shadowing — the spec's own example, where the two bindings are
+adjacent and visibly sequential — does **not** warn.
+
+<!-- skip-check -->
+```text
+m=test;
+f=bad(n: i64): i64 { let x = 1; if(n>0){ let x = 2; }; < x };
+```
+
+Triggers W3013 on the inner `let`; the function returns 1.
+
+**Fix:** If an assignment was meant, declare the outer binding `let x =
+mut.1` and write `x = 2`. If a distinct binding was meant, rename it.
+
+---
 
 ### W5001
 
