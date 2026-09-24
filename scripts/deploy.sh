@@ -61,8 +61,12 @@ TOKE_ROOT="${TOKE_ROOT:-$(cd "${REPO_ROOT}/../toke" && pwd)}"
 MODE="${1:-auto}"
 
 # ── Auto-detect mode ─────────────────────────────────────────────────────
-# Files that require a binary rebuild when changed:
-BINARY_PATTERNS="main\.tk$|pages/.*\.tk$"
+# Files that require a binary rebuild when changed. Only main.tk is compiled
+# into the server: `full` mode emits IR from main.tk alone and resolves its
+# stdlib via `tkc --emit-deps main.tk`, and main.tk imports only std.* modules.
+# pages/*.tk are rendered by `ooke build` (scripts/build_static.sh), which
+# content mode already runs, so they are content, not binary triggers (132.33).
+BINARY_PATTERNS="^main\.tk$"
 
 detect_mode() {
   cd "${REPO_ROOT}"
