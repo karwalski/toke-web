@@ -4,7 +4,7 @@
 
 <div class="page-hero">
   <h1>ooke</h1>
-  <p class="tagline">A CMS and web framework built on the toke language. File-system routing, flat-file and SQLite content stores, template engine with Markdown, island architecture. Zero runtime dependencies. Ships as a single native binary.</p>
+  <p class="tagline">A CMS and web framework built on the toke language. File-system routing, a flat-file content store, template engine with Markdown, island architecture. Ships as a single native binary that links OpenSSL, zlib and SQLite as shared libraries.</p>
   <div class="hero-actions">
     <a href="https://github.com/karwalski/ooke" class="btn btn-primary">GitHub</a>
     <a href="/ecosystem" class="btn btn-secondary">← Ecosystem</a>
@@ -12,7 +12,7 @@
 </div>
 
 <div class="stat-row">
-  <div class="stat"><div class="num">0</div><div class="lbl">Runtime deps</div></div>
+  <div class="stat"><div class="num">3</div><div class="lbl">Shared libraries: OpenSSL, zlib, SQLite</div></div>
   <div class="stat"><div class="num">1</div><div class="lbl">Binary</div></div>
   <div class="stat"><div class="num">3</div><div class="lbl">Modes: build+serve+repair</div></div>
 </div>
@@ -64,8 +64,8 @@ ooke build
     <p>Templates use <code>&#123;= expr =&#125;</code> for expressions, <code>&#123;! directive !&#125;</code> for layout/blocks/partials. Layout inheritance, named blocks, partials, and a Markdown filter built in.</p>
   </div>
   <div class="feature">
-    <h3>Flat-file and SQLite content stores</h3>
-    <p>Content lives as <code>.md</code> or <code>.json</code> files with validated frontmatter. Set <code>store.backend = "sqlite"</code> in <code>ooke.toml</code> for a SQLite-backed store with automatic schema migration. Same query API either way: <code>store.all("posts")</code>, <code>store.slug("posts"; "hello-world")</code>.</p>
+    <h3>Flat-file content store</h3>
+    <p>Content lives as <code>.md</code> or <code>.json</code> files with validated frontmatter. The store module also has a SQLite reader, but nothing selects it yet: <code>ooke build</code> and <code>ooke serve</code> both use the flat-file store, and the <code>[store] backend</code> key in <code>ooke.toml</code> is read and then ignored.</p>
   </div>
   <div class="feature">
     <h3>Content validation with models</h3>
@@ -80,8 +80,8 @@ ooke build
     <p><code>ooke build</code> renders static HTML with CSS inlining and minification. <code>ooke serve</code> runs a live HTTP server with an in-memory page cache. TLS supported. Worker count auto-detected from CPU cores (<code>workers=0</code> in <code>ooke.toml</code>).</p>
   </div>
   <div class="feature">
-    <h3>Error and access logging</h3>
-    <p>Separate <code>error.log</code> with automatic rotation. Access logs in NDJSON format for easy ingestion into log aggregators. Structured fields for method, path, status, and timing.</p>
+    <h3>Logging</h3>
+    <p>ooke writes its own startup and routing messages to stderr as NDJSON, through <code>std.log</code>. The <code>[log]</code> section of <code>ooke.toml</code> (<code>accessformat</code>, default <code>combined</code>; <code>maxlines</code>; <code>maxagedays</code>) is read but not yet applied: <code>ooke serve</code> does not open an access log or a separate error log.</p>
   </div>
   <div class="feature">
     <h3>Custom error pages</h3>
@@ -93,11 +93,11 @@ ooke build
   </div>
   <div class="feature">
     <h3>Content type scaffolding</h3>
-    <p><code>ooke gen type</code>, <code>ooke gen page</code>, <code>ooke gen api</code>, <code>ooke gen island</code> scaffold common patterns instantly. toke's 55-char syntax means an LLM generates a complete ooke site in fewer tokens with higher correctness.</p>
+    <p><code>ooke gen type</code>, <code>ooke gen page</code>, <code>ooke gen api</code>, <code>ooke gen island</code> scaffold common patterns instantly.</p>
   </div>
   <div class="feature">
     <h3>Native binary output</h3>
-    <p>ooke itself is a compiled C binary linked against the toke stdlib. No interpreter, no VM, no GC. Runs on macOS, Linux, and anything clang can target.</p>
+    <p>ooke is written in toke. <code>tkc</code> compiles each module through LLVM, and the objects are linked with the toke stdlib&rsquo;s C runtime into one native binary. No interpreter, no VM, no GC. Runs on macOS, Linux, and anything clang can target.</p>
   </div>
 </div>
 
@@ -117,19 +117,6 @@ ooke build
 <span class="cm">&#123;! end !&#125;</span>
 </div>
 
-<h2>Route handler</h2>
-<div class="code-block">
-<span class="kw">m</span>=page.blog.slug;
-<span class="kw">i</span>=http:std.http;
-<span class="kw">i</span>=tpl:ooke.template;
-<span class="kw">i</span>=store:ooke.store;
-
-<span class="kw">f</span>=<span class="fn">get</span>(req:http.$req):http.$res{
-  let post=store.<span class="fn">slug</span>(<span class="str">"posts"</span>;req.<span class="fn">param</span>(<span class="str">"slug"</span>));
-  <span class="kw">&lt;</span>tpl.<span class="fn">renderfile</span>(<span class="str">"templates/blog/post.tkt"</span>;post);
-};
-</div>
-
 <h2>Dynamic routes with full HTTP methods</h2>
 <div class="code-block">
 <span class="kw">i</span>=http:std.http;
@@ -140,18 +127,6 @@ http.<span class="fn">get</span>(<span class="str">"/api/posts"</span>;<span cla
 http.<span class="fn">post</span>(<span class="str">"/api/posts"</span>;<span class="fn">createpost</span>);
 http.<span class="fn">put</span>(<span class="str">"/api/posts/:id"</span>;<span class="fn">updatepost</span>);
 http.<span class="fn">delete</span>(<span class="str">"/api/posts/:id"</span>;<span class="fn">deletepost</span>);
-</div>
-
-<h2>SQLite store</h2>
-<div class="code-block">
-<span class="cm"># ooke.toml</span>
-[store]
-backend = <span class="str">"sqlite"</span>
-path    = <span class="str">"data/content.db"</span>
-
-<span class="cm"># Same query API — code doesn't change</span>
-let posts = store.<span class="fn">all</span>(<span class="str">"posts"</span>);
-let post  = store.<span class="fn">slug</span>(<span class="str">"posts"</span>;<span class="str">"hello-world"</span>);
 </div>
 
 <h2>Content model</h2>
