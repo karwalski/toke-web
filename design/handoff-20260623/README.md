@@ -136,7 +136,7 @@ Approved descriptor line: **"A language built for AI."** Brand line: **"Write le
 These weren't designed as final pages — recreate the *system* across the standard marketing/docs structure. Apply the tokens above.
 - **Home / hero** — dark espresso hero, big coin + wordmark, "A language built for AI." descriptor, a gold / admit-one / version pill trio (the −42% exemplar is withdrawn), primary + secondary CTA, a live code block. Whether it can show a "token saving" at all depends on what `metrics-baseline.md` supports on the day.
 - **Why toke / token economics** — the "token is currency" explainer, before/after token counts (Python `return 0;` vs `<0;`). ~~the 40–75% stat~~ — withdrawn, and deliberately left as a hole: this page has no headline figure until `metrics-baseline.md` carries one.
-- **Docs** — light cream surface, mono labels/eyebrows in gold-deep, three-colour code blocks, `.tki` interface contracts, stdlib (30+ modules).
+- **Docs** — light cream surface, mono labels/eyebrows in gold-deep, three-colour code blocks, `.tki` interface contracts, stdlib reference (one page per module).
 - **Playground / API** — console.tokelang.dev style: API key, free tier (1,000 tokens / 6 hrs), `api.tokelang.dev/v1/generate` example; `toke-7b-gate2` model.
 
 ## Files in this bundle
