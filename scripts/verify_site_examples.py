@@ -52,7 +52,7 @@ while this check only ever ran on a push to THIS repository. The toke repo's
 `make check-site-compile`, its CI and its release workflow run this mode
 against the compiler they just built. It asserts the compile half only,
 because the count half is red on purpose pending the canonical-tokenizer
-decision (132.47/132.52a) and a compiler change cannot fix or break a count;
+decision (132.64/132.52a) and a compiler change cannot fix or break a count;
 the count findings are still printed, as "Reported, not asserted".
 """
 import html
@@ -71,7 +71,7 @@ TOKENIZER_TKT = os.path.join(ROOT, "templates", "tokenizer.tkt")
 INDEX_TKT = os.path.join(ROOT, "templates", "index.tkt")
 # The tokenizer /tokenizer actually fetches and encodes with, in the browser
 # (templates/tokenizer.tkt:419). The toke-lane counts must come from this file
-# and nothing else, exactly as the cl100k lanes come from tiktoken (132.47).
+# and nothing else, exactly as the cl100k lanes come from tiktoken (132.64).
 TOKENIZER_JSON = os.path.join(ROOT, "static", "tokenizer_v03.json")
 
 OK_BADGE = '<span class="check-ok">&#10003;</span>'
@@ -253,7 +253,7 @@ def check_tab_labels():
 def report_tokens_page_counts():
     """REPORTED, NOT ASSERTED: what /tokens publishes vs what the tokenizer says.
 
-    Story 132.48. Each gallery lang-label reads "toke &mdash; N tokens (toke
+    Story 132.65. Each gallery lang-label reads "toke &mdash; N tokens (toke
     BPE v03)". None of those N reproduce. The page is internally consistent —
     N equals the number of rendered spans — but the segmentation was not
     produced by any tokenizer artefact in this project: the per-token ids are
@@ -290,7 +290,7 @@ def report_tokens_page_counts():
         if derived != stated:
             drift += 1
     if drift:
-        lines.append("Reported, not asserted (132.48): %d of the /tokens toke "
+        lines.append("Reported, not asserted (132.65): %d of the /tokens toke "
                      "panels publish a count that static/tokenizer_v03.json "
                      "does not reproduce. Not failed here: 116.13-H4 requires "
                      "the markup be regenerated, not re-numbered, and the "
@@ -333,7 +333,7 @@ def check_home_panels():
             ok, diag = compiles(source)
             if not ok:
                 findings.append(("FAIL", pid, diag))
-            # 132.47: derive the toke number from the shipped tokenizer, the
+            # 132.64: derive the toke number from the shipped tokenizer, the
             # same way the cl100k lanes are derived from tiktoken. Before this,
             # a toke panel was only checked span-count == stated-number, which
             # is self-consistency: a hand-written pair of numbers that agree
