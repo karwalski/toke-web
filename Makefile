@@ -158,11 +158,10 @@ check-docs-content:
 	TOKE_REPO="$(TOKE_REPO)" ./scripts/sync_docs_content.sh --check
 
 # 134.32 — the same comparison, but drift is a warning (exit 0); a missing
-# section or source still fails. This is what the GitHub workflow runs while
-# 132.51a's known ~30-file drift awaits owner review, so the drift is printed on
-# every run instead of the job being red on a deliberate state. `ci` above keeps
-# the strict check (132.57a). Point the workflow at check-docs-content when
-# 132.51a lands.
+# section or source still fails. The GitHub workflow ran this while 132.51a's
+# ~30-file drift awaited review; 132.51a synced and reviewed it and pointed the
+# workflow at the strict check-docs-content above. Kept for a local look at the
+# drift list without a red exit; no gate runs it.
 check-docs-content-report:
 	TOKE_REPO="$(TOKE_REPO)" ./scripts/sync_docs_content.sh --report
 

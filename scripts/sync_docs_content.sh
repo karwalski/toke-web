@@ -36,12 +36,12 @@
 #     ./scripts/sync_docs_content.sh --check           # exit 1 on drift
 #     ./scripts/sync_docs_content.sh --report          # drift is a WARNING, exit 0
 #
-#   --report exists for one reason, story 132.51a: content/docs/ is known to be
-#   ~30 files adrift pending an owner review, so the strict check is red on
-#   purpose. The GitHub workflow runs --report so that drift is visible on every
-#   run without the job being red for a state chosen deliberately (134.32).
-#   Only DRIFT is downgraded — a missing section or missing source still exits
-#   1. Switch the workflow to --check when 132.51a lands.
+#   --report was added for story 132.51a, while content/docs/ sat ~30 files
+#   adrift pending review and the GitHub workflow ran it so the drift was
+#   visible without a red job (134.32). 132.51a synced and reviewed that
+#   backlog and switched the workflow to --check; --report stays as a local
+#   listing and no gate runs it. Only DRIFT is downgraded — a missing section
+#   or missing source still exits 1.
 #
 # Without the toke repository available, both modes fall back to verifying the
 # tracked copy is present and complete, and PASS — so `make ci` and `make build`
@@ -155,11 +155,11 @@ if [[ "${MODE}" == "check" || "${MODE}" == "report" ]]; then
   fi
   if [[ "${MODE}" == "report" ]]; then
     ndrift="$({ diff -rq "${staging}" content/docs 2>&1 || true; } | wc -l | tr -d ' ')"
-    echo "WARNING (report mode, story 132.51a): content/docs/ has drifted from ${TOKE_REPO}/docs — ${ndrift} path(s):" >&2
+    echo "WARNING (report mode): content/docs/ has drifted from ${TOKE_REPO}/docs — ${ndrift} path(s):" >&2
     { diff -rq "${staging}" content/docs 2>&1 || true; } | sed "s#${staging}#<toke docs>#; s#^#       #" >&2
     [[ -n "${GITHUB_ACTIONS:-}" ]] && \
-      echo "::warning title=content/docs drift (132.51a)::content/docs/ is ${ndrift} path(s) adrift from the toke docs; pending owner review. Run make check-docs-content for the strict gate."
-    echo "       Not failing: this drift is known and awaiting review (132.51a)." >&2
+      echo "::warning title=content/docs drift::content/docs/ is ${ndrift} path(s) adrift from the toke docs. Run make check-docs-content for the strict gate."
+    echo "       Not failing: report mode lists drift; make check-docs-content fails on it." >&2
     exit 0
   fi
   echo "ERROR: content/docs/ has drifted from ${TOKE_REPO}/docs." >&2

@@ -71,15 +71,14 @@ jobs:
 
       # Story 134.32: content/docs/ is a tracked copy of the toke repo's docs,
       # and this is the only job with that repo checked out, so drift is
-      # checked here. REPORT mode, keyed to 132.51a: the tree is known to be
-      # ~30 files adrift pending owner review, so drift prints (and annotates)
-      # without failing; a missing section still fails. Switch to
-      # `make check-docs-content` (the strict gate `make ci` runs) when 132.51a
-      # lands.
-      - name: content/docs matches the toke docs (report mode, 132.51a)
+      # checked here. STRICT since 132.51a: the ~30-file backlog this job used
+      # to tolerate in report mode was synced and reviewed (49 paths), so any
+      # drift now is new and fails. The fix is `make docs-content`, a reviewed
+      # diff, and a commit of content/docs -- never a rewrite inside CI.
+      - name: content/docs matches the toke docs
         env:
           TOKE_REPO: ${{ github.workspace }}/.toke
-        run: make TOKE_REPO="$TOKE_REPO" check-docs-content-report
+        run: make TOKE_REPO="$TOKE_REPO" check-docs-content
 
   # Job 2: generated content must match its source, and build/ must be
   # reproducible from committed files (story 132.17b).
