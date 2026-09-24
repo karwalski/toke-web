@@ -34,6 +34,14 @@
 #
 #   To verify the copy is in step without writing anything:
 #     ./scripts/sync_docs_content.sh --check           # exit 1 on drift
+#     ./scripts/sync_docs_content.sh --report          # drift is a WARNING, exit 0
+#
+#   --report exists for one reason, story 132.51a: content/docs/ is known to be
+#   ~30 files adrift pending an owner review, so the strict check is red on
+#   purpose. The GitHub workflow runs --report so that drift is visible on every
+#   run without the job being red for a state chosen deliberately (134.32).
+#   Only DRIFT is downgraded — a missing section or missing source still exits
+#   1. Switch the workflow to --check when 132.51a lands.
 #
 # Without the toke repository available, both modes fall back to verifying the
 # tracked copy is present and complete, and PASS — so `make ci` and `make build`
@@ -43,7 +51,7 @@
 # URL prefix on the left, the directory in the toke repo that fills it on the
 # right. Change it here and nowhere else.
 #
-# Usage:   ./scripts/sync_docs_content.sh [--check]
+# Usage:   ./scripts/sync_docs_content.sh [--check | --report]
 #          TOKE_REPO=/path/to/toke ./scripts/sync_docs_content.sh
 
 set -euo pipefail
@@ -54,6 +62,7 @@ cd "${REPO_ROOT}"
 TOKE_REPO="${TOKE_REPO:-${HOME}/tk/toke}"
 MODE="sync"
 [[ "${1:-}" == "--check" ]] && MODE="check"
+[[ "${1:-}" == "--report" ]] && MODE="report"
 
 # <url section>:<dir under ${TOKE_REPO}/docs>
 #
@@ -139,13 +148,22 @@ if (( missing > 0 )); then
   exit 1
 fi
 
-if [[ "${MODE}" == "check" ]]; then
+if [[ "${MODE}" == "check" || "${MODE}" == "report" ]]; then
   if diff -rq "${staging}" content/docs >/dev/null 2>&1; then
     echo "==> content/docs/ matches ${TOKE_REPO}/docs ($(find content/docs -name '*.md' | wc -l | tr -d ' ') files)"
     exit 0
   fi
+  if [[ "${MODE}" == "report" ]]; then
+    ndrift="$({ diff -rq "${staging}" content/docs 2>&1 || true; } | wc -l | tr -d ' ')"
+    echo "WARNING (report mode, story 132.51a): content/docs/ has drifted from ${TOKE_REPO}/docs — ${ndrift} path(s):" >&2
+    { diff -rq "${staging}" content/docs 2>&1 || true; } | sed "s#${staging}#<toke docs>#; s#^#       #" >&2
+    [[ -n "${GITHUB_ACTIONS:-}" ]] && \
+      echo "::warning title=content/docs drift (132.51a)::content/docs/ is ${ndrift} path(s) adrift from the toke docs; pending owner review. Run make check-docs-content for the strict gate."
+    echo "       Not failing: this drift is known and awaiting review (132.51a)." >&2
+    exit 0
+  fi
   echo "ERROR: content/docs/ has drifted from ${TOKE_REPO}/docs." >&2
-  diff -rq "${staging}" content/docs 2>&1 | sed "s#${staging}#<toke docs>#; s#^#       #" >&2
+  { diff -rq "${staging}" content/docs 2>&1 || true; } | sed "s#${staging}#<toke docs>#; s#^#       #" >&2
   echo "" >&2
   echo "       content/docs/ is a GENERATED, TRACKED copy — do not edit it by hand." >&2
   echo "       Regenerate and commit it:  make docs-content && git add content/docs" >&2

@@ -26,9 +26,9 @@
   <div class="docs-layout">
     <aside class="docs-sidebar">
       <h4>Getting Started</h4>
-      <a href="/docs/getting-started/hello-world">Hello World</a>
-      <a href="/docs/getting-started/install">Install</a>
-      <a href="/docs/getting-started/tour">Language Tour</a>
+      <a href="/docs/learn/hello-world">Hello World</a>
+      <a href="/docs/learn/install">Install</a>
+      <a href="/docs/learn/tour">Language Tour</a>
       <h4>Learn</h4>
       <a href="/docs/learn/01-why-toke">Why toke?</a>
       <a href="/docs/learn/02-modules-functions">Modules &amp; Functions</a>

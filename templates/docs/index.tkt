@@ -8,9 +8,9 @@
 <h2>Getting Started</h2>
 <p>New to toke? Start here.</p>
 <ul>
-  <li><a href="/docs/getting-started/hello-world">Hello World</a> — write, compile, and run your first toke program</li>
-  <li><a href="/docs/getting-started/install">Install</a> — build toke from source on macOS or Linux</li>
-  <li><a href="/docs/getting-started/tour">Language Tour</a> — a fast overview of toke syntax and features</li>
+  <li><a href="/docs/learn/hello-world">Hello World</a> — write, compile, and run your first toke program</li>
+  <li><a href="/docs/learn/install">Install</a> — build toke from source on macOS or Linux</li>
+  <li><a href="/docs/learn/tour">Language Tour</a> — a fast overview of toke syntax and features</li>
 </ul>
 
 <h2>Learn</h2>

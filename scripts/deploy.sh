@@ -3,7 +3,8 @@
 #
 # Modes:
 #   content   Rsync build/, sites/, static/, certs/ only (no binary rebuild)
-#   full      Emit LLVM IR, cross-compile on server, rsync everything, restart
+#   full      Emit LLVM IR, rsync everything, cross-compile on server to a
+#             STAGED binary, and stop. It never restarts anything (134.29).
 #   auto      Detect which mode is needed based on git changes (default)
 #
 # Both modes rebuild build/ and re-check every gate BEFORE anything is synced
@@ -26,7 +27,7 @@
 #   # Content-only deploy (templates, static, sites — no binary rebuild):
 #   ./scripts/deploy.sh content
 #
-#   # Full deploy (rebuild binary + all content):
+#   # Full deploy (rebuild binary + all content; stops at the staged binary):
 #   ./scripts/deploy.sh full
 #
 # Environment shortcuts (source one before running):
@@ -208,8 +209,11 @@ if [[ "${MODE}" == "content" ]]; then
   echo "==> [2/2] Smoke test: GET /health on remote"
   sleep 1
   # shellcheck disable=SC2029
+  # 134.29: the live server listens on 443 with TLS (specs/production-config.md),
+  # not on the development port 8081 this used to probe, so the old check
+  # could only ever report failure.
   HEALTH=$(ssh ${SSH_OPTS} "${REMOTE}" \
-    'curl --fail --silent --show-error http://localhost:8081/health' 2>/dev/null || true)
+    'curl --fail --silent --show-error -k --max-time 8 https://localhost/health' 2>/dev/null || true)
 
   if [[ -n "${HEALTH}" ]]; then
     echo "    ${HEALTH}"
@@ -217,13 +221,14 @@ if [[ "${MODE}" == "content" ]]; then
     echo "Content deploy complete. Server is running (no restart needed)."
   else
     echo "    WARNING: Health check failed or server not running."
-    echo "    Content was synced but server may need a restart (use 'full' mode)."
+    echo "    Content was synced but the server may need a restart:"
+    echo "      sudo systemctl restart toke-website.service   (on the server; never nohup a copy)"
   fi
   exit 0
 fi
 
 # ── Full deploy ──────────────────────────────────────────────────────────
-echo "==> [1/6] Emitting LLVM IR from main.tk"
+echo "==> [1/4] Emitting LLVM IR from main.tk"
 cd "${REPO_ROOT}"
 "${TKC}" --emit-llvm --out main.ll main.tk
 echo "    main.ll written ($(wc -c < main.ll) bytes)"
@@ -243,7 +248,7 @@ echo "    main.ll written ($(wc -c < main.ll) bytes)"
 #
 # `tkc --emit-deps <program>` prints one absolute C source path per line, then
 # a line containing only `---`, then one linker flag per line.
-echo "==> [2/6] Resolving stdlib sources via --emit-deps"
+echo "==> [2/4] Resolving stdlib sources via --emit-deps"
 
 DEPS_RAW="$(mktemp)"
 trap 'rm -f "${DEPS_RAW}"' EXIT
@@ -286,7 +291,7 @@ PYNORM
 SRC_COUNT=$(wc -l < "${SRC_REL}" | tr -d ' ')
 echo "    ${SRC_COUNT} stdlib sources, link flags: $(cat "${LINK_FLAGS}")"
 
-echo "==> [2b/6] Rsyncing IR + those sources to server"
+echo "==> [2b/4] Rsyncing IR + those sources to server"
 
 # shellcheck disable=SC2029
 ssh ${SSH_OPTS} "${REMOTE}" "mkdir -p ${DEPLOY_DIR}/toke"
@@ -305,9 +310,28 @@ rsync -az --include='*/' --include='*.h' --exclude='*' -e "ssh ${SSH_OPTS}" \
 
 echo "    IR + ${SRC_COUNT} sources synced"
 
-rsync_content "[3/6]"
+rsync_content "[3/4]"
 
-echo "==> [4/6] Compiling website_server binary on remote (clang-15)"
+# ── The artefact, and where this script stops (story 134.29) ─────────────
+#
+# This used to compile `website_server`, then `pkill -f website_server`, start
+# it again under `nohup` and health-check localhost:8081. None of that matches
+# the server: the site is run by systemd (toke-website.service, Restart=always,
+# see specs/production-config.md), on 443 with TLS, from a binary of a
+# different name. So the tail would have started a SECOND server beside the
+# supervised one — two processes, one port, and a restart loop — and then
+# health-checked a port nothing listens on. Every real deploy since has gone
+# through the manual staging path instead (134.9, 134.28).
+#
+# The script now stops at the artefact. It compiles to a STAGED name that
+# nothing runs, so building never touches the live binary or the live process,
+# and prints the promotion as explicit steps. Promotion is a human decision
+# (every deploy is owner-approval-gated), and it is where the staged binary
+# should be smoke-tested on a throwaway port first.
+STAGED_BIN="${TOKE_DEPLOY_STAGED_BIN:-website-new}"
+SERVICE="${TOKE_DEPLOY_SERVICE:-toke-website.service}"
+
+echo "==> [4/4] Compiling ${STAGED_BIN} on remote (clang-15) — staged, not live"
 # shellcheck disable=SC2029
 REMOTE_SRCS="$(sed 's|^|toke/|' "${SRC_REL}" | tr '\n' ' ')"
 REMOTE_LFLAGS="$(cat "${LINK_FLAGS}")"
@@ -324,27 +348,28 @@ clang-15 -std=c99 -D_GNU_SOURCE -O1 \
   -I toke/stdlib/vendor/tomlc99 \
   -Wno-pedantic -DTK_HAVE_OPENSSL \
   -x ir main.ll -x c ${REMOTE_SRCS} \
-  -o website_server ${REMOTE_LFLAGS}
-echo "    Compiled OK: \$(ls -lh website_server | awk '{print \$5, \$9}')"
+  -o "${STAGED_BIN}" ${REMOTE_LFLAGS}
+echo "    Compiled OK: \$(ls -lh "${STAGED_BIN}" | awk '{print \$5, \$9}')"
+echo "    sha256: \$(sha256sum "${STAGED_BIN}" | cut -c1-16)"
 ENDSSH
 
-echo "==> [5/6] Restarting website_server on remote"
-# shellcheck disable=SC2029
-ssh ${SSH_OPTS} "${REMOTE}" bash <<ENDSSH
-set -euo pipefail
-cd "${DEPLOY_DIR}"
-pkill -f website_server || true
-sleep 1
-mkdir -p logs
-nohup ./website_server > logs/server.out 2>&1 &
-echo "    website_server started (PID \$!)"
-ENDSSH
+cat <<EOF
 
-echo "==> [6/6] Smoke test: GET /health on remote"
-sleep 2
-# shellcheck disable=SC2029
-ssh ${SSH_OPTS} "${REMOTE}" \
-  'curl --fail --silent --show-error http://localhost:8081/health'
+Full deploy STOPPED at the artefact: ${DEPLOY_DIR}/${STAGED_BIN} on the server.
+Content (build/, sites/, static/, templates/) is already synced. Nothing was
+restarted, and the running binary was not touched.
 
-echo ""
-echo "Full deploy complete."
+To promote it — an explicit, owner-approved step, run on the server:
+
+  cd ${DEPLOY_DIR}
+  systemctl cat ${SERVICE}              # read ExecStart: the live binary's name
+  ./${STAGED_BIN} --port <spare-port> & # smoke-test on a throwaway port, then kill it
+  cp <live-binary> <live-binary>.bak-\$(date +%Y%m%d)
+  mv ${STAGED_BIN} <live-binary>
+  sudo systemctl restart ${SERVICE}
+  systemctl status ${SERVICE} --no-pager
+  curl -sk --max-time 8 https://localhost/health
+
+Never start the binary with nohup or kill it by hand: ${SERVICE} supervises it
+with Restart=always, so a hand-started copy fights the service for the port.
+EOF

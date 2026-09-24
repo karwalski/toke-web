@@ -242,6 +242,21 @@ for entry in "${RETIRED_SECTIONS[@]}"; do
 done
 echo "    ${retired} redirect(s) for the retired duplicate sections (${RETIRED_SECTIONS[*]})"
 
+# 134.32 — nothing the site authors may link INTO a retired section. The
+# redirects above keep old inbound URLs working, but a link of our own to one
+# costs every visitor an extra hop, and four templates still had them after
+# 134.30. Derived from RETIRED_SECTIONS, so retiring a section extends it.
+stale_links=0
+for entry in "${RETIRED_SECTIONS[@]}"; do
+  old="${entry%%:*}"; new="${entry##*:}"
+  if hits=$(grep -rn "/docs/${old}/" templates sites pages main.tk 2>/dev/null); then
+    echo "ERROR: links into the retired section /docs/${old}/ — use /docs/${new}/:" >&2
+    printf '%s\n' "${hits}" | sed 's/^/    /' >&2
+    stale_links=1
+  fi
+done
+(( stale_links == 0 )) || exit 1
+
 # 134.9 — trailing-slash redirect stubs.
 #
 # A named route serves /docs but NOT /docs/, and 132.17b removes the mirrored
