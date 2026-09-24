@@ -150,6 +150,15 @@ library-recount:
 check-docs-content:
 	TOKE_REPO="$(TOKE_REPO)" ./scripts/sync_docs_content.sh --check
 
+# 134.32 — the same comparison, but drift is a warning (exit 0); a missing
+# section or source still fails. This is what the GitHub workflow runs while
+# 132.51a's known ~30-file drift awaits owner review, so the drift is printed on
+# every run instead of the job being red on a deliberate state. `ci` above keeps
+# the strict check (132.57a). Point the workflow at check-docs-content when
+# 132.51a lands.
+check-docs-content-report:
+	TOKE_REPO="$(TOKE_REPO)" ./scripts/sync_docs_content.sh --report
+
 # Fail if build/ is older than the sources it is derived from. The deploy runs
 # this after rebuilding, so a stale tree can never be published.
 check-build-fresh:
