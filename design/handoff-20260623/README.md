@@ -114,7 +114,7 @@ f=sum(arr:@i64):i64{
   $t:i64=0;
   <t;};
 ```
-Context: `<0;` is `return 0;` (4 tokens → 1), and the close pattern `<0;}` collapses to a single token under toke's purpose-built BPE tokenizer. Other real tokens: `m=` (module), `f=` (function), `$` type sigils, `@()` arrays, `.tki` interface contracts, `--legacy` flag (80-char profile vs the default 55-char "toke").
+Context: `<0;` is `return 0;` (4 tokens → 1), and the close pattern `<0;}` collapses to a single token under toke's purpose-built BPE tokenizer. Other real tokens: `m=` (module), `f=` (function), `$` type sigils, `@()` arrays, `.tki` interface contracts, `--legacy` flag (the 86-character legacy profile vs the 59-character default, "toke").
 
 ## Voice & persona
 **Terse. Exact. Dry.** A senior engineer who stopped trying to impress you and just tells you the number. Four principles: (1) Economical — cut every token that doesn't earn its place; (2) Exact — real numbers over adjectives (a figure with its method and sample size, not "tons"; the "40–75%" this line used to give as the example is withdrawn); (3) Confident — state it plainly, no hype, no exclamation marks; (4) Dry wit — a flat one-liner beats a slogan.
