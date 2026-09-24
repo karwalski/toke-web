@@ -1,6 +1,21 @@
 # Production Server Configuration
 
+> **Read this first (story 132.55a, 2026-09-24).** This file mixes three kinds of
+> statement, and until now did not say which was which. Each row below is now
+> marked:
+>
+> - **repo** — confirmed from this repository or the toke stdlib it links
+>   (`main.tk`, `scripts/deploy.sh`, `toke/src/stdlib/`), with the line cited;
+> - **recorded** — a measurement or setting written down on the date given and
+>   not re-checked since;
+> - **owner** — only the server can say. Nothing in any repository confirms it,
+>   and nobody with repository access alone should act on it during an
+>   incident without checking first. Listed together at the end (§ Owner
+>   checks, story 134.38).
+
 ## Instance specification
+
+Recorded 2026-04 (the soak-test period); not re-checked.
 
 | Parameter | Value |
 |-----------|-------|
@@ -15,19 +30,24 @@
 
 ## Server binary
 
-| Parameter | Value |
-|-----------|-------|
-| Binary | `/home/ec2-user/website/main` |
-| Source | `main.tk` (compiled with tkc) |
-| Port | 443 (TLS) |
-| Capability | `CAP_NET_BIND_SERVICE` (via systemd `AmbientCapabilities`) |
-| Service | `toke-website.service` (systemd, `Restart=always`, `RestartSec=3`) |
+| Parameter | Value | Basis |
+|-----------|-------|-------|
+| Source | `main.tk` (module `website`), compiled with `tkc --emit-llvm`, linked on the server with clang-15 | **repo** — `scripts/deploy.sh` full mode |
+| Port | 443, TLS from `certs/cert.pem` + `certs/key.pem`; `--port N` overrides; `--http` serves plain HTTP with 2 workers instead | **repo** — `main.tk` `main()` |
+| Binary name and path | **Unconfirmed.** This file said `/home/ec2-user/website/main`; other ops notes (134.9 backups) say `website`. `deploy.sh` deliberately does not assume either: it stages `website-new` and tells the operator to read `ExecStart` from the unit | **owner** |
+| Service | `toke-website.service` — the name `deploy.sh` assumes (`TOKE_DEPLOY_SERVICE` overrides). **The unit file is not in any repository**, so its contents below are unverified | **owner** |
+| Unit settings | `Restart=always`, `RestartSec=3`, `AmbientCapabilities=CAP_NET_BIND_SERVICE`, `Environment=TK_HTTP_WORKERS=8` | **owner** |
+| SSH user | **Contradictory in the repo.** `deploy.sh` defaults `TOKE_DEPLOY_USER` to `bitnami`; this file names Amazon Linux 2023, whose default user is `ec2-user`. Set `TOKE_DEPLOY_USER` explicitly until the owner records which | **owner** |
 
 ## Worker configuration
 
+`TK_HTTP_WORKERS` is read by the stdlib's server loop (**repo** —
+`toke/src/stdlib/http.c`; default is the CPU count). That it is set to 8 in the
+unit is **owner**. The rest of this section is **recorded** 2026-04.
+
 | Parameter | Value | Notes |
 |-----------|-------|-------|
-| `TK_HTTP_WORKERS` | 8 | Set in systemd unit Environment |
+| `TK_HTTP_WORKERS` | 8 | Set in systemd unit Environment (owner) |
 | Process count | 9 | 1 master + 8 workers |
 | Per-worker RSS | ~13 MB | Observed under load |
 | Total server RSS | ~110 MB | 9 processes at steady state |
@@ -85,6 +105,8 @@ Between OOM events and outside them: **100% availability**, 0 errors, all reques
 
 ## Network configuration
 
+**Recorded** 2026-04; the firewall rules and the Cloudflare mode are **owner**.
+
 - **Proxy:** Cloudflare (DNS proxied, orange cloud)
 - **Firewall:** iptables — allow SSH (22) and HTTPS (443) from Cloudflare IPs only, plus ICMP
 - **TLS:** Self-signed cert on origin; Cloudflare handles public TLS termination (Full mode)
@@ -124,20 +146,58 @@ Only Cloudflare edge servers should reach port 443. The following CIDR ranges ar
 2c0f:f248::/32
 ```
 
-## Virtual hosts
+## Routing (there are no virtual hosts)
 
-| Hostname | Root directory |
-|----------|---------------|
-| `tokelang.dev` | `sites/tokelang.dev` |
-| `www.tokelang.dev` | `sites/tokelang.dev` |
-| `staging.tokelang.dev` | `sites/tokelang.dev` |
-| `loke.tokelang.dev` | `sites/loke.tokelang.dev` |
+**repo** — `main.tk`. This section used to be a virtual-host table mapping four
+hostnames to directories under `sites/`. Story 132.21 removed that routing:
+every host the server answers for gets the same tree. In order of registration:
+
+1. exact paths from `main.tk`: `/llms.txt`, `/health`, `/api/health`, `/api/version`;
+2. `http.servepages("templates";"templates")` — one named route per `templates/*.tkt`;
+3. `http.servedir("/";"build")` — everything else, from `build/`.
+
+`sites/` is not a docroot; `scripts/build_static.sh` copies the files under
+`sites/tokelang.dev/` that must be served at `/` into `build/`.
+
+## What a content deploy changes without a restart
+
+**repo** — `toke/src/stdlib/tk_web_glue.c`, `main.tk`. `deploy.sh content` syncs
+files and restarts nothing. From the code, that is enough for some changes and
+not others:
+
+| Change | Live without a restart? | Why |
+|---|---|---|
+| an edit to an existing `templates/*.tkt` | yes | pages are re-read from disk on every request |
+| a file under `build/` | yes | `servedir` opens the file per request |
+| a template **added or removed** | **no** | `servepages` registers its routes once, at startup |
+| `sites/tokelang.dev/llms.txt` | **no** | `main.tk` reads it once, at startup |
+| `certs/*.pem` | **no** | loaded when the TLS listener starts |
+
+That the running binary was built from a stdlib with this behaviour is
+**owner** (it depends on which commit the live binary was linked from).
 
 ## Logging
 
-| Parameter | Value |
-|-----------|-------|
-| Access log | `~/website/logs/access.log` |
-| Max lines | 10,000 (rotation) |
-| Max age | 30 days |
-| Systemd journal | `journalctl -u toke-website` |
+| Parameter | Value | Basis |
+|-----------|-------|-------|
+| Access log | `logs/access.log`, relative to the server's working directory (`~/website` if the unit sets it) | **repo** — `main.tk` `log.openaccess(...)`; the directory is **owner** |
+| Max lines | 10,000 (rotation) | **repo** — same call |
+| Max age | 30 days | **repo** — same call |
+| Systemd journal | `journalctl -u toke-website` | **owner** — follows from the unit name |
+
+## Owner checks (story 134.38)
+
+Only the server can answer these. Each is one command there; none needs a
+change to any repository unless the answer differs from what is written above.
+
+1. `systemctl cat toke-website.service` — does the unit exist under that name?
+   Its `ExecStart` gives the live binary's name and path (this file said `main`,
+   other notes say `website`), its `User=` settles the `bitnami`/`ec2-user`
+   question, and its `Environment=`, `Restart=`, `RestartSec=` and
+   `AmbientCapabilities=` lines confirm or correct the "Unit settings" row.
+2. `systemctl show -p WorkingDirectory toke-website.service` — where
+   `logs/access.log` actually is.
+3. Which toke commit the live binary was linked from — it decides whether the
+   "without a restart" table above describes the running server.
+4. The firewall and Cloudflare settings under "Network configuration".
+
