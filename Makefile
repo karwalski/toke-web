@@ -187,6 +187,14 @@ site-examples:
 check-site-examples:
 	TKC="$(TKC)" python3 scripts/verify_site_examples.py --check
 
+# 132.43 — the compile half only. This is what the toke repo runs, with the
+# compiler it just built, on every push, in `make ci` and before a release tag:
+# a compiler-side change (a new .tki, a stricter check) can invalidate programs
+# this site publishes, and until now nothing on the compiler side looked.
+# check-site-examples above stays the full, deliberately-red gate here.
+check-site-compile:
+	TKC="$(TKC)" python3 scripts/verify_site_examples.py --check --compile-only
+
 # 132.36 — the stdlib module count on the home page is FILLED from the fact sheet
 # the compiler repo derives from the tree, never typed. templates/index.tkt marks
 # it `<!--fact:stdlib_modules-->57<!--/fact-->`; the deriving script lives in the

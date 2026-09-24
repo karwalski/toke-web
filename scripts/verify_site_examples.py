@@ -38,7 +38,22 @@ Usage:
     python3 scripts/verify_site_examples.py --write    # write the badges
     python3 scripts/verify_site_examples.py --check    # CI: fail on drift or on
                                                        # a program that does not compile
+    python3 scripts/verify_site_examples.py --check --compile-only
+                                                       # assert ONLY that every
+                                                       # program compiles and every
+                                                       # badge matches; report the
+                                                       # token-count findings
 Exit: 0 clean, 1 on a compile failure or a badge that disagrees with the compiler.
+
+--compile-only (story 132.43) exists for the OTHER direction. The break it
+guards against starts in the compiler repo: stdlib/io.tki landed and made
+`io.printi` a diagnosable error, invalidating programs this site publishes,
+while this check only ever ran on a push to THIS repository. The toke repo's
+`make check-site-compile`, its CI and its release workflow run this mode
+against the compiler they just built. It asserts the compile half only,
+because the count half is red on purpose pending the canonical-tokenizer
+decision (132.47/132.52a) and a compiler change cannot fix or break a count;
+the count findings are still printed, as "Reported, not asserted".
 """
 import html
 import json
@@ -353,9 +368,15 @@ def check_home_panels():
     return findings, checked
 
 
+# The findings a compiler change can cause: a program that stopped compiling,
+# and a badge that no longer matches the compile result.
+COMPILE_KINDS = ("FAIL", "BADGE")
+
+
 def main():
     write = "--write" in sys.argv
     strict = "--check" in sys.argv
+    compile_only = "--compile-only" in sys.argv
 
     if not os.path.exists(TKC):
         print("ERROR: tkc not found at %r. Set TKC=/path/to/tkc." % TKC)
@@ -383,6 +404,16 @@ def main():
           % (n_gallery, n_presets, n_home, n_tabs))
     for line in reported:
         print("  " + line)
+    if compile_only:
+        for kind, what, detail in findings:
+            if kind not in COMPILE_KINDS:
+                print("  Reported, not asserted (--compile-only): %-6s %-24s %s"
+                      % (kind, what, detail))
+        findings = [f for f in findings if f[0] in COMPILE_KINDS]
+        if not findings:
+            print("OK (--compile-only): every published toke program compiles "
+                  "under %s, and every /tokens badge matches." % TKC)
+            return 0
     if not findings:
         print("OK: every published toke program compiles, and every badge on "
               "/tokens was written from that compile result.")
