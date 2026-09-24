@@ -105,7 +105,7 @@ TOKE_DEPLOY_KEY=~/.ssh/your-key.pem \
 ./scripts/deploy.sh
 ```
 
-This emits LLVM IR locally, rsyncs it to the server, compiles a native binary with clang, and restarts the service. See `scripts/deploy.sh` for details.
+This emits LLVM IR locally, rsyncs it and the site content to the server, and compiles a native binary with clang under a staged name. It does **not** restart anything: the server is systemd-managed, so promoting the staged binary and restarting the service is a separate, explicit step that the script prints when it finishes (story 134.29). See `scripts/deploy.sh` for details.
 
 ## Related repositories
 

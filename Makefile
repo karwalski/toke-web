@@ -239,7 +239,7 @@ ci: check-toke check-site-examples check-facts check-roadmap check-llms check-do
 
 # --- Deployment ---
 
-deploy: ## Full deploy (rebuild binary + all content)
+deploy: ## Full deploy (all content + staged binary; promotion is a manual step)
 	./scripts/deploy.sh full
 
 deploy-content: ## Content-only deploy (templates, static, sites — no rebuild)
