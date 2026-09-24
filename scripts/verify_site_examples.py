@@ -97,7 +97,7 @@ PANEL = re.compile(r'<div class="tv-tab-panel[^"]*" id="(?P<id>[a-z-]+)">'
 # A home-page tab button: <button class="tv-tab-btn…" data-tab="see-c">C &mdash; 52 (cl100k)</button>
 # These sit in a sibling <div class="tv-tab-bar"> BEFORE the panels, so PANEL
 # never sees them — which is how see-c/see-java published 52/55 against their
-# own tiktoken-verified footers of 59/62 with CI green (132.49).
+# own tiktoken-verified footers of 59/62 with CI green (132.80).
 TAB_BTN = re.compile(r'<button class="tv-tab-btn[^"]*" data-tab="(?P<id>[a-z-]+)">'
                      r'(?P<label>[^<]*)</button>')
 
@@ -220,7 +220,7 @@ def load_toke_bpe():
 
 
 def check_tab_labels():
-    """Every tab label must agree with the panel it switches to (132.49).
+    """Every tab label must agree with the panel it switches to (132.80).
 
     The label and the footer are two published statements of one number. The
     footer is already derived — tiktoken for the cl100k lanes — so pinning the
