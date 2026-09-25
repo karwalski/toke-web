@@ -112,11 +112,68 @@ def strip_markup(fragment):
     return html.unescape(TAG.sub("", fragment))
 
 
+# One JS escape sequence (ECMA-262 SingleStringCharacter): the named single
+# characters, \xHH, \uHHHH, \u{H..}, a line continuation, or any other
+# character escaping itself ("\q" is "q").
+JS_ESCAPE = re.compile(r"\\(?:x(?P<x>[0-9A-Fa-f]{2})|u(?P<u>[0-9A-Fa-f]{4})"
+                       r"|u\{(?P<cp>[0-9A-Fa-f]{1,6})\}|(?P<nl>\r\n|[\n\r\u2028\u2029])"
+                       r"|(?P<c>.))", re.S)
+JS_SINGLE = {"n": "\n", "t": "\t", "r": "\r", "b": "\b", "f": "\f",
+             "v": "\v", "0": "\0"}
+
+
+def _js_escape(m):
+    if m.group("x") or m.group("u"):
+        return chr(int(m.group("x") or m.group("u"), 16))
+    if m.group("cp"):
+        return chr(int(m.group("cp"), 16))
+    if m.group("nl"):
+        return ""
+    c = m.group("c")
+    return JS_SINGLE.get(c, c)
+
+
 def unescape_js(literal):
-    """A single-quoted JS string literal -> its value."""
-    return (literal.replace("\\n", "\n").replace("\\t", "\t")
-                   .replace("\\'", "'").replace('\\"', '"')
-                   .replace("\\\\", "\\"))
+    """A single-quoted JS string literal -> its value, in ONE left-to-right pass.
+
+    132.50a: this used to be a chain of str.replace calls with `\\n` replaced
+    BEFORE `\\\\`, so the literal `\\\\n` (an escaped backslash, then n)
+    decoded to backslash-plus-newline, and a preset whose program prints
+    "%d\\n" could not be written at all. Order-dependent unescaping does not
+    fail loudly: another escape would have produced a valid program holding the
+    wrong string. A single pass consumes each backslash exactly once, which is
+    what the browser does with the same literal.
+    """
+    return JS_ESCAPE.sub(_js_escape, literal)
+
+
+# (literal as written in the page's source, value the browser gives it)
+UNESCAPE_CASES = [
+    (r"a\nb", "a\nb"),                           # a newline
+    (r"\\n", "\\n"),                          # 132.50a: backslash, then n
+    (r"p(\"%d\\n\")", 'p("%d\\n")'),          # 132.50a: toke's own "\n"
+    (r"\\\\", "\\\\"),                        # two escaped backslashes
+    (r"\\\n", "\\\n"),                        # backslash, then newline
+    (r"it\'s \"q\"", "it's \"q\""),
+    (r"\t\x41\u0042\u{43}", "\tABC"),
+    (r"\q", "q"),                                 # identity escape
+    ("a\\\nb", "ab"),                            # line continuation
+]
+
+
+def selftest():
+    bad = 0
+    for lit, want in UNESCAPE_CASES:
+        got = unescape_js(lit)
+        if got != want:
+            bad += 1
+            print("SELFTEST FAIL unescape_js(%r) = %r, want %r" % (lit, got, want))
+    if bad:
+        print("selftest: %d of %d unescape_js cases wrong" % (bad, len(UNESCAPE_CASES)))
+        return 1
+    print("selftest: %d unescape_js cases OK (incl. 132.50a: \\\\n and \"%%d\\\\n\")"
+          % len(UNESCAPE_CASES))
+    return 0
 
 
 def compiles(source):
@@ -374,6 +431,8 @@ COMPILE_KINDS = ("FAIL", "BADGE")
 
 
 def main():
+    if "--selftest" in sys.argv:
+        return selftest()
     write = "--write" in sys.argv
     strict = "--check" in sys.argv
     compile_only = "--compile-only" in sys.argv
