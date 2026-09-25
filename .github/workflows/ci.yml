@@ -106,6 +106,10 @@ jobs:
       - name: build/ is newer than everything it derives from
         run: make check-build-fresh
 
+      # 132.89: every in-site link on a rendered /docs page resolves.
+      - name: Rendered docs link only to what the site serves
+        run: make check-doc-links
+
   # Job 3: compile the server binary on Linux, start it, and check that every
   # route the repository defines answers 200.
   build-smoke:

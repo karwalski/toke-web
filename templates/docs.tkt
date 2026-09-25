@@ -103,7 +103,7 @@
       <a href="/docs/stdlib/yaml">yaml</a>
       <a href="/docs/stdlib/zip">zip</a>
       <h4>Specification</h4>
-      <a href="/docs/spec/toke-spec-v02">Language Spec</a>
+      <a href="/docs/spec/toke-spec-v0.4">Language Spec</a>
       <a href="/docs/spec/semantics">Formal Semantics</a>
       <a href="/docs/spec/errors">Error Registry</a>
       <a href="/docs/spec/stdlib-signatures">stdlib Signatures</a>

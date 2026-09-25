@@ -170,6 +170,16 @@ check-docs-content-report:
 check-build-fresh:
 	@python3 scripts/check_build_fresh.py
 
+# 132.89 — every in-site link on a rendered /docs page must name something the
+# server answers. Nothing checked this: the build verified that pages RENDERED,
+# never that what they link to EXISTS, and 227 dead links shipped. --selftest
+# first (a dead link of each shape must fail); links still dead at their toke
+# source are listed, dated, in scripts/check_doc_links_known.txt, which only
+# shrinks. Needs build/ (`make build`).
+check-doc-links:
+	@python3 scripts/check_doc_links.py --selftest
+	@python3 scripts/check_doc_links.py
+
 # Start the site and assert every route it defines answers 200.
 check-routes: $(BIN) build
 	@./scripts/check_routes.sh
@@ -199,7 +209,11 @@ check-llms:
 site-examples:
 	TKC="$(TKC)" python3 scripts/verify_site_examples.py --write
 
+# 132.50a: --selftest first -- the extractor's JS unescaper, against literals
+# whose browser values were checked under node. A wrong decoder hands tkc a
+# different program from the one the page runs.
 check-site-examples:
+	python3 scripts/verify_site_examples.py --selftest
 	TKC="$(TKC)" python3 scripts/verify_site_examples.py --check
 
 # 132.43 — the compile half only. This is what the toke repo runs, with the
@@ -208,6 +222,7 @@ check-site-examples:
 # this site publishes, and until now nothing on the compiler side looked.
 # check-site-examples above stays the full, deliberately-red gate here.
 check-site-compile:
+	python3 scripts/verify_site_examples.py --selftest
 	TKC="$(TKC)" python3 scripts/verify_site_examples.py --check --compile-only
 
 # 132.36 — the stdlib module count on the home page is FILLED from the fact sheet
@@ -224,7 +239,7 @@ check-facts:
 	python3 $(FACTS_SCRIPT) --sync-check $(CURDIR)/templates/index.tkt
 
 # Everything a change to this repo must pass before it is deployed.
-ci: check-toke check-site-examples check-facts check-roadmap check-llms check-docs-content build check-build-fresh check-routes check-library
+ci: check-toke check-site-examples check-facts check-roadmap check-llms check-docs-content build check-build-fresh check-doc-links check-routes check-library
 	@echo ""; echo "=== CI checks passed ==="
 
 # --- Documentation checks (story 132.41) ---
@@ -271,4 +286,4 @@ deploy-content: ## Content-only deploy (templates, static, sites — no rebuild)
 deploy-auto: ## Auto-detect deploy mode based on git changes
 	./scripts/deploy.sh auto
 
-.PHONY: site-examples check-site-examples facts check-facts all run run-http dev certs clean roadmap check-roadmap llms check-llms ci check-toke build docs-content check-docs-content check-library check-library-strict library-recount check-build-fresh check-routes asset-hashes deploy deploy-content deploy-auto
+.PHONY: site-examples check-site-examples facts check-facts all run run-http dev certs clean roadmap check-roadmap llms check-llms ci check-toke build docs-content check-docs-content check-library check-library-strict library-recount check-build-fresh check-doc-links check-routes asset-hashes deploy deploy-content deploy-auto
