@@ -147,6 +147,10 @@ echo "    rebuilding build/ before sync"
 # Hard stop: build/ must not be older than static/, templates/ or content/.
 python3 scripts/check_build_fresh.py
 
+# 132.89: no rendered /docs page may link to something the site does not serve.
+python3 scripts/check_doc_links.py --selftest
+python3 scripts/check_doc_links.py
+
 echo "    gates passed"
 echo ""
 
