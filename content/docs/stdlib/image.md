@@ -15,6 +15,24 @@ Beyond the basic transforms it carries the pieces a document pipeline needs befo
 analysis: arbitrary-angle rotation for deskew, adaptive thresholding for unevenly lit
 scans, a general convolution for noise reduction, and multi-page TIFF decode.
 
+Every fallible function returns `T!$str`, and the `$str` is the module's own
+message — `image_decode: not a PNG or TIFF file (bad signature)`, `page index is
+past the last page`, a named unsupported TIFF compression — readable in the
+`$err` arm (story 135.5b; until then every failure bound nil, so the causes were
+indistinguishable to a toke caller):
+
+```toke
+m=example;
+i=image:std.image;
+i=io:std.io;
+i=str:std.str;
+
+f=why():i64{
+  mt image.decode(str.bytes("not an image")) {$ok:i io.println("decoded");$err:e io.println(e)};
+  < 0
+};
+```
+
 ## Types
 
 ### $imgbuf
@@ -30,10 +48,10 @@ scans, a general convolution for noise reduction, and multi-page TIFF decode.
 
 | Variant | Meaning |
 |---------|---------|
-| $Png | PNG format |
-| $Jpeg | JPEG format |
-| $Webp | WebP format |
-| $Bmp | BMP format |
+| $png | PNG format |
+| $jpeg | JPEG format |
+| $webp | WebP format |
+| $bmp | BMP format |
 
 ## Functions
 
@@ -136,7 +154,7 @@ f=main():i64{
   let raw = mt file.read("photo.jpg") {$ok:d d;$err:e ""};
   let img = mt image.decode(raw) {$ok:i i;$err:e $imgbuf{width:0;height:0;channels:0;data:@()}};
   let thumb = image.resize(img; 128; 128);
-  let out = mt image.encode(thumb; $imgfmt{$Png:true}; 90) {$ok:b b;$err:e @()};
+  let out = mt image.encode(thumb; $imgfmt{$png:true}; 90) {$ok:b b;$err:e @()};
   let res = file.write("thumb.png"; out);
   <0;
 }
@@ -174,7 +192,7 @@ f=main():i64{
   (* Sauvola: survives a page lit unevenly, which a global cut does not *)
   let bw = mt image.adaptivethreshold(smooth; 31; 0.2) {$ok:i i;$err:e empty};
 
-  let out = mt image.encode(bw; $imgfmt{$Png:true}; 90) {$ok:b b;$err:e @()};
+  let out = mt image.encode(bw; $imgfmt{$png:true}; 90) {$ok:b b;$err:e @()};
   let wrote = mt file.writebytes("page0.png"; out) {$ok:v v;$err:e false};
   <0
 }
@@ -201,7 +219,7 @@ f=main():i64{
   let lap = @(0.0;1.0;0.0; 1.0;0.0-4.0;1.0; 0.0;1.0;0.0);
   let out = mt image.convolve(grey; lap; 3; 0.0; 128.0) {$ok:i i;$err:e empty};
 
-  let png = mt image.encode(out; $imgfmt{$Png:true}; 90) {$ok:b b;$err:e @()};
+  let png = mt image.encode(out; $imgfmt{$png:true}; 90) {$ok:b b;$err:e @()};
   let wrote = mt file.writebytes("edges.png"; png) {$ok:v v;$err:e false};
   <0
 }

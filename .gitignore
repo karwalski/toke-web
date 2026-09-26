@@ -32,3 +32,6 @@ logs/
 # macOS
 .DS_Store
 test-results/
+
+# workspace AGENTS.md §4.4 junk classes
+__pycache__/
