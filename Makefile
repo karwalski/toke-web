@@ -225,6 +225,15 @@ check-site-compile:
 	python3 scripts/verify_site_examples.py --selftest
 	TKC="$(TKC)" python3 scripts/verify_site_examples.py --check --compile-only
 
+# 132.52a — the /tokenizer page's in-browser BPE must BE the tokenizer it
+# loads. Runs the page's own JS under node against the `tokenizers` library on
+# every preset, every /tokens gallery program and every home-page toke panel,
+# token for token and id for id, and holds verify_site_examples.py's Python
+# mirror to the same reference. Needs node and `pip install tokenizers`; a
+# missing one fails the target rather than skipping it.
+check-bpe-reference:
+	python3 scripts/check_bpe_reference.py
+
 # 132.36 — the stdlib module count on the home page is FILLED from the fact sheet
 # the compiler repo derives from the tree, never typed. templates/index.tkt marks
 # it `<!--fact:stdlib_modules-->57<!--/fact-->`; the deriving script lives in the
@@ -239,7 +248,7 @@ check-facts:
 	python3 $(FACTS_SCRIPT) --sync-check $(CURDIR)/templates/index.tkt
 
 # Everything a change to this repo must pass before it is deployed.
-ci: check-toke check-site-examples check-facts check-roadmap check-llms check-docs-content build check-build-fresh check-doc-links check-routes check-library
+ci: check-toke check-site-examples check-bpe-reference check-facts check-roadmap check-llms check-docs-content build check-build-fresh check-doc-links check-routes check-library
 	@echo ""; echo "=== CI checks passed ==="
 
 # --- Documentation checks (story 132.41) ---
@@ -286,4 +295,4 @@ deploy-content: ## Content-only deploy (templates, static, sites — no rebuild)
 deploy-auto: ## Auto-detect deploy mode based on git changes
 	./scripts/deploy.sh auto
 
-.PHONY: site-examples check-site-examples facts check-facts all run run-http dev certs clean roadmap check-roadmap llms check-llms ci check-toke build docs-content check-docs-content check-library check-library-strict library-recount check-build-fresh check-doc-links check-routes asset-hashes deploy deploy-content deploy-auto
+.PHONY: site-examples check-site-examples check-bpe-reference facts check-facts all run run-http dev certs clean roadmap check-roadmap llms check-llms ci check-toke build docs-content check-docs-content check-library check-library-strict library-recount check-build-fresh check-doc-links check-routes asset-hashes deploy deploy-content deploy-auto
