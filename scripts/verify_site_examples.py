@@ -240,14 +240,23 @@ def check_tokenizer_presets():
 def load_toke_bpe():
     """The vocab+merges /tokenizer loads, and the encoder it runs on them.
 
-    templates/tokenizer.tkt:280-301 defines BPETokenizer in the page itself:
-    split to characters, then repeatedly merge the single lowest-ranked
-    adjacent pair (first occurrence only) until no pair is in the merge table.
-    That is NOT textbook BPE — the reference implementation merges every
-    occurrence of the best pair per pass — so the page and the `tokenizers`
-    library disagree on the same artefact. Since the claim on the page is
-    about what the page shows, this mirrors the page's algorithm exactly.
-    Verified identical to the real JS under node: same count, same ids.
+    A line-for-line mirror of the page's BPETokenizer (templates/tokenizer.tkt),
+    which since 132.52a is the `tokenizers` library's BPE for this artefact:
+    added tokens matched first (longest first), then Split "\\n" Isolated,
+    then characters absent from the vocabulary DROPPED before merging
+    (unk_token is null), then lowest-rank-leftmost merging.
+
+    132.52a corrected the premise this docstring used to state. The old page
+    encoder merged the first occurrence of the best pair and rescanned, which
+    reaches the same fixpoint as merging every occurrence; that was never the
+    divergence. The divergence was out-of-vocabulary characters: the library
+    drops them and lets their neighbours merge, the page kept each one as a
+    token. FizzBuzz's `F`s and `\\` made that 68 against the library's 65.
+
+    Returns encode(text) -> (tokens, ids, dropped_chars). The mirror, the
+    page's JS under node, and the library are held identical, token for token
+    and id for id, by scripts/check_bpe_reference.py (`make
+    check-bpe-reference`).
     """
     try:
         with open(TOKENIZER_JSON, encoding="utf-8") as fh:
@@ -259,9 +268,12 @@ def load_toke_bpe():
     for i, m in enumerate(data["model"]["merges"]):
         a, b = m.split(" ", 1) if isinstance(m, str) else (m[0], m[1])
         rank[(a, b)] = i
+    added = sorted(((t["content"], t["id"]) for t in data.get("added_tokens") or []),
+                   key=lambda t: -len(t[0]))
 
-    def encode(text):
-        syms = list(text)
+    def word(w, toks, dropped):
+        syms = [c for c in w if c in vocab]
+        dropped.extend(c for c in w if c not in vocab)
         while len(syms) > 1:
             best, at = None, -1
             for i in range(len(syms) - 1):
@@ -271,7 +283,29 @@ def load_toke_bpe():
             if at < 0:
                 break
             syms[at:at + 2] = [syms[at] + syms[at + 1]]
-        return syms, [vocab.get(x, -1) for x in syms]
+        toks.extend(syms)
+
+    def split(s, toks, dropped):
+        for k, part in enumerate(s.split("\n")):
+            if k:
+                word("\n", toks, dropped)
+            if part:
+                word(part, toks, dropped)
+
+    def encode(text):
+        toks, dropped, ids_of = [], [], dict(added)
+        seg = i = 0
+        while i < len(text):
+            hit = next((c for c, _ in added if text.startswith(c, i)), None)
+            if hit is None:
+                i += 1
+                continue
+            split(text[seg:i], toks, dropped)
+            toks.append(hit)
+            i += len(hit)
+            seg = i
+        split(text[seg:], toks, dropped)
+        return toks, [ids_of[t] if t in ids_of else vocab[t] for t in toks], dropped
 
     return encode
 
@@ -317,9 +351,9 @@ def report_tokens_page_counts():
     wrong (every toke panel opens `m=` as "token 181", and 181 is `false` in
     static/tokenizer_v03.json; `m=` is 144), and no artefact agrees on the
     count either. For the FizzBuzz program the page says 42, the shipped
-    16,384 BPE says 68 under the page's own algorithm and 65 under the
-    `tokenizers` reference implementation, and the SentencePiece models say
-    110 (8K) and 104 (32K).
+    16,384 BPE says 65 (the page's encoder said 68 until 132.52a made it
+    match the `tokenizers` reference implementation), and the SentencePiece
+    models say 110 (8K) and 104 (32K).
 
     This is REPORTED rather than asserted, in the same spirit as
     `make check-hardening`'s _FORTIFY_SOURCE line (AGENTS.md 14.3), because
@@ -398,19 +432,21 @@ def check_home_panels():
             # had existed. A count that UNDERSTATES is invisible to every other
             # gate here, and it still has to reproduce.
             if toke_enc is not None:
-                toks, ids = toke_enc(source)
+                toks, ids, dropped = toke_enc(source)
                 if len(toks) != stated:
                     findings.append(("COUNT", pid,
                                      "badge says %d toke BPE v03 tokens; "
                                      "static/tokenizer_v03.json encodes the "
                                      "panel's own source as %d"
                                      % (stated, len(toks))))
-                unknown = [t for t, i in zip(toks, ids) if i < 0]
-                if unknown:
+                # 132.52a: a character the vocabulary lacks is dropped by the
+                # tokenizer, not emitted as an id-less token.
+                if dropped:
                     findings.append(("VOCAB", pid,
-                                     "%d rendered token(s) are not in the "
-                                     "16,384 vocab, e.g. %r"
-                                     % (len(unknown), unknown[:3])))
+                                     "%d character(s) of the panel are not in "
+                                     "the 16,384 vocab and are dropped by the "
+                                     "tokenizer, e.g. %r"
+                                     % (len(dropped), dropped[:3])))
         elif enc is not None and "cl100k" in bm.group("lane"):
             n = len(enc.encode(source))
             if n != stated:

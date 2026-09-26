@@ -54,6 +54,19 @@ jobs:
           TKC: ${{ github.workspace }}/.toke/tkc
         run: make TKC="$TKC" check-site-examples
 
+      # Story 132.52a: the /tokenizer page's in-browser BPE is checked, under
+      # node, against the `tokenizers` library on the artefact it loads. The
+      # page disagreed with the library on FizzBuzz (68 vs 65) until this gate.
+      - name: Python for the tokenizers reference
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: The /tokenizer page's BPE reproduces the tokenizers library
+        run: |
+          python3 -m pip install --quiet tokenizers==0.22.2
+          make check-bpe-reference
+
       # Story 132.36: the stdlib module count on the home page is filled from the
       # fact sheet the compiler repo derives from the tree. It drifted twice in
       # one day while it was typed by hand.

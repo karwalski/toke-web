@@ -51,6 +51,8 @@ textarea:focus { outline: none; border-color: #c792ea; }
 .token-display span:hover { opacity: 0.7; }
 .t0 { background: #1a3a2a; } .t1 { background: #2a1a3a; } .t2 { background: #1a2a3a; } .t3 { background: #3a2a1a; }
 .t4 { background: #2a3a1a; } .t5 { background: #3a1a2a; } .t6 { background: #1a3a3a; } .t7 { background: #3a3a1a; }
+/* 132.52a — a character the vocabulary lacks: dropped by the tokenizer, shown uncounted. */
+.unknown-token { outline: 1px dashed #c46; outline-offset: -1px; }
 
 /* ── Normalised view ── */
 .norm-section { margin-top: 1.5rem; }
@@ -279,29 +281,79 @@ function normalizeToke(text) {
 }
 
 // ── BPE Tokenizer ──
-let tokVocab = null, tokMerges = null, tokReady = false;
+let tokVocab = null, tokMerges = null, tokAdded = null, tokReady = false;
 
 class BPETokenizer {
-  constructor(vocab, merges) {
+  // 132.52a — this is the `tokenizers` library's BPE, reproduced exactly for
+  // the artefact the page loads (static/tokenizer_v03.json: no normalizer,
+  // pre_tokenizer Split "\n" Isolated, unk_token null, byte_fallback false).
+  // scripts/check_bpe_reference.py runs THIS class under node against the
+  // library on every preset and every /tokens gallery program, token for
+  // token and id for id. The old encoder already merged correctly (lowest
+  // rank, leftmost first); it differed from the library in three other ways:
+  //   1. A character with no vocabulary entry is DROPPED before merging —
+  //      unk_token is null — so its neighbours can merge across it. The page
+  //      used to keep it as a token, which is where FizzBuzz's 68-vs-65 and
+  //      the api panel's 52-vs-48 came from ("F" and "\" are not in the
+  //      vocabulary). Dropped characters are still shown to the visitor, as
+  //      uncounted marks, in `dropped`.
+  //   2. "\n" is its own pre-token; nothing merges across a newline.
+  //   3. The added tokens (<|endoftext|>, <pad>, <newline>) are matched in the
+  //      raw text first, longest first, and are single tokens.
+  constructor(vocab, merges, addedTokens) {
     this.vocab = vocab;
-    this.mergeRank = {};
+    this.mergeRank = new Map();
     for (let i = 0; i < merges.length; i++) {
-      this.mergeRank[merges[i][0] + '\x00' + merges[i][1]] = i;
+      const m = merges[i];
+      const sp = typeof m === 'string' ? m.indexOf(' ') : -1;
+      const a = typeof m === 'string' ? m.slice(0, sp) : m[0];
+      const b = typeof m === 'string' ? m.slice(sp + 1) : m[1];
+      this.mergeRank.set(a + '\x00' + b, i);
     }
+    this.added = (addedTokens || []).map(t => [t.content, t.id])
+      .sort((x, y) => y[0].length - x[0].length);
   }
   encode(text) {
-    let symbols = text.split('');
-    while (symbols.length > 1) {
+    const out = { tokens: [], ids: [], dropped: [] };
+    let seg = 0, i = 0;
+    while (i < text.length) {
+      const hit = this.added.find(([c]) => text.startsWith(c, i));
+      if (!hit) { i++; continue; }
+      this._split(text.slice(seg, i), out);
+      out.tokens.push(hit[0]); out.ids.push(hit[1]);
+      i += hit[0].length; seg = i;
+    }
+    this._split(text.slice(seg), out);
+    return out;
+  }
+  _split(s, out) {
+    // pre_tokenizer: Split on "\n", behavior Isolated.
+    const parts = s.split('\n');
+    parts.forEach((p, k) => {
+      if (k > 0) this._word('\n', out);
+      if (p) this._word(p, out);
+    });
+  }
+  _word(word, out) {
+    const chars = Array.from(word), base = out.tokens.length;
+    let syms = [], gone = [];
+    chars.forEach((c, k) => (c in this.vocab ? syms.push({ s: c, at: k }) : gone.push({ ch: c, at: k })));
+    while (syms.length > 1) {
       let bestRank = Infinity, bestIdx = -1;
-      for (let i = 0; i < symbols.length - 1; i++) {
-        const key = symbols[i] + '\x00' + symbols[i+1];
-        const rank = this.mergeRank[key];
-        if (rank !== undefined && rank < bestRank) { bestRank = rank; bestIdx = i; }
+      for (let j = 0; j < syms.length - 1; j++) {
+        const r = this.mergeRank.get(syms[j].s + '\x00' + syms[j + 1].s);
+        if (r !== undefined && r < bestRank) { bestRank = r; bestIdx = j; }
       }
       if (bestIdx === -1) break;
-      symbols.splice(bestIdx, 2, symbols[bestIdx] + symbols[bestIdx + 1]);
+      syms.splice(bestIdx, 2, { s: syms[bestIdx].s + syms[bestIdx + 1].s, at: syms[bestIdx].at });
     }
-    return { tokens: symbols, ids: symbols.map(s => this.vocab[s] ?? -1) };
+    for (const g of gone) {
+      // Shown before the first token that starts after it: in place when it
+      // fell between tokens, just after the token its neighbours merged into.
+      let j = syms.findIndex(x => x.at > g.at);
+      out.dropped.push({ ch: g.ch, before: base + (j < 0 ? syms.length : j) });
+    }
+    for (const x of syms) { out.tokens.push(x.s); out.ids.push(this.vocab[x.s]); }
   }
 }
 
@@ -324,13 +376,28 @@ const COLORS = ['t0','t1','t2','t3','t4','t5','t6','t7'];
 function renderTokens(result, containerId) {
   const el = document.getElementById(containerId);
   el.innerHTML = '';
+  // 132.52a — a character the vocabulary lacks is not a token: the tokenizer
+  // drops it (unk_token is null) and it is not counted. It is still shown, in
+  // place, as a dashed mark with no id, so the visitor can see what was lost.
+  // (132.53a: it used to be rendered as a token captioned `id: -1`.)
+  const dropped = result.dropped || [];
+  const mark = d => {
+    const span = document.createElement('span');
+    span.className = 'unknown-token';
+    span.textContent = d.ch;
+    span.title = `Not a token: "${d.ch}" is not in the vocabulary, so the tokenizer drops it (not counted)`;
+    el.appendChild(span);
+  };
+  let k = 0;
   result.tokens.forEach((t, i) => {
+    while (k < dropped.length && dropped[k].before === i) mark(dropped[k++]);
     const span = document.createElement('span');
     span.className = COLORS[i % 8];
     span.textContent = t;
     span.title = `Token ${i+1}/${result.tokens.length}: "${t}" (id: ${result.ids[i]})`;
     el.appendChild(span);
   });
+  while (k < dropped.length) mark(dropped[k++]);
 }
 
 function tokenize() {
@@ -351,7 +418,7 @@ function tokenize() {
 
   let tokeCount = 0;
   if (tokReady) {
-    const bpe = new BPETokenizer(tokVocab, tokMerges);
+    const bpe = new BPETokenizer(tokVocab, tokMerges, tokAdded);
     const result = bpe.encode(norm);
     tokeCount = result.tokens.length;
     document.getElementById('toke-count').textContent = tokeCount;
@@ -427,6 +494,7 @@ async function loadTokenizer() {
       const data = await resp.json();
       tokVocab = data.model.vocab;
       tokMerges = data.model.merges;
+      tokAdded = data.added_tokens;
       tokReady = true;
       tokenize();
       return;
