@@ -45,8 +45,25 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "scripts"))
 import verify_site_examples as vse  # noqa: E402
 
-PAGES = [os.path.join(ROOT, "templates", "tokenizer.tkt"),
-         os.path.join(ROOT, "static", "tokenizer.html")]
+PAGES = [os.path.join(ROOT, "templates", "tokenizer.tkt")]
+# 132.100: static/tokenizer.html was a second, still-served copy of /tokenizer
+# with its own encoder, and it did not receive 132.53a's fix until 132.52a. It
+# is now a redirect stub to /tokenizer. It must stay one: a stub that grows a
+# script again is a second encoder this gate does not check.
+STUB = os.path.join(ROOT, "static", "tokenizer.html")
+
+
+def stub_findings(path=STUB):
+    if not os.path.exists(path):
+        return []
+    src = open(path, encoding="utf-8").read()
+    out = []
+    if re.search(r"<script\b", src, re.I) or "BPETokenizer" in src:
+        out.append("%s: carries a script -- a second copy of the /tokenizer "
+                   "encoder; it must stay a redirect stub" % os.path.relpath(path, ROOT))
+    if not re.search(r'http-equiv="refresh"[^>]*url=/tokenizer"', src):
+        out.append("%s: does not redirect to /tokenizer" % os.path.relpath(path, ROOT))
+    return out
 
 # Probes for the behaviours that differ from naive BPE on this artefact.
 PROBES = [
@@ -133,7 +150,7 @@ def main():
           % (tokenizers.__version__, node_ver))
 
     named = published_texts()
-    failures, compared = [], 0
+    failures, compared = stub_findings(), 0
 
     def compare(label, r):
         nonlocal compared

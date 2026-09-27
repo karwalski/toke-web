@@ -15,8 +15,8 @@
 #   static/            every asset, served at /static/...
 #   library/           the program-library JSON the library page fetches at /library/...
 #   library.html       the three standalone pages, served at their own top-level
-#   tokenizer.html     URLs (the site nav links to /library.html)
-#   tokens.html
+#   tokenizer.html     URLs (the site nav links to /library.html). tokenizer.html
+#   tokens.html        is only a redirect stub to the /tokenizer route (132.100)
 #   tokenizer_v03.json the vocabulary the tokenizer page fetches at /tokenizer_v03.json
 #   docs/             the ~190 per-slug documentation pages, rendered from
 #                     content/docs/ by `ooke build` (story 134.8)
