@@ -458,6 +458,12 @@ def check_home_panels():
     if enc is None:
         print("note: tiktoken not installed — the cl100k_base counts on the "
               "home page were not re-derived (pip install tiktoken)")
+        # 132.100: CI installs tiktoken and sets REQUIRE_TIKTOKEN=1, so a
+        # missing install there is a failure, not a note nobody reads.
+        if os.environ.get("REQUIRE_TIKTOKEN") == "1":
+            findings.append(("SETUP", "tiktoken", "REQUIRE_TIKTOKEN=1 but tiktoken "
+                             "is not importable: the home page's cl100k_base "
+                             "counts were not re-derived"))
     return findings, checked
 
 
