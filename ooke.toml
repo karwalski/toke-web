@@ -14,6 +14,10 @@ minify = true
 inlinecss = false
 
 [server]
+# ooke 3.0.0-rc.2 binds 127.0.0.1 unless told otherwise (toke 138.7 O-3).
+# Keep the pre-rc.2 behaviour explicitly; switch to "127.0.0.1" if a local
+# reverse proxy fronts this server.
+host = "0.0.0.0"
 port = 8081
 admin = false
 workers = 0
