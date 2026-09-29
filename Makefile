@@ -247,8 +247,14 @@ facts:
 check-facts:
 	python3 $(FACTS_SCRIPT) --sync-check $(CURDIR)/templates/index.tkt
 
+# toke 121.27: the deploy path keeps host-key checking on, never ships the
+# origin TLS key, and no key file or infrastructure address is committed.
+# --selftest plants one of each first and fails unless all are caught.
+check-deploy-posture:
+	python3 scripts/check_deploy_posture.py --selftest
+
 # Everything a change to this repo must pass before it is deployed.
-ci: check-toke check-site-examples check-bpe-reference check-facts check-roadmap check-llms check-docs-content build check-build-fresh check-doc-links check-routes check-library
+ci: check-deploy-posture check-toke check-site-examples check-bpe-reference check-facts check-roadmap check-llms check-docs-content build check-build-fresh check-doc-links check-routes check-library
 	@echo ""; echo "=== CI checks passed ==="
 
 # --- Documentation checks (story 132.41) ---
@@ -295,4 +301,4 @@ deploy-content: ## Content-only deploy (templates, static, sites — no rebuild)
 deploy-auto: ## Auto-detect deploy mode based on git changes
 	./scripts/deploy.sh auto
 
-.PHONY: site-examples check-site-examples check-bpe-reference facts check-facts all run run-http dev certs clean roadmap check-roadmap llms check-llms ci check-toke build docs-content check-docs-content check-library check-library-strict library-recount check-build-fresh check-doc-links check-routes asset-hashes deploy deploy-content deploy-auto
+.PHONY: check-deploy-posture site-examples check-site-examples check-bpe-reference facts check-facts all run run-http dev certs clean roadmap check-roadmap llms check-llms ci check-toke build docs-content check-docs-content check-library check-library-strict library-recount check-build-fresh check-doc-links check-routes asset-hashes deploy deploy-content deploy-auto
