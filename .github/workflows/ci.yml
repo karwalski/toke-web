@@ -130,6 +130,11 @@ jobs:
       - name: Rendered docs link only to what the site serves
         run: make check-doc-links
 
+      # toke 121.27: host-key checking on, no TLS key shipped, no key file or
+      # infrastructure address committed (the gate runs its own selftest).
+      - name: Deploy posture
+        run: make check-deploy-posture
+
   # Job 3: compile the server binary on Linux, start it, and check that every
   # route the repository defines answers 200.
   build-smoke:
