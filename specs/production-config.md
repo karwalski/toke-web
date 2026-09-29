@@ -110,7 +110,44 @@ Between OOM events and outside them: **100% availability**, 0 errors, all reques
 - **Proxy:** Cloudflare (DNS proxied, orange cloud)
 - **Firewall:** iptables — allow SSH (22) and HTTPS (443) from Cloudflare IPs only, plus ICMP
 - **TLS:** Self-signed cert on origin; Cloudflare handles public TLS termination (Full mode)
-- **Rate limiting:** Per-worker, ~200 req/min per worker (not shared memory)
+- **Rate limiting:** none in the server. The per-worker limiter recorded here
+  in 2026-04 was removed from the toke stdlib (toke story 127.60: it counted
+  connections, not requests, and throttled the wrong traffic); **repo** —
+  `toke/src/stdlib/http.c`. Rate limiting belongs in front of the server
+  (Cloudflare), which is **owner**.
+
+### Deployment posture (toke story 121.27, audit-120 DEP-01..06)
+
+- **Host key** — **repo**: `scripts/deploy.sh` checks the server's host key on
+  every connection (`StrictHostKeyChecking=yes`) against a pinned entry, and
+  refuses to start without one. It no longer switches checking off.
+- **Origin TLS key** — **repo**: `deploy.sh` no longer copies `certs/`. The
+  certificate and key live on the server only; renewing them is a server-side
+  step. The key that was copied by earlier deploys has crossed the network
+  and sits in every checkout that deployed: rotating it is **owner**.
+- **Origin certificate** — **owner**, open: the origin still presents a
+  self-signed, one-year certificate from `make certs`, and Cloudflare connects
+  in Full (not Full (strict)) mode, so the Cloudflare-to-origin hop is
+  encrypted but not authenticated, and expiry is a manual outage. The fix is a
+  Cloudflare Origin CA (or ACME) certificate with Full (strict), and an expiry
+  alarm.
+- **On-host compile** — **owner**, open: `deploy.sh full` still compiles the
+  binary on the production host with clang-15. Building on a build host and
+  shipping a checksummed binary removes the toolchain from the server.
+- **Supervision** — the server is run by systemd (above); `deploy.sh` has
+  started nothing by hand since toke story 134.29.
+- **Committed addresses and keys** — **repo**: `make check-deploy-posture`
+  (in `make ci` and the CI workflow) fails on host-key checking switched off,
+  a command that ships `certs/`, private key material or a real key path, or
+  an IPv4 address outside loopback, private and documentation ranges. The
+  Cloudflare ranges below are the one allowed exception, in this file only.
+- **Listen address** — **repo**: the production binary is `main.tk`, which
+  listens on every interface (`http.servetls(port; ...)`) and relies on the
+  firewall above. `ooke.toml`'s `[server] host = "0.0.0.0"` is read only by
+  `ooke serve`, which neither the site nor the deploy uses: it changes nothing
+  in production, and on a developer machine it exposes `ooke serve` on port
+  8081 to the local network. ooke 3.0.0-rc.2 defaults to loopback; whether to
+  keep `0.0.0.0` is **owner**.
 
 ## Cloudflare IP allowlist
 

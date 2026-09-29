@@ -2,7 +2,7 @@
 # deploy.sh — Deploy toke-website to Lightsail
 #
 # Modes:
-#   content   Rsync build/, sites/, static/, certs/ only (no binary rebuild)
+#   content   Rsync build/, sites/, static/, templates/ only (no binary rebuild)
 #   full      Emit LLVM IR, rsync everything, cross-compile on server to a
 #             STAGED binary, and stop. It never restarts anything (134.29).
 #   auto      Detect which mode is needed based on git changes (default)
@@ -19,6 +19,20 @@
 # Optional env vars:
 #   TOKE_DEPLOY_USER  — remote SSH user        (default: bitnami)
 #   TOKE_DEPLOY_DIR   — remote working dir     (default: ~/website)
+#   TOKE_DEPLOY_KNOWN_HOSTS — known_hosts file holding the server's pinned
+#                       host key (default: ~/.ssh/known_hosts)
+#
+# The server's host key must already be pinned in that file (toke 121.27,
+# audit-120 DEP-01): this script verifies it on every connection and never
+# accepts a new or changed key. To pin it once, fetch the key and compare its
+# fingerprint with the one the server itself reports (Lightsail console, or
+# `ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub` on the box) before
+# adding it:
+#   ssh-keyscan -t ed25519 "$TOKE_DEPLOY_HOST" > /tmp/hk && ssh-keygen -lf /tmp/hk
+#   cat /tmp/hk >> ~/.ssh/known_hosts      # only after the fingerprints match
+#
+# The origin TLS certificate and key (certs/) are NOT sent by this script
+# (121.27, DEP-03): they are provisioned on the server and stay there.
 #
 # Usage:
 #   # Auto-detect mode based on git changes since last deploy tag:
@@ -48,8 +62,23 @@ fi
 
 DEPLOY_USER="${TOKE_DEPLOY_USER:-bitnami}"
 DEPLOY_DIR="${TOKE_DEPLOY_DIR:-~/website}"
-SSH_OPTS="-i ${TOKE_DEPLOY_KEY} -o StrictHostKeyChecking=no -o BatchMode=yes"
+KNOWN_HOSTS="${TOKE_DEPLOY_KNOWN_HOSTS:-${HOME}/.ssh/known_hosts}"
+# 121.27 (DEP-01): the host key is checked, never waved through. This used to
+# checking switched off (StrictHostKeyChecking set to no), so anyone on the
+# deploy path could impersonate
+# the server and receive what the deploy sends: the build inputs it compiles
+# into the live binary, and (until 121.27) the origin TLS private key.
+SSH_OPTS="-i ${TOKE_DEPLOY_KEY} -o StrictHostKeyChecking=yes -o UserKnownHostsFile=${KNOWN_HOSTS} -o BatchMode=yes"
 REMOTE="${DEPLOY_USER}@${TOKE_DEPLOY_HOST}"
+
+# Fail before any gate runs, and without touching the network, when the host
+# key has not been pinned: ssh would refuse later, after the build.
+if ! ssh-keygen -F "${TOKE_DEPLOY_HOST}" -f "${KNOWN_HOSTS}" >/dev/null 2>&1; then
+  echo "ERROR: no pinned host key for ${TOKE_DEPLOY_HOST} in ${KNOWN_HOSTS}." >&2
+  echo "       Pin it once, after checking its fingerprint out of band (see the" >&2
+  echo "       header of this script). This script never accepts an unknown key." >&2
+  exit 1
+fi
 
 # Paths local to this repo (script lives in scripts/, so repo root is one up)
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -187,13 +216,11 @@ rsync_content() {
     "${REMOTE}:${DEPLOY_DIR}/sites/"
   echo "    sites/ synced"
 
-  # Rsync certs/ (TLS certificates)
-  if [[ -d "${REPO_ROOT}/certs" ]]; then
-    rsync -az -e "ssh ${SSH_OPTS}" \
-      "${REPO_ROOT}/certs/" \
-      "${REMOTE}:${DEPLOY_DIR}/certs/"
-    echo "    certs/ synced"
-  fi
+  # certs/ is deliberately NOT synced (toke 121.27, audit-120 DEP-03). It used
+  # to be copied from the deploying machine on every deploy, so the origin's
+  # unencrypted private key lived in every checkout that ever deployed and
+  # crossed the network each time. The certificate and key are provisioned on
+  # the server and never leave it; replacing them is a server-side step.
 
   # Rsync static/ (CSS, images, tokenizer data)
   rsync -az --delete -e "ssh ${SSH_OPTS}" \
@@ -227,8 +254,8 @@ if [[ "${MODE}" == "content" ]]; then
     echo "    ${HEALTH}"
     echo ""
     echo "Content deploy complete. Server is running; edited templates and build/"
-    echo "files are live now. A template ADDED or REMOVED, llms.txt, or certs/ only"
-    echo "take effect after a restart (specs/production-config.md, 132.55a)."
+    echo "files are live now. A template ADDED or REMOVED, or llms.txt, only take"
+    echo "effect after a restart (specs/production-config.md, 132.55a)."
   else
     echo "    WARNING: Health check failed or server not running."
     echo "    Content was synced but the server may need a restart:"
