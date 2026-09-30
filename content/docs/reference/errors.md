@@ -17,8 +17,16 @@ The toke compiler emits structured JSON diagnostics with stable error codes. Err
 | E4xxx  | 4000--4999  | Type Checker       |
 | E5xxx  | 5000--5999  | Arena Validator    |
 | E6xxx  | 6000--6999  | IR Lowerer         |
+| E8xxx  | 8000--8999  | FFI                |
 | E9xxx  | 9000--9999  | Codegen / Internal |
-| W1xxx  | 1000--1999  | Warnings           |
+| Wnxxx  | same ranges | Warnings — the number, not the emitting pass, sets the stage |
+
+The `stage` field of every JSON diagnostic is derived from the code's number
+(`phase_for_code` in `src/diag.c`), so it reads `lex`, `parse`,
+`name_resolution`, `type_check`, `arena_check`, `ir_lower`, `ffi` or `codegen`.
+Each section's **Stage** row gives that value first; when another pass
+actually emits the code, the row says so in parentheses (for example E2030 is
+`parse`, emitted by name resolution). `make check-error-codes` gates both rows.
 
 ---
 
@@ -123,6 +131,20 @@ Emitted for a malformed number (e.g. a bad hex/float form).
 
 Emitted when an uppercase-cased keyword is used where the default (lowercase) profile expects it lowercase.
 
+### E1007
+
+**Unterminated comment**
+
+| Field    | Value |
+|----------|-------|
+| Severity | error |
+| Stage    | lex |
+
+Emitted when a `(*` comment is still open at end of file. Comments nest, so a
+`(*` inside a comment (e.g. `COUNT(*)`) opens another level and takes the `*)`
+meant for the outer one. Reported at the outermost `(*`, naming the nested
+opener. No fix field (story 138.10).
+
 ## Lexer Warnings (W1xxx)
 
 ### W1010
@@ -151,7 +173,7 @@ default profile, where `\(expr)` works.
 | Field    | Value |
 |----------|-------|
 | Severity | warning |
-| Stage    | lex |
+| Stage    | type_check |
 
 Warns that a cast loses information (e.g. `f64` to `i64`).
 
@@ -176,6 +198,13 @@ Hint that an identifier begins with a reserved keyword prefix.
 | Stage    | lex |
 
 Cross-language hint: a keyword from another language was detected.
+
+Not emitted where toke has a name spelled like the keyword (story 138.10):
+after `let`, before `=` or a `:` that does not end the line, and -- for the
+statement and declaration keywords (`def`, `return`, `class`, `var`, `else`,
+`while`, ...) -- before an operator or closing punctuation (`def.a`,
+`f(def)`). Value-like words (`None`, `null`, `nil`, `undefined`, `True`,
+`False`) and `print` / `printf` / `console` still warn in value position.
 
 ## Parser Errors (E2xxx)
 
@@ -274,7 +303,7 @@ Triggers E2004.
 | Field    | Value      |
 |----------|------------|
 | Severity | error      |
-| Stage    | type_check |
+| Stage    | parse (emitted by the type checker) |
 
 Pointer types (`*T`) are only valid in extern (bodyless) function signatures. Using `*T` in a function with a body produces this error.
 <!-- skip-check -->
@@ -320,7 +349,7 @@ Emitted when a struct declares the same field name twice.
 | Field    | Value           |
 |----------|-----------------|
 | Severity | error           |
-| Stage    | name_resolution |
+| Stage    | parse (emitted by name resolution) |
 
 The module path in an `i=` declaration does not resolve to any `.tki` interface file on the search path.
 
@@ -337,7 +366,7 @@ A `std.*` path is checked the same way (story 127.42): a standard-library module
 | Field    | Value           |
 |----------|-----------------|
 | Severity | error           |
-| Stage    | name_resolution |
+| Stage    | parse (emitted by name resolution) |
 
 The import graph contains a cycle. Module A imports B which (directly or transitively) imports A.
 
@@ -352,7 +381,7 @@ The import graph contains a cycle. Module A imports B which (directly or transit
 | Field    | Value           |
 |----------|-----------------|
 | Severity | error           |
-| Stage    | name_resolution |
+| Stage    | parse (emitted by name resolution) |
 
 The optional version string in an import declaration does not match the expected `MAJOR.MINOR` or `MAJOR.MINOR.PATCH` format.
 <!-- skip-check -->
@@ -374,7 +403,7 @@ Triggers E2035.
 | Field    | Value           |
 |----------|-----------------|
 | Severity | error           |
-| Stage    | name_resolution |
+| Stage    | parse (reserved for name resolution; not yet emitted) |
 
 Reserved. Interface files were found but none match the requested version constraint.
 
@@ -387,7 +416,7 @@ Reserved. Interface files were found but none match the requested version constr
 | Field    | Value           |
 |----------|-----------------|
 | Severity | error           |
-| Stage    | name_resolution |
+| Stage    | parse (emitted by name resolution) |
 
 Two import declarations reference the same module path with different major versions. toke does not support diamond-dependency version conflicts within a single compilation unit.
 
@@ -456,7 +485,7 @@ Triggers E3012 on the second `t=box`.
 | Field    | Value      |
 |----------|------------|
 | Severity | error      |
-| Stage    | type_check |
+| Stage    | name_resolution (emitted by the type checker) |
 
 The propagation operator `!` can only be applied to a value whose type is an error union (`T!Err`), and only inside a function whose return type is also an error union.
 
@@ -483,6 +512,22 @@ f=bad(): i64 { < mt true {$true:v 1} };
 ```
 
 Triggers E4010 (non-exhaustive match: missing arm for `false`).
+
+A result match whose value is used must have both an `$ok` arm and an
+error arm (`$err`, or the variants of the error sum); without one, that side
+would yield the zero value of the result type.  A result match standing as a
+statement may have just one: `mt g() {$err:e io.println("failed")};` runs only
+on failure.
+<!-- skip-check -->
+```text
+let a=mt g() {$ok:v v};
+```
+
+Triggers E4010 (non-exhaustive match: missing arm for `$err`), with no `fix`.
+
+The last statement of a branch of an expression-`if` is that `if`'s value, so
+a match there is used too (story 127.252): `let a=if(c){ mt g() {$ok:v v} }el{ 5 };`
+is E4010. An `if` standing as a statement discards its branches' values.
 
 **Fix:** Add the missing match arm(s) to cover all cases.
 
@@ -622,7 +667,15 @@ Triggers E4043.
 | Severity | error      |
 | Stage    | type_check |
 
-Reserved. Planned for type mismatches at FFI boundaries.
+A body-less extern (`f=malloc(n:i64):i64;`) names a C function that the
+compiler itself declares and calls -- `malloc` (array literals, closure
+environments), and `fprintf` and `exit` (the `--max-iters` loop guard) --
+with a different signature.  A symbol has one declaration, so the compiler's
+own calls and the extern cannot both be right.  Emitted during code
+generation (story 127.219), so `--check` does not report it.  An extern that
+repeats the compiler's own declaration exactly is accepted.  No `fix`:
+changing the signature or binding a different symbol is the author's choice.
+Conformance: `test/conform/C211_extern_own_c_symbol.sh`.
 
 ---
 
@@ -633,7 +686,7 @@ Reserved. Planned for type mismatches at FFI boundaries.
 | Field    | Value |
 |----------|-------|
 | Severity | error |
-| Stage    | typecheck |
+| Stage    | type_check |
 
 Emitted when a call passes too few or too many arguments.
 
@@ -650,7 +703,7 @@ Since 127.1 it also covers a member call on a VALUE receiver, `recv.member(args)
 | Field    | Value |
 |----------|-------|
 | Severity | error |
-| Stage    | typecheck |
+| Stage    | type_check |
 
 Emitted for `alias.member(...)` when neither the imported module's `.tki` interface nor the runtime declares `member`. Before 136.1 such a call was lowered to a symbol name anyway and surfaced as an E9003 link failure naming a mangled symbol, with no file and no line.
 
@@ -688,7 +741,7 @@ guess.
 | Field    | Value |
 |----------|-------|
 | Severity | error |
-| Stage    | codegen |
+| Stage    | type_check (also emitted by codegen) |
 
 Emitted when a `\(expr)` interpolates an array, struct, or map. Convert it to a string first (e.g. its fields/elements). Fires at code generation.
 
@@ -699,9 +752,9 @@ Emitted when a `\(expr)` interpolates an array, struct, or map. Convert it to a 
 | Field    | Value |
 |----------|-------|
 | Severity | error |
-| Stage    | typecheck |
+| Stage    | type_check |
 
-Emitted when a declared type's name stands in a value position. Three spellings
+Emitted when a declared type's name stands in a value position. Four spellings
 reach it, from three stages:
 
 - **`$Type.member`** (typecheck, 127.90) — member access on a type rather than
@@ -734,6 +787,15 @@ reach it, from three stages:
   at all was the correct-looking mistake — calling a real member of a module
   you forgot to import.
 
+- **a type as a key or value of a map literal entry** (typecheck, 127.226) —
+  `@($str:1)`, `@("a":$str)`, or a type entry alongside real ones. The one
+  legitimate shape is the typed EMPTY map, a single entry with a type as its
+  key and, as its value, a type or another typed-empty literal:
+  `@($str:$i64)`, `@($str:@($tok))` — the map counterpart of the typed-empty
+  array `@($f64)`. Before 127.226 every one of these built a map holding a
+  junk entry keyed by `""`, so the empty form answered `.len` 1. No `fix`: the
+  checker cannot tell whether an empty map or a real key was meant.
+
 A name that is not also a type is still `E3011` (undefined identifier), and
 the legitimate bare-type positions — `as Type` casts, `$Type{…}` struct
 literals, `:Type` annotations, sum-type variant constructors and module
@@ -758,7 +820,7 @@ Triggers E4033 on `thing`.
 | Field    | Value |
 |----------|-------|
 | Severity | error |
-| Stage    | codegen |
+| Stage    | type_check (emitted by codegen) |
 
 Emitted when a `.field` access reaches lowering and the base's struct type is not established, and the field name does not resolve to one unambiguous layout — either no struct in scope declares it, or several declare it at different offsets.
 
@@ -773,7 +835,7 @@ No `fix` is supplied: the obvious instruction — annotate the binding — is no
 | Field    | Value |
 |----------|-------|
 | Severity | error |
-| Stage    | typecheck (also codegen) |
+| Stage    | type_check (also emitted by codegen) |
 
 Emitted for `m.name` on a map where `name` is not one of the two map
 properties, `len` and `keys`. A map has no fields, so there is no layout to
@@ -809,7 +871,7 @@ it is a member call, and the receiver dispatch is what refuses it.
 | Field    | Value |
 |----------|-------|
 | Severity | error |
-| Stage    | typecheck |
+| Stage    | type_check |
 
 Emitted for `recv.member(args)` where `recv` is a value rather than an import
 alias and `member` is not a member the receiver dispatch lowers.
@@ -871,7 +933,7 @@ and the call disagrees with its arity.
 | Field    | Value |
 |----------|-------|
 | Severity | error |
-| Stage    | typecheck |
+| Stage    | type_check |
 
 Emitted when code assigns to a `let` binding that was not declared mutable.
 
@@ -882,7 +944,7 @@ Emitted when code assigns to a `let` binding that was not declared mutable.
 | Field    | Value |
 |----------|-------|
 | Severity | error |
-| Stage    | typecheck |
+| Stage    | type_check |
 
 `<` is toke's return operator. A function body that ends in a *value*
 expression without one computes the value, discards it, and returns `0` —
@@ -951,7 +1013,7 @@ Per `AGENTS.md` §3.1 an incorrect `fix` breaks the automated repair loop, and
 | Field    | Value |
 |----------|-------|
 | Severity | error |
-| Stage    | typecheck |
+| Stage    | type_check |
 
 `<$v(x)` returns a variant constructed by the call form, and `$v` is declared
 by two or more sum types of which none is the enclosing function's error
@@ -983,7 +1045,7 @@ reported as **E4031**, the code the literal form `<$other{$v:x}` already drew.
 | Field    | Value |
 |----------|-------|
 | Severity | error |
-| Stage    | typecheck |
+| Stage    | type_check |
 
 A `\(..)` interpolation whose expression contains another interpolated
 string. The lexer accepts it, but the lowering finds the end of each `\(..)`
@@ -1003,6 +1065,69 @@ f=show(n: i64): $str { <"\(tag("\(n)"))" };
 Bind the inner string first — `let t="\(n)"; <"\(tag(t))"`. There is no
 `fix` field: lifting the inner string ahead of the statement can reorder the
 side effects of the other interpolations in the same literal.
+
+### E4074
+
+**A comparison stands as a statement: its result is discarded**
+
+| Field    | Value |
+|----------|-------|
+| Severity | error |
+| Stage    | type_check |
+
+A comparison (`==`, `!=`, `<`, `>`, `<=`, `>=`) written as a statement
+computes a `bool` and throws it away, so the statement does nothing. The
+usual cause is `==` written for the assignment `=`: until 137.14 / 138.10
+`x.a==9;` compiled as a silent no-op. `<` is also toke's return operator, so
+a missing `;` can turn `g()` and `<$ok(1)` into one comparison. The last
+statement of a block is not judged (it may be the block's value; a function
+body's tail is E4071's). There is no `fix`: `=` is the likely repair for
+`==`, and not for the other operators.
+
+<!-- skip-check -->
+```text
+m=test;
+t=$r{a:i64};
+f=main(): i64 { let x=mut.$r{a:1}; x.a==9; <x.a };
+```
+
+## Arena Errors (E5xxx)
+
+### E4075
+
+**Regex pattern literal is not in the supported regex language**
+
+| Field    | Value |
+|----------|-------|
+| Severity | error |
+| Stage    | type_check (emitted by the regex_check pass that follows it) |
+
+A string-literal pattern passed to `str.containsre`, `str.countre`,
+`str.findall`, `str.matches` or `str.replacere` uses syntax outside toke's
+regex language — a lazy quantifier (`*?`), a backreference (`\1`),
+lookaround or an inline flag other than a leading `(?i)`, an unknown escape,
+an unbalanced `(`, `)` or `[`, a `{` that does not start a bound, an empty
+alternative, or repeats that expand past 2000 states. The diagnostic points
+at the offending byte inside the literal. Until 137.9 these patterns
+compiled and then matched nothing at run time, because a POSIX `regcomp`
+failure read as "no match". The supported language is in
+[str.md](../stdlib/str.md#regular-expressions); the same engine checks the
+pattern here and runs it in the program, so they cannot disagree. A pattern
+held by an immutable `let` bound to a string literal is checked the same way
+(121.45) when that `let` is provably the binding the call reads: it is the
+name's only binder in the function, and the call follows it in its block. A
+pattern that is shadowed, `mut.`-bound, a parameter, or computed at run time
+is checked when it is used, and an invalid one traps `RT008`.
+
+<!-- skip-check -->
+```text
+m=test;
+i=str:std.str;
+f=main():i64{ <str.countre("<a><b>";"<.*?>") };
+```
+
+Rewrite the construct, e.g. `<[^>]*>` for `<.*?>`. There is no `fix` field:
+the intended pattern is not knowable from the rejected one.
 
 ## Arena Errors (E5xxx)
 
@@ -1028,7 +1153,7 @@ f=bad(): i64 { let x = 0; {arena x = 1}; < x };
 | Field    | Value |
 |----------|-------|
 | Severity | error |
-| Stage    | arena |
+| Stage    | arena_check |
 
 Emitted for statements that follow a `<` return in the same block.
 
@@ -1123,6 +1248,37 @@ basic block!" — a backend crash rather than a diagnostic.
 
 A fixed compiler capacity was exceeded (e.g. too many locals, functions, or imports).
 
+The import, function-signature and struct-type caps are met at `--check`, at
+the import or declaration that crosses them, with `expected` = the limit and
+`got` = the count. Imported signatures and types count: every function of an
+imported user module's `.tki`, every record of an imported `std` module, and
+the built-in `timeparts` and `none` types. The message lists what was counted.
+
+**Fix:** raise the limit to the count: `--max-imports=N` / `max_imports`,
+`--max-funcs=N` / `max_funcs`, `--max-structs=N` / `max_structs` (in
+`tkc.toml`). The `fix` field names the exact value (story 138.15). The
+defaults are 32 imports, 1024 function signatures and 1024 struct types
+(`tkc --show-limits`); the last two were 128 and 64 until story 127.250.
+
+The per-function local-variable cap (`--max-locals=N` / `max_locals`, shared
+by pointer locals, local types and shadowing aliases) is reported once per
+function, closure or globals initialiser that crosses it, at that function,
+naming it, with `expected` = the limit and `got` = the count needed. That
+count is a lower bound -- a full registry stops recording, which can hide
+further demand -- so this E9010 carries no `fix` (story 127.252). `--check`
+meets the part of it that is certain: the parameters, `let` bindings and
+`lp(let ..)` variables of a function's own body (match-arm subtrees and
+closure bodies are left to codegen, which may release or lift them), so a
+function the checker passes can still be refused by the build, never the
+reverse (127.252 residue).
+
+Source nested too deeply for the compiler's recursive passes is refused
+before them, as one E9010 at the offending token or node, no `fix`: more
+than 256 open brackets, or a run of more than 256 prefix operators
+(`-` `!` `~`) or type prefixes (`@` `*`), or a syntax tree more than 1000
+levels high -- a long `a+b+c+...` chain is one level per operator. Before
+story 121.28 such input crashed the compiler with no diagnostic.
+
 ### E9020
 
 **Failed to write .tkir file**
@@ -1182,6 +1338,25 @@ nothing.
 
 Before 127.208 this condition was reported as E9020, a code whose meaning is
 "failed to write .tkir file"; E9020 now means only that.
+
+### E9024
+
+**Stdlib or runtime directory path contains whitespace**
+
+| Field    | Value |
+|----------|-------|
+| Severity | error |
+| Stage    | codegen |
+
+A build to an executable was requested while `TKC_STDLIB_DIR` (as resolved by
+the compiler, see E9022) or `TKC_RUNTIME_DIR` names a directory whose path
+contains whitespace. The stdlib C sources and vendor include flags reach
+clang as whitespace-separated arguments, so such a path would be split into
+fragments — and a fragment that looks like a flag (`-v`, `-o`) would reach
+clang as one. Emitted before clang is run; `--check` is unaffected. Use a
+directory whose path has no whitespace (a symlink to it works: the compiler
+resolves `TKC_STDLIB_DIR` to its real path). No `fix`: the right path is not
+knowable from the diagnostic (121.28, audit-120 compiler-toolchain COM-02).
 
 ## Semantic Warnings (W2xxx / W3xxx / W5xxx / W8xxx)
 
@@ -1272,7 +1447,7 @@ mut.1` and write `x = 2`. If a distinct binding was meant, rename it.
 | Field    | Value |
 |----------|-------|
 | Severity | warning |
-| Stage    | typecheck |
+| Stage    | arena_check (emitted by the type checker) |
 
 Escape analysis warns that a value may outlive its arena.
 
@@ -1283,6 +1458,6 @@ Escape analysis warns that a value may outlive its arena.
 | Field    | Value |
 |----------|-------|
 | Severity | warning |
-| Stage    | typecheck |
+| Stage    | ffi (emitted by codegen) |
 
 An `extern` function crosses the FFI boundary and is not memory-safe.

@@ -17,8 +17,8 @@ The `std.svg` module provides a builder API for constructing SVG documents. Crea
 |-------|------|---------|
 | width | f64 | Document width |
 | height | f64 | Document height |
-| viewbox | $str | SVG viewBox attribute |
-| elements | @($svgelem) | Child elements |
+| viewbox | $str | SVG viewBox attribute, `"0 0 <width> <height>"` as `svg.render` writes it |
+| elements | @($svgelem) | Child elements, in the order `svg.append` added them |
 
 ### $svgelem
 
@@ -30,10 +30,10 @@ Opaque handle to an SVG element.
 |-------|------|---------|
 | fill | $str | Fill color |
 | stroke | $str | Stroke color |
-| stroke_width | f64 | Stroke width |
+| strokewidth | f64 | Stroke width |
 | opacity | f64 | Element opacity (0.0--1.0) |
-| font_size | f64 | Font size for text elements |
-| font_family | $str | Font family for text elements |
+| fontsize | f64 | Font size for text elements |
+| fontfamily | $str | Font family for text elements |
 
 ## Functions
 
@@ -52,6 +52,13 @@ Opaque handle to an SVG element.
 | `svg.render` | `doc: $svgdoc` | `$str` | Render the document to an SVG string |
 | `svg.style` | `fill: $str; stroke: $str; stroke_width: f64` | `$svgstyle` | Create a style with common defaults |
 | `svg.arrow` | `x1: f64; y1: f64; x2: f64; y2: f64; style: $svgstyle` | `$svgelem` | Create a line with an arrowhead |
+
+## Escaping
+
+Every string you pass is written as data, not markup: text content and every
+attribute value (colours, font family, path data, group transforms) are
+XML-escaped on output, so a label such as `a < b & "c"` renders as that text
+and cannot close its element or attribute.
 
 ## Usage
 

@@ -16,10 +16,10 @@ An entry below is declared as a `func` export in a `stdlib/*.tki` interface file
 
 ## Population
 
-| `.tki` func exports | 926 |
+| `.tki` func exports | 927 |
 |---|---|
-| Resolve to a defined symbol | 879 |
-| **Quarantined (no defined symbol)** | **47** |
+| Resolve to a defined symbol | 887 |
+| **Quarantined (no defined symbol)** | **40** |
 | Stale skips (quarantined but now resolving) | 0 |
 
 A stale skip fails `make check-tki`, so the skiplist cannot silently outlive the gap it records: the moment an export gets its glue, the gate demands the line be deleted.
@@ -75,12 +75,6 @@ An export whose symbol **exists** but whose declared **arity** disagrees with th
 | `df.schema` | `tk_dataframe_schema_w` | 2026-09-19 no _w glue; no C impl [101.R3c] |
 | `df.tojson` | `tk_dataframe_tojson_w` | 2026-09-19 no _w glue; no C impl [101.R3c] |
 
-### `encoding` (1)
-
-| Export | Expected symbol | Reason |
-|---|---|---|
-| `encoding.b64urldecode` | `tk_encoding_b64urldecode_w` | 2026-09-19 C core encoding_b64urldecode lives in acme.c, no _w glue [131.38-followup] |
-
 ### `html` (5)
 
 | Export | Expected symbol | Reason |
@@ -100,14 +94,6 @@ An export whose symbol **exists** but whose declared **arity** disagrees with th
 | `http.res.json` | `tk_http_res.json_w` | 2026-09-19 spec spelling http.res.* is a dotted export the resolver cannot reach; callable form is http.resok/resjson/resbad/reserr (llvm.c map) — pick one spelling; no C impl [131.38-followup] |
 | `http.res.ok` | `tk_http_res.ok_w` | 2026-09-19 spec spelling http.res.* is a dotted export the resolver cannot reach; callable form is http.resok/resjson/resbad/reserr (llvm.c map) — pick one spelling; no C impl [131.38-followup] |
 
-### `image` (3)
-
-| Export | Expected symbol | Reason |
-|---|---|---|
-| `image.fliph` | `tk_image_fliph_w` | 2026-09-19 C core image_* in image.c, no _w glue; core=image_flip_h [131.38-followup] |
-| `image.flipv` | `tk_image_flipv_w` | 2026-09-19 C core image_* in image.c, no _w glue; core=image_flip_v [131.38-followup] |
-| `image.tograyscale` | `tk_image_tograyscale_w` | 2026-09-19 C core image_* in image.c, no _w glue; core=image_to_grayscale [131.38-followup] |
-
 ### `json` (5)
 
 | Export | Expected symbol | Reason |
@@ -124,19 +110,11 @@ An export whose symbol **exists** but whose declared **arity** disagrees with th
 |---|---|---|
 | `math.hypot` | `tk_math_hypot_w` | 2026-09-19 no _w glue and not in llvm.c libc map; core=math_hypot [131.38-followup] |
 
-### `mdns` (2)
+### `mdns` (1)
 
 | Export | Expected symbol | Reason |
 |---|---|---|
-| `mdns.isavailable` | `tk_mdns_isavailable_w` | 2026-09-19 no _w glue; core=mdns_is_available [131.38-followup] |
 | `mdns.resolve` | `tk_mdns_resolve_w` | 2026-09-19 no _w glue; core=mdns_resolve [131.38-followup] |
-
-### `mlx` (2)
-
-| Export | Expected symbol | Reason |
-|---|---|---|
-| `mlx.embed` | `tk_mlx_embed_w` | 2026-09-19 no _w glue; core=mlx_embed [131.38-followup] |
-| `mlx.unload` | `tk_mlx_unload_w` | 2026-09-19 no _w glue; core=mlx_unload [131.38-followup] |
 
 ### `template` (1)
 

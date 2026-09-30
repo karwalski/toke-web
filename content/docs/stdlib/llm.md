@@ -11,6 +11,10 @@ The `std.llm` module provides a provider-agnostic client for large language mode
 
 > **Note:** `llm.tki` exports six functions: `llm.client`, `llm.chat`, `llm.chatstream`, `llm.streamnext`, `llm.complete`, and `llm.countokens`. Extended features (`llm.embedding`, `llm.json_mode`, `llm.vision`, `llm.retry_backoff`, `llm.usage`) are planned but not yet in the current tki -- do not use them.
 
+> **Capability:** every request (`llm.chat`, `llm.chatstream`, `llm.complete`, and `std.llmtool`'s `chatwithtools` / `submitresult`) opens a TCP connection and needs the **net** grant, like `http.client`: run the program with `--allow-net` or declare it in `tkc.toml [capabilities]`. Without it the program stops with `CAP001: capability 'net'` before connecting (121.42).
+
+> **Transport security (121.23):** an `https://` base URL is spoken over TLS 1.2 or later. The server's certificate chain is verified against OpenSSL's default trust store (the `SSL_CERT_FILE` / `SSL_CERT_DIR` environment variables override it, as for any OpenSSL client) and its name is checked against the host in the URL; a certificate that fails either check is refused before the request is sent. An API key is never sent over cleartext `http://` to a host that is not a loopback address -- that request fails with `refusing to send the API key over cleartext http:// to a non-loopback host; use https://`. A local server (`http://localhost:11434/v1`), with or without a key, works as before. The base URL and key are operator configuration; a control character in either (a CR/LF header injection) is refused. Never build them from request data.
+
 ## Types
 
 ### $llmclient
@@ -19,10 +23,10 @@ Holds all connection parameters for one LLM provider endpoint. Create with `llm.
 
 | Field | Type | Meaning |
 |-------|------|---------|
-| provider | $str | Provider name (e.g. `"openai"`, `"anthropic"`, `"ollama"`) |
+| provider | $str | Provider name, from the base URL: `"ollama"` when it names port 11434 or contains `ollama`, `"openai"` for `api.openai.com`, `"anthropic"` for `api.anthropic.com`, otherwise the URL's host (e.g. `"127.0.0.1"`) |
 | model | $str | Model identifier (e.g. `"gpt-4o"`, `"claude-3-5-sonnet-20241022"`) |
 
-The runtime also stores the API key, base URL, and timeout internally; these are not directly accessible as toke fields.
+The runtime also stores the API key, base URL, and timeout internally; these are not accessible as toke fields — no field of `$llmclient` reads the API key.
 
 ### $llmmsg
 

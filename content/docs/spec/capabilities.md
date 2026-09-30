@@ -1,7 +1,7 @@
 # toke Capability Model [N]
 
-**Status:** implemented (Epic 124.4a–d, 2026-07-06); default is `allow-all` until the
-deny-by-default flip (124.4g). ADR: [ADR-0010](/docs/decisions/ADR-0010/).
+**Status:** implemented (Epic 124.4a–d, 2026-07-06); deny-by-default since the
+124.4g flip (§4). ADR: [ADR-0010](/docs/decisions/ADR-0010/).
 
 toke compiles to native code with no language-level sandbox. Without a capability
 model, any program that reaches a `std` filesystem / network / environment /
@@ -16,8 +16,8 @@ Exactly five classes gate the ambient surface:
 
 | Class | Grants | Example sinks |
 |-------|--------|---------------|
-| `fs.read` | read files / dirs / metadata | `file.read`, `file.list`, `file.stat`, `os.open` (read), `db.open` |
-| `fs.write` | create / modify / delete files & dirs | `file.write`, `file.mkdir`, `file.delete`, `os.open` (write), `db.open` |
+| `fs.read` | read files / dirs / metadata | `file.read`, `file.list`, `file.stat`, `os.open` (read), `db.open`, `toml.loadfile`, `toon.load`, `yaml.load`, `md.renderfile`, `crypto.sha256file` / `crypto.sha256verify` |
+| `fs.write` | create / modify / delete files & dirs | `file.write`, `file.mkdir`, `file.delete`, `os.open` (write), `db.open`, `log.openaccess` / `log.openerror` (not for `/dev/stderr` or `/dev/stdout`) |
 | `net` | listen / connect / send / receive | `http.get`/`serve*`, `net.listen`, `ws.connect`, `tls.*`, `db` (pg/mysql) |
 | `env.write` | mutate the process environment | `env.set`, `os.setenv` |
 | `process.spawn` | fork/exec other programs | `process.exec`, `process.spawn`, `process.spawndetached` |
@@ -25,6 +25,33 @@ Exactly five classes gate the ambient surface:
 Environment **reads**, closing a handle, and reads/writes on an *already-acquired*
 handle are ungated: the check fires once, at the **acquisition** point (open file /
 listen / connect / spawn / setenv), matching the Deno model.
+
+### 1.1 Which entries are gated, and how that is kept true [I]
+
+The sink list is not maintained by hand. `scripts/check_capability_sinks.py` walks
+every stdlib entry a program can call (each `.tki` function's wrapper, and the
+symbols `src/stdlib_tables.c` and `src/llvm.c` name) through the C call graph to
+every fs / net / env-write / spawn primitive it can reach, and fails when one is
+reached with no `TK_REQUIRE` of its class on the path. Conformance case
+`C470_capability_sinks_gated.sh` runs it, and shows it failing when a gate is
+removed (story 121.22).
+
+What it cannot yet pass is listed, entry by entry, in
+`scripts/check_capability_sinks_skiplist.txt`: sinks that are not the program's
+authority (entropy from `/dev/urandom`, the server's own pre-forked workers, a log
+file's rotation after it was opened under a grant), and **known gaps**. The known
+gaps, as of 2026-09-29, are entries that reach a primitive with no grant under
+enforcement: `llm.*` connects without `net`; `i18n.load`, `template.load` and the
+`vecstore` load/save read or write files with no grant. Story 121.42 closed the
+rest: `toon.load`, `yaml.load`, `md.renderfile` and `crypto.sha256file` /
+`sha256verify` take `fs.read`; `router.serve` (and `chart.serve` /
+`dashboard.serve`, which serve through it) takes `net` before it binds;
+`http.downloadfile` takes `fs.write` as well as `net`, before it fetches
+anything; and `http.servedir` / `http.servepages` take `fs.read` when they
+register, since the mount hands the server the authority to read files under it
+on every request.
+The skiplist is self-failing: a line whose gap is fixed must be deleted in the same
+commit.
 
 ## 2. Grant channels [N]
 
@@ -39,36 +66,57 @@ Passed to the compiled binary itself:
       --allow-env --allow-run[=PATH] --allow-all
 ```
 
-A specific grant opts the program into enforcement; `--allow-all` is the deliberately
-broad, greppable escape hatch. (Scoped values `=PATH`/`=HOST` are accepted today and
-coarsened to the whole class; per-path/per-host scoping is a planned refinement.)
+Every class is denied unless granted (§4); `--allow-all` is the deliberately broad,
+greppable escape hatch. A scoped value `=PATH`/`=HOST` is accepted and **ignored**:
+`--allow-read=/srv/www` grants `fs.read` for every path (§2.2). Per-path/per-host
+scoping is not implemented.
 
 ### 2.2 Compile-time baking
 
 Grants declared at compile time are baked into the binary so a shipped artifact
 carries its own authority (no manifest needs to travel with it):
 
-- CLI: `tkc app.tk --allow-net --allow-read --cap-enforce -o app`
-- `tkc.toml` `[capabilities]` table:
+- CLI: `tkc app.tk --allow-net --allow-read -o app`
+- `tkc.toml` `[capabilities]` table (read from `./tkc.toml`, or `--config=PATH`):
 
 ```toml
 [capabilities]
 net = true
-fs_read = "/srv/www"     # quoted path/host = grant (coarsened to the class)
+fs_read = true
 fs_write = false
 process_spawn = false
 env_write = false
-enforce = true           # bake deny-by-default into this binary
 ```
 
 Keys: `fs_read`/`read`, `fs_write`/`write`, `net`, `env_write`/`env`,
-`process_spawn`/`run`, `all`, `enforce`. Precedence: CLI `--allow-*` unions with the
-`tkc.toml` set.
+`process_spawn`/`run`, `all`, and `enforce` (below). A value is `true`/`1`,
+`false`/`0`, or a quoted string. Precedence: CLI `--allow-*` unions with the
+`tkc.toml` set, and the runtime flags of §2.1 union with both.
+
+What the broker does with each value (`src/config.c`, `src/stdlib/capabilities.c`;
+121.42 (8), measured 2026-09-30):
+
+- **Every grant is a whole class.** There is no per-path or per-host scoping. A
+  non-empty quoted string is read as `true`: `fs_read = "/srv/www"` grants
+  `fs.read` for **every** path — the program can read `/etc/hosts` — not only
+  `/srv/www`. An empty string `""` is read as `false`. Write `true`, not a path,
+  so the manifest does not claim a restriction the binary does not have.
+- **`enforce` does not switch enforcement.** Enforcement is the default (§4),
+  so `enforce = true` and `--cap-enforce` change nothing, and `enforce = false`
+  does **not** turn enforcement off: a program compiled with only
+  `enforce = false` still stops with CAP001 at its first gated call. The key and
+  flag are accepted for compatibility and recorded (`cap-enforce` in
+  `--show-limits`); the runtime no longer reads the value.
+- **The only way out of enforcement is `all = true`** (or `--allow-all`, at
+  compile or run time), which puts the broker in `ALLOW_ALL`. Granting each of
+  the five classes one by one passes every gate as well, but the broker stays in
+  `ENFORCE`.
 
 Mechanism: the compiler emits strong `@__tk_cap_baked_{grants,present,enforce}`
-globals into the entry module, overriding the weak `allow-all` defaults in the runtime
-broker (`capabilities.c`). `--show-limits` reports the baked set (`cap-present`,
-`cap-grants`, `cap-enforce`).
+globals into the entry module, overriding the weak defaults in the runtime broker
+(`capabilities.c`: no grants, not present). `__tk_cap_baked_enforce` is emitted but
+vestigial. `--show-limits` reports the baked set (`cap-present`, `cap-grants`,
+`cap-enforce`).
 
 ## 3. Enforcement & diagnostics [N]
 
@@ -92,14 +140,13 @@ generate-compile-repair loop can repair a missing grant mechanically:
 
 The broker has two modes:
 
-- `ALLOW_ALL` — nothing is gated (today's default; preserves ambient behaviour).
+- `ALLOW_ALL` — nothing is gated. Reached only by an explicit `--allow-all`
+  (baked or at run time).
 - `ENFORCE` — only granted classes pass; everything else fails closed.
 
-The default is `ALLOW_ALL` until Epic **124.4g** flips it to `ENFORCE`, bundled
-atomically with the first-party manifests (ooke, website) and a grant-aware
-corpus/eval harness so training/eval Pass@1 is not destroyed by the change.
-Enforcement is fully functional today via `--cap-enforce` (baked) or any runtime
-`--allow-*` flag.
+The default is `ENFORCE`: Epic **124.4g** flipped it (2026-07-06), together with
+the first-party manifests (ooke, website) and grant-aware run harnesses, which
+compile with `--allow-all` so that measurement is unaffected.
 
 ## References
 

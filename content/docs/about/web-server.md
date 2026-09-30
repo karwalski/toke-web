@@ -35,13 +35,13 @@ A production-grade HTTP server built into the toke standard library. Single stat
 
 **Pre-fork worker pool** -- multi-process serving via `http_serve_workers`. Specify worker count; `nworkers=1` falls back to single-process mode.
 
-**Keep-alive** -- persistent connections with configurable idle timeout (default 30s, max 1000 requests per connection).
+**Keep-alive** -- persistent connections: an HTTP/1.1 connection idle for 2 s between requests is closed, and one connection serves at most 1000 requests. An HTTP/2 connection (offered over TLS through ALPN) is closed after 30 s with no request in progress.
 
 **Gzip compression** -- automatic response compression.
 
 **ETag generation and 304 support** -- `http_etag_fnv` generates weak ETags via FNV-1a hash. `http_etag_matches` checks `If-None-Match` headers for conditional responses.
 
-**Rate limiting** -- per-IP sliding window.
+**No rate limiting.** The per-IP limiter was removed (story 127.60): it counted connections rather than requests, kept a separate table in each worker process, and HTTP/2 clients never reached it. Put rate limiting at an external reverse proxy or WAF.
 
 **Cookie support** -- `http_cookie` reads cookies from headers; `http_set_cookie_header` builds `Set-Cookie` values with path, domain, max-age, Secure, HttpOnly, and SameSite options.
 
@@ -49,7 +49,7 @@ A production-grade HTTP server built into the toke standard library. Single stat
 
 **URL-encoded form parsing** -- `http_form_parse` handles `application/x-www-form-urlencoded` bodies with `http_form_get` for field lookup.
 
-**Chunked transfer encoding** -- `http_chunked_write` and `http_chunked_read` for streaming large payloads.
+**Chunked transfer encoding** -- `http_chunked_write` writes a body in chunked encoding; the server decodes chunked request bodies itself (see "How a request is framed" in `docs/stdlib/http.md`).
 
 **Request size limits** -- configurable via `http_set_limits`: max header size (default 8 KiB), max body size (default 1 MiB), and per-socket timeout (default 10s).
 
@@ -217,7 +217,7 @@ curl -X POST http://localhost:8080/api/bookmarks \
 
 ### Production Setup: TLS + Workers
 
-A production-ready server with TLS termination, pre-fork workers, rate limiting, gzip compression, and cache headers:
+A production-ready server with TLS termination and pre-fork workers (rate limiting and cache policy belong at a reverse proxy in front of it -- see the comment):
 
 ```toke
 m=prod;
