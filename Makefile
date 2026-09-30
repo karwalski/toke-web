@@ -145,14 +145,25 @@ docs-content:
 # Neither mode writes. The writing mode stays available as `library-recount`
 # and must NOT be put in `ci`: per 132.45 a blind re-run restamps the same
 # stale picture with today's date, which is worse than the stale file.
+#
+# 132.105 — the recount reads two sibling repos: toke-tokenizer (the pure-Python
+# toke_tokenizer package, no install needed -- it goes on sys.path) and
+# toke-test-programs (the library's sources). They are named here, like
+# TOKE_REPO, rather than inferred from this checkout's location, which broke
+# every worktree. tiktoken must be importable (pip install tiktoken==0.12.0,
+# the version the CI workflow pins).
+TOKE_TOKENIZER ?= $(HOME)/tk/toke-tokenizer
+TOKE_TEST_PROGRAMS ?= $(HOME)/tk/toke-test-programs
+LIBRARY_ENV = TOKE_TOKENIZER="$(TOKE_TOKENIZER)" TOKE_TEST_PROGRAMS="$(TOKE_TEST_PROGRAMS)"
+
 check-library:
-	@python3 scripts/recount_library_tokens.py --report
+	@$(LIBRARY_ENV) python3 scripts/recount_library_tokens.py --report
 
 check-library-strict:
-	@python3 scripts/recount_library_tokens.py --check
+	@$(LIBRARY_ENV) python3 scripts/recount_library_tokens.py --check
 
 library-recount:
-	@python3 scripts/recount_library_tokens.py
+	@$(LIBRARY_ENV) python3 scripts/recount_library_tokens.py
 
 # 132.57a — `ci` must VERIFY that content/docs/ matches the toke repo, not
 # silently rewrite it to match. `docs-content` runs the sync, so having it in

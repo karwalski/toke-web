@@ -48,14 +48,51 @@ DRY = CHECK or REPORT
 
 ROOT = Path(__file__).resolve().parent.parent          # toke-website/
 LIB = ROOT / "static" / "library"
-CORPUS = ROOT.parent / "toke-test-programs" / "results"
+# 132.105 — the two sibling repos this reads are NAMED, not guessed from where
+# this checkout happens to sit. Both used to be ROOT.parent/<repo>, which only
+# holds for the main checkout at ~/tk/toke-website: from any git worktree (and in
+# a CI job that checks out one repo) the tokenizer import failed with
+# ModuleNotFoundError and `make ci` stopped here. The Makefile passes
+# TOKE_TOKENIZER and TOKE_TEST_PROGRAMS (default ~/tk/<repo>); the fallback is
+# the old sibling layout, so a direct run from the main checkout still works.
+def _repo(env, name):
+    return Path(os.environ.get(env) or (ROOT.parent / name)).expanduser()
+
+
+TOKENIZER_REPO = _repo("TOKE_TOKENIZER", "toke-tokenizer")
+CORPUS = _repo("TOKE_TEST_PROGRAMS", "toke-test-programs") / "results"
 SOL = CORPUS / "solutions"
 PYREF = CORPUS / "python-refs"
+# The vocabulary is the site's own tracked copy -- the artefact /tokenizer
+# publishes (sha256 42631f3a..., identical to toke-tokenizer's). The package's
+# data/tokenizer_v03.json is not tracked in toke-tokenizer, so a fresh clone of
+# it has the code but not the file its count_tokens() loads.
+VOCAB = ROOT / "static" / "tokenizer_v03.json"
 
-sys.path.insert(0, str(ROOT.parent / "toke-tokenizer" / "python"))
-from toke_tokenizer.tokenizer import count_tokens
-import tiktoken
+
+def _need(path, what, env):
+    if not path.exists():
+        sys.exit(f"recount-library: {what} not found at {path}\n"
+                 f"  Set {env}=/path/to/it (make check-library {env}=...). Missing\n"
+                 f"  sources are a failure, not a skip: with them absent every\n"
+                 f"  program reads as unpaired and the report would describe nothing.")
+
+
+_need(TOKENIZER_REPO / "python" / "toke_tokenizer" / "tokenizer.py",
+      "the toke_tokenizer package", "TOKE_TOKENIZER")
+_need(SOL, "the library's toke sources (results/solutions)", "TOKE_TEST_PROGRAMS")
+_need(PYREF, "the library's Python references (results/python-refs)", "TOKE_TEST_PROGRAMS")
+_need(VOCAB, "static/tokenizer_v03.json", "TOKE_TOKENIZER")
+
+sys.path.insert(0, str(TOKENIZER_REPO / "python"))
+from toke_tokenizer.tokenizer import TokeTokenizer  # noqa: E402
+import tiktoken  # noqa: E402
 CL = tiktoken.get_encoding("cl100k_base")
+_TOKE = TokeTokenizer.from_file(VOCAB)
+
+
+def count_tokens(text):
+    return len(_TOKE.encode(text))
 
 
 def round_or_none(x, n=4):

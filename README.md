@@ -91,6 +91,7 @@ workflow runs the same targets:
 | `make build` | Rebuilds `build/` from committed sources. It is gitignored but the deploy rsyncs it. |
 | `make check-build-fresh` | `build/` is not older than `static/`, `templates/`, `content/` or `sites/`. |
 | `make check-routes` | Starts the server and asserts every route the repository defines answers 200. |
+| `make check-library` | Recounts the `/library` JSON from its sources and reports drift. Reads two sibling repos, named by `TOKE_TOKENIZER` and `TOKE_TEST_PROGRAMS` (default `~/tk/toke-tokenizer`, `~/tk/toke-test-programs`), and needs `tiktoken` installed; a missing one fails the target rather than reporting nothing. |
 
 `scripts/deploy.sh` runs the same gates and rebuilds `build/` before it syncs
 anything, so a deploy cannot publish a stale tree.
