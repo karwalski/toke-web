@@ -67,6 +67,12 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TKC = os.environ.get("TKC", os.path.expanduser("~/tk/toke/tkc"))
 
 TOKENS_TKT = os.path.join(ROOT, "templates", "tokens.tkt")
+# 132.106: the same gallery is ALSO published whole at /tokens.html, from
+# static/tokens.html (build_static.sh copies it into build/). Nothing checked
+# that copy, so it could carry a program the compiler rejects under a green tick
+# after the route's copy was fixed. Its badges are written and checked exactly
+# like the route's.
+TOKENS_PAGES = [TOKENS_TKT, os.path.join(ROOT, "static", "tokens.html")]
 TOKENIZER_TKT = os.path.join(ROOT, "templates", "tokenizer.tkt")
 INDEX_TKT = os.path.join(ROOT, "templates", "index.tkt")
 # The tokenizer /tokenizer actually fetches and encodes with, in the browser
@@ -194,14 +200,15 @@ def compiles(source):
         os.unlink(path)
 
 
-def check_tokens_page(write):
+def check_tokens_page(write, path=TOKENS_TKT):
     """Compile each gallery program; return (findings, new_text_or_None)."""
-    text = open(TOKENS_TKT, encoding="utf-8").read()
+    text = open(path, encoding="utf-8").read()
+    where = "" if path == TOKENS_TKT else os.path.relpath(path, ROOT) + ": "
     findings, out, cursor, checked = [], [], 0, 0
 
     for m in COMPARISON.finditer(text):
         checked += 1
-        title = m.group("title").strip()
+        title = where + m.group("title").strip()
         source = strip_markup(m.group("code"))
         ok, diag = compiles(source)
         want = OK_BADGE if ok else FAIL_BADGE
@@ -486,7 +493,12 @@ def main():
                              text=True).stdout.strip()
     print("compiler: %s (%s)" % (version, TKC))
 
-    findings, n_gallery, new_text = check_tokens_page(write)
+    findings, n_gallery, new_texts = [], 0, {}
+    for page in TOKENS_PAGES:
+        f, n, t = check_tokens_page(write, page)
+        findings += f
+        n_gallery += n
+        new_texts[page] = t
     preset_findings, n_presets = check_tokenizer_presets()
     findings += preset_findings
     home_findings, n_home = check_home_panels()
@@ -495,10 +507,11 @@ def main():
     findings += tab_findings
     reported = report_tokens_page_counts()
 
-    if write and new_text is not None:
-        with open(TOKENS_TKT, "w", encoding="utf-8") as fh:
-            fh.write(new_text)
-        print("wrote badges into templates/tokens.tkt")
+    for page, new_text in new_texts.items():
+        if write and new_text is not None:
+            with open(page, "w", encoding="utf-8") as fh:
+                fh.write(new_text)
+            print("wrote badges into %s" % os.path.relpath(page, ROOT))
 
     print("checked %d /tokens gallery programs, %d /tokenizer programs, "
           "%d home-page panels and %d tab labels"

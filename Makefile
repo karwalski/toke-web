@@ -7,27 +7,35 @@ BIN = ./website
 
 TOKE_VENDOR = $(TOKE_REPO)/stdlib/vendor
 CFLAGS = -std=c99 -D_GNU_SOURCE -O1 -iquote $(TOKE_STDLIB) \
-  -I$(TOKE_VENDOR)/cmark/src -I$(TOKE_VENDOR)/tomlc99 \
+  -I$(TOKE_VENDOR)/tomlc99 \
   -Wno-pedantic -DTK_HAVE_OPENSSL
-LIBS = -lssl -lcrypto -lz -lm -lsqlite3 -lpthread
 UNAME = $(shell uname -s)
 ifeq ($(UNAME), Darwin)
   CFLAGS += -I/opt/homebrew/include
-  LDFLAGS = -L/opt/homebrew/lib
+  LDFLAGS = -L/opt/homebrew/lib -framework Security -framework CoreFoundation
 endif
-
-STDLIB_C = $(filter-out $(TOKE_STDLIB)/llm_tool.c $(TOKE_STDLIB)/secure_mem.c $(TOKE_STDLIB)/infer_stream.c,$(wildcard $(TOKE_STDLIB)/*.c))
-CMARK_C = $(filter-out $(TOKE_VENDOR)/cmark/src/main.c,$(wildcard $(TOKE_VENDOR)/cmark/src/*.c))
-TOML_C = $(TOKE_VENDOR)/tomlc99/toml.c
-VENDOR_C = $(CMARK_C) $(TOML_C)
 
 all: $(BIN)
 
 main.ll: main.tk
 	$(TOKE) --emit-llvm --out main.ll main.tk
 
-$(BIN): main.ll
-	clang $(CFLAGS) $(LDFLAGS) -x ir main.ll -x c $(STDLIB_C) $(VENDOR_C) -o $@ $(LIBS) -framework Security -framework CoreFoundation
+# 132.105 — the stdlib C sources and link flags are ASKED of the compiler
+# (`tkc --emit-deps`, toke 127.99's module manifest), never globbed. This used
+# to be $(wildcard $(TOKE_STDLIB)/*.c) minus a hand-kept exclusion list, so every
+# new stdlib file was linked into the site whether main.tk imported it or not:
+# ocr.c (CoreGraphics/ImageIO) and llm_tool_glue.c (whose llm_tool.c was on the
+# exclusion list) broke the link on main. scripts/deploy.sh made the same move
+# for the server build under 134.28; this is the local build catching up.
+# Output format: one C source per line, a `---` line, one link flag per line.
+$(BIN): main.ll main.tk
+	@deps="$$(TKC_STDLIB_DIR="$(TOKE_STDLIB)" $(TKC) --emit-deps main.tk 2>/dev/null)" || { \
+		echo "ERROR: $(TKC) --emit-deps main.tk failed" >&2; exit 1; }; \
+	srcs=$$(printf '%s\n' "$$deps" | sed '/^---$$/,$$d'); \
+	lflags=$$(printf '%s\n' "$$deps" | sed '1,/^---$$/d'); \
+	if [ -z "$$srcs" ]; then echo "ERROR: --emit-deps listed no C sources" >&2; exit 1; fi; \
+	echo "clang ... main.ll + $$(printf '%s\n' "$$srcs" | wc -l | tr -d ' ') stdlib sources from --emit-deps -o $@ $$(echo $$lflags)"; \
+	clang $(CFLAGS) -x ir main.ll -x c $$srcs -o $@ $$lflags $(LDFLAGS)
 
 run: $(BIN)
 	@echo "Serving on https://staging.tokelang.dev:9443"
@@ -137,14 +145,25 @@ docs-content:
 # Neither mode writes. The writing mode stays available as `library-recount`
 # and must NOT be put in `ci`: per 132.45 a blind re-run restamps the same
 # stale picture with today's date, which is worse than the stale file.
+#
+# 132.105 — the recount reads two sibling repos: toke-tokenizer (the pure-Python
+# toke_tokenizer package, no install needed -- it goes on sys.path) and
+# toke-test-programs (the library's sources). They are named here, like
+# TOKE_REPO, rather than inferred from this checkout's location, which broke
+# every worktree. tiktoken must be importable (pip install tiktoken==0.12.0,
+# the version the CI workflow pins).
+TOKE_TOKENIZER ?= $(HOME)/tk/toke-tokenizer
+TOKE_TEST_PROGRAMS ?= $(HOME)/tk/toke-test-programs
+LIBRARY_ENV = TOKE_TOKENIZER="$(TOKE_TOKENIZER)" TOKE_TEST_PROGRAMS="$(TOKE_TEST_PROGRAMS)"
+
 check-library:
-	@python3 scripts/recount_library_tokens.py --report
+	@$(LIBRARY_ENV) python3 scripts/recount_library_tokens.py --report
 
 check-library-strict:
-	@python3 scripts/recount_library_tokens.py --check
+	@$(LIBRARY_ENV) python3 scripts/recount_library_tokens.py --check
 
 library-recount:
-	@python3 scripts/recount_library_tokens.py
+	@$(LIBRARY_ENV) python3 scripts/recount_library_tokens.py
 
 # 132.57a — `ci` must VERIFY that content/docs/ matches the toke repo, not
 # silently rewrite it to match. `docs-content` runs the sync, so having it in

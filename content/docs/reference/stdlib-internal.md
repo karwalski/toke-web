@@ -54,13 +54,7 @@ These are declared in a `.tki` with `"internal": true`: toke source can call the
 | `fmt.print` | `tk_fmt_print_w` | `fmt_glue.c` |
 | `fmt.sprintf` | `tk_fmt_sprintf_w` | `str_glue.c` |
 
-### `std.fs` (1)
-
-| Export | Glue symbol | Defined in |
-|---|---|---|
-| `fs.writetext` | `tk_fs_writetext_w` | `file_glue.c` |
-
-### `std.http` (20)
+### `std.http` (19)
 
 | Export | Glue symbol | Defined in |
 |---|---|---|
@@ -74,7 +68,6 @@ These are declared in a `.tki` with `"internal": true`: toke source can call the
 | `http.patchhandler` | `tk_http_patchhandler_w` | `tk_web_glue.c` |
 | `http.pathparam` | `tk_http_pathparam_w` | `tk_web_glue.c` |
 | `http.posthandler` | `tk_http_posthandler_w` | `tk_web_glue.c` |
-| `http.postheaders` | `tk_http_postheaders_w` | `tk_web_glue.c` |
 | `http.postroutejson` | `tk_http_postroutejson_w` | `tk_web_glue.c` |
 | `http.poststatic` | `tk_http_post_static` | `tk_web_glue.c` |
 | `http.posturl` | `tk_http_posturl_w` | `tk_web_glue.c` |
@@ -85,38 +78,21 @@ These are declared in a `.tki` with `"internal": true`: toke source can call the
 | `http.resnew` | `tk_http_res_new` | `tk_web_glue.c` |
 | `http.resp` | `tk_http_resp_w` | `tk_web_glue.c` |
 
-### `std.string` (12)
-
-| Export | Glue symbol | Defined in |
-|---|---|---|
-| `string.arrayget` | `tk_string_arrayget_w` | `str_glue.c` |
-| `string.arraylen` | `tk_string_arraylen_w` | `str_glue.c` |
-| `string.charat` | `tk_string_charat_w` | `str_glue.c` |
-| `string.concat` | `tk_string_concat_w` | `str_glue.c` |
-| `string.contains` | `tk_string_contains_w` | `str_glue.c` |
-| `string.fromi32` | `tk_string_fromi32_w` | `str_glue.c` |
-| `string.fromi64` | `tk_string_fromi64_w` | `str_glue.c` |
-| `string.len` | `tk_string_len_w` | `str_glue.c` |
-| `string.startswith` | `tk_string_startswith_w` | `str_glue.c` |
-| `string.substr` | `tk_string_substr_w` | `str_glue.c` |
-| `string.trim` | `tk_string_trim_w` | `str_glue.c` |
-| `string.uuid` | `tk_string_uuid_w` | `str_glue.c` |
-
 ## Defined, with no interface entry
 
 Every `tk_*` function defined in `src/stdlib/*.c` that no `.tki` export resolves to (story 136.34). None of them can be named from toke under a publishable spelling -- any that could is exported by `scripts/gen_tki.py` -- so this is the runtime's private half, classified by what reaches it:
 
 | Class | Meaning | Symbols |
 |---|---|---|
-| `emitted` | the compiler emits a call to it by name: a lowering target | 69 |
-| `c-internal` | called only from other C in `src/stdlib/` | 148 |
+| `emitted` | the compiler emits a call to it by name: a lowering target | 71 |
+| `c-internal` | called only from other C in `src/stdlib/` | 152 |
 | `alias` | reachable from toke only under a spelling generation will not publish -- a legacy alias of a published name | 9 |
-| `dead` | nothing in `src/` calls it and no toke spelling reaches it (a unit test under `test/` may) | 97 |
-| | **total** | **323** |
+| `dead` | nothing in `src/` calls it and no toke spelling reaches it (a unit test under `test/` may) | 89 |
+| | **total** | **321** |
 
 A `dead` symbol is finished or half-finished code with no way in: wiring it up is an interface decision, and deleting it is a glue decision. Neither is made by this page.
 
-### `emitted` (69)
+### `emitted` (71)
 
 | Symbol | Defined in | Detail |
 |---|---|---|
@@ -138,6 +114,8 @@ A `dead` symbol is finished or half-finished code with no way in: wiring it up i
 | `tk_array_set_inplace_w` | `str_glue.c` | - |
 | `tk_base64_encode_w` | `encoding_glue.c` | - |
 | `tk_bounds_trap` | `tk_runtime.c` | - |
+| `tk_clos_release` | `tk_runtime.c` | - |
+| `tk_clos_retain` | `tk_runtime.c` | - |
 | `tk_crypto_to_hex_w` | `crypto_glue.c` | - |
 | `tk_div_trap` | `tk_runtime.c` | - |
 | `tk_env_get_or` | `env_glue.c` | - |
@@ -190,7 +168,7 @@ A `dead` symbol is finished or half-finished code with no way in: wiring it up i
 | `tk_str_to_float_w` | `str_glue.c` | - |
 | `tk_str_to_int` | `str_glue.c` | - |
 
-### `c-internal` (148)
+### `c-internal` (152)
 
 | Symbol | Defined in | Detail |
 |---|---|---|
@@ -205,8 +183,10 @@ A `dead` symbol is finished or half-finished code with no way in: wiring it up i
 | `tk_cap_init` | `capabilities.c` | tk_runtime.c |
 | `tk_cap_is_grant_flag` | `capabilities.c` | tk_runtime.c |
 | `tk_cap_mode` | `capabilities.c` | capabilities.c |
+| `tk_clos_base` | `tk_runtime.c` | tk_runtime.c |
 | `tk_delegate_class` | `webview.c` | webview.c |
 | `tk_delete_handler_dispatch` | `tk_web_glue.c` | tk_web_glue.c |
+| `tk_err_msg` | `tk_runtime.c` | csv_glue.c, file_glue.c, ocr_glue.c, pdf_glue.c, str_glue.c, toon_glue.c |
 | `tk_err_release` | `tk_runtime.c` | tk_runtime.c |
 | `tk_error_log_get_global` | `log.c` | http.c, log.c |
 | `tk_error_log_open` | `log.c` | log.c, log_glue.c |
@@ -235,9 +215,12 @@ A `dead` symbol is finished or half-finished code with no way in: wiring it up i
 | `tk_map_hash_int` | `collections_glue.c` | collections_glue.c |
 | `tk_map_hash_str` | `collections_glue.c` | collections_glue.c |
 | `tk_map_key_eq` | `collections_glue.c` | collections_glue.c |
+| `tk_map_key_fill` | `collections_glue.c` | collections_glue.c |
+| `tk_map_key_init` | `collections_glue.c` | collections_glue.c |
 | `tk_map_new_kind` | `collections_glue.c` | collections_glue.c |
 | `tk_map_put_w` | `collections_glue.c` | collections_glue.c |
 | `tk_map_rehash` | `collections_glue.c` | collections_glue.c |
+| `tk_map_siphash` | `collections_glue.c` | collections_glue.c |
 | `tk_map_slot_insert` | `collections_glue.c` | collections_glue.c |
 | `tk_message_trusted` | `webview.c` | webview.c |
 | `tk_nsurl_trusted` | `webview.c` | webview.c |
@@ -255,7 +238,6 @@ A `dead` symbol is finished or half-finished code with no way in: wiring it up i
 | `tk_queue_push` | `collections.c` | collections_glue.c |
 | `tk_rec2` | `encrypt_glue.c` | encrypt_glue.c |
 | `tk_rl_hash` | `tk_web_glue.c` | tk_web_glue.c |
-| `tk_scheme_handler_class` | `webview.c` | webview.c |
 | `tk_securemem_alloc` | `securemem.c` | securemem.c, securemem_glue.c |
 | `tk_securemem_isavailable` | `securemem.c` | securemem_glue.c |
 | `tk_securemem_read` | `securemem.c` | securemem.c, securemem_glue.c |
@@ -357,16 +339,12 @@ A `dead` symbol is finished or half-finished code with no way in: wiring it up i
 | `tk_task_spawn_w` | `tk_web_glue.c` | task.spawn_w |
 | `tk_time_to_parts_w` | `time_glue.c` | time.to_parts |
 
-### `dead` (97)
+### `dead` (89)
 
 | Symbol | Defined in | Detail |
 |---|---|---|
 | `tk_array_retain` | `collections_glue.c` | - |
 | `tk_base64_decode_w` | `encoding_glue.c` | - |
-| `tk_cache_del_w` | `tk_web_glue.c` | - |
-| `tk_cache_get_w` | `tk_web_glue.c` | - |
-| `tk_cache_new_w` | `tk_web_glue.c` | - |
-| `tk_cache_set_w` | `tk_web_glue.c` | - |
 | `tk_cap_check` | `capabilities.c` | - |
 | `tk_cap_deny` | `capabilities.c` | - |
 | `tk_cap_grants` | `capabilities.c` | - |
@@ -423,13 +401,9 @@ A `dead` symbol is finished or half-finished code with no way in: wiring it up i
 | `tk_os_o_nofollow` | `os.c` | - |
 | `tk_ratelimit_check_w` | `tk_web_glue.c` | - |
 | `tk_ratelimit_new_w` | `tk_web_glue.c` | - |
-| `tk_regex_findall_w` | `tk_web_glue.c` | - |
-| `tk_regex_match_w` | `tk_web_glue.c` | - |
-| `tk_regex_replace_w` | `tk_web_glue.c` | - |
 | `tk_soap12_envelope_w` | `soap_glue.c` | - |
 | `tk_sort_ints_w` | `collections_glue.c` | - |
 | `tk_sort_strs_w` | `collections_glue.c` | - |
-| `tk_std_homedir_w` | `process_glue.c` | - |
 | `tk_test_assert_contains` | `tk_test.c` | - |
 | `tk_test_assert_false` | `tk_test.c` | - |
 | `tk_test_assert_gt` | `tk_test.c` | - |

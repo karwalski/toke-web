@@ -11,13 +11,9 @@ The `std.auth` module provides authentication primitives: JWT creation and valid
 
 ## Types
 
-### $jwtalg (sum type)
-
-| Variant | Meaning |
-|---------|---------|
-| $hs256 | HMAC-SHA256 |
-| $hs384 | HMAC-SHA384 |
-| $rs256 | RSA-SHA256 |
+JWT signing is **HS256 only**: `auth.jwtsign` and `auth.jwtverify` take no
+algorithm argument, and no algorithm type is declared. A token whose header
+names any other algorithm fails `auth.jwtverify`.
 
 ### $jwtclaims
 
@@ -25,9 +21,9 @@ The `std.auth` module provides authentication primitives: JWT creation and valid
 |-------|------|---------|
 | sub | $str | Subject identifier |
 | iss | $str | Issuer |
-| exp | u64 | Expiration time (Unix epoch seconds) |
 | iat | u64 | Issued-at time (Unix epoch seconds) |
-| extra | @(@($str)) | Additional key-value claim pairs |
+| exp | u64 | Expiration time (Unix epoch seconds) |
+| aud | $str | Audience |
 
 ### $autherr
 
@@ -36,22 +32,18 @@ The `std.auth` module provides authentication primitives: JWT creation and valid
 | msg | $str | Error description |
 | code | u64 | Error code |
 
-### $keystore
-
-| Field | Type | Meaning |
-|-------|------|---------|
-| handle | u64 | Opaque handle to a key store |
-
 ## Functions
 
 | Function | Parameters | Return | Description |
 |----------|-----------|--------|-------------|
-| `auth.jwtsign` | `claims: $jwtclaims; secret: @($byte); alg: $jwtalg` | `$str!$autherr` | Sign claims into a JWT string |
-| `auth.jwtverify` | `token: $str; secret: @($byte)` | `$jwtclaims!$autherr` | Verify a JWT and extract its claims |
-| `auth.jwtexpired` | `claims: $jwtclaims` | `bool` | Check whether a JWT's claims have expired |
+| `auth.jwtsign` | `claims: $jwtclaims; secret: @($byte)` | `$str!$autherr` | Sign claims into a JWT string (HS256; there is no algorithm parameter) |
+| `auth.jwtverify` | `token: $str; secret: @($byte)` | `$jwtclaims!$autherr` | Verify a JWT's signature and validity window and extract its claims. Fails when the current time is at or after `exp`, before `nbf`, or when either claim is present but not an integer |
+| `auth.jwtexpired` | `token: $str` | `bool` | Check whether a JWT token's `exp` claim has passed (`true` for a malformed token) |
 | `auth.apikeygenerate` | (none) | `$str` | Generate a random API key (32 random bytes, base64url-encoded) |
-| `auth.apikeyvalidate` | `key: $str; store: $keystore` | `bool!$autherr` | Validate an API key against a key store |
+| `auth.apikeyvalidate` | `provided: $str; stored: $str` | `bool` | Compare a presented API key with the stored one; `true` when they match |
 | `auth.bearerextract` | `header: $str` | `$str!$autherr` | Extract the token from a `Bearer <token>` header value |
+| `auth.passwordhash` | `password: $str` | `$str!$autherr` | Hash a password with bcrypt (cost 12) |
+| `auth.passwordverify` | `password: $str; hash: $str` | `bool` | Check a password against a bcrypt hash; `false` on mismatch or a malformed hash |
 
 ## Usage
 

@@ -9,7 +9,9 @@ order: 11
 
 The `std.db` module provides functions for querying a SQL database. Query results are returned as `$row` values, with typed accessor functions to extract column values by column name.
 
-The current implementation uses SQLite as the backend. The database connection is configured via environment variable or runtime context; there is no explicit `open`/`close` API.
+The current implementation uses SQLite as the backend. A connection is opened with `db.open`, which returns a handle.
+
+**Several connections (138.6).** Every `db.open` returns a new handle (1, 2, 3, ... — never reused), and each handle is its own connection. The `*on` forms — `db.execon`, `db.oneon`, `db.manyon`, `db.closeon` — take the handle as their first argument. The handle-less forms — `db.exec`, `db.one`, `db.many`, `db.close` — use the **default connection**: the lowest-numbered one still open, which is the first database the program opened. Opening a second database never repoints them. Before 138.6 there was one global connection: a second `db.open` replaced the first for every later query and returned the same handle.
 
 ## Types
 
@@ -19,7 +21,7 @@ Represents a single row returned from a query. Column values are accessed by nam
 
 | Field | Type | Meaning |
 |-------|------|---------|
-| cols | @(@($str)) | Column values as a 2D string array |
+| cols | @(@($str)) | One `@(name; value)` pair per column, in the query's column order; SQL NULL reads as `""`. The `row.*` accessors read this field, so a `$row{cols:@(...)}` literal works with them too |
 
 ### $dberr
 
@@ -32,11 +34,42 @@ A sum type representing database operation failures.
 | $notfound | $str | No matching row or column found |
 | $constraint | $str | A database constraint was violated (e.g., unique, foreign key) |
 
+**The message is for your logs, not your users (121.21).** A `$dberr`'s text is usually the database driver's own message, and it can quote the SQL, table and column names and constraint names. Log it on the server; send a client a fixed message of your own. Returning it in an HTTP response hands an attacker your schema.
+
 ## Functions
+
+### db.open(path: $str): u64!$dberr
+
+Opens (creating if needed) the SQLite database at `path` — `":memory:"` for a private in-memory one — and returns its handle. Needs the `fs.read` and `fs.write` capabilities. Returns `$dberr.$connection`'s arm if the database cannot be opened.
+
+```toke
+m=app;
+i=db:std.db;
+
+f=twodbs():i64{
+  let a=mt db.open("a.db") {$ok:h h;$err:e 0};
+  let b=mt db.open("b.db") {$ok:h h;$err:e 0};
+  let n=mt db.execon(b;"CREATE TABLE IF NOT EXISTS t(v INTEGER)";@()) {$ok:v 0;$err:e 1};
+  db.closeon(b);
+  < n
+};
+```
+
+### db.close(): i64
+
+Closes the default connection (the lowest-numbered one still open). The next one, if any, becomes the default.
+
+### db.closeon(h: u64): bool
+
+Closes the connection `h`. Returns `false` if `h` is not an open handle.
 
 ### db.exec(sql: $str; params: @($str)): u64!$dberr
 
-Executes a SQL statement that does not return rows (e.g., `INSERT`, `UPDATE`, `DELETE`, `CREATE TABLE`). Returns the number of rows affected. The `params` slice provides positional bind parameters (use `?` placeholders in the SQL).
+Executes SQL that does not return rows (e.g., `INSERT`, `UPDATE`, `DELETE`, `CREATE TABLE`) on the default connection. Returns the number of rows the string inserted, updated or deleted. The `params` slice provides positional bind parameters (use `?` placeholders in the SQL).
+
+**Every statement runs, or the call fails (138.6).** A string of several `;`-separated statements runs each in turn. If one fails, the call returns `$dberr.$query` naming the statement (`db.exec: statement 2: ...`); the statements before it have already been applied, so wrap a migration in `BEGIN; ... COMMIT;` to make it all-or-nothing. Bind parameters with more than one statement are refused before anything runs, because which statement a `?` belongs to is ambiguous. Before 138.6 only the first statement ran and the call reported success. Transactions are ordinary statements: `db.exec("BEGIN";@())`, `COMMIT`, `ROLLBACK`.
+
+A count of 0 is `$ok 0` -- every `CREATE`, and an `UPDATE` that matched nothing. (Until the compiler read std.db's error slot, 138.6, a 0 was reported as 1, because under the value-sentinel ABI it would have read as `$err`.)
 
 ```toke
 m=app;
@@ -47,6 +80,10 @@ f=setup():i64{
   <mt n {$ok:v 0;$err:e 1}
 };
 ```
+
+### db.execon(h: u64; sql: $str; params: @($str)): u64!$dberr
+
+`db.exec` on the connection `h`. Returns `$dberr.$connection` if `h` is not an open handle.
 
 ### db.one(sql: $str; params: @($str)): $row!$dberr
 
@@ -62,6 +99,10 @@ f=finduser(id:$str):i64{
 };
 ```
 
+### db.oneon(h: u64; sql: $str; params: @($str)): $row!$dberr
+
+`db.one` on the connection `h`.
+
 ### db.many(sql: $str; params: @($str)): @($row)!$dberr
 
 Executes a query and returns all matching rows as a slice. Returns `$dberr.$query` if the SQL is invalid.
@@ -75,6 +116,10 @@ f=allrows():i64{
   <mt rows {$ok:v 0;$err:e 1}
 };
 ```
+
+### db.manyon(h: u64; sql: $str; params: @($str)): @($row)!$dberr
+
+`db.many` on the connection `h`.
 
 ### row.str(r: $row; col: $str): $str!$dberr
 
