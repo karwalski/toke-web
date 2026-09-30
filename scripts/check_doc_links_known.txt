@@ -13,5 +13,3 @@
 # rendered under /docs/<section>/<slug>/). Fix at the source in toke
 # docs/stdlib/str.md:308 and docs/reference/errors.md:1114 (the /docs/... form
 # 132.94 used), re-sync, and delete these two lines.
-docs/reference/errors/index.html	../stdlib/str.md#regular-expressions	2026-10-01	132.107
-docs/stdlib/str/index.html	../reference/errors.md#e4075	2026-10-01	132.107
