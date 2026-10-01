@@ -208,6 +208,18 @@ DIAGNOSTIC: kind=server_start_failed fn="http.serveworkers" port=8080 stage="bin
 
 where `stage` is `host`, `port`, `certificate/key` or `bind/fork`, and it makes the process **exit non-zero** however `main` ends — with `main`'s own status if that is non-zero, otherwise `1`, so even a program that ignores the `-1` and returns `0` exits `1`. To a supervisor, a server that never started must not look like a clean shutdown. (Stories 135.22 for the TLS forms, 135.24 for the plain ones; the exit rule is shared with failed `std.test` assertions, see `docs/stdlib/test.md`; 135.29 keeps `main`'s non-zero status.)
 
+**`SIGHUP` reopens the logs; it does not stop the server** (story 121.53). A
+running server treats `SIGHUP` — what `logrotate` sends after renaming a log —
+as "reopen the access and error logs at their paths", in every mode: the
+single-process server and each worker reopen them at their next connection;
+the plain pre-fork supervisor reopens them and replaces its workers (its
+reload, story 59.4.8); the TLS supervisor reopens them and passes the signal to
+its workers. A log opened with `log.openaccess` in a directory the server can
+write follows a rename on its own, on the next line written; `SIGHUP` is what
+moves one opened where no lock file could be made beside it. Until then
+`SIGHUP` killed a single-process server, and killed a TLS supervisor while
+leaving its workers listening on the port.
+
 ## Abandoned requests
 
 A client that sends a request and goes away before reading the answer is
@@ -339,6 +351,28 @@ matched. Until then a request whose headers used `CONTINUATION` was never
 answered, `req.body` was always empty, and a response carried only its
 status, length and content type.
 
+**HTTP/2 flow control and header compression** (story 121.50). A response
+body is sent within the client's flow-control windows (RFC 9113 §6.9): what
+the stream's or the connection's window does not take waits and is sent as
+the client's `WINDOW_UPDATE` frames open it, while other streams on the
+connection are served. A client that never opens its window is disconnected
+after `timeout_secs` from the last byte sent. A `WINDOW_UPDATE` that would
+take a window past 2^31−1 ends the connection with `FLOW_CONTROL_ERROR`. When
+the client changes `SETTINGS_HEADER_TABLE_SIZE`, the next response header
+block opens with the dynamic table size update RFC 7541 §4.2 requires, and
+the server's table never grows past 4096 bytes. Until then a body over 64 KiB
+overran a client on the default window, and the table size changed silently.
+
+**The handler's security headers win** (story 121.50). Every response
+carries `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY` and
+`Referrer-Policy: strict-origin-when-cross-origin`, and over TLS
+`Strict-Transport-Security: max-age=63072000; includeSubDomains; preload` —
+except a field the handler set itself (the name compared without regard to
+case), which is sent once, with the handler's value. That is so on HTTP/1.1
+and HTTP/2 alike. Until then HTTP/1.1 sent the handler's value and then the
+default, so `X-Frame-Options: SAMEORIGIN` went out beside `DENY` — and a
+browser that sees two `X-Frame-Options` values applies neither.
+
 **No cleartext upgrade to HTTP/2.** A request carrying `Upgrade: h2c` is
 answered over HTTP/1.1 like any other; the server ignores the header, as RFC
 9110 §7.8 allows. The upgrade used to answer `101 Switching Protocols` and
@@ -356,6 +390,44 @@ f=main():void{
   http.getstatic("/about"; "<html><body><p>About page</p></body></html>");
 };
 ```
+
+### http.setnotfound(body: $str): i64
+
+Sets the body served, with status `404` and `Content-Type: text/html; charset=utf-8`,
+for any request whose path matches no registered route — in every serving mode
+(plain, TLS, HTTP/2, single-process and workers). The string is copied, so the
+caller may free or reuse it afterwards. Returns `0`, or `-1` if the copy could
+not be allocated (the previous body stays in force). Without a call, an
+unrouted path gets the plain-text body `Not Found`.
+
+```toke
+i=http:std.http;
+f=main():void{
+  http.getstatic("/"; "<h1>Home</h1>");
+  http.setnotfound("<h1>404</h1><p>No such page.</p>");
+  http.serve(8080);
+};
+```
+
+A path that a route *does* match keeps whatever that route answers: a missing
+file under an `http.servedir` mount is still that mount's plain `Not Found`,
+and a path whose route exists for another method is `405`. Until story 121.62
+the set body was served only on one internal fallback that an unrouted path
+never reached, so it had no visible effect; it also kept the caller's pointer
+instead of a copy.
+
+### How a request path is matched
+
+Routes match the request path **as the client sent it**, up to the first `?`
+or `#`, with no percent-decoding. So `http.getstatic("/a b"; …)` is not
+reached by `/a%20b`, and a route registered as `/<script>` answers a client
+that sends the raw bytes `/<script>` but not `/%3Cscript%3E` (which is a 404).
+`http.servedir` resolves files from the same raw path, so a file whose name
+needs escaping in a URL cannot be served under its escaped name. This is the
+same rule as `http.param` below. It is deliberate for routing: RFC 3986 §6.2.2.2
+makes a percent-encoding equivalent to its character only for unreserved
+characters, and `<`, `>` and space are not unreserved, so `/%3Cscript%3E` and
+`/<script>` are different paths. Register routes in the form clients send.
 
 ### http.servedir(prefix: $str; dir: $str): i64
 
