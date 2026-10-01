@@ -206,6 +206,29 @@ statement and declaration keywords (`def`, `return`, `class`, `var`, `else`,
 `f(def)`). Value-like words (`None`, `null`, `nil`, `undefined`, `True`,
 `False`) and `print` / `printf` / `console` still warn in value position.
 
+### W1021
+
+**Raw control byte in string literal**
+
+| Field    | Value |
+|----------|-------|
+| Severity | warning |
+| Stage    | lex |
+
+A string literal's text holds a raw control byte: 0x00-0x08, 0x0B, 0x0C,
+0x0E-0x1A or 0x1C-0x1F. Tab, line feed, carriage return and ESC (0x1B) are
+not reported. The byte compiles to the same string as its escape, but it is
+invisible in an editor and a raw NUL cuts `source_line` short; the corpus
+control-byte guard rejects a program that holds one (story 131.32).
+
+**Fix:** replace the byte with its `\xHH` escape. The `fix` field names it
+(`replace the raw byte with \x00`); the escape and the byte are the same
+string, so the fix is exact. One warning per byte. A control byte inside a
+`\(...)` interpolation is outside the literal's text and is E1003.
+
+It is a warning, not an error, because the spec permits any UTF-8 in string
+literal content (`toke-spec-v0.4.md` §G).
+
 ## Parser Errors (E2xxx)
 
 ### E2001
@@ -1260,6 +1283,11 @@ the built-in `timeparts` and `none` types. The message lists what was counted.
 defaults are 32 imports, 1024 function signatures and 1024 struct types
 (`tkc --show-limits`); the last two were 128 and 64 until story 127.250.
 
+A cap is a count: `0` allows none. Caps so large (or negative) that a
+registry sized from them cannot be one compiler allocation are refused at
+`--check` too, with the same E9010 as the build, naming the caps; lower them
+(story 127.264).
+
 The per-function local-variable cap (`--max-locals=N` / `max_locals`, shared
 by pointer locals, local types and shadowing aliases) is reported once per
 function, closure or globals initialiser that crosses it, at that function,
@@ -1357,6 +1385,81 @@ clang as one. Emitted before clang is run; `--check` is unaffected. Use a
 directory whose path has no whitespace (a symlink to it works: the compiler
 resolves `TKC_STDLIB_DIR` to its real path). No `fix`: the right path is not
 knowable from the diagnostic (121.28, audit-120 compiler-toolchain COM-02).
+
+## Package Resolution (E9011--E9014, E9025, W9010 -- reserved)
+
+The codes `docs/reference/package-manifest.md` gives for package resolution.
+They are defined in `src/pkg.h` so that no compiler diagnostic takes one, but
+the resolver is not wired into a `tkc` command and nothing emits them yet
+(story 121.50). The unsatisfiable-constraints condition was documented as
+E9010 until then -- the compiler's "compiler limit exceeded" -- and moved to
+E9025 (E9024 went to the compiler in the meantime, 121.28).
+
+### E9011
+
+**Package not found in the index and no git URL**
+
+| Field    | Value |
+|----------|-------|
+| Severity | error |
+| Stage    | codegen (reserved for package resolution; not yet emitted) |
+
+A dependency names a package the central index does not have, and gives no `git` source.
+
+### E9012
+
+**Malformed pkg.toml**
+
+| Field    | Value |
+|----------|-------|
+| Severity | error |
+| Stage    | codegen (reserved for package resolution; not yet emitted) |
+
+`pkg.toml` is missing a required field, is not the TOML subset the manifest allows, uses an unsupported constraint, names a dependency twice, or has an unknown table or key.
+
+### E9013
+
+**Git clone or fetch of a dependency failed**
+
+| Field    | Value |
+|----------|-------|
+| Severity | error |
+| Stage    | codegen (reserved for package resolution; not yet emitted) |
+
+The repository of a dependency could not be cloned or fetched.
+
+### E9014
+
+**No git tag matches the resolved version**
+
+| Field    | Value |
+|----------|-------|
+| Severity | error |
+| Stage    | codegen (reserved for package resolution; not yet emitted) |
+
+A dependency's repository has no tag for the version resolution selected.
+
+### E9025
+
+**No version of a dependency satisfies every constraint**
+
+| Field    | Value |
+|----------|-------|
+| Severity | error |
+| Stage    | codegen (reserved for package resolution; not yet emitted) |
+
+Minimal version selection took the highest minimum any constraint names, and some constraint on that package does not admit it (an exact version it does not name, or an upper bound it reaches).
+
+### W9010
+
+**pkg.lock is out of date relative to pkg.toml**
+
+| Field    | Value |
+|----------|-------|
+| Severity | warning |
+| Stage    | codegen (reserved for package resolution; not yet emitted) |
+
+`pkg.toml` changed after `pkg.lock` was written.
 
 ## Semantic Warnings (W2xxx / W3xxx / W5xxx / W8xxx)
 
