@@ -185,7 +185,7 @@ if [[ ! -x "${OOKE}" ]]; then
   exit 1
 fi
 
-echo "==> Rendering /docs pages with ooke build"
+echo "==> Rendering /docs pages with ooke build (ooke: ${OOKE})"
 rm -rf build-docs
 if ! "${OOKE}" build; then
   echo "ERROR: ooke build failed — /docs pages would be missing or stale." >&2
