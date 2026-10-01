@@ -113,6 +113,11 @@ def scan(root):
                 if not PLACEHOLDER.search(name):
                     findings.append((rel, n, "key-file", m.group(0)))
             for m in IPV4.finditer(line):
+                # A document section number such as "RFC 3986 §6.2.2.2" has
+                # the shape of an address; a section sign before it says it is
+                # not one.
+                if line[:m.start()].rstrip().endswith("\u00a7"):
+                    continue
                 if not benign_ip(m.group(1), m.group(2), rel):
                     findings.append((rel, n, "address", m.group(0)))
         if is_shell:
@@ -144,7 +149,8 @@ def selftest():
             "#!/usr/bin/env bash\n# rsync certs/ is not done here\n"
             'SSH_OPTS="-o StrictHostKeyChecking=yes"\n'
             "# TOKE_DEPLOY_KEY=~/.ssh/<key>.pem ~/.ssh/your-key.pem\n"
-            "echo 2.8.0.1.5\n")
+            "echo 2.8.0.1.5\n"
+            "# see RFC 3986 \u00a76.2.2.2 and \u00a7 7.1.2.3\n")
         (r / "cidr-elsewhere.md").write_text("104.16.0.0/13\n")
         subprocess.run(["git", "-C", str(r), "add", "-A"], check=True)
         got = {(f, rule) for f, _, rule, _ in scan(r)}
