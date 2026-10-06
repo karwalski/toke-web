@@ -325,7 +325,9 @@ trickles bytes to hold a worker open is answered `408` when its deadline
 passes; the timeout used to restart with every byte received.
 
 **HTTP/2 has the same clock** (story 121.44). HTTP/2 is offered on the TLS
-servers, through ALPN. The connection preface and the client's first
+servers, through ALPN (`h2` first, then `http/1.1`), so a client that offers
+both gets HTTP/2. Between 2026-05-16 and story 121.80 the servers offered only
+`http/1.1`, and no client could reach HTTP/2 at all. The connection preface and the client's first
 `SETTINGS` frame must arrive within the server timeout of the connection
 starting; every frame must be whole within the timeout of its first byte; and
 a request's header block (`HEADERS` up to `END_HEADERS`) must be complete
@@ -334,10 +336,14 @@ above. A connection that misses one of these is closed. A header block larger
 than the 64 KiB header-list size the server advertises ends the connection
 with `GOAWAY` (`ENHANCE_YOUR_CALM`). Waiting between requests is not a
 request, but it is not free either: a connection with no request in progress
-for 30 seconds is closed with `GOAWAY` (`NO_ERROR`), and `PING` frames do not
-count as activity (story 121.46 — the server used to ping an idle connection
-and take the answer as activity, so any client that answered held a worker
-for as long as it stayed connected).
+for 2 seconds — the same as an idle HTTP/1.1 keep-alive connection — is
+closed with `GOAWAY` (`NO_ERROR`), and `PING` frames do not count as activity
+(story 121.46 — the server used to ping an idle connection and take the
+answer as activity, so any client that answered held a worker for as long as
+it stayed connected). A worker serves one connection at a time, so an idle
+connection costs a worker whichever protocol it speaks; until story 121.80
+the HTTP/2 limit was 30 seconds, long enough for one browser's idle
+connection to keep a worker from every other client.
 
 **An HTTP/2 request is the same request** (story 121.46). A header block that
 continues into `CONTINUATION` frames is dispatched when it ends; the request
@@ -362,6 +368,14 @@ the client changes `SETTINGS_HEADER_TABLE_SIZE`, the next response header
 block opens with the dynamic table size update RFC 7541 §4.2 requires, and
 the server's table never grows past 4096 bytes. Until then a body over 64 KiB
 overran a client on the default window, and the table size changed silently.
+
+**HTTP/2 responses are compressed like HTTP/1.1 ones** (story 121.87). A
+`2xx` response body of at least 256 bytes is sent gzip-encoded, with
+`content-encoding: gzip` and `vary: Accept-Encoding`, when the request's
+`accept-encoding` names `gzip` and the handler set no `Content-Encoding` of
+its own — per stream, by the rule the HTTP/1.1 servers use. A `HEAD` carries
+the unencoded length. Until then HTTP/2 never compressed, so a server sent the
+same stylesheet gzipped over HTTP/1.1 and whole over HTTP/2.
 
 **The handler's security headers win** (story 121.50). Every response
 carries `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY` and
@@ -409,9 +423,18 @@ f=main():void{
 };
 ```
 
-A path that a route *does* match keeps whatever that route answers: a missing
-file under an `http.servedir` mount is still that mount's plain `Not Found`,
-and a path whose route exists for another method is `405`. Until story 121.62
+A path that a route *does* match keeps whatever that route answers, and a
+path whose route exists for another method is `405`. A `*` route — which is
+what an `http.servedir` or `http.servepages` mount sits on — is a fallback, not
+a route for the path, so it never makes a path `405`: `PUT /anything` on a
+server with a mount is `404` unless a route naming that path exists for
+another method, and a non-GET to a file under a mount is `404` too (story
+121.87; it used to be `405` for every non-GET to every path once any mount
+existed). A miss under
+`http.servedir` or `http.servepages` — a missing file, or any path no mount
+covers, since a mount answers every path no other route takes — is a
+`404` with the set body (story 121.81; it used to be the plain `Not Found`
+whatever `http.setnotfound` said). Until story 121.62
 the set body was served only on one internal fallback that an unrouted path
 never reached, so it had no visible effect; it also kept the caller's pointer
 instead of a copy.
@@ -422,12 +445,18 @@ Routes match the request path **as the client sent it**, up to the first `?`
 or `#`, with no percent-decoding. So `http.getstatic("/a b"; …)` is not
 reached by `/a%20b`, and a route registered as `/<script>` answers a client
 that sends the raw bytes `/<script>` but not `/%3Cscript%3E` (which is a 404).
-`http.servedir` resolves files from the same raw path, so a file whose name
-needs escaping in a URL cannot be served under its escaped name. This is the
-same rule as `http.param` below. It is deliberate for routing: RFC 3986 §6.2.2.2
+This is the same rule as `http.param` below. It is deliberate for routing: RFC 3986 §6.2.2.2
 makes a percent-encoding equivalent to its character only for unreserved
 characters, and `<`, `>` and space are not unreserved, so `/%3Cscript%3E` and
 `/<script>` are different paths. Register routes in the form clients send.
+
+`http.servedir` is the exception, for the file name only: the mount is chosen
+on the raw path like any route, and the file is then looked up by the
+**percent-decoded** path, so `/static/a%20b.txt` serves `a b.txt` (story
+121.81; until then such a file could not be served at all). What must not
+reach the filesystem is refused: a `%` not followed by two hex digits, `%00`
+and `%2F` (an escaped slash) are `400`, and a `..` in the decoded path —
+`%2e%2e` as well as `..` — is `403`. `+` is a plain character in a path.
 
 ### http.servedir(prefix: $str; dir: $str): i64
 
@@ -439,6 +468,15 @@ The request path is appended to `dir` **whole, including the prefix** — so
 `http.servedir("/static";"./public")` serves `/static/style.css` from
 `./public/static/style.css`, not from `./public/style.css`. Lay the directory
 out to match.
+
+**Files are served as bytes.** A file holding `0x00` bytes — an image, a
+font, a `.wasm` module — is served whole, with a `Content-Length` (or chunk
+sizes) counting every byte, over HTTP/1.1, TLS and HTTP/2, and gzip-encoded
+whole when the client accepts it (story 121.86). Until then every response
+writer sized the body as a C string, so a binary file was cut at its first
+`0x00`: a PNG arrived as its 8-byte signature and nothing else. A handler's
+body is a `str`, which cannot hold a `0x00`, so this only ever affected
+`http.servedir`.
 
 **Capabilities.** The mount gives the server the authority to read any file
 under `dir` on every request, so `http.servedir` — and `http.servepages`,
