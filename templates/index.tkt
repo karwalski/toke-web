@@ -49,11 +49,11 @@
   <p>"Write a complete program that prints the 10th Fibonacci number"</p>
 </div>
 
-<p class="section-desc">Each panel shows how <em>that language's own tokenizer lane</em> segments a complete, runnable program: the toke panel under toke's v0.3 purpose-built BPE, the Python, C and Java panels under cl100k_base. <strong>The two lanes are different tokenizers, so no reduction may be read across the panels</strong> &mdash; doing so measures the toke tokenizer's training bias rather than the language, which is the error the old &ldquo;42% vs Python&rdquo; headline made. For the same-tokenizer numbers, see the box above.</p>
+<p class="section-desc">Each panel shows how <em>that language's own tokenizer lane</em> segments a complete, runnable program: the toke panel under toke's legacy v03 BPE (<code>static/tokenizer_v03.json</code>, the canonical tokenizer for the site's toke counts), the Python, C and Java panels under cl100k_base. <strong>The two lanes are different tokenizers, so no reduction may be read across the panels</strong> &mdash; doing so measures the toke tokenizer's training bias rather than the language, which is the error the old &ldquo;42% vs Python&rdquo; headline made. For the same-tokenizer numbers, see the box above.</p>
 
 <div class="tv-tabs" style="max-width:860px;margin:0 auto;padding:0 2rem;">
   <div class="tv-tab-bar">
-    <button class="tv-tab-btn active" data-tab="see-toke">toke &mdash; 24 (toke BPE v03)</button>
+    <button class="tv-tab-btn active" data-tab="see-toke">toke &mdash; 32 (toke BPE v03, legacy)</button>
     <button class="tv-tab-btn" data-tab="see-python">Python &mdash; 41 (cl100k)</button>
     <button class="tv-tab-btn" data-tab="see-c">C &mdash; 59 (cl100k)</button>
     <button class="tv-tab-btn" data-tab="see-java">Java &mdash; 62 (cl100k)</button>
@@ -61,13 +61,13 @@
 
   <div class="tv-tab-panel active" id="see-toke">
     <div class="token-viz toke-p2">
-      <pre class="tv-code"><code><span class="tv-tok tv-c0">m=fib</span><span class="tv-tok tv-c1">;i=io:std.io</span><span class="tv-tok tv-c2">;f=</span><span class="tv-tok tv-c3">fib</span><span class="tv-tok tv-c4">(n:i64):i64{if(n</span><span class="tv-tok tv-c5">&lt;2){&lt;</span><span class="tv-tok tv-c6">n;</span><span class="tv-tok tv-c7">}el{&lt;</span><span class="tv-tok tv-c8">fib</span><span class="tv-tok tv-c9">(n</span><span class="tv-tok tv-c10">-1)+</span><span class="tv-tok tv-c11">fib</span><span class="tv-tok tv-c0">(n</span><span class="tv-tok tv-c1">-2</span><span class="tv-tok tv-c2">);</span><span class="tv-tok tv-c3">}};</span><span class="tv-tok tv-c4">f=main():</span><span class="tv-tok tv-c5">i64{</span><span class="tv-tok tv-c6">io.printf</span><span class="tv-tok tv-c7">(&quot;%d&quot;;</span><span class="tv-tok tv-c8">fib(</span><span class="tv-tok tv-c9">10</span><span class="tv-tok tv-c10">));&lt;</span><span class="tv-tok tv-c11">0;};</span></code></pre>
+      <pre class="tv-code"><code><span class="tv-tok tv-c0">m=fib</span><span class="tv-tok tv-c1">;</span><span class="tv-tok tv-c2">i=io:std.io</span><span class="tv-tok tv-c3">;f=</span><span class="tv-tok tv-c4">fib</span><span class="tv-tok tv-c5">(n:i64):i64{if(</span><span class="tv-tok tv-c6">n&lt;2</span><span class="tv-tok tv-c7">){&lt;</span><span class="tv-tok tv-c8">n;</span><span class="tv-tok tv-c9">}el{&lt;</span><span class="tv-tok tv-c10">fib</span><span class="tv-tok tv-c11">(n</span><span class="tv-tok tv-c0">-1)+</span><span class="tv-tok tv-c1">fib</span><span class="tv-tok tv-c2">(n</span><span class="tv-tok tv-c3">-2</span><span class="tv-tok tv-c4">);</span><span class="tv-tok tv-c5">}};</span><span class="tv-tok tv-c6">f=main():i64{</span><span class="tv-tok tv-c7">io.</span><span class="tv-tok tv-c8">print</span><span class="tv-tok tv-c9">f</span><span class="tv-tok tv-c10">(</span><span class="tv-tok tv-c11">&quot;</span><span class="tv-tok tv-c0">%</span><span class="tv-tok tv-c1">d</span><span class="tv-tok tv-c2">&quot;</span><span class="tv-tok tv-c3">;</span><span class="tv-tok tv-c4">fib(</span><span class="tv-tok tv-c5">10</span><span class="tv-tok tv-c6">));&lt;</span><span class="tv-tok tv-c7">0;};</span></code></pre>
       <div class="tv-footer">
-        <span class="token-badge toke-p2">24 tokens &mdash; toke BPE v03 (16,384 vocab), v0.3 syntax &mdash; a different lane from the cl100k panels</span>
+        <span class="token-badge toke-p2">32 tokens &mdash; toke BPE v03, legacy (16,384 vocab, trained on v0.3 syntax) &mdash; a different lane from the cl100k panels</span>
       </div>
     </div>
     <div class="tv-note" style="margin:0.75rem 0;font-size:0.85rem;color:#9a9082;line-height:1.4;">
-      This is the complete program &mdash; module declaration, import, function, main, and I/O. Token boundaries are measured using toke's purpose-built BPE tokenizer (16,384 tokens, trained on 25,953 toke programs). Patterns like <code style="background:#2a2317;border:1px solid #2a2317;border-radius:3px;padding:0.1em 0.3em;font-size:0.82em;color:#f0c04a;">;i=io:std.io</code> (entire import as 1 token) and <code style="background:#2a2317;border:1px solid #2a2317;border-radius:3px;padding:0.1em 0.3em;font-size:0.82em;color:#f0c04a;">(n:i64):i64{if(n</code> (signature + conditional in 1 token) emerge naturally from BPE training on real toke code. <a href="/tokenizer" style="color:#f0c04a;">Try the live tokenizer &rarr;</a>
+      This is the complete program &mdash; module declaration, import, function, main, and I/O. Token boundaries are derived from <code>static/tokenizer_v03.json</code>, the tokenizer the <a href="/tokenizer" style="color:#f0c04a;">live tokenizer</a> loads: toke&rsquo;s <strong>legacy v03</strong> BPE (16,384 tokens, trained on 25,953 v0.3 toke programs), kept as the canonical tokenizer for the counts on this site until the v0.4 tokenizer is trained. Patterns like <code style="background:#2a2317;border:1px solid #2a2317;border-radius:3px;padding:0.1em 0.3em;font-size:0.82em;color:#f0c04a;">i=io:std.io</code> (the whole import as 1 token) and <code style="background:#2a2317;border:1px solid #2a2317;border-radius:3px;padding:0.1em 0.3em;font-size:0.82em;color:#f0c04a;">(n:i64):i64{if(</code> (signature and the opening of the conditional as 1 token) emerge from BPE training on toke code. It is a legacy artefact: it was trained on v0.3 text and its null <code>unk_token</code> silently drops characters it lacks (every backslash, for one). <a href="/tokenizer" style="color:#f0c04a;">Try the live tokenizer &rarr;</a>
     </div>
   </div>
 
@@ -138,7 +138,7 @@
 
 <div class="tv-tabs" style="max-width:860px;margin:0 auto;padding:0 2rem;">
   <div class="tv-tab-bar">
-    <button class="tv-tab-btn active" data-tab="bp-toke">toke &mdash; 24, unchanged (toke BPE v03)</button>
+    <button class="tv-tab-btn active" data-tab="bp-toke">toke &mdash; 32, unchanged (toke BPE v03, legacy)</button>
     <button class="tv-tab-btn" data-tab="bp-python">Python &mdash; 82 (cl100k)</button>
     <button class="tv-tab-btn" data-tab="bp-c">C &mdash; 75 (cl100k)</button>
     <button class="tv-tab-btn" data-tab="bp-java">Java &mdash; 102 (cl100k)</button>
@@ -146,9 +146,9 @@
 
   <div class="tv-tab-panel active" id="bp-toke">
     <div class="token-viz toke-p2">
-      <pre class="tv-code"><code><span class="tv-tok tv-c0">m=</span><span class="tv-tok tv-c1">fib;</span><span class="tv-tok tv-c2">i=</span><span class="tv-tok tv-c3">io:</span><span class="tv-tok tv-c4">std.io;</span><span class="tv-tok tv-c5">f=</span><span class="tv-tok tv-c6">fib(</span><span class="tv-tok tv-c7">n:i64):i64{</span><span class="tv-tok tv-c8">if(</span><span class="tv-tok tv-c9">n&lt;2){&lt;</span><span class="tv-tok tv-c10">n;}</span><span class="tv-tok tv-c11">el{&lt;</span><span class="tv-tok tv-c0">fib(</span><span class="tv-tok tv-c1">n-1)+</span><span class="tv-tok tv-c2">fib(</span><span class="tv-tok tv-c3">n-2</span><span class="tv-tok tv-c4">);}}</span><span class="tv-tok tv-c5">;</span><span class="tv-tok tv-c6">f=</span><span class="tv-tok tv-c7">main():i64{</span><span class="tv-tok tv-c8">io.printf(&quot;%d&quot;;</span><span class="tv-tok tv-c9">fib(10</span><span class="tv-tok tv-c10">));</span><span class="tv-tok tv-c11">&lt;0;};</span></code></pre>
+      <pre class="tv-code"><code><span class="tv-tok tv-c0">m=fib</span><span class="tv-tok tv-c1">;</span><span class="tv-tok tv-c2">i=io:std.io</span><span class="tv-tok tv-c3">;f=</span><span class="tv-tok tv-c4">fib</span><span class="tv-tok tv-c5">(n:i64):i64{if(</span><span class="tv-tok tv-c6">n&lt;2</span><span class="tv-tok tv-c7">){&lt;</span><span class="tv-tok tv-c8">n;</span><span class="tv-tok tv-c9">}el{&lt;</span><span class="tv-tok tv-c10">fib</span><span class="tv-tok tv-c11">(n</span><span class="tv-tok tv-c0">-1)+</span><span class="tv-tok tv-c1">fib</span><span class="tv-tok tv-c2">(n</span><span class="tv-tok tv-c3">-2</span><span class="tv-tok tv-c4">);</span><span class="tv-tok tv-c5">}};</span><span class="tv-tok tv-c6">f=main():i64{</span><span class="tv-tok tv-c7">io.</span><span class="tv-tok tv-c8">print</span><span class="tv-tok tv-c9">f</span><span class="tv-tok tv-c10">(</span><span class="tv-tok tv-c11">&quot;</span><span class="tv-tok tv-c0">%</span><span class="tv-tok tv-c1">d</span><span class="tv-tok tv-c2">&quot;</span><span class="tv-tok tv-c3">;</span><span class="tv-tok tv-c4">fib(</span><span class="tv-tok tv-c5">10</span><span class="tv-tok tv-c6">));&lt;</span><span class="tv-tok tv-c7">0;};</span></code></pre>
       <div class="tv-footer">
-        <span class="token-badge toke-p2">24 tokens &mdash; toke BPE v03, identical to above (toke has no comment syntax)</span>
+        <span class="token-badge toke-p2">32 tokens &mdash; toke BPE v03, legacy &mdash; identical to above (toke has no comment syntax)</span>
       </div>
     </div>
     <div class="tv-note" style="margin:0.75rem 0;font-size:0.85rem;color:#9a9082;line-height:1.4;">

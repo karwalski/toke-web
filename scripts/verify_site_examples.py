@@ -23,15 +23,16 @@ along with the program the page loads into its textarea. They carry no badge,
 but they are the code a visitor runs, so they must compile; five of the twelve
 presets did not, and neither did the default textarea.
 
-What this does NOT check
-------------------------
-The per-token `title="token <id>"` ids and the "N tokens (toke BPE v03)" counts
-on /tokens are NOT reproducible from any tokenizer artefact in this tree — not
-`toke-tokenizer/tokenizer_v03.json` (id 181 is `false` there, not `m=`), not
-`models/toke.model` (8K) and not `models/32k/toke.model`. The stated count does
-equal the number of rendered spans, so the page is at least self-consistent, but
-the ids cannot be re-derived. That is a separate defect and is filed as such;
-this script deliberately does not launder it by pretending to verify it.
+The toke token counts (132.64/132.65)
+------------------------------------
+Every toke count the site publishes -- the /tokens gallery panels (both
+copies) and the home page's toke panels -- is REGENERATED from
+static/tokenizer_v03.json, the tokenizer /tokenizer loads, which the owner
+made canonical for published toke counts on 2026-10-01 (owner decisions
+§4.4), labelled "toke BPE v03, legacy". `--write` rewrites each toke panel
+whole: spans, per-token ids and the count together (116.13-H4: never a number
+by hand). `--check` fails when a published panel is not exactly what the
+tokenizer gives its own source, or when its label drops the "legacy" lane.
 
 Usage:
     python3 scripts/verify_site_examples.py            # report
@@ -51,9 +52,8 @@ guards against starts in the compiler repo: stdlib/io.tki landed and made
 while this check only ever ran on a push to THIS repository. The toke repo's
 `make check-site-compile`, its CI and its release workflow run this mode
 against the compiler they just built. It asserts the compile half only,
-because the count half is red on purpose pending the canonical-tokenizer
-decision (132.64/132.52a) and a compiler change cannot fix or break a count;
-the count findings are still printed, as "Reported, not asserted".
+because a compiler change cannot fix or break a token count; the count
+findings are still printed there, as "Reported, not asserted".
 """
 import html
 import json
@@ -88,7 +88,7 @@ FAIL_BADGE = '<span class="check-fail">&#10007;</span>'
 COMPARISON = re.compile(
     r'<h3>(?P<title>[^<]*?)\s*(?P<badge><span class="check-(?:ok|fail)">[^<]*</span>)</h3>'
     r'(?P<between>.*?)'
-    r'<div class="lang-label">toke &mdash;[^<]*</div>\s*'
+    r'<div class="lang-label">(?P<label>toke &mdash;[^<]*)</div>\s*'
     r'<pre class="tokens">(?P<code>.*?)</pre>',
     re.S)
 
@@ -167,6 +167,15 @@ UNESCAPE_CASES = [
 ]
 
 
+# Programs whose characters the v03 vocabulary partly lacks (F, backslash).
+RENDER_CASES = [
+    'm=fb;i=io:std.io;f=main():i64{io.println("FizzBuzz\\n");<0;};',
+    'x="a\\\\b\\"F"',
+    "F\\",
+    "",
+]
+
+
 def selftest():
     bad = 0
     for lit, want in UNESCAPE_CASES:
@@ -179,6 +188,20 @@ def selftest():
         return 1
     print("selftest: %d unescape_js cases OK (incl. 132.50a: \\\\n and \"%%d\\\\n\")"
           % len(UNESCAPE_CASES))
+    # 132.65: a regenerated panel must give back its program byte for byte,
+    # characters the vocabulary drops included, or --write would publish a
+    # different program from the one it compiled.
+    enc = load_toke_bpe()
+    if enc is not None:
+        for src in RENDER_CASES:
+            markup, n = render_toke_markup(enc, src, lambda i: "t%d" % (i % 8), True)
+            back = strip_markup(markup)
+            if back != src or n != len(enc(src)[0]):
+                print("SELFTEST FAIL render_toke_markup(%r) gives back %r, %d "
+                      "tokens" % (src, back, n))
+                return 1
+        print("selftest: %d render round-trips OK (dropped characters kept "
+              "in place, uncounted)" % len(RENDER_CASES))
     return 0
 
 
@@ -201,9 +224,16 @@ def compiles(source):
 
 
 def check_tokens_page(write, path=TOKENS_TKT):
-    """Compile each gallery program; return (findings, new_text_or_None)."""
+    """Compile each gallery program and regenerate its toke panel.
+
+    Returns (findings, checked, new_text_or_None). The badge is written from
+    the compile result (132.44). The toke panel -- label count, spans and
+    per-token ids together -- is regenerated from static/tokenizer_v03.json
+    (132.65), and --check fails when the published panel is not exactly that.
+    """
     text = open(path, encoding="utf-8").read()
     where = "" if path == TOKENS_TKT else os.path.relpath(path, ROOT) + ": "
+    enc = load_toke_bpe()
     findings, out, cursor, checked = [], [], 0, 0
 
     for m in COMPARISON.finditer(text):
@@ -223,7 +253,28 @@ def check_tokens_page(write, path=TOKENS_TKT):
         out.append(text[cursor:m.start("badge")])
         out.append(want)
         cursor = m.end("badge")
+        if enc is not None:
+            markup, n = render_toke_markup(enc, source,
+                                           lambda i: "t%d" % (i % 8), True)
+            label = "toke &mdash; %d tokens (%s)" % (n, TOKE_LANE)
+            if m.group("label") != label or m.group("code") != markup:
+                stated = re.search(r"(\d+) tokens", m.group("label"))
+                findings.append(("COUNT", title,
+                                 "panel says %s toke tokens; %s regenerates it "
+                                 "as %d (label, spans and ids must equal the "
+                                 "regenerated panel)"
+                                 % (stated.group(1) if stated else "?",
+                                    os.path.relpath(TOKENIZER_JSON, ROOT), n)))
+            out.append(text[cursor:m.start("label")])
+            out.append(label)
+            out.append(text[m.end("label"):m.start("code")])
+            out.append(markup)
+            cursor = m.end("code")
     out.append(text[cursor:])
+    if enc is None:
+        findings.append(("SETUP", where + "tokenizer",
+                         "static/tokenizer_v03.json missing: the /tokens toke "
+                         "panels were not regenerated"))
     return findings, checked, ("".join(out) if write else None)
 
 
@@ -260,7 +311,10 @@ def load_toke_bpe():
     drops them and lets their neighbours merge, the page kept each one as a
     token. FizzBuzz's `F`s and `\\` made that 68 against the library's 65.
 
-    Returns encode(text) -> (tokens, ids, dropped_chars). The mirror, the
+    Returns encode(text) -> (tokens, ids, dropped_chars), with
+    encode.segments(text) -> ([(token, start, end)], [(char, pos)]) giving the
+    source span of every token, which is what the panels are rendered from
+    (render_toke_markup). The mirror, the
     page's JS under node, and the library are held identical, token for token
     and id for id, by scripts/check_bpe_reference.py (`make
     check-bpe-reference`).
@@ -278,43 +332,110 @@ def load_toke_bpe():
     added = sorted(((t["content"], t["id"]) for t in data.get("added_tokens") or []),
                    key=lambda t: -len(t[0]))
 
-    def word(w, toks, dropped):
-        syms = [c for c in w if c in vocab]
-        dropped.extend(c for c in w if c not in vocab)
+    def word(w, off, segs, dropped):
+        # Each symbol carries the source span it covers: a merge spans from
+        # its left part's start to its right part's end, so a character the
+        # vocabulary lacks, dropped between two parts that then merge, falls
+        # INSIDE the merged token's span (132.65: the regenerated panels keep
+        # the published program byte-for-byte, dropped characters included).
+        syms = []
+        for k, c in enumerate(w):
+            if c in vocab:
+                syms.append((c, off + k, off + k + 1))
+            else:
+                dropped.append((c, off + k))
         while len(syms) > 1:
             best, at = None, -1
             for i in range(len(syms) - 1):
-                r = rank.get((syms[i], syms[i + 1]))
+                r = rank.get((syms[i][0], syms[i + 1][0]))
                 if r is not None and (best is None or r < best):
                     best, at = r, i
             if at < 0:
                 break
-            syms[at:at + 2] = [syms[at] + syms[at + 1]]
-        toks.extend(syms)
+            a, b = syms[at], syms[at + 1]
+            syms[at:at + 2] = [(a[0] + b[0], a[1], b[2])]
+        segs.extend(syms)
 
-    def split(s, toks, dropped):
+    def split_into(s, off, segs, dropped):
         for k, part in enumerate(s.split("\n")):
             if k:
-                word("\n", toks, dropped)
+                word("\n", off - 1, segs, dropped)
             if part:
-                word(part, toks, dropped)
+                word(part, off, segs, dropped)
+            off += len(part) + 1
 
-    def encode(text):
-        toks, dropped, ids_of = [], [], dict(added)
+    def segments(text):
+        """[(token, start, end)] in order, and [(char, pos)] dropped."""
+        segs, dropped = [], []
         seg = i = 0
         while i < len(text):
             hit = next((c for c, _ in added if text.startswith(c, i)), None)
             if hit is None:
                 i += 1
                 continue
-            split(text[seg:i], toks, dropped)
-            toks.append(hit)
+            split_into(text[seg:i], seg, segs, dropped)
+            segs.append((hit, i, i + len(hit)))
             i += len(hit)
             seg = i
-        split(text[seg:], toks, dropped)
-        return toks, [ids_of[t] if t in ids_of else vocab[t] for t in toks], dropped
+        split_into(text[seg:], seg, segs, dropped)
+        return segs, dropped
 
+    ids_of = dict(added)
+
+    def token_id(t):
+        return ids_of[t] if t in ids_of else vocab[t]
+
+    def encode(text):
+        segs, dropped = segments(text)
+        toks = [t for t, _, _ in segs]
+        return toks, [token_id(t) for t in toks], [c for c, _ in dropped]
+
+    encode.segments = segments
+    encode.token_id = token_id
     return encode
+
+
+# 132.64/132.65 (owner decision 2026-10-01 §4.4): static/tokenizer_v03.json is
+# the canonical tokenizer for every toke count the site publishes, labelled as
+# the legacy v0.3 artefact it is. Every toke count is therefore DERIVED from it
+# and asserted, exactly as the cl100k lanes are derived from tiktoken.
+TOKE_LANE = "toke BPE v03, legacy"
+DROPPED_TITLE = ("not a token: this character is not in the v03 vocabulary, "
+                 "so the tokenizer drops it (not counted)")
+
+
+def render_toke_markup(enc, source, span_class, with_id):
+    """The panel markup for `source`, one span per token, REGENERATED (116.13-H4).
+
+    Each span holds the exact source text the token covers, so stripping the
+    tags gives back the published program byte for byte. A character the
+    vocabulary lacks is shown in place as an uncounted `unknown-token` mark --
+    the same convention /tokenizer uses -- inside the token its neighbours
+    merged into, or between tokens. Returns (markup, token_count).
+    """
+    segs, dropped = enc.segments(source)
+    gone = {pos for _, pos in dropped}
+
+    def text(a, b):
+        out = []
+        for k in range(a, b):
+            ch = html.escape(source[k], quote=True)
+            if source[k] == "\n" and not with_id:
+                ch = "&#x21B5;\n"     # the home page's newline glyph
+            if k in gone:
+                ch = '<span class="unknown-token" title="%s">%s</span>' % (
+                    DROPPED_TITLE, ch)
+            out.append(ch)
+        return "".join(out)
+
+    out, cursor = [], 0
+    for i, (tok, a, b) in enumerate(segs):
+        out.append(text(cursor, a))
+        title = ' title="token %d"' % enc.token_id(tok) if with_id else ""
+        out.append('<span class="%s"%s>%s</span>' % (span_class(i), title, text(a, b)))
+        cursor = b
+    out.append(text(cursor, len(source)))
+    return "".join(out), len(segs)
 
 
 def check_tab_labels():
@@ -337,6 +458,9 @@ def check_tab_labels():
         pid, label = m.group("id"), m.group("label")
         if pid not in footers:
             continue
+        if "toke" in pid and TOKE_LANE not in label:
+            findings.append(("LABEL", pid, "tab label %r does not name the "
+                             "canonical lane %r" % (label, TOKE_LANE)))
         lm = re.search(r"&mdash;\s*(\d+)", label)
         if not lm:
             continue
@@ -348,52 +472,49 @@ def check_tab_labels():
     return findings, checked
 
 
-def report_tokens_page_counts():
-    """REPORTED, NOT ASSERTED: what /tokens publishes vs what the tokenizer says.
+def home_toke_markup(enc, source):
+    return render_toke_markup(enc, source, lambda i: "tv-tok tv-c%d" % (i % 12),
+                              False)
 
-    Story 132.65. Each gallery lang-label reads "toke &mdash; N tokens (toke
-    BPE v03)". None of those N reproduce. The page is internally consistent —
-    N equals the number of rendered spans — but the segmentation was not
-    produced by any tokenizer artefact in this project: the per-token ids are
-    wrong (every toke panel opens `m=` as "token 181", and 181 is `false` in
-    static/tokenizer_v03.json; `m=` is 144), and no artefact agrees on the
-    count either. For the FizzBuzz program the page says 42, the shipped
-    16,384 BPE says 65 (the page's encoder said 68 until 132.52a made it
-    match the `tokenizers` reference implementation), and the SentencePiece
-    models say 110 (8K) and 104 (32K).
 
-    This is REPORTED rather than asserted, in the same spirit as
-    `make check-hardening`'s _FORTIFY_SOURCE line (AGENTS.md 14.3), because
-    the fix is not a number: story 116.13-H4 is explicit that the markup must
-    be REGENERATED and must not be hand-edited, since editing the count by
-    hand desyncs it from the per-token ids. Which tokenizer is canonical for
-    a published toke count is an open owner decision, and asserting one of
-    three candidate answers here would be re-guessing rather than deriving.
+def regenerate_home_panels():
+    """--write: regenerate each home-page toke panel from the tokenizer (132.64).
 
-    Turning this into an assertion is the correct follow-up the moment that
-    decision is made and the markup is regenerated.
+    Spans, the footer count and the tab-button count together, never a number
+    by hand: setting the badge alone trips the span-count check below.
+    Returns the new index.tkt text, or None when the tokenizer is missing.
     """
-    text = open(TOKENS_TKT, encoding="utf-8").read()
     enc = load_toke_bpe()
     if enc is None:
-        return ["Reported, not asserted: static/tokenizer_v03.json missing — "
-                "/tokens counts not derived"]
-    lines, drift = [], 0
-    for m in re.finditer(r'<div class="lang-label">toke &mdash;\s*(?P<n>\d+) tokens'
-                         r'[^<]*</div>\s*<pre class="tokens">(?P<code>.*?)</pre>',
-                         text, re.S):
-        stated = int(m.group("n"))
-        source = strip_markup(m.group("code"))
-        derived = len(enc(source)[0])
-        if derived != stated:
-            drift += 1
-    if drift:
-        lines.append("Reported, not asserted (132.65): %d of the /tokens toke "
-                     "panels publish a count that static/tokenizer_v03.json "
-                     "does not reproduce. Not failed here: 116.13-H4 requires "
-                     "the markup be regenerated, not re-numbered, and the "
-                     "canonical tokenizer is an open owner decision." % drift)
-    return lines
+        return None
+    text = open(INDEX_TKT, encoding="utf-8").read()
+    counts = {}
+
+    def panel(m):
+        pid, body = m.group("id"), m.group("body")
+        cm = re.search(r"<code>(.*?)</code>", body, re.S)
+        if "toke" not in pid or not cm:
+            return m.group(0)
+        source = strip_markup(cm.group(1)).replace("\u21b5", "")
+        markup, n = home_toke_markup(enc, source)
+        counts[pid] = n
+        body = body[:cm.start(1)] + markup + body[cm.end(1):]
+        body = re.sub(r"\d+(?= tokens &mdash; )", str(n), body, count=1)
+        start, end = m.start("body") - m.start(0), m.end("body") - m.start(0)
+        whole = m.group(0)
+        return whole[:start] + body + whole[end:]
+
+    text = PANEL.sub(panel, text)
+
+    def tab(m):
+        n = counts.get(m.group("id"))
+        if n is None:
+            return m.group(0)
+        label = re.sub(r"(&mdash;\s*)\d+", lambda x: x.group(1) + str(n),
+                       m.group("label"), count=1)
+        return m.group(0).replace(m.group("label"), label)
+
+    return TAB_BTN.sub(tab, text)
 
 
 def check_home_panels():
@@ -428,6 +549,10 @@ def check_home_panels():
             findings.append(("COUNT", pid, "badge says %d tokens; the panel "
                              "renders %d" % (stated, spans)))
         if "toke" in pid:
+            if TOKE_LANE not in bm.group("lane"):
+                findings.append(("LABEL", pid, "footer lane %r does not name "
+                                 "the canonical lane %r"
+                                 % (bm.group("lane").strip(), TOKE_LANE)))
             ok, diag = compiles(source)
             if not ok:
                 findings.append(("FAIL", pid, diag))
@@ -439,6 +564,12 @@ def check_home_panels():
             # had existed. A count that UNDERSTATES is invisible to every other
             # gate here, and it still has to reproduce.
             if toke_enc is not None:
+                if home_toke_markup(toke_enc, source)[0] != cm.group(1):
+                    findings.append(("COUNT", pid,
+                                     "the panel's token spans are not the "
+                                     "segmentation static/tokenizer_v03.json "
+                                     "gives its own source (regenerate, "
+                                     "116.13-H4)"))
                 toks, ids, dropped = toke_enc(source)
                 if len(toks) != stated:
                     findings.append(("COUNT", pid,
@@ -501,23 +632,27 @@ def main():
         new_texts[page] = t
     preset_findings, n_presets = check_tokenizer_presets()
     findings += preset_findings
+    if write:
+        new_index = regenerate_home_panels()
+        if new_index is not None:
+            with open(INDEX_TKT, "w", encoding="utf-8") as fh:
+                fh.write(new_index)
+            print("regenerated the home-page toke panels in %s"
+                  % os.path.relpath(INDEX_TKT, ROOT))
     home_findings, n_home = check_home_panels()
     findings += home_findings
     tab_findings, n_tabs = check_tab_labels()
     findings += tab_findings
-    reported = report_tokens_page_counts()
 
     for page, new_text in new_texts.items():
         if write and new_text is not None:
             with open(page, "w", encoding="utf-8") as fh:
                 fh.write(new_text)
-            print("wrote badges into %s" % os.path.relpath(page, ROOT))
+            print("wrote badges and toke panels into %s" % os.path.relpath(page, ROOT))
 
     print("checked %d /tokens gallery programs, %d /tokenizer programs, "
           "%d home-page panels and %d tab labels"
           % (n_gallery, n_presets, n_home, n_tabs))
-    for line in reported:
-        print("  " + line)
     if compile_only:
         for kind, what, detail in findings:
             if kind not in COMPILE_KINDS:
