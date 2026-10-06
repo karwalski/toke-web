@@ -56,9 +56,9 @@ unchanged and unrelated to it.
   Current version: toke 3.1.0. Licence Apache-2.0.
 - Author: Matthew Watt (github.com/karwalski), sole maintainer.
 - Source: github.com/karwalski/toke — compiler, specification and standard library,
-  Apache-2.0. The project is eleven public repositories under github.com/karwalski, plus two
-  private ones; the site is tokelang.dev, built with ooke and served by a toke binary on
-  std.http.
+  Apache-2.0, except spec/, stdlib/ and src/stdlib/, which are MIT. The project is twelve
+  public repositories under github.com/karwalski, plus two private ones; the site is
+  tokelang.dev, built with ooke and served by a toke binary on std.http.
 
 ## A complete program
 
