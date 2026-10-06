@@ -83,7 +83,7 @@
     <b>0.92&times;</b>. A correct multi-lane recount of this library is scheduled work &mdash; see the
     <a href="/roadmap">roadmap</a>.
   </div>
-  <p class="legend">Units: <code>B</code> = raw source bytes, the same basis on both sides. Ratio &gt; 1 = toke fewer bytes; &lt; 1 = toke more. Token counts are shown per side with the tokenizer that produced them (toke BPE v03 on toke, cl100k_base on Python) and are never divided across languages.</p>
+  <p class="legend">Units: <code>B</code> = raw source bytes, the same basis on both sides. Ratio &gt; 1 = toke fewer bytes; &lt; 1 = toke more. Token counts are shown per side with the tokenizer that produced them (toke BPE v03, legacy, on toke; cl100k_base on Python) and are never divided across languages.</p>
   <div class="stats" id="stats"></div>
   <div class="tabs">
     <div class="tab active" data-tab="corpus" id="tab-corpus">Corpus</div>
@@ -149,7 +149,7 @@ async function renderCategory(key,q){
   let progs = data.programs;
   if(q) progs = progs.filter(p=>(p.id+' '+p.title+' '+p.description).toLowerCase().includes(q));
   V.innerHTML = `<div class="crumb"><span class="back" onclick="goHome()">← all categories</span> / ${esc(data.title)} (${progs.length})</div>
-    <table><thead><tr><th>ID</th><th>Title</th><th>Diff</th><th>toke (BPE v03)</th><th>Python (cl100k)</th><th>Bytes, Py / toke</th></tr></thead><tbody>` +
+    <table><thead><tr><th>ID</th><th>Title</th><th>Diff</th><th>toke (BPE v03, legacy)</th><th>Python (cl100k)</th><th>Bytes, Py / toke</th></tr></thead><tbody>` +
     progs.map((p,i)=>`<tr class="prow" onclick="openProg('${key}',${data.programs.indexOf(p)})">
       <td><code>${esc(p.id)}</code></td><td>${esc(p.title)}</td>
       <td><span class="diff">${'★'.repeat(p.difficulty||0)||'–'}</span></td>
@@ -174,10 +174,10 @@ async function openProg(key,idx){
     <div class="desc">${esc(p.description)}</div>
     <div class="mods">${(p.stdlib_modules||[]).map(m=>`<span class="mod">${esc(m)}</span>`).join('')}</div>
     <div class="cmp">
-      <div class="section-h" style="margin-top:0">Tokens — toke BPE v03 vs cl100k_base</div>
+      <div class="section-h" style="margin-top:0">Tokens — toke BPE v03 (legacy) vs cl100k_base</div>
       <div class="bar toke" style="width:${Math.max(8,100*tt/mx)}%">toke — ${tt} tok</div>
       <div class="bar py" style="width:${Math.max(8,100*pt/mx)}%">Python — ${pt} tok</div>
-      <div style="margin-top:0.4rem">${ratioBadge(p.byte_ratio)} <span class="muted" style="font-size:0.8rem">· ${p.toke_bytes||'–'} B toke vs ${p.python_bytes||'–'} B Python · tokens: ${p.toke_tokens||'–'} (toke BPE v03) / ${p.python_tokens||'–'} (cl100k) — different tokenizers, not comparable</span></div>
+      <div style="margin-top:0.4rem">${ratioBadge(p.byte_ratio)} <span class="muted" style="font-size:0.8rem">· ${p.toke_bytes||'–'} B toke vs ${p.python_bytes||'–'} B Python · tokens: ${p.toke_tokens||'–'} (toke BPE v03, legacy) / ${p.python_tokens||'–'} (cl100k) — different tokenizers, not comparable</span></div>
     </div>
     <div class="section-h">Source — solution.tk</div>
     <pre>${esc(p.source)}</pre>
