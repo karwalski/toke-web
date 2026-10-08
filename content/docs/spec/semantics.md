@@ -266,8 +266,12 @@ For `x = expr`:
 
 - The left-hand side type and right-hand side type must be equal.
   Violation: `[errors.md E4031]`.
-- The binding must have been declared with `let x=mut.` (mutable binding).
-  STUB: mutability checking is not yet formalized in the type checker.
+- The binding must be mutable: declared with `let x=mut.`, or the loop
+  variable introduced by an `lp` init (§4.7), which is mutable without
+  `mut.`. Assigning to any other binding -- an immutable `let`, a
+  parameter, an `mt` arm binding -- is `[errors.md E4070]`. So
+  `lp(let i=0; i<n; i=i+1){...}` is legal, and so is an assignment to `i`
+  in the loop body (127.283).
 
 ### 2.10 Return Statements
 
@@ -334,6 +338,11 @@ to innermost, is:
 Lookup proceeds from the innermost scope outward. The first matching declaration
 is returned.
 
+A `let` binding is in scope from the end of its statement to the end of its
+block; when the block ends, the name means again what it meant before the
+block (an enclosing binding, a module-level declaration, or nothing). Uses and
+assignments both resolve this way [toke-spec-v0.4 §I, story 127.196].
+
 ### 4.2 Declaration Kinds
 
 | Kind              | Introduced by           | Mutable | Notes                        |
@@ -374,11 +383,13 @@ pass before any references are resolved. This means:
 
 ### 4.5 Shadowing Rules
 
-- **Same-scope duplicate:** Declaring a name that already exists in the
-  *same* scope is a compile error `[errors.md E3012]`.
+- **Same-scope duplicate:** Declaring a function, type, constant, parameter or
+  import alias whose name already exists in the *same* scope is a compile
+  error `[errors.md E3012]`. A `let` may re-bind a name in the same scope; the
+  newer binding is in force from its statement on (v0.3 §11.8.1).
 - **Cross-scope shadowing:** Declaring a name in an inner scope that shadows
-  an outer-scope name is permitted. The inner declaration takes precedence
-  within its scope.
+  an outer-scope name is permitted (a `let` that does so draws W3013). The
+  inner declaration takes precedence within its scope, and only there.
 
 ### 4.6 Reference Resolution
 
@@ -395,8 +406,14 @@ field list.
 ### 4.7 Loop Scoping
 
 A `lp(init; cond; step) { body }` loop creates a single scope that encloses
-the init variable, condition, step, and body. The init variable (if declared
-with `let` or `let x=mut.`) is visible in all three subsequent positions.
+the init variable, condition, step, and body. The init variable
+(`lp(let i = e; ...)`) is visible in all three subsequent positions, and
+not after the loop.
+
+The init variable is **mutable**, though it is written without `mut.`: the
+step (`i = i + 1`) and any assignment to it in the body are legal (§2.9).
+The init takes no `mut.` qualifier -- `lp(let i = mut.e; ...)` does not
+parse (`[errors.md E2002]`) (127.283).
 
 ### 4.8 Match Arm Scoping
 
@@ -425,6 +442,25 @@ error union type. Its semantics are:
    enclosing function immediately (early return).
 4. If the value is the success variant, the `!` operator unwraps it and
    produces a value of type `T`.
+5. The error must be one the enclosing function can return unchanged
+   (127.225, owner decision 2026-10-01 §2.3). When the operand is a call to
+   a user function declaring `T!$a`, and the enclosing function declares
+   `U!$b`, then `$a` and `$b` must be the same type, or two records whose
+   fields have the same types in the same order. Any other pair of named sum
+   or record types is a check-time error `[errors.md E4076]`. A re-raise
+   the checker cannot judge, between two types whose layouts differ, traps
+   `RT010` when the error occurs (memory-model §6.6). An error from a
+   `std.*` call is re-raised without its payload when its type is not the
+   enclosing function's.
+6. A call through a function value (a `let` bound to a function, a copy of
+   `&f`, a closure, an array element, an immediately applied closure) is a
+   call of that value's signature, and the error type is part of the
+   signature: `!` and `mt` decide on the callee's error exactly as for a
+   call by name, and rule 5 applies to it (127.276). A function type written
+   `(T1;..):R` is infallible, so a function declaring `R!$e` cannot be
+   passed to a parameter, stored in a field, or bound to an annotated `let`
+   of that type: `[errors.md E4031]`, whose message names the error type
+   (`(i64):i64!$e`).
 
 ### 5.3 Match on Error Types
 

@@ -102,6 +102,7 @@ source and `docs/reference/errors.md` by `python3 scripts/check_error_codes.py
 | E4073 | error | type_check | Nested interpolation the interpolation lowering cannot delimit | n/s |
 | E4074 | error | type_check | A comparison stands as a statement: its result is discarded | n/s |
 | E4075 | error | type_check | Regex pattern literal is not in the supported regex language | n/s |
+| E4076 | error | type_check | `!` re-raises a user error into a different error type | n/s |
 | E5001 | error | arena_check | Value escapes arena scope | -- |
 | W5001 | warning | arena_check | Value may escape arena scope | n/s |
 | E5002 | error | arena_check | Unreachable code after return | -- |
@@ -124,6 +125,7 @@ source and `docs/reference/errors.md` by `python3 scripts/check_error_codes.py
 | E9024 | error | codegen | Stdlib or runtime directory path contains whitespace | n/s |
 | E9025 | error | codegen | No version of a dependency satisfies every constraint | n/s |
 | E9026 | error | codegen | `--migrate` declined; source echoed unchanged | C711 |
+| E9027 | error | codegen | The C compiler tkc would run is not an executable file | n/s |
 
 **Legend:** `--` = no dedicated conformance test yet (code is exercised by compiler but not by a D/G-series test); `n/s` = not surveyed for this table — see `docs/reference/errors.md`.
 
@@ -685,13 +687,16 @@ f=bad():i64{<x};
 | **Fix field** | absent |
 | **Conformance test** | -- |
 
-**Notes:** A second declaration of the same name in the same scope. Shadowing
-across scope boundaries is allowed; duplicate declaration within one scope is not.
+**Notes:** A second function, type, constant, parameter or import alias of
+the same name in the same scope. A `let` may re-bind a name, in the same scope
+or an enclosing one (v0.3 §11.8.1; toke-spec-v0.4 §I), so `let x=1;let x=2;`
+is not E3012.
 
 **Example trigger:**
 ```text
 m=test;
-f=bad():i64{let x=1;let x=2;<x};
+f=bad():i64{<1};
+f=bad():i64{<2};
 ```
 
 ---
