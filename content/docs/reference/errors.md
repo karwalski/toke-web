@@ -493,6 +493,19 @@ the bare upper-case `DbErr`, or one of the seven renamed `<module><noun>`
 when the renamed type is in scope (not for `$row`, which may mean `std.ml`'s
 own `row`); `tkc --migrate` rewrites them.
 
+A match-arm label that names no type and no variant is E3011 too (127.292):
+`mt s.toint(t) {$i64:v v;StrErr:e 0}`. A label names something when it is
+`$ok`/`$err` (or the legacy `Ok`/`Err`), `$some`/`$none`, a primitive type,
+a type in scope, or a variant of a sum declared in the program or in an
+imported interface. A string-tag match (`mt s {$aa:w ..;$bb:w ..}` over a
+`str`) is exempt: its labels are strings. Before 127.292 nothing checked the label: beside a
+recognised one it lowered by position (and in the other order gave a wrong
+value), and with none recognised (`{Handle:h ..;ProcessErr:e ..}`) the build
+died with E9005 after `--check` had passed. An old spelling of a renamed
+stdlib type (`ProcessErr:e`) carries the same `fix` as above --
+"did you mean '$processerr'?" -- when its module is imported, and
+`tkc --migrate` rewrites it; any other label gets no `fix`.
+
 **Fix:** Declare the identifier before using it, or check for typos.
 
 ---
@@ -509,6 +522,14 @@ own `row`); `tkc --migrate` rewrites them.
 A second declaration of the same name in the same scope, for a kind that may
 not be redeclared: `f=` functions, `t=` types, `i=` imports, consts and
 parameters.
+
+Import aliases (`i=json:std.json;`) and the sub-namespaces an imported module
+registers (`row` with `std.db`) live in the same module scope as types,
+functions and constants, so `t=$json{..}` beside `i=json:std.json;` is E3012.
+The message then names the alias and its module ("type 'json' clashes with
+the import alias 'json' (i=json:std.json)") or says the name is a
+sub-namespace; there is no `fix`, because renaming either side can be the
+intended repair (127.285).
 
 `let` and `let mut` are **excluded**: story 75.1.7 chose "allow same-scope
 and cross-scope shadowing", and §11.8.1 of the spec publishes
