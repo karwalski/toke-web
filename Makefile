@@ -50,7 +50,7 @@ certs/cert.pem certs/key.pem:
 	  -keyout certs/key.pem -out certs/cert.pem \
 	  -days 365 -nodes \
 	  -subj "/C=AU/ST=NSW/O=toke/CN=tokelang.dev" \
-	  -addext "subjectAltName=DNS:tokelang.dev,DNS:www.tokelang.dev,DNS:staging.tokelang.dev,DNS:loke.tokelang.dev,DNS:localhost,IP:127.0.0.1"
+	  -addext "subjectAltName=DNS:tokelang.dev,DNS:www.tokelang.dev,DNS:staging.tokelang.dev,DNS:localhost,IP:127.0.0.1"
 
 certs: certs/cert.pem certs/key.pem
 
