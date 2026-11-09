@@ -22,6 +22,15 @@
   </div>
 
   <div class="oke-card">
+    <div class="oke-badge">test programs</div>
+    <h2><a href="https://github.com/karwalski/toke-test-programs">toke-test-programs</a></h2>
+    <p>Executable toke programs used as regression and conformance material for the compiler: real-world application requirements, grouped by category, with generated toke solutions that are compiled and run against their tests. The full-local re-audit of its 1,748 programs (v0.3.9) is the honest floor for model output: 37.5% compile, about 2.2% fully correct (<a href="https://github.com/karwalski/toke/blob/main/docs/metrics-baseline.md">metrics baseline</a>).</p>
+    <div class="oke-links">
+      <a href="https://github.com/karwalski/toke-test-programs">GitHub</a>
+    </div>
+  </div>
+
+  <div class="oke-card">
     <div class="oke-badge">web framework</div>
     <h2><a href="/ooke">ooke</a></h2>
     <p>toke's web framework and static site generator, written in toke. File-system routing, flat-file content store, template engine with Markdown, build and serve modes. Zero dependencies. Ships as a single binary. Builds tokelang.dev in production; a std.http binary serves it.</p>
