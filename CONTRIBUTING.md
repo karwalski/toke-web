@@ -12,7 +12,11 @@ Thank you for your interest in contributing to the toke website.
 
 ## What to contribute
 
-- Documentation improvements and corrections
+- Corrections to the site's own pages (`templates/`, `static/`, `sites/`)
+- Documentation improvements and corrections -- in the
+  [toke](https://github.com/karwalski/toke) repository's `docs/`, not here:
+  `content/docs/` is a generated copy (`make docs-content`) and
+  `make check-docs-content` fails if it is edited by hand
 - New tutorials or cookbook recipes
 - Bug fixes in templates or styling
 - Accessibility improvements
@@ -20,8 +24,15 @@ Thank you for your interest in contributing to the toke website.
 ## Pull requests
 
 - Keep changes focused -- one topic per PR
-- Test locally before submitting (`make run` and check the relevant pages)
+- Run `make ci` before submitting; it is what the CI workflow runs (see the
+  Checks table in the [README](README.md))
 - Write clear commit messages describing the change
+- Sign off every commit (`git commit -s`): the project uses the Developer
+  Certificate of Origin, not a CLA -- see
+  [`LICENSING.md`](https://github.com/karwalski/toke/blob/main/LICENSING.md)
+- Every number published about toke comes from
+  [`docs/metrics-baseline.md`](https://github.com/karwalski/toke/blob/main/docs/metrics-baseline.md);
+  a figure that is not there is not published
 
 ## Code of conduct
 

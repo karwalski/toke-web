@@ -71,7 +71,7 @@ pages/             # Route names for `ooke build` only (story 134.8): one
                    # /docs/<section>/<slug> page per pages/**/*.tk *filename*.
                    # The server never reads it — main.tk routes with
                    # http.servepages("templates";"templates"). The bodies are
-                   # still pre-v0.3 and 13 of 24 do not compile; migrating them
+                   # still pre-v0.3 and 21 of 22 do not compile; migrating them
                    # is story 132.17 / 134.2. Do not delete the tree: that
                    # deletes the ~195 documentation pages.
 scripts/           # Generation, gate and deployment scripts
@@ -85,11 +85,17 @@ workflow runs the same targets:
 
 | Target | What it protects |
 |---|---|
+| `make check-deploy-posture` | The deploy path keeps host-key checking on, never ships the origin TLS key, and no key file or infrastructure address is committed (`--selftest` plants one of each first). |
 | `make check-toke` | Every toke source the site is built from compiles under `tkc`. `main.tk` once sat at HEAD in v0.3 `=`-equality that the current compiler rejects, so the site could not be rebuilt from its own source. |
+| `make check-site-examples` | Every toke program the site publishes compiles under `tkc`, and every badge on `/tokens` was written from that compile result. |
+| `make check-bpe-reference` | The `/tokenizer` page's in-browser BPE matches the `tokenizers` library token for token. Needs node and `pip install tokenizers`. |
+| `make check-facts` | Every `<!--fact:KEY-->` count (the stdlib module count on `/` and `/docs/reference`) matches the fact sheet the compiler repo derives from its tree. |
 | `make check-roadmap` | `/roadmap` and the home-page milestones block still match `content/roadmap.json`, their single source. |
 | `make check-llms` | `/llms.txt` still matches the canonical facts block in the compiler repo (`docs/about/canonical.json`, override the location with `TOKE_DOCS`). |
+| `make check-docs-content` | `content/docs/` is byte-identical to the toke repo's `docs/` (`TOKE_REPO`, default `~/tk/toke`). It is a generated copy: fix documentation in the toke repo, then `make docs-content` here. |
 | `make build` | Rebuilds `build/` from committed sources. It is gitignored but the deploy rsyncs it. |
 | `make check-build-fresh` | `build/` is not older than `static/`, `templates/`, `content/` or `sites/`. |
+| `make check-doc-links` | Every in-site link on a rendered `/docs` page names something the server answers. |
 | `make check-routes` | Starts the server and asserts every route the repository defines answers 200. |
 | `make check-library` | Recounts the `/library` JSON from its sources and reports drift. Reads two sibling repos, named by `TOKE_TOKENIZER` and `TOKE_TEST_PROGRAMS` (default `~/tk/toke-tokenizer`, `~/tk/toke-test-programs`), and needs `tiktoken` installed; a missing one fails the target rather than reporting nothing. |
 
@@ -113,9 +119,14 @@ This emits LLVM IR locally, rsyncs it and the site content to the server, and co
 - [toke](https://github.com/karwalski/toke) -- the toke language compiler and standard library (also the source of truth for the docs this site serves)
 - [ooke](https://github.com/karwalski/ooke) -- ooke web framework
 - [toke-corpus](https://github.com/karwalski/toke-corpus) -- training-data generation for toke code models
-- [toke-model](https://github.com/karwalski/toke-models) -- model training and adapter merging
+- [toke-models](https://github.com/karwalski/toke-models) -- model training and adapter merging
 - [toke-tokenizer](https://github.com/karwalski/toke-tokenizer) -- custom toke tokenizer
+
+The full map, with each repository's role and licence, is
+[`docs/about/repos.md`](https://github.com/karwalski/toke/blob/main/docs/about/repos.md).
 
 ## License
 
-MIT -- see [LICENSE](LICENSE).
+MIT -- see [LICENSE](LICENSE). The licences of the toke project as a whole
+(Apache-2.0 compiler, MIT specification and standard library) are set out in
+[`LICENSING.md`](https://github.com/karwalski/toke/blob/main/LICENSING.md).
