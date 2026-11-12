@@ -14,7 +14,7 @@
   <div class="oke-card oke-core">
     <div class="oke-badge">language</div>
     <h2><a href="/">toke</a></h2>
-    <p>The core programming language, purpose-built for LLM code generation. 59-character syntax, zero runtime, single binary. Compiles via LLVM to native code on any platform.</p>
+    <p>The core programming language, purpose-built for LLM code generation. A closed 59-character alphabet, 14 keywords, structured diagnostics. <code>tkc</code> compiles through LLVM to native x86-64 and ARM64 binaries, linking a small C runtime and standard library.</p>
     <div class="oke-links">
       <a href="/docs">Docs</a>
       <a href="https://github.com/karwalski/toke">GitHub</a>
