@@ -50,13 +50,14 @@ unchanged and unrelated to it.
   automaton behind a decoding mask small and the masks cheap.
 - Canonical form: one per construct, chosen by measurement in a 46-entry pattern
   catalogue and reproduced by `tkc --min`.
-- Compiler: tkc, the reference compiler: single-pass C99, zero dependencies beyond LLVM,
-  native binaries for x86-64 and ARM64, and structured diagnostics with stable error
-  codes, machine-parseable spans and a fix field.
+- Compiler: tkc, the reference compiler: C99; links only libc, libm, zlib and pthreads;
+  emits LLVM IR and drives clang to build native binaries for x86-64 and ARM64;
+  structured diagnostics with stable error codes, machine-parseable spans and a fix
+  field.
   Current version: toke 3.1.0. Licence Apache-2.0.
 - Author: Matthew Watt (github.com/karwalski), sole maintainer.
 - Source: github.com/karwalski/toke — compiler, specification and standard library,
-  Apache-2.0, except spec/, stdlib/ and src/stdlib/, which are MIT. The project is twelve
+  Apache-2.0, except spec/, stdlib/ and src/stdlib/, which are MIT. The project is thirteen
   public repositories under github.com/karwalski, plus two private ones; the site is
   tokelang.dev, built with ooke and served by a toke binary on std.http.
 
