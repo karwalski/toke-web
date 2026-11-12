@@ -23,7 +23,10 @@
   <li><a href="/docs/learn/05-errors">Errors</a> — structured error types and recovery</li>
   <li><a href="/docs/learn/06-strings-io">Strings &amp; I/O</a> — working with text and the file system</li>
   <li><a href="/docs/learn/07-modules-imports">Modules &amp; Imports</a> — organising larger programs</li>
-  <li><a href="/docs/learn/08-advanced">Advanced</a> — generics, closures, and unsafe blocks</li>
+  <li><a href="/docs/learn/08-advanced">Advanced</a> — FFI, pointers, casts and arena blocks</li>
+  <li><a href="/docs/learn/09-stdlib">Standard Library</a> — a deep dive into the stdlib modules</li>
+  <li><a href="/docs/learn/10-project">Project</a> — build a complete application</li>
+  <li><a href="/docs/learn/11-patterns-and-efficiency">Patterns &amp; Efficiency</a> — the measured pattern catalogue</li>
 </ul>
 
 <h2>Reference</h2>
