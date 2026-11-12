@@ -578,7 +578,7 @@
     </div>
     <div class="cta-card">
       <h3>Install the compiler</h3>
-      <p>Build from source. Homebrew is not published yet &mdash; the tap returns 404 today. Run your first program in under 5 minutes.</p>
+      <p>Build from source. Homebrew is not installable yet &mdash; the tap exists, but its formulae still carry placeholder checksums and no release tarball has been published. Run your first program in under 5 minutes.</p>
       <a href="/docs/learn/install">Installation guide &rarr;</a>
     </div>
     <div class="cta-card">
@@ -588,7 +588,7 @@
     </div>
     <div class="cta-card">
       <h3>Learn the language</h3>
-      <p>A structured 10-lesson course from zero to proficient. All examples compile.</p>
+      <p>An 11-lesson course from zero to proficient. All examples compile.</p>
       <a href="/docs/learn/01-why-toke">Start learning &rarr;</a>
     </div>
   </div>

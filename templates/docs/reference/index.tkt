@@ -3,7 +3,7 @@
 {! block("content") !}
 
 <h1>Standard Library Reference</h1>
-<p>The toke standard library provides 35 modules covering HTTP, data, AI, cryptography, media, and more. All modules are imported with <code>i=alias:std.module;</code> syntax.</p>
+<p>The toke standard library provides <!--fact:stdlib_modules-->67<!--/fact--> modules covering HTTP, data, AI, cryptography, media, and more. A selection is below; the <a href="/docs/stdlib/index">standard library index</a> lists every module. All modules are imported with <code>i=alias:std.module;</code> syntax.</p>
 
 <h2>Core</h2>
 <div class="ref-grid">
@@ -38,12 +38,13 @@
 <div class="ref-grid">
   <a href="/docs/stdlib/crypto" class="ref-card"><strong>crypto</strong><span>Hashing and HMAC</span></a>
   <a href="/docs/stdlib/encrypt" class="ref-card"><strong>encrypt</strong><span>Symmetric and asymmetric encryption</span></a>
+  <a href="/docs/stdlib/tls" class="ref-card"><strong>tls</strong><span>TLS 1.3 connections; prefers the hybrid post-quantum X25519MLKEM768 key exchange</span></a>
 </div>
 
 <h2>AI and Data Science</h2>
 <div class="ref-grid">
-  <a href="/docs/stdlib/llm" class="ref-card"><strong>llm</strong><span>LLM client (chat, stream, json_mode)</span></a>
-  <a href="/docs/stdlib/llm_tool" class="ref-card"><strong>llm_tool</strong><span>LLM tool-call loop</span></a>
+  <a href="/docs/stdlib/llm" class="ref-card"><strong>llm</strong><span>LLM client (chat, streaming, completion)</span></a>
+  <a href="/docs/stdlib/llmtool" class="ref-card"><strong>llmtool</strong><span>LLM tool-call loop</span></a>
   <a href="/docs/stdlib/math" class="ref-card"><strong>math</strong><span>Statistics and linear algebra</span></a>
   <a href="/docs/stdlib/dataframe" class="ref-card"><strong>dataframe</strong><span>Tabular data processing</span></a>
   <a href="/docs/stdlib/analytics" class="ref-card"><strong>analytics</strong><span>Time-series and anomaly detection</span></a>
@@ -61,8 +62,9 @@
 
 <h2>Serialisation and Internationalisation</h2>
 <div class="ref-grid">
-  <a href="/docs/stdlib/toon" class="ref-card"><strong>toon</strong><span>TOON binary serialisation</span></a>
+  <a href="/docs/stdlib/toon" class="ref-card"><strong>toon</strong><span>TOON (Token-Oriented Object Notation), the default serialisation format</span></a>
   <a href="/docs/stdlib/yaml" class="ref-card"><strong>yaml</strong><span>YAML parse and emit</span></a>
+  <a href="/docs/stdlib/toml" class="ref-card"><strong>toml</strong><span>TOML read: tables, scalars and typed arrays</span></a>
   <a href="/docs/stdlib/i18n" class="ref-card"><strong>i18n</strong><span>Internationalisation and localisation</span></a>
 </div>
 

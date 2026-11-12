@@ -22,9 +22,10 @@
   <a href="/docs/learn/05-errors" class="ref-card"><strong>5. Errors</strong><span>Error types and handling</span></a>
   <a href="/docs/learn/06-strings-io" class="ref-card"><strong>6. Strings &amp; I/O</strong><span>String operations and file I/O</span></a>
   <a href="/docs/learn/07-modules-imports" class="ref-card"><strong>7. Modules &amp; Imports</strong><span>Multi-file projects</span></a>
-  <a href="/docs/learn/08-advanced" class="ref-card"><strong>8. Advanced</strong><span>Closures, generics, and more</span></a>
+  <a href="/docs/learn/08-advanced" class="ref-card"><strong>8. Advanced</strong><span>FFI, pointers, casts and arena blocks</span></a>
   <a href="/docs/learn/09-stdlib" class="ref-card"><strong>9. Standard Library</strong><span>Using the stdlib modules</span></a>
   <a href="/docs/learn/10-project" class="ref-card"><strong>10. Project</strong><span>Build a complete application</span></a>
+  <a href="/docs/learn/11-patterns-and-efficiency" class="ref-card"><strong>11. Patterns &amp; Efficiency</strong><span>The measured pattern catalogue: the form to write and why</span></a>
 </div>
 
 {! end !}

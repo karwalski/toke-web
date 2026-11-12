@@ -13,6 +13,7 @@
 <url><loc>https://tokelang.dev/docs/learn/08-advanced/</loc></url>
 <url><loc>https://tokelang.dev/docs/learn/09-stdlib/</loc></url>
 <url><loc>https://tokelang.dev/docs/learn/10-project/</loc></url>
+<url><loc>https://tokelang.dev/docs/learn/11-patterns-and-efficiency/</loc></url>
 <url><loc>https://tokelang.dev/docs/learn/overview/</loc></url>
 <url><loc>https://tokelang.dev/docs/learn/install/</loc></url>
 <url><loc>https://tokelang.dev/docs/learn/hello-world/</loc></url>
@@ -33,7 +34,7 @@
 <url><loc>https://tokelang.dev/docs/reference/plugin-guide/</loc></url>
 <url><loc>https://tokelang.dev/docs/reference/stdlib-coverage/</loc></url>
 <url><loc>https://tokelang.dev/docs/reference/index/</loc></url>
-<url><loc>https://tokelang.dev/docs/spec/toke-spec-v02/</loc></url>
+<url><loc>https://tokelang.dev/docs/spec/toke-spec-v0.4/</loc></url>
 <url><loc>https://tokelang.dev/docs/spec/semantics/</loc></url>
 <url><loc>https://tokelang.dev/docs/spec/errors/</loc></url>
 <url><loc>https://tokelang.dev/docs/spec/stdlib-signatures/</loc></url>
@@ -82,7 +83,7 @@
 <url><loc>https://tokelang.dev/docs/stdlib/json/</loc></url>
 <url><loc>https://tokelang.dev/docs/stdlib/json_stream/</loc></url>
 <url><loc>https://tokelang.dev/docs/stdlib/llm/</loc></url>
-<url><loc>https://tokelang.dev/docs/stdlib/llm_tool/</loc></url>
+<url><loc>https://tokelang.dev/docs/stdlib/llmtool/</loc></url>
 <url><loc>https://tokelang.dev/docs/stdlib/log/</loc></url>
 <url><loc>https://tokelang.dev/docs/stdlib/math/</loc></url>
 <url><loc>https://tokelang.dev/docs/stdlib/md/</loc></url>

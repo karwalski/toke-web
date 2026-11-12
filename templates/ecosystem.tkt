@@ -14,7 +14,7 @@
   <div class="oke-card oke-core">
     <div class="oke-badge">language</div>
     <h2><a href="/">toke</a></h2>
-    <p>The core programming language, purpose-built for LLM code generation. 59-character syntax, zero runtime, single binary. Compiles via LLVM to native code on any platform.</p>
+    <p>The core programming language, purpose-built for LLM code generation. A closed 59-character alphabet, 14 keywords, structured diagnostics. <code>tkc</code> compiles through LLVM to native x86-64 and ARM64 binaries, linking a small C runtime and standard library.</p>
     <div class="oke-links">
       <a href="/docs">Docs</a>
       <a href="https://github.com/karwalski/toke">GitHub</a>
@@ -91,7 +91,7 @@
       <h3>Build from Source</h3>
       <pre><code>git clone https://github.com/karwalski/toke.git
 cd toke && make</code></pre>
-      <p class="install-note">Homebrew is <strong>not published yet</strong>: the tap <code>github.com/karwalski/homebrew-toke</code> does not exist, so <code>brew tap karwalski/toke</code> returns 404 today. Build from source until it lands.</p>
+      <p class="install-note">Homebrew is <strong>not installable yet</strong>: the tap <code>github.com/karwalski/homebrew-toke</code> exists, but its <code>tkc</code> and <code>ooke</code> formulae still carry placeholder checksums and the release tarballs they download have not been published, so <code>brew install</code> fails today. Build from source until a release lands.</p>
     </div>
 
     <div class="install-card">

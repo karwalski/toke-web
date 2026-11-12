@@ -140,7 +140,7 @@ def render(canon):
     w("`m=` declares the module, `i=` imports, `f=` declares a function, `<` returns, and")
     w("every statement ends with `;`. The declaration order m, i, t, f is enforced by the")
     w("compiler (E2001). Read the syntax card linked below before generating toke: it is")
-    w("written for models and every rule in it is verified against tkc 2.8.0.\n")
+    w("written for models and every rule in it is verified against tkc 3.1.0.\n")
 
     w("## Where the project actually is\n")
     w("Stated so that nothing here has to be discovered later.\n")
@@ -162,7 +162,7 @@ def render(canon):
     w("  https://github.com/karwalski/toke/blob/main/docs/spec/grammar.ebnf")
     w("  and https://github.com/karwalski/toke/blob/main/docs/spec/toke.gbnf (GBNF, for")
     w("  constrained decoding)")
-    w("- Syntax card, written for models, every rule verified against tkc 2.8.0:")
+    w("- Syntax card, written for models, every rule verified against tkc 3.1.0:")
     w("  https://github.com/karwalski/toke-corpus/blob/main/regen/syntax_card.md")
     w("- Roadmap — what is done, what is running, what is compute-gated, and the benchmark")
     w("  each stage is measured against: https://tokelang.dev/roadmap")
