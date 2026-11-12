@@ -50,6 +50,7 @@
       <a href="/docs/reference/modules">Modules</a>
       <a href="/docs/reference/error-handling">Error Handling</a>
       <a href="/docs/reference/errors">Error Codes</a>
+      <a href="/docs/reference/package-manifest">Packages (pkg.toml)</a>
       <a href="/docs/reference/data-formats">Data Formats</a>
       <a href="/docs/reference/glossary">Glossary</a>
       <a href="/docs/reference/migration">Migration Guide</a>
@@ -146,11 +147,13 @@
       <a href="/docs/compiler/companion-file-spec">Companion File Spec</a>
       <a href="/docs/compiler/conventions">Conventions</a>
       <a href="/docs/compiler/lint-rules-v1">Lint Rules</a>
+      <a href="/docs/compiler/python-view">Python View</a>
       <h4>Decisions</h4>
       <a href="/docs/decisions/ADR-0001">ADR-0001: Architecture</a>
       <a href="/docs/decisions/ADR-0002-file-extension">ADR-0002: File Extension</a>
       <a href="/docs/decisions/ADR-0003">ADR-0003: Serialization</a>
       <a href="/docs/decisions/gate1-decision">Gate 1 Decision</a>
+      <a href="/docs/decisions/96.7-python-view">96.7: Python View</a>
       <h4>Tutorials</h4>
       <a href="/docs/tutorials/cli-tool">CLI Tool</a>
       <a href="/docs/tutorials/rest-api">REST API</a>
