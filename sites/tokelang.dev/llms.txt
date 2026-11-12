@@ -75,7 +75,7 @@ f=main():i64{
 `m=` declares the module, `i=` imports, `f=` declares a function, `<` returns, and
 every statement ends with `;`. The declaration order m, i, t, f is enforced by the
 compiler (E2001). Read the syntax card linked below before generating toke: it is
-written for models and every rule in it is verified against tkc 2.8.0.
+written for models and every rule in it is verified against tkc 3.1.0.
 
 ## Where the project actually is
 
@@ -125,7 +125,7 @@ data-analysis demo. All three are written in toke.
   https://github.com/karwalski/toke/blob/main/docs/spec/grammar.ebnf
   and https://github.com/karwalski/toke/blob/main/docs/spec/toke.gbnf (GBNF, for
   constrained decoding)
-- Syntax card, written for models, every rule verified against tkc 2.8.0:
+- Syntax card, written for models, every rule verified against tkc 3.1.0:
   https://github.com/karwalski/toke-corpus/blob/main/regen/syntax_card.md
 - Roadmap — what is done, what is running, what is compute-gated, and the benchmark
   each stage is measured against: https://tokelang.dev/roadmap
