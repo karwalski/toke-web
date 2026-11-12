@@ -259,12 +259,15 @@ check-bpe-reference:
 # toke repo, next to the tree it reads (the same arrangement as gen_llms.py, which
 # reads the canonical block from $(TOKE_REPO)/docs).
 FACTS_SCRIPT = $(TOKE_REPO)/scripts/verify_project_facts.py
+# Every template carrying a <!--fact:KEY--> span. The /docs/reference stdlib
+# index said "35 modules" by hand while the tree had 67, so it is a span now.
+FACT_SURFACES = $(CURDIR)/templates/index.tkt $(CURDIR)/templates/docs/reference/index.tkt
 
 facts:
-	python3 $(FACTS_SCRIPT) --sync $(CURDIR)/templates/index.tkt
+	python3 $(FACTS_SCRIPT) --sync $(FACT_SURFACES)
 
 check-facts:
-	python3 $(FACTS_SCRIPT) --sync-check $(CURDIR)/templates/index.tkt
+	python3 $(FACTS_SCRIPT) --sync-check $(FACT_SURFACES)
 
 # toke 121.27: the deploy path keeps host-key checking on, never ships the
 # origin TLS key, and no key file or infrastructure address is committed.
