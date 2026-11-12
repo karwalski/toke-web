@@ -48,7 +48,7 @@
   </nav>
   {! yield("content") !}
   <footer class="site-footer">
-    <p>toke language — <a href="https://github.com/karwalski/toke">GitHub</a> — <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></p>
+    <p>toke language — <a href="https://github.com/karwalski/toke">GitHub</a> — <a href="https://github.com/karwalski/toke/blob/main/LICENSING.md">Apache-2.0 compiler, MIT spec and stdlib</a></p>
     <p style="font-size:0.8rem;opacity:0.6">© 2026 Matthew Watt</p>
     <p style="margin-top:0.5rem">Built with <a href="/ooke">ooke</a>, served by toke — a single native binary. Write less. Mean more.</p>
   </footer>
