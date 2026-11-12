@@ -132,8 +132,9 @@ done
 # could never run because http.servedir("/";"build") registers its wildcard
 # first and the first matching wildcard wins. The vhost calls were removed in
 # story 132.21; copying these files into build/ is what publishes
-# /robots.txt, /sitemap.xml and the favicons.
-for f in robots.txt sitemap.xml favicon.ico favicon.svg; do
+# /robots.txt and the favicons. /sitemap.xml is not among them: it is generated
+# from the built page set at the end of this script (132.138).
+for f in robots.txt favicon.ico favicon.svg; do
   if [[ -f "sites/tokelang.dev/${f}" ]]; then
     cp "sites/tokelang.dev/${f}" "build/${f}"
   else
@@ -346,5 +347,15 @@ emit_redirect "/docs/reference/api"   "/docs/reference"
 echo "    2 renamed-page redirect(s) emitted"
 
 echo "    ${stubs} trailing-slash redirect stub(s) emitted"
+
+# ── /sitemap.xml (story 132.138) ─────────────────────────────────────────
+#
+# Generated from what this build serves -- every named route, every /docs page
+# rendered above, every standalone page -- leaving out redirects, noindex pages,
+# error pages and drafts. It was hand-kept in sites/tokelang.dev/ and had fallen
+# to 109 URLs against ~195 docs pages. lastmod comes from git, not the clock, so
+# a rebuild of the same checkout writes the same bytes. `make ci` re-checks it
+# (check-sitemap).
+python3 scripts/gen_sitemap.py --write
 
 echo "    build/ rebuilt ($(find build -type f | wc -l | tr -d ' ') files)"
