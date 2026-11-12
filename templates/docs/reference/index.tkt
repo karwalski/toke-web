@@ -26,7 +26,7 @@
 
 <h2>Web</h2>
 <div class="ref-grid">
-  <a href="/docs/stdlib/router" class="ref-card"><strong>router</strong><span>HTTP routing middleware</span></a>
+  <a href="/docs/stdlib/router" class="ref-card"><strong>router</strong><span>HTTP routing middleware; <code>:param</code> and trailing <code>*</code> path patterns</span></a>
   <a href="/docs/stdlib/ws" class="ref-card"><strong>ws</strong><span>WebSocket server and client</span></a>
   <a href="/docs/stdlib/sse" class="ref-card"><strong>sse</strong><span>Server-sent events</span></a>
   <a href="/docs/stdlib/html" class="ref-card"><strong>html</strong><span>HTML builder</span></a>

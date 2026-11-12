@@ -33,6 +33,7 @@
 <url><loc>https://tokelang.dev/docs/reference/migration/</loc></url>
 <url><loc>https://tokelang.dev/docs/reference/plugin-guide/</loc></url>
 <url><loc>https://tokelang.dev/docs/reference/stdlib-coverage/</loc></url>
+<url><loc>https://tokelang.dev/docs/reference/package-manifest/</loc></url>
 <url><loc>https://tokelang.dev/docs/reference/index/</loc></url>
 <url><loc>https://tokelang.dev/docs/spec/toke-spec-v0.4/</loc></url>
 <url><loc>https://tokelang.dev/docs/spec/semantics/</loc></url>
@@ -47,10 +48,12 @@
 <url><loc>https://tokelang.dev/docs/compiler/binary-size/</loc></url>
 <url><loc>https://tokelang.dev/docs/compiler/companion-file-spec/</loc></url>
 <url><loc>https://tokelang.dev/docs/compiler/lint-rules-v1/</loc></url>
+<url><loc>https://tokelang.dev/docs/compiler/python-view/</loc></url>
 <url><loc>https://tokelang.dev/docs/decisions/ADR-0001/</loc></url>
 <url><loc>https://tokelang.dev/docs/decisions/ADR-0002-file-extension/</loc></url>
 <url><loc>https://tokelang.dev/docs/decisions/ADR-0003/</loc></url>
 <url><loc>https://tokelang.dev/docs/decisions/gate1-decision/</loc></url>
+<url><loc>https://tokelang.dev/docs/decisions/96.7-python-view/</loc></url>
 <url><loc>https://tokelang.dev/docs/about/why/</loc></url>
 <url><loc>https://tokelang.dev/docs/about/design/</loc></url>
 <url><loc>https://tokelang.dev/docs/about/ecosystem/</loc></url>
