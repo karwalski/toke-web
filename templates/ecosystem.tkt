@@ -91,7 +91,7 @@
       <h3>Build from Source</h3>
       <pre><code>git clone https://github.com/karwalski/toke.git
 cd toke && make</code></pre>
-      <p class="install-note">Homebrew is <strong>not published yet</strong>: the tap <code>github.com/karwalski/homebrew-toke</code> does not exist, so <code>brew tap karwalski/toke</code> returns 404 today. Build from source until it lands.</p>
+      <p class="install-note">Homebrew is <strong>not installable yet</strong>: the tap <code>github.com/karwalski/homebrew-toke</code> exists, but its <code>tkc</code> and <code>ooke</code> formulae still carry placeholder checksums and the release tarballs they download have not been published, so <code>brew install</code> fails today. Build from source until a release lands.</p>
     </div>
 
     <div class="install-card">
