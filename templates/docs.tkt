@@ -135,7 +135,7 @@
       <a href="/docs/spec/errors">Error Registry</a>
       <a href="/docs/spec/stdlib-signatures">stdlib Signatures</a>
       <a href="/docs/spec/spec-implementation-delta">Spec-Implementation Delta</a>
-      <a href="/docs/spec/oke-namespace">oke Namespace</a>
+      <a href="/docs/spec/oke-namespace">*oke Namespace</a>
       <h4>Cookbook</h4>
       <a href="/docs/cookbook/rest-api">REST API</a>
       <a href="/docs/cookbook/data-pipeline">Data Pipeline</a>
