@@ -19,7 +19,7 @@ For every page under build/docs/ that is not a redirect stub this checks:
     rendered by an ooke without the quote fix, fails too -- and so is its
     <h1>, which is the page's ONLY <h1>: the front-matter title is the single
     heading, so a body H1 left in the markdown is a second one (132.150;
-    the pages that still have one are listed in KNOWN_EXTRA_H1, story 132.151);
+    132.151 removed the last 14; KNOWN_EXTRA_H1 parks any page in flight);
   * every section page template, templates/docs/*/[slug].tkt, renders
     `<h1>{= title =}</h1>`.  There is no exception: the reference template was
     one, so 15 reference pages had no <h1> and 9 had a body H1 that disagreed
@@ -85,17 +85,11 @@ def sources(root):
 
 # Pages whose toke source still carries a body H1 under its front-matter title,
 # so they render two <h1>s.  Found 2026-11-13 when 132.150 made the extra H1 a
-# finding; fixing them at the source is story 132.151.  This list only shrinks:
-# a listed page that renders one <h1> fails until its entry is deleted.
-KNOWN_EXTRA_H1 = {
-    "/docs/about/canonical", "/docs/about/kern-2026-08",
-    "/docs/about/landscape-2026-09", "/docs/about/positioning-2026-09",
-    "/docs/about/registry-descriptions", "/docs/compiler/build-deps",
-    "/docs/security/threat-model", "/docs/spec/capabilities",
-    "/docs/spec/memory-model", "/docs/spec/oke-namespace",
-    "/docs/spec/toke-spec-v0.4", "/docs/stdlib/webview",
-    "/docs/tutorials/cross-platform", "/docs/tutorials/data-pipeline",
-}
+# finding; story 132.151 fixed all 14 at the source, so the list is empty.  It
+# stays as the place to park a page while its fix is in flight (name the story
+# beside the entry).  It only shrinks: a listed page that renders one <h1>
+# fails until its entry is deleted.
+KNOWN_EXTRA_H1 = set()
 
 H1_FROM_TITLE = re.compile(r"<h1>\s*\{=\s*title\s*=\}\s*</h1>")
 
