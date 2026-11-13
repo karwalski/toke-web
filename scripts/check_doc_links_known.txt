@@ -13,16 +13,3 @@
 # rendered under /docs/<section>/<slug>/). Fix at the source in toke
 # docs/stdlib/str.md:308 and docs/reference/errors.md:1114 (the /docs/... form
 # 132.94 used), re-sync, and delete these two lines.
-# 2026-11-13, story 132.136: publishing docs/security/ brought in eight links
-# written as repo-relative paths (right on GitHub, dead under /docs/security/<slug>/):
-# seven sibling .md links and one to audit-120/, which is not published. Fix at
-# the source in toke docs/security/ (132.146: the /docs/security/<slug> form, and
-# the audit-120 link as a GitHub URL), re-sync, and delete these lines.
-docs/security/pqc-hndl-triage/index.html	pqc-signatures-roadmap.md	2026-11-13	132.146
-docs/security/pqc-hndl-triage/index.html	pqc-signatures-roadmap.md#appendix-a--stdencrypt-pqc-api-proposal-owner-decision	2026-11-13	132.146
-docs/security/pqc-hndl-triage/index.html	threat-model.md	2026-11-13	132.146
-docs/security/pqc-signatures-roadmap/index.html	pqc-hndl-triage.md	2026-11-13	132.146
-docs/security/pqc-signatures-roadmap/index.html	threat-model.md	2026-11-13	132.146
-docs/security/threat-model/index.html	audit-120/	2026-11-13	132.146
-docs/security/threat-model/index.html	pqc-hndl-triage.md	2026-11-13	132.146
-docs/security/threat-model/index.html	pqc-signatures-roadmap.md	2026-11-13	132.146
