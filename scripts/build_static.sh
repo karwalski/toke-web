@@ -298,9 +298,24 @@ done
 # stub, 12 URLs that return 200 today would start returning 404 — measured
 # against the live server before this was added, not assumed.
 #
-# The list is DERIVED, never hand-maintained: every named template route, plus
-# every directory ooke rendered under build/docs/. A hand-written list is the
+# The list is DERIVED, never hand-maintained. A hand-written list is the
 # recurring root cause in this repo (127.80, 127.85, 134.21, 136.1).
+#
+# 132.144 — it is now the named-route list itself, from the one derivation
+# check_routes.sh's rule and the sitemap already share (scripts/gen_sitemap.py
+# --routes: every templates/**.tkt, layouts and [param] templates excluded,
+# templates/<x>/index.tkt answering at /<x>). This loop used to derive it a
+# second way -- templates/<x>.tkt, plus a build/docs/<dir> only when a
+# templates/<basename>.tkt existed -- so the three routes served from
+# templates/docs/<x>/index.tkt (/docs/learn, /docs/reference, /docs/tutorials)
+# got no stub and their trailing-slash form answered 404. It also stubbed the
+# layout templates (/base/, /doc-page/), which are not pages.
+#
+# A stub is written only for a named route, so it never redirects a path to
+# itself: the route, not build/, answers the non-slash form. A docs section
+# with no route (/docs/about, ...) gets no stub and 404s honestly; a
+# self-redirect is a worse page than a 404 (134.9 put 8 sections into exactly
+# that loop on the live site).
 emit_stub() {
   local path="$1" dir="build/${1#/}"
   [[ -f "${dir}/index.html" ]] && return 0
@@ -311,24 +326,14 @@ emit_stub() {
 }
 
 stubs=0
-for t in templates/*.tkt; do
-  name="$(basename "${t}" .tkt)"
-  [[ "${name}" == "index" || "${name}" == _* ]] && continue
-  emit_stub "/${name}"
-done
-while IFS= read -r d; do
-  rel="${d#build/}"
-  [[ -z "${rel}" ]] && continue
-  # A docs section is SERVED FROM build/<rel>/index.html, so a stub there would
-  # redirect /docs/x to /docs/x — a loop. 134.9 emitted one for every directory
-  # and put 8 sections into exactly that state on the live site. Only emit where
-  # the non-slash form is answered by something OTHER than this directory, i.e.
-  # a named template route. A section with no index should 404 honestly; a 404
-  # is a worse page than content, but a self-redirect is a worse page than a 404.
-  if [[ -f "templates/${rel##*/}.tkt" ]]; then
-    emit_stub "/${rel}"
-  fi
-done < <(find build/docs -type d | sort)
+route_list="$(python3 scripts/gen_sitemap.py --routes)" || {
+  echo "ERROR: scripts/gen_sitemap.py --routes failed; the trailing-slash stubs cannot be derived" >&2
+  exit 1
+}
+while IFS= read -r r; do
+  [[ -z "${r}" || "${r}" == "/" ]] && continue
+  emit_stub "${r}"
+done <<< "${route_list}"
 
 # Renamed and retired pages keep a redirect so existing links and search
 # results do not 404. Verified against the live server, not assumed: these are

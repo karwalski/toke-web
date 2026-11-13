@@ -53,6 +53,11 @@ while IFS= read -r tpl; do
   r="${r%/index}"
   [[ -z "$r" ]] && r="/"
   routes+=("$r")
+  # 132.144 — and its trailing-slash form, which build_static.sh answers with
+  # a redirect stub (200). /docs/learn/, /docs/reference/ and /docs/tutorials/
+  # 404ed while their routes answered, because the stub list was derived from
+  # templates/<x>.tkt only; nothing here looked at the slash form.
+  [[ "$r" != "/" ]] && routes+=("$r/")
 done < <(find templates -name '*.tkt' | sort)
 
 routes+=(/health /api/health /api/version /llms.txt)
