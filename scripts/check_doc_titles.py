@@ -16,10 +16,14 @@ For every page under build/docs/ that is not a redirect stub this checks:
     (a YAML quote the parser kept);
   * when the page comes from content/docs/, the <title> is the front-matter
     `title` as YAML reads it -- so a value cut short at a colon, or a page
-    rendered by an ooke without the quote fix, fails too -- and so is the
-    <h1> in every section whose page template renders `<h1>{= title =}</h1>`.
-    The reference template does not (those pages carry their own H1 in the
-    body), and the set is read from templates/docs/*/[slug].tkt, not listed.
+    rendered by an ooke without the quote fix, fails too -- and so is its
+    <h1>, which is the page's ONLY <h1>: the front-matter title is the single
+    heading, so a body H1 left in the markdown is a second one (132.150;
+    the pages that still have one are listed in KNOWN_EXTRA_H1, story 132.151);
+  * every section page template, templates/docs/*/[slug].tkt, renders
+    `<h1>{= title =}</h1>`.  There is no exception: the reference template was
+    one, so 15 reference pages had no <h1> and 9 had a body H1 that disagreed
+    with their title, until 132.150 aligned it with the rest.
 
 Usage:
   check_doc_titles.py             check build/ (needs `make build`)
@@ -79,15 +83,29 @@ def sources(root):
     return out
 
 
+# Pages whose toke source still carries a body H1 under its front-matter title,
+# so they render two <h1>s.  Found 2026-11-13 when 132.150 made the extra H1 a
+# finding; fixing them at the source is story 132.151.  This list only shrinks:
+# a listed page that renders one <h1> fails until its entry is deleted.
+KNOWN_EXTRA_H1 = {
+    "/docs/about/canonical", "/docs/about/kern-2026-08",
+    "/docs/about/landscape-2026-09", "/docs/about/positioning-2026-09",
+    "/docs/about/registry-descriptions", "/docs/compiler/build-deps",
+    "/docs/security/threat-model", "/docs/spec/capabilities",
+    "/docs/spec/memory-model", "/docs/spec/oke-namespace",
+    "/docs/spec/toke-spec-v0.4", "/docs/stdlib/webview",
+    "/docs/tutorials/cross-platform", "/docs/tutorials/data-pipeline",
+}
+
 H1_FROM_TITLE = re.compile(r"<h1>\s*\{=\s*title\s*=\}\s*</h1>")
 
 
-def h1_sections(root):
-    """Sections whose page template renders the front-matter title as <h1>."""
-    out = set()
-    for t in (root / "templates" / "docs").glob("*/[[]slug[]].tkt"):
-        if H1_FROM_TITLE.search(t.read_text(encoding="utf-8", errors="replace")):
-            out.add(t.parent.name)
+def templates_without_h1(root):
+    """Section page templates that do not render the front-matter title as <h1>."""
+    out = []
+    for t in sorted((root / "templates" / "docs").glob("*/[[]slug[]].tkt")):
+        if not H1_FROM_TITLE.search(t.read_text(encoding="utf-8", errors="replace")):
+            out.append(t.relative_to(root).as_posix())
     return out
 
 
@@ -95,10 +113,10 @@ def text_of(m):
     return html.unescape(TAG.sub("", m.group(1))).strip() if m else None
 
 
-def problems(root):
-    out = []
+def problems(root, known_extra_h1=frozenset(KNOWN_EXTRA_H1)):
+    out = ["%s: renders no <h1>{= title =}</h1> -- every section's page "
+           "template must (132.150)" % t for t in templates_without_h1(root)]
     src = sources(root)
-    h1_from_title = h1_sections(root)
     pages = sorted((root / "build" / "docs").rglob("index.html"))
     checked = 0
     for page in pages:
@@ -113,6 +131,7 @@ def problems(root):
             out.append("%s: no <title>" % url)
             continue
         title = SUFFIX.sub("", full).strip()
+        h1s = H1.findall(body)
         h1 = text_of(H1.search(body))
         if not title:
             out.append("%s: empty <title> (%r)" % (url, full))
@@ -127,20 +146,34 @@ def problems(root):
             if title and title != want:
                 out.append("%s: <title> %r is not the front-matter title %r (%s)"
                            % (url, title, want, path))
-            if rel.split("/")[1] in h1_from_title and h1 != want:
+            if h1 != want:
                 out.append("%s: <h1> %r is not the front-matter title %r (%s)"
                            % (url, h1, want, path))
+            if url in known_extra_h1:
+                if len(h1s) < 2:
+                    out.append("%s: renders one <h1> now -- delete it from "
+                               "KNOWN_EXTRA_H1 (132.151)" % url)
+            elif len(h1s) > 1:
+                out.append("%s: %d <h1>s -- the front-matter title is the only "
+                           "heading; drop the body H1 at the source (%s): %s"
+                           % (url, len(h1s), path,
+                              ", ".join(repr(html.unescape(TAG.sub("", x)).strip())
+                                        for x in h1s[1:])))
     return checked, out
 
 
 PAGE = ('<!doctype html><html><head><title>%s — toke docs</title></head>'
-        '<body><h1>%s</h1></body></html>')
+        '<body><h1>%s</h1>%s</body></html>')
+TPL_H1 = ('{! block("title") !}{= title =} — toke docs{! end !}\n'
+          '<h1>{= title =}</h1>\n{= body | md =}\n')
+TPL_NO_H1 = '{! block("title") !}{= title =} — toke docs{! end !}\n{= body | md =}\n'
 STUB = '<!doctype html><meta http-equiv="refresh" content="0; url=/x"><title></title>'
 
 
 def selftest():
     cases = [
-        # (name, front matter title line, rendered title, rendered h1, ok)
+        # (name, front matter title line, rendered title, rendered h1, ok
+        #  [, more body html [, the section page template [, listed as known]]])
         ("a plain title", "title: Hello", "Hello", "Hello", True),
         ("a quoted title with a colon", 'title: "A: b"', "A: b", "A: b", True),
         ("a single-quoted title", "title: 'It''s'", "It&#39;s", "It&#39;s", True),
@@ -152,9 +185,25 @@ def selftest():
         ("a stray single quote", "title: 'x", "&#39;x", "&#39;x", False),
         ("h1 differs from title", "title: Hello", "Hello", "Other", False),
         ("an empty title on a page with no source", None, "", "", False),
+        # 132.150: the front-matter title is the page's only heading, and every
+        # section template renders it.
+        ("a body H1 as well (132.150)", "title: Hello", "Hello", "Hello", False,
+         "<h1>Hello again</h1>"),
+        ("a template with no <h1> (132.150)", "title: Hello", "Hello", "", False,
+         "", TPL_NO_H1),
+        ("a template with no <h1>, body H1 = title", "title: Hello", "Hello",
+         "Hello", False, "", TPL_NO_H1),
+        ("a body H1 on a KNOWN_EXTRA_H1 page", "title: Hello", "Hello", "Hello",
+         True, "<h1>Hello again</h1>", TPL_H1, True),
+        ("a KNOWN_EXTRA_H1 page fixed but still listed", "title: Hello", "Hello",
+         "Hello", False, "", TPL_H1, True),
     ]
     bad = 0
-    for name, fm, t, h, ok in cases:
+    for case in cases:
+        name, fm, t, h, ok = case[:5]
+        extra = case[5] if len(case) > 5 else ""
+        tpl_text = case[6] if len(case) > 6 else TPL_H1
+        known = {"/docs/learn/p"} if len(case) > 7 and case[7] else set()
         with tempfile.TemporaryDirectory() as tmp:
             root = pathlib.Path(tmp)
             md = root / "content/docs/learn/p.md"
@@ -165,15 +214,14 @@ def selftest():
                 md.write_text("---\n%sslug: p\n---\nbody\n" % (fm + "\n" if fm else ""))
             tpl = root / "templates/docs/learn/[slug].tkt"
             tpl.parent.mkdir(parents=True)
-            tpl.write_text('{! block("title") !}{= title =} — toke docs{! end !}\n'
-                           '<h1>{= title =}</h1>\n')
+            tpl.write_text(tpl_text)
             out = root / "build/docs/learn/p/index.html"
             out.parent.mkdir(parents=True)
-            out.write_text(PAGE % (t, h))
+            out.write_text(PAGE % (t, h, extra))
             stub = root / "build/docs/community/p/index.html"
             stub.parent.mkdir(parents=True)
             stub.write_text(STUB)
-            n, why = problems(root)
+            n, why = problems(root, known)
             if n != 1:
                 bad += 1
                 print("SELFTEST FAIL [%s] %d pages checked, want 1 (stub skipped)" % (name, n))

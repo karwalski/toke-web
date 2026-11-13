@@ -1,9 +1,10 @@
 {! layout("docs") !}
-{! block("title") !}{= title =} — toke{! end !}
+{! block("title") !}{= title =} — toke docs{! end !}
 {! block("content") !}
 
 <div class="ref-page">
   <div class="ref-body">
+    <h1>{= title =}</h1>
     {= body | md =}
   </div>
 </div>
