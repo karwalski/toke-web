@@ -130,6 +130,11 @@ jobs:
       - name: Rendered docs link only to what the site serves
         run: make check-doc-links
 
+      # 132.148: every rendered /docs page carries its source's title -- no
+      # YAML quote kept, nothing cut at a colon, no empty title.
+      - name: Rendered docs carry their source titles
+        run: make check-doc-titles
+
       # toke 121.27: host-key checking on, no TLS key shipped, no key file or
       # infrastructure address committed (the gate runs its own selftest).
       - name: Deploy posture
