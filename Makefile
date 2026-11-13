@@ -208,6 +208,17 @@ check-doc-links:
 	@python3 scripts/check_doc_links.py --selftest
 	@python3 scripts/check_doc_links.py
 
+# 132.148 — every rendered /docs page's <title> (and <h1>, where the section's
+# template renders one from the title) is its source's front-matter title as
+# YAML reads it: no stray quote, nothing cut at a colon, nothing empty. ooke
+# kept YAML quotes and older builds cut a title at its first colon, so
+# /docs/about/canonical went out titled '"Canonical facts' (132.148), and ten
+# pages without front matter went out with an empty title (132.147). A stale
+# ooke fails this too: rebuild it or set OOKE=. --selftest first. Needs build/.
+check-doc-titles:
+	@python3 scripts/check_doc_titles.py --selftest
+	@python3 scripts/check_doc_titles.py
+
 # Start the site and assert every route it defines answers 200.
 check-routes: $(BIN) build
 	@./scripts/check_routes.sh
@@ -285,7 +296,7 @@ check-deploy-posture:
 	python3 scripts/check_deploy_posture.py --selftest
 
 # Everything a change to this repo must pass before it is deployed.
-ci: check-deploy-posture check-toke check-site-examples check-bpe-reference check-facts check-roadmap check-llms check-docs-content build check-build-fresh check-sitemap check-doc-links check-routes check-library
+ci: check-deploy-posture check-toke check-site-examples check-bpe-reference check-facts check-roadmap check-llms check-docs-content build check-build-fresh check-sitemap check-doc-links check-doc-titles check-routes check-library
 	@echo ""; echo "=== CI checks passed ==="
 
 # --- Documentation checks (story 132.41) ---
@@ -332,4 +343,4 @@ deploy-content: ## Content-only deploy (templates, static, sites — no rebuild)
 deploy-auto: ## Auto-detect deploy mode based on git changes
 	./scripts/deploy.sh auto
 
-.PHONY: check-deploy-posture site-examples check-site-examples check-bpe-reference facts check-facts all run run-http dev certs clean roadmap check-roadmap llms check-llms ci check-toke build docs-content check-docs-content check-library check-library-strict library-recount check-build-fresh check-sitemap check-doc-links check-routes asset-hashes deploy deploy-content deploy-auto
+.PHONY: check-deploy-posture site-examples check-site-examples check-bpe-reference facts check-facts all run run-http dev certs clean roadmap check-roadmap llms check-llms ci check-toke build docs-content check-docs-content check-library check-library-strict library-recount check-build-fresh check-sitemap check-doc-links check-doc-titles check-routes asset-hashes deploy deploy-content deploy-auto
