@@ -33,6 +33,9 @@ Usage:
                               that is served and indexable, and every content/
                               docs page that is not a draft is in it
   gen_sitemap.py --selftest   negative controls on a synthetic tree (no build/)
+  gen_sitemap.py --routes     print every named route's path, one per line (no
+                              build/ needed); build_static.sh derives its
+                              trailing-slash stubs from this list (132.144)
 """
 import os
 import pathlib
@@ -319,6 +322,14 @@ def selftest():
 def main(argv):
     if "--selftest" in argv:
         return selftest()
+    if "--routes" in argv:
+        # 132.144: the one derivation of the named routes. build_static.sh
+        # used its own (templates/<x>.tkt only), so the routes served from
+        # templates/docs/<x>/index.tkt got no trailing-slash stub and their
+        # slash form 404ed.
+        for r in sorted(route_paths(ROOT)):
+            print(r)
+        return 0
     target = ROOT / "build" / "sitemap.xml"
     if not (ROOT / "build" / "docs").is_dir():
         print("gen_sitemap: build/docs/ is missing -- run: make build", file=sys.stderr)

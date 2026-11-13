@@ -148,6 +148,12 @@
       <a href="/docs/compiler/conventions">Conventions</a>
       <a href="/docs/compiler/lint-rules-v1">Lint Rules</a>
       <a href="/docs/compiler/python-view">Python View</a>
+      <h4>Architecture</h4>
+      <a href="/docs/architecture/binary-ir-design">Binary IR (.tkir)</a>
+      <h4>Security</h4>
+      <a href="/docs/security/threat-model">Threat Model</a>
+      <a href="/docs/security/pqc-hndl-triage">PQC: Key-Exchange Triage</a>
+      <a href="/docs/security/pqc-signatures-roadmap">PQC: Signatures Roadmap</a>
       <h4>Decisions</h4>
       <a href="/docs/decisions/ADR-0001">ADR-0001: Architecture</a>
       <a href="/docs/decisions/ADR-0002-file-extension">ADR-0002: File Extension</a>

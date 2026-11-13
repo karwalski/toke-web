@@ -64,7 +64,26 @@ MODE="sync"
 [[ "${1:-}" == "--check" ]] && MODE="check"
 [[ "${1:-}" == "--report" ]] && MODE="report"
 
-# <url section>:<dir under ${TOKE_REPO}/docs>
+# <url section>:<dir under ${TOKE_REPO}/docs>[:<file>,<file>...]
+#
+# With no file list every *.md under the directory is published. A file list
+# publishes exactly those files and nothing else from the directory (132.136):
+# docs/architecture/ and docs/security/ hold public reference pages next to
+# internal planning and audit records, so for them publication is opt-in, file
+# by file. A listed file that does not exist fails the sync.
+#
+#   architecture  binary-ir-design.md (the .tkir format, --emit-tkir,
+#                 --from-tkir, --read-tkir). The rest of the directory (model,
+#                 corpus, tokenizer and training plans, ADR drafts) was not
+#                 reviewed for publication and is not listed.
+#   security      the post-quantum triage and roadmap and the threat model,
+#                 each read in full before listing (no host, address,
+#                 credential or key path). Not published: the dated internal
+#                 audit and review records (fixture-secret-review-2026-09,
+#                 which names key files; audit-120/; path-traversal-audit;
+#                 static-analysis-audit; library-inventory;
+#                 dependency-tracking), the harness sandbox-setup notes and the
+#                 draft soc2-readiness assessment.
 #
 # 134.30 removed two entries that were duplicates, not sections:
 #   community        served ${TOKE_REPO}/docs/about,  the same pages as /docs/about
@@ -88,6 +107,8 @@ SECTIONS=(
   "spec:spec"
   "stdlib:stdlib"
   "tutorials:tutorials"
+  "architecture:architecture:binary-ir-design.md"
+  "security:security:pqc-hndl-triage.md,pqc-signatures-roadmap.md,threat-model.md"
 )
 
 # Only markdown is copied. `ooke build` renders one page per *.md; the other
@@ -131,13 +152,29 @@ trap 'rm -rf "${staging}"' EXIT
 missing=0
 for entry in "${SECTIONS[@]}"; do
   section="${entry%%:*}"
-  src="${TOKE_REPO}/docs/${entry##*:}"
+  rest="${entry#*:}"
+  dir="${rest%%:*}"
+  files=""
+  [[ "${rest}" == *:* ]] && files="${rest#*:}"
+  src="${TOKE_REPO}/docs/${dir}"
   if [[ ! -d "${src}" ]]; then
     echo "    ERROR: ${src} does not exist (section /docs/${section}/)" >&2
     missing=$((missing + 1))
     continue
   fi
   mkdir -p "${staging}/${section}"
+  if [[ -n "${files}" ]]; then
+    IFS=',' read -r -a listed <<< "${files}"
+    for f in "${listed[@]}"; do
+      if [[ ! -f "${src}/${f}" ]]; then
+        echo "    ERROR: ${src}/${f} does not exist (listed for /docs/${section}/)" >&2
+        missing=$((missing + 1))
+        continue
+      fi
+      cp "${src}/${f}" "${staging}/${section}/${f}"
+    done
+    continue
+  fi
   (cd "${src}" && find . -name '*.md' -type f -print0) \
     | (cd "${src}" && xargs -0 -I{} sh -c 'mkdir -p "$1/$(dirname "$2")" && cp "$2" "$1/$2"' _ "${staging}/${section}" {})
 done
