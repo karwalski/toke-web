@@ -1,0 +1,12 @@
+# The ooke commit that renders this site's /docs pages (story 132.149).
+#
+# The one place the ooke version is pinned. scripts/build_ooke.sh builds ooke
+# from exactly this commit, scripts/build_static.sh refuses any other ooke, and
+# .github/workflows/ci.yml checks out karwalski/ooke at this commit. Before
+# this, `make build` used whatever binary sat in a developer's ooke checkout
+# (a feature-branch build from 2026-09-20 that lacked the 121.66 and 132.148
+# front-matter fixes), and CI had no ooke at all.
+#
+# A full 40-character sha on ooke main. To move it: change the line below,
+# `make build`, review the rendered /docs diff, and commit.
+a411902d0d29de8b07f41c40292675051897f289

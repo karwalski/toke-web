@@ -118,10 +118,51 @@ jobs:
       - name: Roadmap is current
         run: make check-roadmap
 
+      # 132.149: /docs is rendered by `ooke build`, so the ooke version decides
+      # what every /docs page says. This job used to run `make build` with no
+      # ooke at all (build_static.sh stopped at 'ooke not found'); locally the
+      # build used whatever binary sat in a developer's ooke checkout. OOKE_REF
+      # pins one ooke commit; it is checked out here and built against the toke
+      # below by scripts/build_ooke.sh, the same script `make build` runs locally.
+      - name: Read the pinned ooke commit (OOKE_REF)
+        id: ooke
+        run: echo "ref=$(./scripts/build_ooke.sh --print-ref)" >> "$GITHUB_OUTPUT"
+
+      - name: Check out ooke at the pinned commit
+        uses: actions/checkout@v4
+        with:
+          repository: karwalski/ooke
+          ref: ${{ steps.ooke.outputs.ref }}
+          path: .ooke
+          token: ${{ secrets.TOKE_REPO_TOKEN }}
+
+      # ooke is a toke program: it needs the compiler and the stdlib, got the
+      # same way as in the other two jobs.
+      - name: Check out the compiler
+        uses: actions/checkout@v4
+        with:
+          repository: karwalski/toke
+          path: .toke
+          token: ${{ secrets.TOKE_REPO_TOKEN }}
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y clang lld llvm-dev libssl-dev zlib1g-dev libsqlite3-dev
+
+      - name: Build tkc
+        working-directory: .toke
+        run: make tkc
+
       # build/ is gitignored but the deploy rsyncs it, so it has to be
       # reproducible here from committed sources alone, and never stale.
+      # make build runs scripts/build_ooke.sh: the pinned ooke, built from .ooke.
       - name: Rebuild build/ from committed sources
-        run: make build
+        env:
+          TKC: ${{ github.workspace }}/.toke/tkc
+          TOKE_REPO: ${{ github.workspace }}/.toke
+          OOKE_SRC: ${{ github.workspace }}/.ooke
+        run: make build TKC="$TKC" TOKE_REPO="$TOKE_REPO" OOKE_SRC="$OOKE_SRC"
 
       - name: build/ is newer than everything it derives from
         run: make check-build-fresh
@@ -171,8 +212,25 @@ jobs:
           TOKE_REPO: ${{ github.workspace }}/.toke
         run: make TKC="$TKC" TOKE_REPO="$TOKE_REPO"
 
+      # 132.149: the pinned ooke, as in check-generated.
+      - name: Read the pinned ooke commit (OOKE_REF)
+        id: ooke
+        run: echo "ref=$(./scripts/build_ooke.sh --print-ref)" >> "$GITHUB_OUTPUT"
+
+      - name: Check out ooke at the pinned commit
+        uses: actions/checkout@v4
+        with:
+          repository: karwalski/ooke
+          ref: ${{ steps.ooke.outputs.ref }}
+          path: .ooke
+          token: ${{ secrets.TOKE_REPO_TOKEN }}
+
       - name: Rebuild build/
-        run: make build
+        env:
+          TKC: ${{ github.workspace }}/.toke/tkc
+          TOKE_REPO: ${{ github.workspace }}/.toke
+          OOKE_SRC: ${{ github.workspace }}/.ooke
+        run: make build TKC="$TKC" TOKE_REPO="$TOKE_REPO" OOKE_SRC="$OOKE_SRC"
 
       - name: Start the server and check every route
         run: ./scripts/check_routes.sh 8099

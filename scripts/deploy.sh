@@ -171,7 +171,12 @@ echo "    materialising content/docs/ from the toke repo"
 ./scripts/sync_docs_content.sh
 
 echo "    rebuilding build/ before sync"
-./scripts/build_static.sh
+# 132.149: /docs is rendered by the ooke OOKE_REF pins -- never by an override.
+if [[ "${OOKE_UNPINNED:-0}" == 1 ]]; then
+  echo "ERROR: OOKE_UNPINNED=1 is for local tests only; a deploy renders /docs with the pinned ooke." >&2
+  exit 1
+fi
+TOKE_ROOT="${TOKE_ROOT}" TKC="${TKC}" ./scripts/build_static.sh
 
 # Hard stop: build/ must not be older than static/, templates/ or content/.
 python3 scripts/check_build_fresh.py
