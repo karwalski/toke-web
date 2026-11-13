@@ -171,7 +171,7 @@ OOKE="${OOKE:-${HOME}/tk/toke-ooke/ooke-toke}"
 # The sections this build expects. Derived from the same table
 # scripts/sync_docs_content.sh writes, so a section added there and forgotten
 # here fails loudly instead of silently publishing fewer pages.
-DOC_SECTIONS=(about compiler cookbook decisions learn reference spec stdlib tutorials)
+DOC_SECTIONS=(about architecture compiler cookbook decisions learn reference security spec stdlib tutorials)
 
 # 134.30 — name what is missing and how to restore it, rather than failing later
 # with an unrelated-looking error. Before this story content/docs/ was eleven

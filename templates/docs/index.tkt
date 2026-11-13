@@ -39,6 +39,14 @@
   <li><a href="/docs/compiler/python-view">Python View</a> — <code>tkc --python-view</code>, a read-only Python-like rendering of toke source for review</li>
 </ul>
 
+<h2>Architecture &amp; Security</h2>
+<ul>
+  <li><a href="/docs/architecture/binary-ir-design">Binary IR (.tkir)</a> — the <code>.tkir</code> 1.2 format and <code>tkc --emit-tkir</code>, <code>--from-tkir</code> and <code>--read-tkir</code></li>
+  <li><a href="/docs/security/threat-model">Threat Model</a> — the corpus pipeline, the compiler, runtime and web trust boundaries, and toke's post-quantum posture</li>
+  <li><a href="/docs/security/pqc-hndl-triage">PQC: Key-Exchange Triage</a> — every harvest-now-decrypt-later exposure in the tree and its status</li>
+  <li><a href="/docs/security/pqc-signatures-roadmap">PQC: Signatures Roadmap</a> — the migration plan from Ed25519 and ECDSA to ML-DSA</li>
+</ul>
+
 <h2>Standard Library</h2>
 <ul>
   <li><a href="/docs/stdlib/http">std.http</a> — HTTP client and server</li>
