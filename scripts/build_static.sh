@@ -15,8 +15,9 @@
 #   static/            every asset, served at /static/...
 #   library/           the program-library JSON the library page fetches at /library/...
 #   library.html       the three standalone pages, served at their own top-level
-#   tokenizer.html     URLs (the site nav links to /library.html). tokenizer.html
-#   tokens.html        is only a redirect stub to the /tokenizer route (132.100)
+#   tokenizer.html     URLs. library.html and tokenizer.html are only redirect
+#   tokens.html        stubs to the /library (132.145) and /tokenizer (132.100)
+#                      routes, kept so old links and search results still land
 #   tokenizer_v03.json the vocabulary the tokenizer page fetches at /tokenizer_v03.json
 #   docs/             the ~190 per-slug documentation pages, rendered from
 #                     content/docs/ by `ooke build` (story 134.8)
@@ -118,6 +119,22 @@ fi
 
 # The library page fetches /library/<category>.json, not /static/library/...
 cp -R static/library build/library
+
+# 132.145 — /library (templates/library.tkt) is the canonical program library;
+# static/library.html is a noindex redirect stub to it, as tokenizer.html is to
+# /tokenizer (132.100). The site served two copies of the page and its own nav
+# linked the static one. Nothing the site authors may link to /library.html
+# again: each such link costs a visitor a redirect hop.
+if hits=$(grep -rnE '(href|src)="/library\.html' templates sites pages main.tk static \
+            --exclude=library.html 2>/dev/null); then
+  echo "ERROR: links to /library.html, a redirect stub since 132.145 -- use /library:" >&2
+  printf '%s\n' "${hits}" | sed 's/^/    /' >&2
+  exit 1
+fi
+if ! grep -q 'http-equiv="refresh" content="0; url=/library"' static/library.html; then
+  echo "ERROR: static/library.html must stay a redirect stub to /library (132.145)" >&2
+  exit 1
+fi
 
 for f in library.html tokenizer.html tokens.html tokenizer_v03.json; do
   if [[ -f "static/${f}" ]]; then

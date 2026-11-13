@@ -4,7 +4,7 @@
 # Routes come from main.tk: http.servepages("templates";"templates") registers
 # one named route per templates/**.tkt, and main.tk registers /health,
 # /api/health, /api/version and /llms.txt explicitly. build/ supplies the three
-# standalone pages the nav links to.
+# top-level .html URLs (two of them redirect stubs since 132.100 / 132.145).
 #
 # Usage:  scripts/check_routes.sh [port]
 # Exit:   0 if every route answered 200.
