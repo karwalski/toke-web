@@ -166,7 +166,12 @@ done
 # documentation authored in the toke repository (story 134.30) — it is a build
 # input and is present in every clone. scripts/sync_docs_content.sh is the only
 # thing that writes it.
-OOKE="${OOKE:-${HOME}/tk/toke-ooke/ooke-toke}"
+#
+# 132.149 — the ooke that renders them is PINNED: OOKE_REF names one ooke commit,
+# and with OOKE unset scripts/build_ooke.sh builds exactly that commit (cached).
+# OOKE=/path/to/ooke-toke is still accepted, but only when it provably IS that
+# commit (see verify_ooke below); OOKE_UNPINNED=1 lets a deliberate local test
+# of another ooke through, with a warning, and must never be set for a deploy.
 
 # The sections this build expects. Derived from the same table
 # scripts/sync_docs_content.sh writes, so a section added there and forgotten
@@ -197,13 +202,58 @@ if (( ${#missing_sections[@]} )); then
   exit 1
 fi
 
-if [[ ! -x "${OOKE}" ]]; then
-  echo "ERROR: ooke not found at '${OOKE}'. Set OOKE=/path/to/ooke-toke." >&2
-  echo "       Build it with: make -C \$(dirname ${OOKE})" >&2
+OOKE_PIN="$(./scripts/build_ooke.sh --print-ref)"
+
+# An explicit OOKE is the pinned commit only if (a) it is a build_ooke.sh build,
+# whose stamp names the commit, or (b) it sits at the root of an ooke checkout
+# whose HEAD is the commit, with no tracked change under src/, and it is newer
+# than that commit. `ooke --version` cannot tell: it prints VERSION
+# (3.0.0-rc.2), which has not moved across the commits that matter here.
+verify_ooke() {
+  local bin="$1" dir head
+  dir="$(cd "$(dirname "${bin}")" && pwd -P)"
+  if [[ -f "${dir}/.ooke-ref" ]] && grep -qx "ooke=${OOKE_PIN}" "${dir}/.ooke-ref"; then
+    return 0
+  fi
+  head="$(git -C "${dir}" rev-parse HEAD 2>/dev/null || true)"
+  if [[ "${head}" != "${OOKE_PIN}" ]]; then
+    echo "ERROR: OOKE='${bin}' is not the ooke OOKE_REF pins (132.149)." >&2
+    echo "       pinned:  ${OOKE_PIN}" >&2
+    echo "       OOKE is: ${head:-not in a git checkout, and no build_ooke.sh stamp}" >&2
+    return 1
+  fi
+  if [[ "$(git -C "${dir}" rev-parse --show-toplevel)" != "${dir}" ]] ||
+     [[ -n "$(git -C "${dir}" status --porcelain --untracked-files=no -- src)" ]]; then
+    echo "ERROR: OOKE='${bin}' is in a checkout of the pinned commit, but not at its root" >&2
+    echo "       or with uncommitted changes under src/ (132.149)." >&2
+    return 1
+  fi
+  if (( $(stat -c %Y "${bin}" 2>/dev/null || stat -f %m "${bin}") < $(git -C "${dir}" log -1 --format=%ct HEAD) )); then
+    echo "ERROR: OOKE='${bin}' is older than the pinned commit it sits on; rebuild it (132.149)." >&2
+    return 1
+  fi
+}
+
+if [[ -z "${OOKE:-}" ]]; then
+  OOKE="$(TOKE_ROOT="${TOKE_ROOT:-${HOME}/tk/toke}" ./scripts/build_ooke.sh)" || {
+    echo "ERROR: could not build the pinned ooke ${OOKE_PIN:0:12} (OOKE_REF; see above)." >&2
+    exit 1
+  }
+elif [[ ! -x "${OOKE}" ]]; then
+  echo "ERROR: ooke not found at OOKE='${OOKE}'. Unset OOKE to build the pinned one." >&2
   exit 1
+elif ! verify_ooke "${OOKE}"; then
+  if [[ "${OOKE_UNPINNED:-0}" == 1 ]]; then
+    echo "    WARNING: OOKE_UNPINNED=1 -- rendering /docs with an ooke OOKE_REF does not pin." >&2
+    echo "             Never deploy this build/." >&2
+  else
+    echo "       Unset OOKE to build the pinned ooke (scripts/build_ooke.sh), or set" >&2
+    echo "       OOKE_UNPINNED=1 to test another ooke locally (never for a deploy)." >&2
+    exit 1
+  fi
 fi
 
-echo "==> Rendering /docs pages with ooke build (ooke: ${OOKE})"
+echo "==> Rendering /docs pages with ooke build (ooke: ${OOKE}; OOKE_REF ${OOKE_PIN:0:12})"
 rm -rf build-docs
 if ! "${OOKE}" build; then
   echo "ERROR: ooke build failed — /docs pages would be missing or stale." >&2

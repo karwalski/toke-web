@@ -113,20 +113,32 @@ check-toke:
 
 # build/ is gitignored but the deploy rsyncs it, so it must be reproducible from
 # committed sources alone. This remakes it from scratch.
-build: ## Rebuild build/ from static/ and render /docs with ooke
-	./scripts/build_static.sh
+#
+# 132.149 — /docs is rendered by the ooke commit pinned in OOKE_REF, built by
+# scripts/build_ooke.sh from OOKE_SRC (any clone of karwalski/ooke holding that
+# commit; it is only read, with `git archive`) against TOKE_REPO and TKC, and
+# cached outside the checkout. OOKE=/path/to/ooke-toke overrides it only with a
+# binary that provably is that commit; build_static.sh refuses any other.
+OOKE_SRC ?= $(HOME)/tk/toke-ooke
+OOKE_ENV = TOKE_ROOT="$(TOKE_REPO)" TKC="$(TKC)" OOKE_SRC="$(OOKE_SRC)"
+
+build: ## Rebuild build/ from static/ and render /docs with the pinned ooke
+	$(OOKE_ENV) ./scripts/build_static.sh
+
+# Build (or reuse) the pinned ooke alone and print its path.
+ooke:
+	@$(OOKE_ENV) ./scripts/build_ooke.sh
 
 # 132.63 — the ONLY target that edits tracked templates: it points
 # templates/*.tkt at the current content-hashed asset names (134.27), then
 # builds. `make build` checks those names and stops if they are stale; it never
 # rewrites a tracked file. Review and commit the template diff this produces.
 asset-hashes:
-	./scripts/build_static.sh --rehash
+	$(OOKE_ENV) ./scripts/build_static.sh --rehash
 
 # content/docs/ is not authored here: it is the canonical documentation in the
 # toke repo, linked in per section. `make build` cannot render the ~195
 # /docs/<section>/<slug> pages without it (story 134.8).
-OOKE ?= $(HOME)/tk/toke-ooke/ooke-toke
 
 docs-content:
 	TOKE_REPO="$(TOKE_REPO)" ./scripts/sync_docs_content.sh
@@ -214,7 +226,8 @@ check-doc-links:
 # kept YAML quotes and older builds cut a title at its first colon, so
 # /docs/about/canonical went out titled '"Canonical facts' (132.148), and ten
 # pages without front matter went out with an empty title (132.147). A stale
-# ooke fails this too: rebuild it or set OOKE=. --selftest first. Needs build/.
+# ooke fails this too, which is why the ooke is pinned (OOKE_REF, 132.149).
+# --selftest first. Needs build/.
 check-doc-titles:
 	@python3 scripts/check_doc_titles.py --selftest
 	@python3 scripts/check_doc_titles.py
@@ -343,4 +356,4 @@ deploy-content: ## Content-only deploy (templates, static, sites — no rebuild)
 deploy-auto: ## Auto-detect deploy mode based on git changes
 	./scripts/deploy.sh auto
 
-.PHONY: check-deploy-posture site-examples check-site-examples check-bpe-reference facts check-facts all run run-http dev certs clean roadmap check-roadmap llms check-llms ci check-toke build docs-content check-docs-content check-library check-library-strict library-recount check-build-fresh check-sitemap check-doc-links check-doc-titles check-routes asset-hashes deploy deploy-content deploy-auto
+.PHONY: ooke check-deploy-posture site-examples check-site-examples check-bpe-reference facts check-facts all run run-http dev certs clean roadmap check-roadmap llms check-llms ci check-toke build docs-content check-docs-content check-library check-library-strict library-recount check-build-fresh check-sitemap check-doc-links check-doc-titles check-routes asset-hashes deploy deploy-content deploy-auto
