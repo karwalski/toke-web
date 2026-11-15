@@ -91,7 +91,7 @@
       <h3>Build from Source</h3>
       <pre><code>git clone https://github.com/karwalski/toke.git
 cd toke && make</code></pre>
-      <p class="install-note">Homebrew is <strong>not installable yet</strong>: the tap <code>github.com/karwalski/homebrew-toke</code> exists, but its <code>tkc</code> and <code>ooke</code> formulae still carry placeholder checksums and the release tarballs they download have not been published, so <code>brew install</code> fails today. Build from source until a release lands.</p>
+      <p class="install-note">Or install the release with Homebrew (macOS 15 or later): <code>brew install karwalski/toke/tkc</code>, and <code>karwalski/toke/ooke</code> for the framework. Release tarballs for macOS and Linux (glibc 2.38 or later) are on the <a href="https://github.com/karwalski/toke/releases/tag/v3.2.0">v3.2.0 release page</a>, with <code>checksums.txt</code>.</p>
     </div>
 
     <div class="install-card">
