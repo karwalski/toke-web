@@ -380,7 +380,10 @@ REMOTE_LFLAGS="$(cat "${LINK_FLAGS}")"
 # shellcheck disable=SC2029
 ssh ${SSH_OPTS} "${REMOTE}" bash <<ENDSSH
 set -euo pipefail
-cd "${DEPLOY_DIR}"
+# Unquoted on purpose: DEPLOY_DIR defaults to ~/website, and a quoted "~/website"
+# is never tilde-expanded, so the remote cd failed after every content rsync had
+# already landed (2026-11-15). rsync's REMOTE:~/website expands it remotely.
+cd ${DEPLOY_DIR}
 # -x ir / -x c: clang would otherwise treat the .c files after main.ll as IR.
 # -iquote toke/src/stdlib so the sources find their own headers; -I tomlc99 for
 # the one vendored source in the list. Link flags come from --emit-deps, which
