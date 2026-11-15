@@ -24,17 +24,32 @@ jobs:
       # to build it from source. Replace with a release download once one
       # exists:
       #   curl -fsSL "${{ secrets.TKC_DOWNLOAD_URL }}" -o tkc && chmod +x tkc
+      #
+      # 132.149: karwalski/toke and karwalski/ooke are public, so every sibling
+      # checkout in this file is anonymous. Each one used to pass a `token:`
+      # read from the TOKE_REPO_TOKEN secret, which this repository does not
+      # have; an empty token fails actions/checkout outright ("Input required
+      # and not supplied: token"). This step failed that way on every run from
+      # 2026-09-22 on, so build-smoke (which needs this job) has never run
+      # since it stopped being a placeholder. Do not add a token back for a
+      # public repository.
+      #
+      # This is toke `main`, unpinned: the job builds whatever main is at the
+      # time of the run (3.2.0 plus tracker commits on 2026-11-15). Pinning it
+      # (a TOKE_REF beside OOKE_REF) is an open owner decision under 132.149.
       - name: Check out the compiler
         uses: actions/checkout@v4
         with:
           repository: karwalski/toke
           path: .toke
-          token: ${{ secrets.TOKE_REPO_TOKEN }}
 
+      # zlib1g-dev: tkc itself links -lz (toke Makefile LDLIBS); toke's own
+      # workflow installs it for the same build. clang/lld/llvm-dev are kept
+      # for parity with the other two jobs; `tkc --check` never links.
       - name: Install LLVM/Clang
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y clang lld llvm-dev
+          sudo apt-get install -y clang lld llvm-dev zlib1g-dev
 
       - name: Build tkc
         working-directory: .toke
@@ -134,7 +149,6 @@ jobs:
           repository: karwalski/ooke
           ref: ${{ steps.ooke.outputs.ref }}
           path: .ooke
-          token: ${{ secrets.TOKE_REPO_TOKEN }}
 
       # ooke is a toke program: it needs the compiler and the stdlib, got the
       # same way as in the other two jobs.
@@ -143,7 +157,6 @@ jobs:
         with:
           repository: karwalski/toke
           path: .toke
-          token: ${{ secrets.TOKE_REPO_TOKEN }}
 
       - name: Install build dependencies
         run: |
@@ -195,7 +208,6 @@ jobs:
         with:
           repository: karwalski/toke
           path: .toke
-          token: ${{ secrets.TOKE_REPO_TOKEN }}
 
       - name: Install build dependencies
         run: |
@@ -223,7 +235,6 @@ jobs:
           repository: karwalski/ooke
           ref: ${{ steps.ooke.outputs.ref }}
           path: .ooke
-          token: ${{ secrets.TOKE_REPO_TOKEN }}
 
       - name: Rebuild build/
         env:
