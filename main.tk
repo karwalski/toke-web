@@ -15,11 +15,13 @@ f=main():i64{
   let httpmode=mut.false;
   let argc=args.count();
   lp(let i=1;i<(argc as i64);i=i+1){
-    let arg=args.get(i as u64);
+    let arg=mt args.get(i as u64){$ok:v v;$err:e ""};
     if(arg=="--http"){httpmode=true};
     if(arg=="--port"){
-      let nxt=args.get((i+1) as u64);
-      let pv=mt str.toint(nxt) {$ok:n n;$err:e 443};
+      let pv=mt args.get((i+1) as u64){
+        $ok:nxt mt str.toint(nxt){$ok:n n;$err:e 443};
+        $err:e 443
+      };
       port=pv as u64;
       i=i+1;
     }
