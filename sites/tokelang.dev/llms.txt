@@ -54,7 +54,7 @@ unchanged and unrelated to it.
   emits LLVM IR and drives clang to build native binaries for x86-64 and ARM64;
   structured diagnostics with stable error codes, machine-parseable spans and a fix
   field.
-  Current version: toke 3.1.0. Licence Apache-2.0.
+  Current version: toke 3.2.0. Licence Apache-2.0.
 - Author: Matthew Watt (github.com/karwalski), sole maintainer.
 - Source: github.com/karwalski/toke — compiler, specification and standard library,
   Apache-2.0, except spec/, stdlib/ and src/stdlib/, which are MIT. The project is thirteen
