@@ -8,15 +8,18 @@ i=file:std.file;
 (* 132.153 -- what this binary was built from. The two strings below are
    STAMPED at build time by scripts/stamp_main.sh, which every build of the
    binary compiles through (make main.ll, scripts/deploy.sh full): the toke
-   version of the tkc that emitted the IR, and the site commit it was emitted
-   from. A build that skips the stamp reports "unstamped", never a stale
+   version of the tkc that emitted the IR, the git sha that tkc was built from
+   (so an unreleased toke main is told apart from the release), and the site
+   commit it was emitted from. A build that skips the stamp reports "unstamped", never a stale
    number. Do not edit the values by hand. *)
 f=tokeversion():$str{<"unstamped"};
+f=tokebuild():$str{<"unstamped"};
 f=sitecommit():$str{<"unstamped"};
 
 f=versionfields():$str{
   let a=str.concat("\"version\":\"";tokeversion());
-  <str.concat(a;str.concat("\",\"site\":\"";str.concat(sitecommit();"\"")))
+  let b=str.concat(a;str.concat("\",\"toke_build\":\"";tokebuild()));
+  <str.concat(b;str.concat("\",\"site\":\"";str.concat(sitecommit();"\"")))
 };
 
 f=healthjson():$str{

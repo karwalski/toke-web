@@ -75,8 +75,10 @@ test.describe('API endpoints', () => {
     const json = await res.json();
     expect(json.status).toBe('ok');
     // 132.153: the toke version of the compiler that built the binary, stamped
-    // at build time (scripts/stamp_main.sh), plus the site commit.
+    // at build time (scripts/stamp_main.sh), the tkc git sha, and the site commit.
     expect(json.version).toMatch(/^\d+\.\d+\.\d+/);
+    expect(json.toke_build).toBeTruthy();
+    expect(json.toke_build).not.toBe('unstamped');
     expect(json.site).toBeTruthy();
   });
 
@@ -92,6 +94,7 @@ test.describe('API endpoints', () => {
     expect(res.status()).toBe(200);
     const json = await res.json();
     expect(json.version).toMatch(/^\d+\.\d+\.\d+/);
+    expect(json.toke_build).toBeTruthy();
     expect(json.site).toBeTruthy();
   });
 });

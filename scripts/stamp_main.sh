@@ -8,6 +8,10 @@
 #
 #   tokeversion()  the version `$TKC --version` prints (e.g. 3.2.0), i.e. the
 #                  toke compiler that emits main.ll
+#   tokebuild()    the git sha that tkc reports ("toke 3.2.0 (git a26e1e7bcdf7)"
+#                  -> "a26e1e7bcdf7"), or "unknown" when it prints none, so a
+#                  binary built with an unreleased toke main is told apart from
+#                  one built with the release of the same version
 #   sitecommit()   the short sha of this checkout's HEAD, with "-dirty" when a
 #                  tracked file differs from it
 #
@@ -29,6 +33,10 @@ if [[ -z "${toke_ver}" ]]; then
   echo "stamp_main: cannot read a toke version from '${raw}'" >&2; exit 1
 fi
 
+# "toke 3.2.0 (git a26e1e7bcdf7)" -> "a26e1e7bcdf7"
+toke_build="$(printf '%s\n' "${raw}" | sed -n 's/.*(git \([0-9A-Za-z.+-]*\)).*/\1/p')"
+toke_build="${toke_build:-unknown}"
+
 site="$(git -C "${REPO_ROOT}" rev-parse --short=12 HEAD 2>/dev/null || true)"
 if [[ -z "${site}" ]]; then
   site="unknown"
@@ -38,20 +46,22 @@ fi
 
 # Both values are [0-9A-Za-z.+-] only, so they need no escaping in a toke
 # string or in the JSON it is spliced into.
-for v in "${toke_ver}" "${site}"; do
+for v in "${toke_ver}" "${toke_build}" "${site}"; do
   [[ "${v}" =~ ^[0-9A-Za-z.+-]+$ ]] || { echo "stamp_main: refusing value '${v}'" >&2; exit 1; }
 done
 
 src="${REPO_ROOT}/main.tk"
 n_t=$(grep -c '^f=tokeversion():\$str{<"unstamped"};$' "${src}" || true)
+n_b=$(grep -c '^f=tokebuild():\$str{<"unstamped"};$' "${src}" || true)
 n_s=$(grep -c '^f=sitecommit():\$str{<"unstamped"};$' "${src}" || true)
-if [[ "${n_t}" != 1 || "${n_s}" != 1 ]]; then
-  echo "stamp_main: main.tk must define tokeversion() and sitecommit() exactly once," >&2
-  echo "            each returning \"unstamped\" (found ${n_t} and ${n_s})" >&2
+if [[ "${n_t}" != 1 || "${n_b}" != 1 || "${n_s}" != 1 ]]; then
+  echo "stamp_main: main.tk must define tokeversion(), tokebuild() and sitecommit() exactly" >&2
+  echo "            once, each returning \"unstamped\" (found ${n_t}, ${n_b} and ${n_s})" >&2
   exit 1
 fi
 
 sed -e "s/^f=tokeversion():\\\$str{<\"unstamped\"};\$/f=tokeversion():\$str{<\"${toke_ver}\"};/" \
+    -e "s/^f=tokebuild():\\\$str{<\"unstamped\"};\$/f=tokebuild():\$str{<\"${toke_build}\"};/" \
     -e "s/^f=sitecommit():\\\$str{<\"unstamped\"};\$/f=sitecommit():\$str{<\"${site}\"};/" \
     "${src}" > "${OUT}.tmp"
 # Replace OUT only when it changed, so make does not re-emit the IR and relink
@@ -61,4 +71,4 @@ if [[ -f "${OUT}" ]] && cmp -s "${OUT}.tmp" "${OUT}"; then
 else
   mv "${OUT}.tmp" "${OUT}"
 fi
-echo "stamp_main: ${OUT} (toke ${toke_ver}, site ${site})" >&2
+echo "stamp_main: ${OUT} (toke ${toke_ver} build ${toke_build}, site ${site})" >&2
