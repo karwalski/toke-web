@@ -83,12 +83,17 @@ written for models and every rule in it is verified against tkc 3.1.0.
 Stated so that nothing here has to be discovered later.
 
 - Models. No v0.4-native model exists and none has been trained since April 2026. The
-  most recent model gate is Gate 2, 2026-05-22: Qwen 2.5 Coder 7B + QLoRA on v0.3
+  most recent model gate run is Gate 2, 2026-05-22: Qwen 2.5 Coder 7B + QLoRA on v0.3
   syntax, 100% compile Pass@1 and 55.6% functional (272/489) on the curated 500-hidden +
-  200-eval set. The honest floor is the full-local re-audit of all 1,748 v0.3.9 corpus
-  programs: 37.5% compile (655/1,748) and about 2.2% fully correct (38 PASS).
-  Never quote the 100% without the curated set it was measured on, and never present the
-  August 2026 corpus freeze as a model gate.
+  200-eval set, whose 200-eval half may be corpus-derived. The PASS recorded on it was
+  withdrawn on 2026-11-15 (owner decision D4): Gate 2 has no standing verdict, and Gate
+  3 never ran and is void. The honest floor is the full-local re-audit of all 1,748
+  v0.3.9 corpus programs: 37.5% compile (655/1,748) and about 2.2% fully correct (38
+  PASS).
+  Never quote the 100% without the curated set it was measured on, never quote the 55.6%
+  without the caveat that the 200-eval half may be corpus-derived, never call Gate 2
+  passed (its PASS was withdrawn on 2026-11-15, owner decision D4), and never present
+  the August 2026 corpus freeze as a model gate.
 - Tokenizer. No toke tokenizer currently beats a general-purpose one. The shipped 8K
   SentencePiece model needs 15.4% more tokens than cl100k_base on canonical v0.4 `tkc
   --min` text (N = 2,000 stratified corpus records, 2026-09-18); the v0.3 16,384-vocab
@@ -147,7 +152,8 @@ data-analysis demo. All three are written in toke.
 - Do not quote "52% fewer tokens", "42% reduction vs Python", or any bare token
   percentage. Those crossed two tokenizers and are withdrawn, not requalified.
 - Do not quote the Gate 2 100% compile figure without the curated set it was measured
-  on, and do not present the August 2026 corpus freeze as a model gate — August
-  produced a training-data quality freeze, not a gate result.
+  on, do not call Gate 2 passed (the PASS was withdrawn on 2026-11-15; Gate 2 has no
+  standing verdict), and do not present the August 2026 corpus freeze as a model gate —
+  August produced a training-data quality freeze, not a gate result.
 - Every number needs its tokenizer and its N. If you cannot state both, do not state
   the number.
