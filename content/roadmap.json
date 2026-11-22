@@ -37,16 +37,17 @@
     {
       "id": "gate-2",
       "label": "Gate 2",
-      "status": "done",
+      "status": "noverdict",
       "date": "2026-05-22",
       "title": "Compile correctness solved; functional correctness not",
-      "index_line": "Gate 2. 100% compile Pass@1 and <strong>55.6% functional</strong> on the curated set &mdash; the honest floor over all 1,748 corpus programs is 37.5% compile / ~2.2% fully correct.",
-      "summary": "A Qwen 2.5 Coder 7B with a QLoRA adapter, trained on the v0.3 corpus. The headline is real and the caveat is bigger than the headline.",
+      "index_line": "Gate 2 has <strong>no standing verdict</strong>: the PASS recorded on 2026-05-24 was withdrawn on 2026-11-15. 100% compile Pass@1 and <strong>55.6% functional</strong> (272/489) on the curated set, whose 200-eval half may be corpus-derived &mdash; the honest floor over all 1,748 corpus programs is 37.5% compile / ~2.2% fully correct. Gate 3 never ran and is void.",
+      "summary": "A Qwen 2.5 Coder 7B with a QLoRA adapter, trained on the v0.3 corpus. The gate was recorded as a pass on 2026-05-24 against a compile-only criterion; neither criterion written for Gate 2 before the run is a compile rate, and the functional figure is below both. <strong>On 2026-11-15 the owner withdrew the PASS (decision D4) and recorded no verdict in its place.</strong>",
       "results": [
-        "<strong>100% compile Pass@1</strong> and <strong>55.6% functional</strong> (272/489) on the curated 500-hidden + 200-eval set the model was optimised against.",
-        "The functional figure was <strong>~8% until 2026-05-25</strong>, when an <code>io.readln</code> stdlib linking bug was fixed; the corrected number is 55.6%. Any argument still built on the 8% figure is arguing from a bug.",
+        "<strong>100% compile Pass@1</strong> and <strong>55.6% functional</strong> (272/489) on the curated 500-hidden + 200-eval set the model was optimised against. The 200-eval half of that set may be corpus-derived (its provenance is unresolved), which can only make the 55.6% less favourable, never more.",
+        "The functional figure was <strong>~8% until 2026-05-25</strong>, when an <code>io.readln</code> stdlib linking bug was fixed; the corrected number is 55.6%, with the caveat above. Any argument still built on the 8% figure is arguing from a bug.",
         "<strong>The honest floor:</strong> a full local re-audit of all 1,748 v0.3.9 corpus programs scored <strong>37.5% compile</strong> (655/1,748) and <strong>~2.2% fully correct</strong> (38 PASS). Never cite the 100% without this."
       ],
+      "correction": "<strong>Withdrawn 2026-11-15.</strong> This stage wore a &ldquo;Done&rdquo; badge until then. Gate 2 has <strong>no standing verdict</strong>, and Gate 3, which never ran, is void. Decision record: <code>docs/decisions/gate2-decision.md</code>.",
       "caveat": "Compile-checking removes one error class and leaves algorithmic correctness untouched. Functional correctness &mdash; not compile rate &mdash; is the open weakness, and closing it is what the training lanes below exist to do."
     },
     {
@@ -78,7 +79,7 @@
         "A-category test coverage: <strong>631</strong> base tasks gained 3&ndash;5 execution-verified test cases each. Before this, all 10,116 A-category specs had <strong>zero</strong> test cases &mdash; they had never been verified at all.",
         "<strong>2,639</strong> records repaired or rewritten; idiom-below-floor 0."
       ],
-      "caveat": "This is data quality, not model quality. It says nothing about what a model can generate. The most recent model gate remains Gate 2 of 2026-05-22."
+      "caveat": "This is data quality, not model quality. It says nothing about what a model can generate. The most recent model gate run remains Gate 2 of 2026-05-22, whose PASS was withdrawn on 2026-11-15: it has no standing verdict."
     },
     {
       "id": "reopened",
@@ -117,7 +118,7 @@
       "summary": "Seven lanes are scored against each other rather than argued about: prompt-only, RLVR/execution-feedback, tokenizer variants, byte-level, continued-pretrain/adapter, fine-tune, and from-scratch. All of them are blocked on compute.",
       "results": [
         "<strong>Lane A, no training</strong> &mdash; a frontier model plus the syntax card plus the grammar artefacts. This is the baseline every other lane must beat, not a control we expect to lose.",
-        "<strong>Lane B, RLVR</strong> &mdash; GRPO on compile &times; tests &times; length. The lane most likely to move the 55.6% functional number, which is the open weakness.",
+        "<strong>Lane B, RLVR</strong> &mdash; GRPO on compile &times; tests &times; length. The lane most likely to move functional correctness (Gate 2&rsquo;s 55.6%, on a curated set whose 200-eval half may be corpus-derived), which is the open weakness.",
         "<strong>Lane C, tokenizer variants</strong> &mdash; purpose-built BPE against a superword tokenizer, the base model's own tokenizer, and the base tokenizer plus added toke tokens; scored on correctness after an identical fine-tune, not on compression alone.",
         "<strong>Lane D, byte-level</strong> &mdash; a small tokenizer-free model, gated on the 131.51 spike reporting first. Explicitly a research lane.",
         "<strong>Lane E, continued pretraining and adapters</strong>, plus the existing fine-tune and from-scratch arms."
@@ -220,7 +221,12 @@
       {
         "claim": "&ldquo;Gate 2: 100% compilation Pass@1&rdquo; quoted alone, with ~8% functional",
         "why": "The 100% is on a curated set the model was optimised against, and the 8% was an <code>io.readln</code> stdlib bug corrected on 2026-05-25.",
-        "replacement": "<strong>100% compile / 55.6% functional</strong> (272/489) on the curated set, with the full-local re-audit floor of <strong>37.5% compile / ~2.2% fully correct</strong> over all 1,748 programs stated alongside it."
+        "replacement": "<strong>100% compile / 55.6% functional</strong> (272/489) on the curated set, whose 200-eval half may be corpus-derived, with the full-local re-audit floor of <strong>37.5% compile / ~2.2% fully correct</strong> over all 1,748 programs stated alongside it."
+      },
+      {
+        "claim": "Gate 2 shown as &ldquo;Done&rdquo; (the PASS recorded on 2026-05-24)",
+        "why": "The PASS was declared against a compile-only criterion. Neither criterion written for Gate 2 before the run is a compile rate, and the functional figure is below both.",
+        "replacement": "<strong>No standing verdict.</strong> The owner withdrew the PASS on 2026-11-15 (decision D4) and recorded none in its place; Gate 3, which never ran, is void. See <code>docs/decisions/gate2-decision.md</code>."
       },
       {
         "claim": "Per-example counts of the form &ldquo;N toke BPE tokens vs M for Python on cl100k&rdquo;",

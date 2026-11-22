@@ -22,6 +22,7 @@
 .rm .stage { border: 1px solid #2a2317; border-left-width: 3px; border-radius: 8px; background: #14110b; padding: 1.25rem 1.4rem; margin-bottom: 1rem; }
 .rm .stage.rm-done { border-left-color: #6fc2b2; }
 .rm .stage.rm-notpassed { border-left-color: #e07a5f; }
+.rm .stage.rm-noverdict { border-left-color: #c9a227; }
 .rm .stage.rm-running { border-left-color: #f0c04a; }
 .rm .stage.rm-gated { border-left-color: #6b6356; }
 .rm .stage.rm-planned { border-left-color: #6b6356; }
@@ -30,6 +31,7 @@
 .rm .badge { font-size: 0.68rem; letter-spacing: 0.05em; text-transform: uppercase; border-radius: 20px; padding: 0.15rem 0.6rem; font-weight: 700; }
 .rm .rm-done .badge { background: #17322d; color: #6fc2b2; }
 .rm .rm-notpassed .badge { background: #3a1d16; color: #e07a5f; }
+.rm .rm-noverdict .badge { background: #2a2317; color: #c9a227; }
 .rm .rm-running .badge { background: #2a2317; color: #f0c04a; }
 .rm .rm-gated .badge, .rm .rm-planned .badge { background: #1f1a11; color: #9a9082; }
 .rm .stage-date { font-size: 0.72rem; color: #6b6356; margin-left: auto; font-family: 'JetBrains Mono', monospace; }
@@ -94,19 +96,20 @@
     <p class="caveat"><strong>Caveat.</strong> Everything measured at this gate is v0.3 syntax, against a compiler that no longer exists.</p>
   </div>
 
-  <div class="stage rm-done" id="gate-2">
+  <div class="stage rm-noverdict" id="gate-2">
     <div class="stage-head">
       <span class="stage-label">Gate 2</span>
-      <span class="badge">Done</span>
+      <span class="badge">No standing verdict</span>
       <span class="stage-date">2026-05-22</span>
     </div>
     <h3>Compile correctness solved; functional correctness not</h3>
-    <p>A Qwen 2.5 Coder 7B with a QLoRA adapter, trained on the v0.3 corpus. The headline is real and the caveat is bigger than the headline.</p>
+    <p>A Qwen 2.5 Coder 7B with a QLoRA adapter, trained on the v0.3 corpus. The gate was recorded as a pass on 2026-05-24 against a compile-only criterion; neither criterion written for Gate 2 before the run is a compile rate, and the functional figure is below both. <strong>On 2026-11-15 the owner withdrew the PASS (decision D4) and recorded no verdict in its place.</strong></p>
     <ul>
-      <li><strong>100% compile Pass@1</strong> and <strong>55.6% functional</strong> (272/489) on the curated 500-hidden + 200-eval set the model was optimised against.</li>
-      <li>The functional figure was <strong>~8% until 2026-05-25</strong>, when an <code>io.readln</code> stdlib linking bug was fixed; the corrected number is 55.6%. Any argument still built on the 8% figure is arguing from a bug.</li>
+      <li><strong>100% compile Pass@1</strong> and <strong>55.6% functional</strong> (272/489) on the curated 500-hidden + 200-eval set the model was optimised against. The 200-eval half of that set may be corpus-derived (its provenance is unresolved), which can only make the 55.6% less favourable, never more.</li>
+      <li>The functional figure was <strong>~8% until 2026-05-25</strong>, when an <code>io.readln</code> stdlib linking bug was fixed; the corrected number is 55.6%, with the caveat above. Any argument still built on the 8% figure is arguing from a bug.</li>
       <li><strong>The honest floor:</strong> a full local re-audit of all 1,748 v0.3.9 corpus programs scored <strong>37.5% compile</strong> (655/1,748) and <strong>~2.2% fully correct</strong> (38 PASS). Never cite the 100% without this.</li>
     </ul>
+    <p class="caveat"><strong>Withdrawn 2026-11-15.</strong> This stage wore a &ldquo;Done&rdquo; badge until then. Gate 2 has <strong>no standing verdict</strong>, and Gate 3, which never ran, is void. Decision record: <code>docs/decisions/gate2-decision.md</code>.</p>
     <p class="caveat"><strong>Caveat.</strong> Compile-checking removes one error class and leaves algorithmic correctness untouched. Functional correctness &mdash; not compile rate &mdash; is the open weakness, and closing it is what the training lanes below exist to do.</p>
   </div>
 
@@ -140,7 +143,7 @@
       <li>A-category test coverage: <strong>631</strong> base tasks gained 3&ndash;5 execution-verified test cases each. Before this, all 10,116 A-category specs had <strong>zero</strong> test cases &mdash; they had never been verified at all.</li>
       <li><strong>2,639</strong> records repaired or rewritten; idiom-below-floor 0.</li>
     </ul>
-    <p class="caveat"><strong>Caveat.</strong> This is data quality, not model quality. It says nothing about what a model can generate. The most recent model gate remains Gate 2 of 2026-05-22.</p>
+    <p class="caveat"><strong>Caveat.</strong> This is data quality, not model quality. It says nothing about what a model can generate. The most recent model gate run remains Gate 2 of 2026-05-22, whose PASS was withdrawn on 2026-11-15: it has no standing verdict.</p>
   </div>
 
   <div class="stage rm-running" id="reopened">
@@ -181,7 +184,7 @@
     <p>Seven lanes are scored against each other rather than argued about: prompt-only, RLVR/execution-feedback, tokenizer variants, byte-level, continued-pretrain/adapter, fine-tune, and from-scratch. All of them are blocked on compute.</p>
     <ul>
       <li><strong>Lane A, no training</strong> &mdash; a frontier model plus the syntax card plus the grammar artefacts. This is the baseline every other lane must beat, not a control we expect to lose.</li>
-      <li><strong>Lane B, RLVR</strong> &mdash; GRPO on compile &times; tests &times; length. The lane most likely to move the 55.6% functional number, which is the open weakness.</li>
+      <li><strong>Lane B, RLVR</strong> &mdash; GRPO on compile &times; tests &times; length. The lane most likely to move functional correctness (Gate 2&rsquo;s 55.6%, on a curated set whose 200-eval half may be corpus-derived), which is the open weakness.</li>
       <li><strong>Lane C, tokenizer variants</strong> &mdash; purpose-built BPE against a superword tokenizer, the base model's own tokenizer, and the base tokenizer plus added toke tokens; scored on correctness after an identical fine-tune, not on compression alone.</li>
       <li><strong>Lane D, byte-level</strong> &mdash; a small tokenizer-free model, gated on the 131.51 spike reporting first. Explicitly a research lane.</li>
       <li><strong>Lane E, continued pretraining and adapters</strong>, plus the existing fine-tune and from-scratch arms.</li>
@@ -298,7 +301,8 @@
   <tbody>
     <tr><td>&ldquo;42% reduction vs Python&rdquo; (and &ldquo;56% vs Java&rdquo;, 31%, 48%, and a 32% page average)</td><td>Measured the toke side with a <strong>toke-trained</strong> tokenizer and the Python or Java side with cl100k_base. Two different tokenizers, one per side: it measures the tokenizer's training bias, not the language. A methodology error, so it cannot be requalified.</td><td>Under cl100k_base on <em>both</em> sides, toke costs <strong>1.30&times;</strong> the tokens of equivalent Python (344 vs 264, N = 4 execution-verified pairs) and <strong>1.34&times;</strong> [1.22, 1.48] over the 60 Gate-1 tasks (4,787 vs 3,565, N = 60). In bytes, <strong>0.92&times;</strong> (693 vs 753, N = 4).</td></tr>
     <tr><td>&ldquo;52% average token reduction vs cl100k&rdquo;</td><td>A <em>tokenizer-vs-tokenizer</em> measurement on identical toke text (Toke-16K v0.3 against cl100k_base, N = 42) &mdash; never a comparison with Python. It also cannot be reproduced from the dataset it cites, which re-aggregates to 61.6%, and it rests on a tokenizer whose null <code>unk_token</code> silently drops backslashes.</td><td>On canonical v0.4 <code>--min</code> text the shipped 8K tokenizer needs <strong>15.4% more</strong> tokens than cl100k_base (279,672 vs 242,427, N = 2,000). No &ldquo;purpose-built tokenizer beats cl100k&rdquo; claim is supportable until 116.9 reports.</td></tr>
-    <tr><td>&ldquo;Gate 2: 100% compilation Pass@1&rdquo; quoted alone, with ~8% functional</td><td>The 100% is on a curated set the model was optimised against, and the 8% was an <code>io.readln</code> stdlib bug corrected on 2026-05-25.</td><td><strong>100% compile / 55.6% functional</strong> (272/489) on the curated set, with the full-local re-audit floor of <strong>37.5% compile / ~2.2% fully correct</strong> over all 1,748 programs stated alongside it.</td></tr>
+    <tr><td>&ldquo;Gate 2: 100% compilation Pass@1&rdquo; quoted alone, with ~8% functional</td><td>The 100% is on a curated set the model was optimised against, and the 8% was an <code>io.readln</code> stdlib bug corrected on 2026-05-25.</td><td><strong>100% compile / 55.6% functional</strong> (272/489) on the curated set, whose 200-eval half may be corpus-derived, with the full-local re-audit floor of <strong>37.5% compile / ~2.2% fully correct</strong> over all 1,748 programs stated alongside it.</td></tr>
+    <tr><td>Gate 2 shown as &ldquo;Done&rdquo; (the PASS recorded on 2026-05-24)</td><td>The PASS was declared against a compile-only criterion. Neither criterion written for Gate 2 before the run is a compile rate, and the functional figure is below both.</td><td><strong>No standing verdict.</strong> The owner withdrew the PASS on 2026-11-15 (decision D4) and recorded none in its place; Gate 3, which never ran, is void. See <code>docs/decisions/gate2-decision.md</code>.</td></tr>
     <tr><td>Per-example counts of the form &ldquo;N toke BPE tokens vs M for Python on cl100k&rdquo;</td><td>The same two-tokenizer error in per-example form.</td><td>Each panel now names the tokenizer that produced its count, and no percentage is read across two lanes.</td></tr>
     <tr><td>&ldquo;LL(1) grammar&rdquo;</td><td>Retired by the v0.4 spec on 2026-07-02.</td><td><strong>Backtrack-free with bounded lookahead</strong> of up to 3 tokens, with the exceptions enumerated in the spec. The mechanical argument is unaffected: what makes a constrained-decoding mask cheap is a small grammar that never rescans input, not the literal lookahead constant.</td></tr>
   </tbody>

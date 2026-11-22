@@ -32,8 +32,12 @@ END = "<!-- ROADMAP:END -->"
 # badge on two pages while the text beside it said the verdict was re-opened;
 # a reader who scans badges got the opposite of the truth. "notpassed" is the
 # badge for a gate whose verdict is recorded against it (128.19, 2026-09-22).
+# 127.494: "noverdict" is the badge for a gate whose recorded verdict was
+# withdrawn with nothing put in its place -- Gate 2, owner decision D4
+# (2026-11-15). It is neither "Done" nor "Not passed".
 STATUS_LABEL = {
     "notpassed": "Not passed",
+    "noverdict": "No standing verdict",
     "done": "Done",
     "running": "Running now",
     "gated": "Compute-gated",
@@ -41,6 +45,7 @@ STATUS_LABEL = {
 }
 STATUS_CLASS = {
     "notpassed": "rm-notpassed",
+    "noverdict": "rm-noverdict",
     "done": "rm-done",
     "running": "rm-running",
     "gated": "rm-gated",
@@ -70,6 +75,7 @@ STYLE = """<style>
 .rm .stage { border: 1px solid #2a2317; border-left-width: 3px; border-radius: 8px; background: #14110b; padding: 1.25rem 1.4rem; margin-bottom: 1rem; }
 .rm .stage.rm-done { border-left-color: #6fc2b2; }
 .rm .stage.rm-notpassed { border-left-color: #e07a5f; }
+.rm .stage.rm-noverdict { border-left-color: #c9a227; }
 .rm .stage.rm-running { border-left-color: #f0c04a; }
 .rm .stage.rm-gated { border-left-color: #6b6356; }
 .rm .stage.rm-planned { border-left-color: #6b6356; }
@@ -78,6 +84,7 @@ STYLE = """<style>
 .rm .badge { font-size: 0.68rem; letter-spacing: 0.05em; text-transform: uppercase; border-radius: 20px; padding: 0.15rem 0.6rem; font-weight: 700; }
 .rm .rm-done .badge { background: #17322d; color: #6fc2b2; }
 .rm .rm-notpassed .badge { background: #3a1d16; color: #e07a5f; }
+.rm .rm-noverdict .badge { background: #2a2317; color: #c9a227; }
 .rm .rm-running .badge { background: #2a2317; color: #f0c04a; }
 .rm .rm-gated .badge, .rm .rm-planned .badge { background: #1f1a11; color: #9a9082; }
 .rm .stage-date { font-size: 0.72rem; color: #6b6356; margin-left: auto; font-family: 'JetBrains Mono', monospace; }
@@ -276,6 +283,7 @@ INDEX_STYLE = """<style>
 .ms-status { display: inline-block; margin-top: 0.25rem; font-size: 0.64rem; letter-spacing: 0.05em; text-transform: uppercase; border-radius: 20px; padding: 0.12rem 0.55rem; font-weight: 700; }
 .ms-done .ms-status { background: #17322d; color: #6fc2b2; }
 .ms-notpassed .ms-status { background: #3a1d16; color: #e07a5f; }
+.ms-noverdict .ms-status { background: #2a2317; color: #c9a227; }
 .ms-running .ms-status { background: #2a2317; color: #f0c04a; }
 .ms-gated .ms-status, .ms-planned .ms-status { background: #1f1a11; color: #9a9082; }
 .ms-body { color: #9a9082; font-size: 0.87rem; line-height: 1.55; }
@@ -363,7 +371,9 @@ def splice(text, block):
 
 # 132.40: the badge and the prose beside it must not disagree. A stage whose own
 # text says its verdict was re-opened or not passed cannot carry "Done".
-VERDICT_AGAINST = re.compile(r"\bre-?opened\b|\bnot passed\b|\bNOT MET\b", re.I)
+# 127.494: a withdrawn verdict ("no standing verdict", D4) is not "Done" either.
+VERDICT_AGAINST = re.compile(r"\bre-?opened\b|\bnot passed\b|\bNOT MET\b|"
+                             r"\bno standing verdict\b", re.I)
 
 
 def badge_contradictions(d):
