@@ -182,8 +182,9 @@ def render(canon):
     w("- Do not quote \"52% fewer tokens\", \"42% reduction vs Python\", or any bare token")
     w("  percentage. Those crossed two tokenizers and are withdrawn, not requalified.")
     w("- Do not quote the Gate 2 100% compile figure without the curated set it was measured")
-    w("  on, and do not present the August 2026 corpus freeze as a model gate — August")
-    w("  produced a training-data quality freeze, not a gate result.")
+    w("  on, do not call Gate 2 passed (the PASS was withdrawn on 2026-11-15; Gate 2 has no")
+    w("  standing verdict), and do not present the August 2026 corpus freeze as a model gate —")
+    w("  August produced a training-data quality freeze, not a gate result.")
     w("- Every number needs its tokenizer and its N. If you cannot state both, do not state")
     w("  the number.")
 

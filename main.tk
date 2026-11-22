@@ -5,8 +5,30 @@ i=args:std.args;
 i=str:std.str;
 i=file:std.file;
 
+(* 132.153 -- what this binary was built from. The two strings below are
+   STAMPED at build time by scripts/stamp_main.sh, which every build of the
+   binary compiles through (make main.ll, scripts/deploy.sh full): the toke
+   version of the tkc that emitted the IR, the git sha that tkc was built from
+   (so an unreleased toke main is told apart from the release), and the site
+   commit it was emitted from. A build that skips the stamp reports "unstamped", never a stale
+   number. Do not edit the values by hand. *)
+f=tokeversion():$str{<"unstamped"};
+f=tokebuild():$str{<"unstamped"};
+f=sitecommit():$str{<"unstamped"};
+
+f=versionfields():$str{
+  let a=str.concat("\"version\":\"";tokeversion());
+  let b=str.concat(a;str.concat("\",\"toke_build\":\"";tokebuild()));
+  <str.concat(b;str.concat("\",\"site\":\"";str.concat(sitecommit();"\"")))
+};
+
 f=healthjson():$str{
-  <"{\"status\":\"ok\",\"version\":\"0.3.0\",\"service\":\"toke-website\"}"
+  let b=str.concat("{\"status\":\"ok\",";versionfields());
+  <str.concat(b;",\"service\":\"toke-website\"}")
+};
+
+f=versionjson():$str{
+  <str.concat("{";str.concat(versionfields();"}"))
 };
 
 f=main():i64{
@@ -31,7 +53,7 @@ f=main():i64{
   http.getstaticmime("/llms.txt";llms;"text/plain; charset=utf-8");
   http.getstaticmime("/health";hj;"application/json");
   http.getstaticmime("/api/health";hj;"application/json");
-  http.getstatic("/api/version";"{\"version\":\"0.3.0\"}");
+  http.getstatic("/api/version";versionjson());
   (* Routing is host-independent: servepages registers a named route per
      templates/*.tkt, and servedir("/") is the wildcard fallback over build/.
      Every host the server answers for gets the same tree (story 132.21). *)

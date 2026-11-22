@@ -17,8 +17,17 @@ endif
 
 all: $(BIN)
 
-main.ll: main.tk
-	$(TOKE) --emit-llvm --out main.ll main.tk
+# 132.153 — the binary is compiled from main.tk with its build identity
+# stamped in (scripts/stamp_main.sh): /health and /api/version report the toke
+# version of $(TKC) and the site commit. The stamp re-runs every time but only
+# rewrites main.stamped.tk, and so only re-emits the IR, when either changed.
+main.stamped.tk: FORCE
+	@TKC="$(TKC)" ./scripts/stamp_main.sh $@
+
+main.ll: main.stamped.tk
+	$(TOKE) --emit-llvm --out main.ll main.stamped.tk
+
+FORCE:
 
 # 132.105 — the stdlib C sources and link flags are ASKED of the compiler
 # (`tkc --emit-deps`, toke 127.99's module manifest), never globbed. This used
@@ -59,7 +68,7 @@ dev: $(BIN)
 	$(BIN) --http --port 3000
 
 clean:
-	rm -f $(BIN) main.ll
+	rm -f $(BIN) main.ll main.stamped.tk
 	rm -rf build-docs
 
 # --- Toke source gate (story 132.17a) ---
@@ -234,7 +243,7 @@ check-doc-titles:
 
 # Start the site and assert every route it defines answers 200.
 check-routes: $(BIN) build
-	@./scripts/check_routes.sh
+	@TKC="$(TKC)" ./scripts/check_routes.sh
 
 # --- Generated content ---
 
@@ -356,4 +365,4 @@ deploy-content: ## Content-only deploy (templates, static, sites — no rebuild)
 deploy-auto: ## Auto-detect deploy mode based on git changes
 	./scripts/deploy.sh auto
 
-.PHONY: ooke check-deploy-posture site-examples check-site-examples check-bpe-reference facts check-facts all run run-http dev certs clean roadmap check-roadmap llms check-llms ci check-toke build docs-content check-docs-content check-library check-library-strict library-recount check-build-fresh check-sitemap check-doc-links check-doc-titles check-routes asset-hashes deploy deploy-content deploy-auto
+.PHONY: FORCE ooke check-deploy-posture site-examples check-site-examples check-bpe-reference facts check-facts all run run-http dev certs clean roadmap check-roadmap llms check-llms ci check-toke build docs-content check-docs-content check-library check-library-strict library-recount check-build-fresh check-sitemap check-doc-links check-doc-titles check-routes asset-hashes deploy deploy-content deploy-auto

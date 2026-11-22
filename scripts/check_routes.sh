@@ -155,6 +155,41 @@ for r in "${routes[@]}"; do
   [[ "${code}" == "200" ]] || fail=1
 done
 
+# 132.153 — /health and /api/version report the build identity stamped in by
+# scripts/stamp_main.sh, never a typed number. The binary under test was built
+# by `make`, so its version must be the one TKC prints (when TKC is given) and
+# must never be the unstamped placeholder.
+want=""
+want_build=""
+if [[ -n "${TKC:-}" ]]; then
+  tkc_raw="$("${TKC}" --version 2>/dev/null | head -1)"
+  want="$(printf '%s\n' "${tkc_raw}" | sed -n 's/^toke \([0-9][0-9A-Za-z.+-]*\).*/\1/p')"
+  want_build="$(printf '%s\n' "${tkc_raw}" | sed -n 's/.*(git \([0-9A-Za-z.+-]*\)).*/\1/p')"
+  want_build="${want_build:-unknown}"
+fi
+for r in /health /api/version; do
+  body=$(curl -s -m 2 "http://127.0.0.1:${PORT}${r}")
+  got=$(printf '%s' "${body}" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("version",""))' 2>/dev/null || true)
+  if [[ -z "${got}" || "${got}" == "unstamped" ]]; then
+    echo "  ${r}: version is '${got}' -- the binary was not built through scripts/stamp_main.sh" >&2
+    fail=1
+  elif [[ -n "${want}" && "${got}" != "${want}" ]]; then
+    echo "  ${r}: version '${got}' is not the toke version of ${TKC} ('${want}')" >&2
+    fail=1
+  else
+    build=$(printf '%s' "${body}" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("toke_build",""))' 2>/dev/null || true)
+    if [[ -z "${build}" || "${build}" == "unstamped" ]]; then
+      echo "  ${r}: toke_build is '${build}' -- the binary was not built through scripts/stamp_main.sh" >&2
+      fail=1
+    elif [[ -n "${want_build}" && "${build}" != "${want_build}" ]]; then
+      echo "  ${r}: toke_build '${build}' is not the git sha of ${TKC} ('${want_build}')" >&2
+      fail=1
+    else
+      echo "  ${r} reports toke ${got} (build ${build})"
+    fi
+  fi
+done
+
 echo ""
 if [[ ${fail} -ne 0 ]]; then
   echo "check-routes FAILED"
