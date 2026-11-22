@@ -265,7 +265,7 @@
 </div>
 
 <div class="explainer" style="max-width:860px;margin:1rem auto;padding-left:2rem;padding-right:2rem;">
-  <p><strong>What is a token?</strong> LLMs don't read characters &mdash; they read <em>tokens</em>, which are chunks of text (roughly 3&ndash;4 characters each). The statement <code>return 0;</code> costs 4 tokens every time an LLM writes it. In toke, the same statement is <code>&lt;0;</code> &mdash; and with a purpose-built tokenizer trained on toke programs, the entire return-and-close pattern <code>&lt;0;};</code> becomes a single token.</p>
+  <p><strong>What is a token?</strong> LLMs don't read characters &mdash; they read <em>tokens</em>, which are chunks of text (roughly 3&ndash;4 characters each). The statement <code>return 0;</code> costs 4 tokens every time an LLM writes it. In toke, the same statement is <code>&lt;0;</code> &mdash; and under toke&rsquo;s legacy v03 tokenizer, trained on toke programs, the entire return-and-close pattern <code>&lt;0;};</code> becomes a single token. That is a property of a tokenizer trained on toke text, not of the language, and it is not a saving against Python: the box above gives the same-tokenizer numbers.</p>
 </div>
 
 <!-- ================================================================== -->
