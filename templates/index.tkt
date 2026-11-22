@@ -33,7 +33,7 @@
 <div class="features">
   <div class="feature-card">
     <h3>Constrainable during decoding</h3>
-    <p>A closed alphabet of 59 printable ASCII characters, lowercase only, 14 keywords, and a backtrack-free grammar with bounded lookahead of up to 3 tokens, published as machine-readable grammars (<code>grammar.ebnf</code>, <code>toke.gbnf</code>). The pushdown automaton behind a decoding mask stays small, so the masks stay cheap.</p>
+    <p>A closed alphabet of 59 printable ASCII characters, lowercase only, 14 keywords, and a backtrack-free grammar with bounded lookahead of up to 3 tokens, published as machine-readable grammars (<code>grammar.ebnf</code>, <code>toke.gbnf</code>). The pushdown automaton behind a decoding mask stays small, so the masks stay cheap. That cost is argued from the grammar, not yet measured: the mask-cost benchmark is story 131.52.</p>
   </div>
   <div class="feature-card">
     <h3>Verifiable by a compiler</h3>
