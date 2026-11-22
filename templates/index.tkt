@@ -301,6 +301,7 @@
 .ms-status { display: inline-block; margin-top: 0.25rem; font-size: 0.64rem; letter-spacing: 0.05em; text-transform: uppercase; border-radius: 20px; padding: 0.12rem 0.55rem; font-weight: 700; }
 .ms-done .ms-status { background: #17322d; color: #6fc2b2; }
 .ms-notpassed .ms-status { background: #3a1d16; color: #e07a5f; }
+.ms-noverdict .ms-status { background: #2a2317; color: #c9a227; }
 .ms-running .ms-status { background: #2a2317; color: #f0c04a; }
 .ms-gated .ms-status, .ms-planned .ms-status { background: #1f1a11; color: #9a9082; }
 .ms-body { color: #9a9082; font-size: 0.87rem; line-height: 1.55; }
@@ -334,13 +335,13 @@
     </div>
     <div class="ms-body">Gate 1 <strong>not passed</strong> (decided 2026-09-22). A fine-tuned 7B reached <strong>58.8%</strong> Pass@1 on held-out tasks (588 of 1,000 generated) &mdash; below the &ge;60% criterion. The 12.5% token-reduction criterion stands as met. The 63.7% published until 2026-09-19 was 588/923: it dropped the solutions that failed to compile out of the denominator. <a href="/roadmap#gate-1" style="color:#f0c04a;">How the correction works &rarr;</a></div>
   </div>
-  <div class="ms-row ms-done">
+  <div class="ms-row ms-noverdict">
     <div class="ms-key">
       <span class="ms-label">Gate 2</span>
-      <span class="ms-status">Done</span><br>
+      <span class="ms-status">No standing verdict</span><br>
       <span class="ms-date">2026-05-22</span>
     </div>
-    <div class="ms-body">Gate 2. 100% compile Pass@1 and <strong>55.6% functional</strong> on the curated set &mdash; the honest floor over all 1,748 corpus programs is 37.5% compile / ~2.2% fully correct.</div>
+    <div class="ms-body">Gate 2 has <strong>no standing verdict</strong>: the PASS recorded on 2026-05-24 was withdrawn on 2026-11-15. 100% compile Pass@1 and <strong>55.6% functional</strong> (272/489) on the curated set, whose 200-eval half may be corpus-derived &mdash; the honest floor over all 1,748 corpus programs is 37.5% compile / ~2.2% fully correct. Gate 3 never ran and is void.</div>
   </div>
   <div class="ms-row ms-done">
     <div class="ms-key">
@@ -473,7 +474,7 @@
     <h2 style="text-align:center;margin-bottom:0.5rem;">Try the Model &mdash; Run It Locally</h2>
     <p style="text-align:center;color:#9a9082;margin-bottom:0.6rem;font-size:0.9rem;">A fine-tuned 7B model that writes toke. Run it with Ollama, or take the weights from HuggingFace.</p>
     <p style="text-align:center;color:#c9a227;margin-bottom:0.6rem;font-size:0.82rem;max-width:720px;margin-left:auto;margin-right:auto;line-height:1.6;"><strong>Withdrawn 2026-09-20:</strong> this section used to offer a hosted free tier and a runnable API example. The inference endpoint behind <code>api.tokelang.dev</code> was deleted on 2026-09-18 and <code>console.tokelang.dev</code> does not answer, so neither works. Saying so here rather than deleting the section: there is no hosted generation channel today, and no date for one.</p>
-    <p style="text-align:center;color:#6b6356;margin-bottom:2rem;font-size:0.82rem;max-width:720px;margin-left:auto;margin-right:auto;line-height:1.6;">It is the <strong style="color:#9a9082;">Gate 2</strong> model of 2026-05-22 &mdash; Qwen&nbsp;2.5&nbsp;Coder&nbsp;7B + QLoRA, trained on <strong style="color:#9a9082;">v0.3</strong> syntax, which the breaking v0.4 change superseded. On the curated 500-hidden + 200-eval set it reached <strong style="color:#9a9082;">100% compile Pass@1</strong> and <strong style="color:#9a9082;">55.6% functional</strong> correctness (272/489); across every program in the corpus the honest floor is <strong style="color:#9a9082;">37.5% compile</strong> and about <strong style="color:#9a9082;">2.2% fully correct</strong>. No v0.4-native model has been trained. <a href="/status" style="color:#f0c04a;">The full numbers and their caveats &rarr;</a></p>
+    <p style="text-align:center;color:#6b6356;margin-bottom:2rem;font-size:0.82rem;max-width:720px;margin-left:auto;margin-right:auto;line-height:1.6;">It is the <strong style="color:#9a9082;">Gate 2</strong> model of 2026-05-22 &mdash; Qwen&nbsp;2.5&nbsp;Coder&nbsp;7B + QLoRA, trained on <strong style="color:#9a9082;">v0.3</strong> syntax, which the breaking v0.4 change superseded. On the curated 500-hidden + 200-eval set it reached <strong style="color:#9a9082;">100% compile Pass@1</strong> and <strong style="color:#9a9082;">55.6% functional</strong> correctness (272/489), and the 200-eval half of that set may be corpus-derived. The PASS recorded on it was withdrawn on 2026-11-15: Gate 2 has <strong style="color:#9a9082;">no standing verdict</strong>. Across every program in the corpus the honest floor is <strong style="color:#9a9082;">37.5% compile</strong> and about <strong style="color:#9a9082;">2.2% fully correct</strong>. No v0.4-native model has been trained. <a href="/status" style="color:#f0c04a;">The full numbers and their caveats &rarr;</a></p>
 
     <div class="two-col">
       <div style="background:#1f1a11;border:1px solid #2a2317;border-radius:8px;padding:1.5rem;">
@@ -497,7 +498,7 @@
       <p style="font-size:0.85rem;color:#9a9082;margin-bottom:0.8rem;">The Gate 2 model (2026-05-22) is published on HuggingFace. Download it, run locally, or fine-tune for your own use case. Includes model card, tokenizer, and training details. It was trained on the <strong>v0.3</strong> corpus and predates the breaking v0.4 syntax change; no v0.4-native model has been trained yet. See the <a href="/roadmap" style="color:#f0c04a;">roadmap</a>.</p>
       <div style="display:flex;gap:1rem;align-items:center;">
         <a href="https://huggingface.co/karwalski/toke" style="background:#2a2317;border:1px solid #6b6356;color:#9a9082;padding:0.5rem 1rem;border-radius:4px;text-decoration:none;font-size:0.85rem;">View on HuggingFace &rarr;</a>
-        <span style="color:#6b6356;font-size:0.8rem;">Qwen 2.5 Coder 7B + QLoRA &middot; Apache 2.0 &middot; v0.3 syntax &middot; 100% compile Pass@1 / 55.6% functional on the curated Gate-2 set (272/489)</span>
+        <span style="color:#6b6356;font-size:0.8rem;">Qwen 2.5 Coder 7B + QLoRA &middot; Apache 2.0 &middot; v0.3 syntax &middot; 100% compile Pass@1 / 55.6% functional on the curated Gate-2 set (272/489; its 200-eval half may be corpus-derived) &middot; Gate 2 PASS withdrawn 2026-11-15, no standing verdict</span>
       </div>
     </div>
 

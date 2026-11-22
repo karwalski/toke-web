@@ -53,13 +53,14 @@
 
 <!-- ================================================================ -->
 <h2>Models</h2>
-<p><strong>No v0.4-native model exists, and no model has been trained since April 2026.</strong> The most recent model gate is Gate 2, run on 2026-05-22 against a Qwen 2.5 Coder 7B fine-tuned with QLoRA on the <strong>v0.3</strong> corpus &mdash; that is, on the syntax that the breaking v0.4 change (<code>=</code>/<code>==</code>, expression-<code>if</code>, <code>&amp;&amp;</code>/<code>||</code>) superseded in Epic 116. Corpus, tokenizer and model all have to be refreshed before any Gate-2 number carries forward.</p>
+<p><strong>No v0.4-native model exists, and no model has been trained since April 2026.</strong> The most recent model gate run is Gate 2, run on 2026-05-22 against a Qwen 2.5 Coder 7B fine-tuned with QLoRA on the <strong>v0.3</strong> corpus &mdash; that is, on the syntax that the breaking v0.4 change (<code>=</code>/<code>==</code>, expression-<code>if</code>, <code>&amp;&amp;</code>/<code>||</code>) superseded in Epic 116. Corpus, tokenizer and model all have to be refreshed before any Gate-2 number carries forward.</p>
+<p><strong>Gate 2 has no standing verdict.</strong> The PASS recorded on 2026-05-24 was declared against a compile-only criterion; neither criterion written for Gate 2 before the run is a compile rate, and the functional figure below is under both. The owner withdrew the PASS on 2026-11-15 (decision D4) and recorded no verdict in its place. Gate 3 never ran and is void. Decision record: <code>docs/decisions/gate2-decision.md</code>.</p>
 
 <div class="cards">
   <div class="card">
     <div class="n">55.6%</div>
     <div class="k">Gate 2 functional correctness</div>
-    <div class="q">272/489 &middot; curated 500-hidden + 200-eval set &middot; Qwen 2.5 Coder 7B + QLoRA, v0.3 syntax &middot; 2026-05-22</div>
+    <div class="q">272/489 &middot; curated 500-hidden + 200-eval set, whose 200-eval half may be corpus-derived &middot; Qwen 2.5 Coder 7B + QLoRA, v0.3 syntax &middot; 2026-05-22 &middot; no standing verdict</div>
   </div>
   <div class="card">
     <div class="n good">100%</div>
@@ -86,7 +87,7 @@
 <div class="box">
   <p>The Gate 2 run first reported <strong>about 8% functional correctness</strong>, and that figure is still quoted in older write-ups. It was wrong, and the cause was ours, not the model's.</p>
   <p><code>io.readln()</code> &mdash; the function a toke program uses to read a line of standard input &mdash; was <strong>declared in the standard library interface but had no C implementation behind it</strong>. Every generated program that read its input therefore failed at run time no matter how correct it was. The missing glue was added on 2026-05-25 and the whole evaluation re-run: <strong>272/489 = 55.6%</strong>.</p>
-  <p><strong>The original 8% was an infrastructure failure, not a model failure.</strong> 55.6% is the corrected figure and the one this project quotes; 8% should be cited only as history, and only with its cause.</p>
+  <p><strong>The original 8% was an infrastructure failure, not a model failure.</strong> 55.6% is the corrected figure and the one this project quotes, always with the caveat that the 200-eval half of the set may be corpus-derived; 8% should be cited only as history, and only with its cause.</p>
   <p class="caveat">Source: <code>docs/metrics-baseline.md</code> &sect; Correctness; stories 102.14 and 102.15.</p>
 </div>
 
@@ -95,7 +96,7 @@
 
 <div class="box flag">
   <p>A share of what is left &mdash; the 44% that Gate 2 got functionally wrong, and some of what it got &ldquo;right&rdquo; &mdash; comes from a failure mode worth naming, because it limits every percentage on this page.</p>
-  <p><strong>A generated program can pass a test without solving the problem</strong>, by printing the expected output rather than computing it from its input. Gate 2's evaluation used fixed inputs, so a program that hardcoded the answer scored as a pass. That is why the Gate 3 criteria add an explicit <em>argv-generalisation</em> requirement &mdash; the solution must read its input and must not contain hardcoded test values &mdash; and why the corpus rebuild randomises inputs per record instead of reusing one fixed pair.</p>
+  <p><strong>A generated program can pass a test without solving the problem</strong>, by printing the expected output rather than computing it from its input. Gate 2's evaluation used fixed inputs, so a program that hardcoded the answer scored as a pass. That is why the Gate 3 criteria (void since 2026-10-01: Gate 3 never ran) added an explicit <em>argv-generalisation</em> requirement &mdash; the solution must read its input and must not contain hardcoded test values &mdash; and why the corpus rebuild randomises inputs per record instead of reusing one fixed pair.</p>
   <p>The proportion of Gate-2 functional failures usually attached to this explanation has <strong>no row in <code>docs/metrics-baseline.md</code></strong>, so it is not restated here. What is measured, and recent, is the same failure mode found in the training corpus itself:</p>
   <ul>
     <li>Of <strong>576</strong> error-union corpus records scanned on 2026-09-19, <strong>429 across 69 base tasks were gamed</strong>: they returned the test harness's error marker as a literal string instead of raising a real error. <strong>147</strong> were correct.</li>
