@@ -270,9 +270,10 @@ if [[ "${MODE}" == "content" ]]; then
 fi
 
 # ── Full deploy ──────────────────────────────────────────────────────────
-echo "==> [1/4] Emitting LLVM IR from main.tk"
+echo "==> [1/4] Emitting LLVM IR from main.tk (build identity stamped, 132.153)"
 cd "${REPO_ROOT}"
-"${TKC}" --emit-llvm --out main.ll main.tk
+TKC="${TKC}" ./scripts/stamp_main.sh main.stamped.tk
+"${TKC}" --emit-llvm --out main.ll main.stamped.tk
 echo "    main.ll written ($(wc -c < main.ll) bytes)"
 
 # ── The stdlib source list, asked for rather than guessed (story 134.28) ──

@@ -2,6 +2,7 @@
 build/
 build-docs/
 *.ll
+main.stamped.tk
 *.dSYM
 
 # Compiled binaries
@@ -24,6 +25,7 @@ logs/
 # by `make` and `make build`, or a local secret:
 #   build/ build-docs/  rendered by scripts/build_static.sh + `ooke build`
 #   website main main.ll *.ll  compiled from main.tk by `make`
+#   main.stamped.tk     main.tk with its build identity stamped in (132.153)
 #   certs/              self-signed dev certificates, made by `make certs`
 #   logs/ test-results/ runtime and test-run output
 # If a rule here ever covers something the build READS, that is the 127.85 /

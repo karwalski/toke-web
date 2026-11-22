@@ -155,6 +155,28 @@ for r in "${routes[@]}"; do
   [[ "${code}" == "200" ]] || fail=1
 done
 
+# 132.153 — /health and /api/version report the build identity stamped in by
+# scripts/stamp_main.sh, never a typed number. The binary under test was built
+# by `make`, so its version must be the one TKC prints (when TKC is given) and
+# must never be the unstamped placeholder.
+want=""
+if [[ -n "${TKC:-}" ]]; then
+  want="$("${TKC}" --version 2>/dev/null | sed -n 's/^toke \([0-9][0-9A-Za-z.+-]*\).*/\1/p' | head -1)"
+fi
+for r in /health /api/version; do
+  body=$(curl -s -m 2 "http://127.0.0.1:${PORT}${r}")
+  got=$(printf '%s' "${body}" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("version",""))' 2>/dev/null || true)
+  if [[ -z "${got}" || "${got}" == "unstamped" ]]; then
+    echo "  ${r}: version is '${got}' -- the binary was not built through scripts/stamp_main.sh" >&2
+    fail=1
+  elif [[ -n "${want}" && "${got}" != "${want}" ]]; then
+    echo "  ${r}: version '${got}' is not the toke version of ${TKC} ('${want}')" >&2
+    fail=1
+  else
+    echo "  ${r} reports toke ${got}"
+  fi
+done
+
 echo ""
 if [[ ${fail} -ne 0 ]]; then
   echo "check-routes FAILED"
