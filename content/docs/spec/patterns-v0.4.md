@@ -4,7 +4,7 @@ slug: patterns-v0.4
 section: spec
 ---
 
-> **GENERATED** by `scripts/patterns/render_catalogue.py spec` from `patterns/catalogue.json` (sha256 `f307ce04ec2e`). Do not hand-edit: change the catalogue, run `make render-patterns`; `make check-patterns` fails CI on drift.
+> **GENERATED** by `scripts/patterns/render_catalogue.py spec` from `patterns/catalogue.json` (sha256 `ea9b223e363c`). Do not hand-edit: change the catalogue, run `make render-patterns`; `make check-patterns` fails CI on drift.
 
 **Status:** normative (Epic 131). **Protocol:** `0.4` — [patterns-protocol-v0.4](/docs/spec/patterns-protocol-v0.4/) defines the schema (§3), the token (§4) and runtime (§5) measurements, the verdict algorithm (§6) and how a verdict is enforced (§7). **Companion:** [idiom-v0.4](/docs/spec/idiom-v0.4/) (the prose rules these verdicts measure), [Lesson 11 — Patterns and Efficiency](/docs/learn/11-patterns-and-efficiency/) (the teaching view of the same data).
 
@@ -583,15 +583,17 @@ f=pat(xs:@i64):i64{
 
 **Intent.** Accumulate values into a new @i64 in a loop.
 
-**Applicability.** Any loop that collects results. `x=x.append(v)` at a self-update site is lowered to the in-place amortised append (ADR-0006 D2); since 127.229 the literal self-update `x=x+@(v)` is lowered to the same in-place append call (tk_array_append_inplace_w), so it is linear too. The form b numbers below are the 2026-09-19 tkc 2.8.0 measurement (a timeout), which predates 127.229. Re-measured on tkc 3b469371 (2026-11-14, loadavg 5-7), a and b have equal RSS and allocation counts, and the faster of the two changed between runs (b +6.5% at N=16,384,000; a +8.6% at N=8,192,000). Ingesting either run would settle the canonical form by noise, so the new numbers are held for an owner decision (127.437). std.vec is a separate handle type needing `vec.toarray` at the end.
+**Applicability.** Any loop that collects results. `x=x.append(v)` at a self-update site is lowered to the in-place amortised append (ADR-0006 D2); since 127.229 the literal self-update `x=x+@(v)` is lowered to the same in-place append call (tk_array_append_inplace_w, pinned by conformance test C267), and `tkc -O2` gives forms a and b identical machine code (recorded in the entry's `identical_code` proof). Under protocol §6 step 3 (owner decision 4.11 (d), 2026-11-15) the two are tied and the tie keeps the incumbent, so `.append` stays canonical; b's 5 fewer `--min` bytes do not displace it, and the wall difference between a and b in any run is noise. `x=x+@(v)` is not slower, only not the canonical spelling. std.vec is a separate handle type needing `vec.toarray` at the end.
 
 | form | label | proxy8k | byte256 | v03 | qwen | cl100k | min bytes | wall ms | RSS KB | allocs calls / bytes | bigO ratio | runtime | tokens |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| **a** | `x=x.append(v)` — expected: best (in-place amortised) | 13 | 74 | 15 | 41 | 39 | 74 | 81.94 | 260912 | 226 / 268464611 | 3.47 | best | best |
-| b | `x=x+@(v)` — in-place append since 127.229 (its 2026-09-19 numbers predate that) | 13 | 69 | 14 | 42 | 40 | 69 | 30000.00 | pending | pending | 99.00 | worse-bigO | best |
-| c | std.vec push then toarray — expected: tied (amortised push, one final copy) | 27 | 95 | 26 | 47 | 45 | 95 | 86.59 | 259664 | 223 / 399535915 | 3.51 | slower | more |
+| **a** | `x=x.append(v)` — expected: best (in-place amortised) | 13 | 74 | 15 | 41 | 39 | 74 | 65.50 | 66656 | 225 / 67146948 | 2.08 | best | best |
+| b | `x=x+@(v)` — in-place append since 127.229; identical code to a | 13 | 69 | 14 | 42 | 40 | 69 | 64.62 | 66640 | 225 / 67146948 | 2.50 | best | best |
+| c | std.vec push then toarray — expected: tied (amortised push, one final copy) | 27 | 95 | 26 | 47 | 45 | 95 | 73.55 | 67760 | 222 / 99914300 | 1.92 | slower | more |
 
 **Verdict.** canonical = `a` (`x=x.append(v)`); status = `provisional`.
+
+**Identical code.** Forms `a`, `b` lower to identical `tkc -O2` machine code (tkc @ `0558545d5b78`, `otool -tV` text sha256 `0543b0a6b8cd`, checked 2026-11-23; the lowering is pinned by conformance test C267). Under protocol §6 step 3 they are tied, and the tie keeps the incumbent.
 
 **Canonical form** (`patterns/acc-array/a.tk`, full fixture program):
 
@@ -618,7 +620,7 @@ f=main():i64{
 };
 ```
 
-**Form `b`** — `x=x+@(v)` — in-place append since 127.229 (its 2026-09-19 numbers predate that) (`patterns/acc-array/b.tk`, `pat` only):
+**Form `b`** — `x=x+@(v)` — in-place append since 127.229; identical code to a (`patterns/acc-array/b.tk`, `pat` only):
 
 ```toke
 f=pat(n:i64):@i64{
@@ -650,7 +652,7 @@ f=pat(n:i64):@i64{
 
 **Lint.** none — the non-canonical forms are not AST-decidable with low false positives.
 
-**Measured at.** tkc `toke 2.8.0` @ `67d244c78216`; proxy `3c6fbf1909bb`; corpus `5f3f74314ce4`; bench result `20260919-152046.json`; date 2026-09-19. Timed on a machine under load (`meta.load_warning`) — every verdict here stays `provisional` until story 131.25 re-measures (protocol §8).
+**Measured at.** tkc `toke 3.2.0 (git 0558545d5b78)` @ `0558545d5b78`; proxy `3c6fbf1909bb`; corpus `5f3f74314ce4`; bench result `20261123-015310.json`; date 2026-11-22. Timed on a machine under load (`meta.load_warning`) — every verdict here stays `provisional` until story 131.25 re-measures (protocol §8).
 
 ### acc-map-build
 
@@ -1388,11 +1390,11 @@ f=pat(a:i64;b:i64):i64{
 
 | form | label | proxy8k | byte256 | v03 | qwen | cl100k | min bytes | wall ms | RSS KB | allocs calls / bytes | bigO ratio | runtime | tokens |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| **a** | json.dec + json.i64/json.str via mt | 40 | 161 | 43 | 76 | 74 | 161 | 67.18 | 33696 | 1280199 / 20909395 | 3.70 | slower | best |
-| b | indexof/slice hand scan (sketch) | 46 | 186 | 70 | 77 | 76 | 198 | 66.45 | 33648 | 1280199 / 20286290 | 3.65 | slower | more |
-| c (hot path) | per-char charcode scan loop (sketch) | 51 | 244 | 62 | 131 | 125 | 244 | 56.18 | 25600 | 768199 / 17837395 | 3.68 | best | more |
+| **a** | json.dec + json.i64/json.str via mt | 40 | 161 | 43 | 76 | 74 | 161 | 92.18 | 33760 | 1024197 / 30756598 | 3.40 | slower | best |
+| b | indexof/slice hand scan (sketch) | 49 | 230 | 83 | 98 | 97 | 242 | 74.69 | 33712 | 512197 / 12324598 | 3.35 | slower | more |
+| c (hot path) | per-char charcode scan loop (sketch) | 51 | 244 | 62 | 131 | 125 | 244 | 63.86 | 25664 | 512197 / 12324598 | 3.33 | best | more |
 
-**Verdict.** canonical = `a` (json.dec + json.i64/json.str via mt); hot path = `c` (per-char charcode scan loop (sketch)) — choose it when the layout is fixed and machine-generated, the parse sits in a loop body executed > 100k times AND profiling shows `json.dec` on the hot path; never for external input (hand scans are wrong on reordered or escaped JSON). The charcode scan measured 50.6 ms against 66.6 ms for `json.dec` (-24%), for 11 tokens more; status = `provisional`.
+**Verdict.** canonical = `a` (json.dec + json.i64/json.str via mt); hot path = `c` (per-char charcode scan loop (sketch)) — choose it when the layout is fixed and machine-generated, the parse sits in a loop body executed > 100k times AND profiling shows `json.dec` on the hot path; never for external input (hand scans are wrong on reordered or escaped JSON). The charcode scan measured 63.9 ms against 92.2 ms for `json.dec` (-31%), for 11 tokens more; status = `provisional`.
 
 **Canonical form** (`patterns/parse-json/a.tk`, full fixture program):
 
@@ -1424,9 +1426,9 @@ f=main():i64{
 ```toke
 f=pat(src:str):i64{
   let pa=s.indexof(src;"\"a\":")+4;
-  let a=mt s.toint(s.slice(src;pa;s.indexof(src;","))) {$ok:v v;$err:e <-1};
+  let a=mt s.toint(mt s.slice(src;pa;s.indexof(src;",")){$ok:v v;$err:e <-1}) {$ok:v v;$err:e <-1};
   let pb=s.indexof(src;"\"b\":\"")+5;
-  <a+s.len(s.slice(src;pb;s.len(src)-2))
+  <a+s.len(mt s.slice(src;pb;s.len(src)-2){$ok:v v;$err:e <-1})
 };
 ```
 
@@ -1461,7 +1463,7 @@ f=pat(src:str):i64{
 
 **Lint.** `hand-rolled-parser` — severity `warning`, not auto-fixable (`tkc --lint`, story 131.9).
 
-**Measured at.** tkc `toke 2.8.0` @ `67d244c78216`; proxy `3c6fbf1909bb`; corpus `5f3f74314ce4`; bench result `20260919-152046.json`; date 2026-09-19. Timed on a machine under load (`meta.load_warning`) — every verdict here stays `provisional` until story 131.25 re-measures (protocol §8).
+**Measured at.** tkc `toke 3.2.0 (git 47a863f569ce)` @ `47a863f569ce`; proxy `3c6fbf1909bb`; corpus `5f3f74314ce4`; bench result `20261115-200127.json`; date 2026-11-15. Timed on a machine under load (`meta.load_warning`) — every verdict here stays `provisional` until story 131.25 re-measures (protocol §8).
 
 ### parse-csv-line
 
@@ -1537,13 +1539,13 @@ f=pat(txt:str):i64{
 
 **Intent.** Split one line on a single-character delimiter into a field array.
 
-**Applicability.** Any delimiter split where empty fields must be preserved. s.split is 5-7x fewer tokens than either manual form and is the only one that does not re-scan the string; b re-slices the remainder every iteration (quadratic in fields x line length).
+**Applicability.** Any delimiter split where empty fields must be preserved. s.split is 6-9x fewer tokens than either manual form and is the only one that does not re-scan the string; b re-slices the remainder every iteration (quadratic in fields x line length).
 
 | form | label | proxy8k | byte256 | v03 | qwen | cl100k | min bytes | wall ms | RSS KB | allocs calls / bytes | bigO ratio | runtime | tokens |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| **a** | s.split(line;",") | 7 | 40 | 11 | 16 | 16 | 40 | 60.06 | 53808 | 2048199 / 36670306 | 3.58 | best | best |
-| b | indexof + slice loop | 50 | 219 | 55 | 93 | 93 | 219 | 79.77 | 90048 | 3584199 / 62960976 | 3.69 | slower | more |
-| c | charcode scan + slice loop | 35 | 185 | 44 | 76 | 75 | 185 | 75.98 | 90016 | 2816199 / 67390306 | 3.71 | slower | more |
+| **a** | s.split(line;",") | 7 | 40 | 11 | 16 | 16 | 40 | 62.47 | 57904 | 768197 / 28708626 | 3.11 | best | best |
+| b | indexof + slice loop | 60 | 288 | 74 | 129 | 129 | 288 | 90.78 | 104672 | 1280197 / 45092626 | 3.37 | slower | more |
+| c | charcode scan + slice loop | 40 | 231 | 58 | 100 | 99 | 231 | 85.53 | 94192 | 1536197 / 59428626 | 3.47 | slower | more |
 
 **Verdict.** canonical = `a` (s.split(line;",")); status = `provisional`.
 
@@ -1578,9 +1580,9 @@ f=pat(line:str):@str{
   let st=mut.0;
   let n=s.len(line);
   lp(let k=0;k<n;k=k+1){
-    let p=s.indexof(s.slice(line;st;n);",");
-    if(p<0){r=r.append(s.slice(line;st;n));br};
-    r=r.append(s.slice(line;st;st+p));
+    let p=s.indexof(mt s.slice(line;st;n){$ok:v v;$err:e <@()};",");
+    if(p<0){r=r.append(mt s.slice(line;st;n){$ok:v v;$err:e <@()});br};
+    r=r.append(mt s.slice(line;st;st+p){$ok:v v;$err:e <@()});
     st=st+p+1
   };
   <r
@@ -1595,9 +1597,9 @@ f=pat(line:str):@str{
   let st=mut.0;
   let n=s.len(line);
   lp(let i=0;i<n;i=i+1){
-    if(s.charcode(line;i)==44){r=r.append(s.slice(line;st;i));st=i+1}
+    if(s.charcode(line;i)==44){r=r.append(mt s.slice(line;st;i){$ok:v v;$err:e <@()});st=i+1}
   };
-  <r.append(s.slice(line;st;n))
+  <r.append(mt s.slice(line;st;n){$ok:v v;$err:e <@()})
 };
 ```
 
@@ -1608,7 +1610,7 @@ f=pat(line:str):@str{
 
 **Lint.** `hand-rolled-parser` — severity `warning`, not auto-fixable (`tkc --lint`, story 131.9).
 
-**Measured at.** tkc `toke 2.8.0` @ `67d244c78216`; proxy `3c6fbf1909bb`; corpus `5f3f74314ce4`; bench result `20260919-152046.json`; date 2026-09-19. Timed on a machine under load (`meta.load_warning`) — every verdict here stays `provisional` until story 131.25 re-measures (protocol §8).
+**Measured at.** tkc `toke 3.2.0 (git 47a863f569ce)` @ `47a863f569ce`; proxy `3c6fbf1909bb`; corpus `5f3f74314ce4`; bench result `20261115-200127.json`; date 2026-11-15. Timed on a machine under load (`meta.load_warning`) — every verdict here stays `provisional` until story 131.25 re-measures (protocol §8).
 
 ### parse-fields
 
@@ -1618,9 +1620,9 @@ f=pat(line:str):@str{
 
 | form | label | proxy8k | byte256 | v03 | qwen | cl100k | min bytes | wall ms | RSS KB | allocs calls / bytes | bigO ratio | runtime | tokens |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| **a** | s.fields(line) | 9 | 37 | 11 | 14 | 14 | 37 | 97.69 | 97952 | 3584199 / 60222286 | 3.81 | best | best |
-| b | s.split(line;" ") + skip-empty loop | 22 | 132 | 34 | 55 | 55 | 132 | 211.39 | 299232 | 9216199 / 206654286 | 3.90 | slower | more |
-| c | charcode scan + slice loop | 49 | 230 | 58 | 100 | 99 | 230 | 169.29 | 178400 | 5632199 / 133950286 | 4.02 | slower | more |
+| **a** | s.fields(line) | 9 | 37 | 11 | 14 | 14 | 37 | 60.05 | 49808 | 1536197 / 24501496 | 3.19 | best | best |
+| b | s.split(line;" ") + skip-empty loop | 22 | 132 | 34 | 55 | 55 | 132 | 107.01 | 150672 | 1792197 / 92196606 | 3.54 | slower | more |
+| c | charcode scan + slice loop | 55 | 276 | 72 | 124 | 123 | 276 | 97.27 | 90128 | 1536197 / 57380606 | 3.42 | slower | more |
 
 **Verdict.** canonical = `a` (s.fields(line)); status = `provisional`.
 
@@ -1669,10 +1671,10 @@ f=pat(line:str):@str{
   let n=s.len(line);
   lp(let i=0;i<n;i=i+1){
     if(s.charcode(line;i)==32){
-      if(st>=0){r=r.append(s.slice(line;st;i));st=-1}
+      if(st>=0){r=r.append(mt s.slice(line;st;i){$ok:v v;$err:e <@()});st=-1}
     }el{if(st<0){st=i}}
   };
-  <if(st>=0){r.append(s.slice(line;st;n))}el{r}
+  <if(st>=0){r.append(mt s.slice(line;st;n){$ok:v v;$err:e <@()})}el{r}
 };
 ```
 
@@ -1687,7 +1689,7 @@ f=pat(line:str):@str{
 
 **Lint.** `hand-rolled-parser` — severity `warning`, not auto-fixable (`tkc --lint`, story 131.9).
 
-**Measured at.** tkc `toke 2.8.0` @ `67d244c78216`; proxy `3c6fbf1909bb`; corpus `5f3f74314ce4`; bench result `20260919-152046.json`; date 2026-09-19. Timed on a machine under load (`meta.load_warning`) — every verdict here stays `provisional` until story 131.25 re-measures (protocol §8).
+**Measured at.** tkc `toke 3.2.0 (git 47a863f569ce)` @ `47a863f569ce`; proxy `3c6fbf1909bb`; corpus `5f3f74314ce4`; bench result `20261115-200127.json`; date 2026-11-15. Timed on a machine under load (`meta.load_warning`) — every verdict here stays `provisional` until story 131.25 re-measures (protocol §8).
 
 ### parse-int
 
@@ -1755,10 +1757,10 @@ f=pat(txt:str):i64{
 
 | form | label | proxy8k | byte256 | v03 | qwen | cl100k | min bytes | wall ms | RSS KB | allocs calls / bytes | bigO ratio | runtime | tokens |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| **a** | s.split lines -> s.split "=" -> m.set | 33 | 172 | 54 | 74 | 73 | 173 | 85.07 | 80560 | 2048273 / 75163951 | 4.21 | slower | best |
-| b (hot path) | s.indexof "=" + s.slice -> m.set | 45 | 194 | 60 | 86 | 85 | 195 | 76.78 | 64080 | 1536270 / 60827910 | 4.16 | best | more |
+| **a** | s.split lines -> s.split "=" -> m.set | 33 | 172 | 54 | 74 | 73 | 173 | 104.17 | 87360 | 1024269 / 60000496 | 3.34 | slower | best |
+| b (hot path) | s.indexof "=" + s.slice -> m.set | 48 | 238 | 72 | 108 | 107 | 239 | 89.77 | 71264 | 512267 / 45664456 | 4.07 | best | more |
 
-**Verdict.** canonical = `a` (s.split lines -> s.split "=" -> m.set); hot path = `b` (s.indexof "=" + s.slice -> m.set) — choose it when millions of lines are parsed: `b` allocates two strings per line where `a` allocates a 2-element array plus two strings, and measured 67.3 ms against 74.7 ms (-10%), for 12 tokens more; status = `provisional`.
+**Verdict.** canonical = `a` (s.split lines -> s.split "=" -> m.set); hot path = `b` (s.indexof "=" + s.slice -> m.set) — choose it when millions of lines are parsed: `b` allocates two strings per line where `a` allocates a 2-element array plus two strings, and measured 89.8 ms against 104.2 ms (-14%), for 15 tokens more; status = `provisional`.
 
 **Canonical form** (`patterns/parse-kv-lines/a.tk`, full fixture program):
 
@@ -1770,7 +1772,7 @@ i=env:std.env;
 f=chk(m:@(str:str)):i64{
   let ks=m.keys();
   let t=mut.ks.len*1000000;
-  lp(let i=0;i<ks.len;i=i+1){t=t+s.len(m.get(ks.get(i)))};
+  lp(let i=0;i<ks.len;i=i+1){t=t+s.len(m.getor(ks.get(i);""))};
   <t
 };
 f=pat(txt:str):i64{
@@ -1800,7 +1802,7 @@ f=pat(txt:str):i64{
   lp(let i=0;i<ls.len;i=i+1){
     let l=ls.get(i);
     let p=s.indexof(l;"=");
-    if(p>0){m=m.set(s.slice(l;0;p);s.slice(l;p+1;s.len(l)))}
+    if(p>0){m=m.set(mt s.slice(l;0;p){$ok:v v;$err:e <-1};mt s.slice(l;p+1;s.len(l)){$ok:v v;$err:e <-1})}
   };
   <chk(m)
 };
@@ -1817,7 +1819,7 @@ f=pat(txt:str):i64{
 
 **Lint.** none — the non-canonical forms are not AST-decidable with low false positives.
 
-**Measured at.** tkc `toke 2.8.0` @ `67d244c78216`; proxy `3c6fbf1909bb`; corpus `5f3f74314ce4`; bench result `20260919-152046.json`; date 2026-09-19. Timed on a machine under load (`meta.load_warning`) — every verdict here stays `provisional` until story 131.25 re-measures (protocol §8).
+**Measured at.** tkc `toke 3.2.0 (git 47a863f569ce)` @ `47a863f569ce`; proxy `3c6fbf1909bb`; corpus `5f3f74314ce4`; bench result `20261115-200127.json`; date 2026-11-15. Timed on a machine under load (`meta.load_warning`) — every verdict here stays `provisional` until story 131.25 re-measures (protocol §8).
 
 ## Family `iter` — Iteration
 
@@ -2707,12 +2709,12 @@ f=pat(xs:@i64):i64{
 
 **Intent.** Read the first program argument with a default when absent.
 
-**Applicability.** args.get(n) returns $err past the end, so mt is a one-expression form; the count check is 7 tokens more. The args.get result interpolates as a pointer (127.7 class) - print it directly or take s.len. args.count() includes the program name.
+**Applicability.** args.get(n) returns $err past the end, so mt is a one-expression form; the count check is 9 tokens more. The args.get result interpolates as a pointer (127.7 class) - print it directly or take s.len. args.count() includes the program name.
 
 | form | label | proxy8k | byte256 | v03 | qwen | cl100k | min bytes | wall ms | RSS KB | allocs calls / bytes | bigO ratio | runtime | tokens |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | **a** | mt args.get(1) {$ok:v v;$err:e "default"} | 8 | 47 | 14 | 23 | 23 | 53 | 64.43 | 1408 | 199 / 28490 | 3.50 | best | best |
-| b | if(args.count()>1){args.get(1)}el{"default"} | 15 | 52 | 18 | 22 | 22 | 58 | 64.52 | 1408 | 199 / 28490 | 3.55 | tied | more |
+| b | if(args.count()>1){mt args.get(1){..}}el{"default"} | 17 | 74 | 22 | 33 | 33 | 86 | 64.52 | 1408 | 199 / 28490 | 3.55 | tied | more |
 
 **Verdict.** canonical = `a` (mt args.get(1) {$ok:v v;$err:e "default"}); status = `provisional`.
 
@@ -2736,11 +2738,11 @@ f=main():i64{
 };
 ```
 
-**Form `b`** — if(args.count()>1){args.get(1)}el{"default"} (`patterns/cli-argv/b.tk`, `pat` only):
+**Form `b`** — if(args.count()>1){mt args.get(1){..}}el{"default"} (`patterns/cli-argv/b.tk`, `pat` only):
 
 ```toke
 f=pat():str{
-  <if(args.count()>1){args.get(1)}el{"default"}
+  <if(args.count()>1){mt args.get(1){$ok:v v;$err:e "default"}}el{"default"}
 };
 ```
 
@@ -2752,6 +2754,7 @@ f=pat():str{
 **Bug caveats.**
 
 - [127.7](https://github.com/karwalski/toke/blob/main/docs/progress.md): "\(args.get(1))" prints a pointer
+- [127.470](https://github.com/karwalski/toke/blob/main/docs/progress.md): runtime held (127.461): the 2026-11-15 bench timed form a (`mt args.get(1)` on the miss path) at 1016 ms against 89 ms for b, because args.get formats its error message on every miss (also on v3.2.0). The wall, RSS, alloc and bigO figures here are the 2026-09-19 toke 2.8.0 run of the pre-migration forms; the tokens and min_bytes are the 2026-11-15 fixtures'. The verdict stays as measured on 2026-09-19 until the owner answers 127.461.
 
 **Lint.** none — the non-canonical forms are not AST-decidable with low false positives.
 
@@ -3064,8 +3067,8 @@ f=pat(x:i64):i64{
 
 | form | label | proxy8k | byte256 | v03 | qwen | cl100k | min bytes | wall ms | RSS KB | allocs calls / bytes | bigO ratio | runtime | tokens |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| **a** | mt file.read + s.split "\n" | 19 | 86 | 24 | 35 | 35 | 87 | 84.12 | 83152 | 1536227 / 104733357 | 3.80 | best | best |
-| b | mt file.read + charcode scan + slice per line | 45 | 228 | 63 | 95 | 94 | 228 | 30000.00 | pending | pending | 99.00 | worse-bigO | more |
+| **a** | mt file.read + s.split "\n" | 19 | 86 | 24 | 35 | 35 | 87 | 59.41 | 50096 | 256223 / 33871666 | 3.50 | best | best |
+| b | mt file.read + charcode scan + slice per line | 50 | 274 | 77 | 119 | 118 | 274 | 30000.00 | pending | pending | 99.00 | worse-bigO | more |
 
 **Verdict.** canonical = `a` (mt file.read + s.split "\n"); status = `provisional`.
 
@@ -3104,9 +3107,9 @@ f=pat(path:str):@str{
   let st=mut.0;
   let n=s.len(txt);
   lp(let i=0;i<n;i=i+1){
-    if(s.charcode(txt;i)==10){r=r.append(s.slice(txt;st;i));st=i+1}
+    if(s.charcode(txt;i)==10){r=r.append(mt s.slice(txt;st;i){$ok:v v;$err:e <@()});st=i+1}
   };
-  <r.append(s.slice(txt;st;n))
+  <r.append(mt s.slice(txt;st;n){$ok:v v;$err:e <@()})
 };
 ```
 
@@ -3117,7 +3120,7 @@ f=pat(path:str):@str{
 
 **Lint.** `hand-rolled-parser` — severity `warning`, not auto-fixable (`tkc --lint`, story 131.9).
 
-**Measured at.** tkc `toke 2.8.0` @ `67d244c78216`; proxy `3c6fbf1909bb`; corpus `5f3f74314ce4`; bench result `20260919-152046.json`; date 2026-09-19. Timed on a machine under load (`meta.load_warning`) — every verdict here stays `provisional` until story 131.25 re-measures (protocol §8).
+**Measured at.** tkc `toke 3.2.0 (git 47a863f569ce)` @ `47a863f569ce`; proxy `3c6fbf1909bb`; corpus `5f3f74314ce4`; bench result `20261115-200127.json`; date 2026-11-15. Timed on a machine under load (`meta.load_warning`) — every verdict here stays `provisional` until story 131.25 re-measures (protocol §8).
 
 ### io-write-accumulate
 
