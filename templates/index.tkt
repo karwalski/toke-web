@@ -265,7 +265,7 @@
 </div>
 
 <div class="explainer" style="max-width:860px;margin:1rem auto;padding-left:2rem;padding-right:2rem;">
-  <p><strong>What is a token?</strong> LLMs don't read characters &mdash; they read <em>tokens</em>, which are chunks of text (roughly 3&ndash;4 characters each). The statement <code>return 0;</code> costs 4 tokens every time an LLM writes it. In toke, the same statement is <code>&lt;0;</code> &mdash; and under toke&rsquo;s legacy v03 tokenizer, trained on toke programs, the entire return-and-close pattern <code>&lt;0;};</code> becomes a single token. That is a property of a tokenizer trained on toke text, not of the language, and it is not a saving against Python: the box above gives the same-tokenizer numbers.</p>
+  <p><strong>What is a token?</strong> LLMs don't read characters &mdash; they read <em>tokens</em>, which are chunks of text (roughly 3&ndash;4 characters each). Under cl100k_base, for example, the statement <code>return 0;</code> is 4 tokens (<code>return</code>, a space, <code>0</code>, <code>;</code>). In toke the same statement is written <code>&lt;0;</code>. How many tokens a program costs depends on which tokenizer counts it, so a comparison between languages means anything only when both sides are counted by the same tokenizer: the box above gives those same-tokenizer numbers.</p>
 </div>
 
 <!-- ================================================================== -->
