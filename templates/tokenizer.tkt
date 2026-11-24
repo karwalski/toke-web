@@ -107,12 +107,13 @@
   <label>Write or paste toke code (multi-line is fine — it will be normalised automatically)</label>
   <textarea id="input" spellcheck="false">m=fib;
 i=io:std.io;
+i=str:std.str;
 f=fib(n:i64):i64{
   if(n<2){<n;}
   el{<fib(n-1)+fib(n-2);}
 };
 f=main():i64{
-  io.printf("%d";fib(10));
+  io.println(str.fromint(fib(10)));
   <0;
 };</textarea>
 </div>
@@ -185,7 +186,7 @@ const PRESETS = {
     langs: { Python: 'print("hello world")', Go: 'package main\nimport "fmt"\nfunc main() { fmt.Println("hello world") }', JavaScript: 'console.log("hello world")' }
   },
   fib: {
-    code: 'm=fib;\ni=io:std.io;\nf=fib(n:i64):i64{\n  if(n<2){<n;}\n  el{<fib(n-1)+fib(n-2);}\n};\nf=main():i64{\n  io.printf("%d";fib(10));\n  <0;\n};',
+    code: 'm=fib;\ni=io:std.io;\ni=str:std.str;\nf=fib(n:i64):i64{\n  if(n<2){<n;}\n  el{<fib(n-1)+fib(n-2);}\n};\nf=main():i64{\n  io.println(str.fromint(fib(10)));\n  <0;\n};',
     langs: { Python: 'def fib(n):\n    if n < 2: return n\n    return fib(n-1) + fib(n-2)\nprint(fib(10))', Go: 'package main\nimport "fmt"\nfunc fib(n int) int { if n < 2 { return n }; return fib(n-1) + fib(n-2) }\nfunc main() { fmt.Println(fib(10)) }' }
   },
   sum: {
