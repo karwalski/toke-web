@@ -65,7 +65,7 @@
 
 <div class="tv-tabs" style="max-width:860px;margin:0 auto;padding:0 2rem;">
   <div class="tv-tab-bar">
-    <button class="tv-tab-btn active" data-tab="see-toke">toke &mdash; 32 (toke BPE v03, legacy)</button>
+    <button class="tv-tab-btn active" data-tab="see-toke">toke &mdash; 26 (toke BPE v03, legacy)</button>
     <button class="tv-tab-btn" data-tab="see-python">Python &mdash; 41 (cl100k)</button>
     <button class="tv-tab-btn" data-tab="see-c">C &mdash; 59 (cl100k)</button>
     <button class="tv-tab-btn" data-tab="see-java">Java &mdash; 62 (cl100k)</button>
@@ -73,9 +73,9 @@
 
   <div class="tv-tab-panel active" id="see-toke">
     <div class="token-viz toke-p2">
-      <pre class="tv-code"><code><span class="tv-tok tv-c0">m=fib</span><span class="tv-tok tv-c1">;</span><span class="tv-tok tv-c2">i=io:std.io</span><span class="tv-tok tv-c3">;f=</span><span class="tv-tok tv-c4">fib</span><span class="tv-tok tv-c5">(n:i64):i64{if(</span><span class="tv-tok tv-c6">n&lt;2</span><span class="tv-tok tv-c7">){&lt;</span><span class="tv-tok tv-c8">n;</span><span class="tv-tok tv-c9">}el{&lt;</span><span class="tv-tok tv-c10">fib</span><span class="tv-tok tv-c11">(n</span><span class="tv-tok tv-c0">-1)+</span><span class="tv-tok tv-c1">fib</span><span class="tv-tok tv-c2">(n</span><span class="tv-tok tv-c3">-2</span><span class="tv-tok tv-c4">);</span><span class="tv-tok tv-c5">}};</span><span class="tv-tok tv-c6">f=main():i64{</span><span class="tv-tok tv-c7">io.</span><span class="tv-tok tv-c8">print</span><span class="tv-tok tv-c9">f</span><span class="tv-tok tv-c10">(</span><span class="tv-tok tv-c11">&quot;</span><span class="tv-tok tv-c0">%</span><span class="tv-tok tv-c1">d</span><span class="tv-tok tv-c2">&quot;</span><span class="tv-tok tv-c3">;</span><span class="tv-tok tv-c4">fib(</span><span class="tv-tok tv-c5">10</span><span class="tv-tok tv-c6">));&lt;</span><span class="tv-tok tv-c7">0;};</span></code></pre>
+      <pre class="tv-code"><code><span class="tv-tok tv-c0">m=fib</span><span class="tv-tok tv-c1">;</span><span class="tv-tok tv-c2">i=io:std.io</span><span class="tv-tok tv-c3">;i=str:std.str;f=</span><span class="tv-tok tv-c4">fib</span><span class="tv-tok tv-c5">(n:i64):i64{if(</span><span class="tv-tok tv-c6">n&lt;2</span><span class="tv-tok tv-c7">){&lt;</span><span class="tv-tok tv-c8">n;</span><span class="tv-tok tv-c9">}el{&lt;</span><span class="tv-tok tv-c10">fib</span><span class="tv-tok tv-c11">(n</span><span class="tv-tok tv-c0">-1)+</span><span class="tv-tok tv-c1">fib</span><span class="tv-tok tv-c2">(n</span><span class="tv-tok tv-c3">-2</span><span class="tv-tok tv-c4">);</span><span class="tv-tok tv-c5">}};</span><span class="tv-tok tv-c6">f=main():i64{</span><span class="tv-tok tv-c7">io.println(</span><span class="tv-tok tv-c8">str.fromint(</span><span class="tv-tok tv-c9">fib(</span><span class="tv-tok tv-c10">10</span><span class="tv-tok tv-c11">)));</span><span class="tv-tok tv-c0">&lt;</span><span class="tv-tok tv-c1">0;};</span></code></pre>
       <div class="tv-footer">
-        <span class="token-badge toke-p2">32 tokens &mdash; toke BPE v03, legacy (16,384 vocab, trained on v0.3 syntax) &mdash; a different lane from the cl100k panels</span>
+        <span class="token-badge toke-p2">26 tokens &mdash; toke BPE v03, legacy (16,384 vocab, trained on v0.3 syntax) &mdash; a different lane from the cl100k panels</span>
       </div>
     </div>
     <div class="tv-note" style="margin:0.75rem 0;font-size:0.85rem;color:#9a9082;line-height:1.4;">
@@ -150,7 +150,7 @@
 
 <div class="tv-tabs" style="max-width:860px;margin:0 auto;padding:0 2rem;">
   <div class="tv-tab-bar">
-    <button class="tv-tab-btn active" data-tab="bp-toke">toke &mdash; 32, unchanged (toke BPE v03, legacy)</button>
+    <button class="tv-tab-btn active" data-tab="bp-toke">toke &mdash; 26, unchanged (toke BPE v03, legacy)</button>
     <button class="tv-tab-btn" data-tab="bp-python">Python &mdash; 82 (cl100k)</button>
     <button class="tv-tab-btn" data-tab="bp-c">C &mdash; 75 (cl100k)</button>
     <button class="tv-tab-btn" data-tab="bp-java">Java &mdash; 102 (cl100k)</button>
@@ -158,9 +158,9 @@
 
   <div class="tv-tab-panel active" id="bp-toke">
     <div class="token-viz toke-p2">
-      <pre class="tv-code"><code><span class="tv-tok tv-c0">m=fib</span><span class="tv-tok tv-c1">;</span><span class="tv-tok tv-c2">i=io:std.io</span><span class="tv-tok tv-c3">;f=</span><span class="tv-tok tv-c4">fib</span><span class="tv-tok tv-c5">(n:i64):i64{if(</span><span class="tv-tok tv-c6">n&lt;2</span><span class="tv-tok tv-c7">){&lt;</span><span class="tv-tok tv-c8">n;</span><span class="tv-tok tv-c9">}el{&lt;</span><span class="tv-tok tv-c10">fib</span><span class="tv-tok tv-c11">(n</span><span class="tv-tok tv-c0">-1)+</span><span class="tv-tok tv-c1">fib</span><span class="tv-tok tv-c2">(n</span><span class="tv-tok tv-c3">-2</span><span class="tv-tok tv-c4">);</span><span class="tv-tok tv-c5">}};</span><span class="tv-tok tv-c6">f=main():i64{</span><span class="tv-tok tv-c7">io.</span><span class="tv-tok tv-c8">print</span><span class="tv-tok tv-c9">f</span><span class="tv-tok tv-c10">(</span><span class="tv-tok tv-c11">&quot;</span><span class="tv-tok tv-c0">%</span><span class="tv-tok tv-c1">d</span><span class="tv-tok tv-c2">&quot;</span><span class="tv-tok tv-c3">;</span><span class="tv-tok tv-c4">fib(</span><span class="tv-tok tv-c5">10</span><span class="tv-tok tv-c6">));&lt;</span><span class="tv-tok tv-c7">0;};</span></code></pre>
+      <pre class="tv-code"><code><span class="tv-tok tv-c0">m=fib</span><span class="tv-tok tv-c1">;</span><span class="tv-tok tv-c2">i=io:std.io</span><span class="tv-tok tv-c3">;i=str:std.str;f=</span><span class="tv-tok tv-c4">fib</span><span class="tv-tok tv-c5">(n:i64):i64{if(</span><span class="tv-tok tv-c6">n&lt;2</span><span class="tv-tok tv-c7">){&lt;</span><span class="tv-tok tv-c8">n;</span><span class="tv-tok tv-c9">}el{&lt;</span><span class="tv-tok tv-c10">fib</span><span class="tv-tok tv-c11">(n</span><span class="tv-tok tv-c0">-1)+</span><span class="tv-tok tv-c1">fib</span><span class="tv-tok tv-c2">(n</span><span class="tv-tok tv-c3">-2</span><span class="tv-tok tv-c4">);</span><span class="tv-tok tv-c5">}};</span><span class="tv-tok tv-c6">f=main():i64{</span><span class="tv-tok tv-c7">io.println(</span><span class="tv-tok tv-c8">str.fromint(</span><span class="tv-tok tv-c9">fib(</span><span class="tv-tok tv-c10">10</span><span class="tv-tok tv-c11">)));</span><span class="tv-tok tv-c0">&lt;</span><span class="tv-tok tv-c1">0;};</span></code></pre>
       <div class="tv-footer">
-        <span class="token-badge toke-p2">32 tokens &mdash; toke BPE v03, legacy &mdash; identical to above (toke has no comment syntax)</span>
+        <span class="token-badge toke-p2">26 tokens &mdash; toke BPE v03, legacy &mdash; identical to above (toke has no comment syntax)</span>
       </div>
     </div>
     <div class="tv-note" style="margin:0.75rem 0;font-size:0.85rem;color:#9a9082;line-height:1.4;">
