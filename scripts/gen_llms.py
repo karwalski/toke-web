@@ -113,8 +113,9 @@ def render(canon):
     w("  2026-07-02 as inaccurate for the real grammar. The mechanical argument is unchanged")
     w("  — a small backtrack-free grammar with bounded lookahead keeps the pushdown")
     w("  automaton behind a decoding mask small and the masks cheap.")
-    w("- Canonical form: one per construct, chosen by measurement in a 46-entry pattern")
-    w("  catalogue and reproduced by `tkc --min`.")
+    # 131.145: read from canonical.json, not typed -- the hand-typed count went
+    # stale (46) when the pattern catalogue reached 47 entries.
+    w(bullet("Canonical form:", canon["language_facts"]["canonical_form"]["value"] + "."))
     w(bullet("Compiler:", canon["compiler"]["value"]))
     w("  Current version: %s. Licence %s." % (canon["compiler"]["version"], canon["compiler"]["licence"]))
     w("- Author: " + canon["author"]["value"])

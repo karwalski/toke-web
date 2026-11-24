@@ -41,11 +41,11 @@
   </div>
   <div class="feature-card">
     <h3>One canonical form, chosen by measurement</h3>
-    <p>Each construct has one canonical form, chosen in a 46-entry pattern catalogue: a form becomes canonical only by being best-or-tied on tokens and runtime, and every candidate form must print byte-identical output. <code>tkc --min</code> reproduces it.</p>
+    <p>Each construct has one canonical form, chosen in a <!--fact:patterns_catalogue_entries-->47<!--/fact-->-entry pattern catalogue: a form becomes canonical only by being best-or-tied on tokens and runtime, and every candidate form must print byte-identical output. <code>tkc --min</code> reproduces it.</p>
   </div>
 </div>
 
-<p class="section-desc"><strong style="color:#f5efe2">toke</strong> is a compiled programming language designed for LLM code generation. It has 14 keywords, a 59-character set, a backtrack-free grammar with bounded lookahead, and one canonical form per construct, chosen by measurement in a 46-pattern catalogue and reproduced by <code>tkc --min</code>. That makes generated code cheap to constrain during decoding and cheap for a compiler to verify afterwards. Token efficiency is one measured property of toke, always reported with its tokenizer and its baseline, not the whole claim.</p>
+<p class="section-desc"><strong style="color:#f5efe2">toke</strong> is a compiled programming language designed for LLM code generation. It has 14 keywords, a 59-character set, a backtrack-free grammar with bounded lookahead, and one canonical form per construct, chosen by measurement in a 47-pattern catalogue and reproduced by <code>tkc --min</code>. That makes generated code cheap to constrain during decoding and cheap for a compiler to verify afterwards. Token efficiency is one measured property of toke, always reported with its tokenizer and its baseline, not the whole claim.</p>
 <p class="section-desc">How toke compares on tokens, with the tokenizer and baseline behind every figure, is set out below under <a href="#measured" style="color:#f0c04a;">Measured, not claimed</a>.</p>
 
 <!-- ================================================================== -->
