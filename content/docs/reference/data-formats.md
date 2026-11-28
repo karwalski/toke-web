@@ -62,7 +62,7 @@ All format modules provide `fromjson` and `tojson` for interconversion:
 ```toke
 let json = http.get(url).body;
 let compact = toon.fromjson(json);
-let payload = toon.tojson(compact);
+let payload = mt toon.tojson(compact) {$ok:s s;$err:e "[]"};
 let readable = yaml.fromjson(json);
 ```
 
@@ -102,4 +102,4 @@ All serialization modules follow the same interface pattern, making it straightf
 | `mod.bool` | `(m: $mod; key: $str): bool!$moderr` | Extract boolean by key |
 | `mod.arr` | `(m: $mod; key: $str): @$mod!$moderr` | Extract array by key |
 | `mod.fromjson` | `(json: $str): $str` | Convert from JSON |
-| `mod.tojson` | `(data: $str): $str` | Convert to JSON |
+| `mod.tojson` | `(data: $str): $str` | Convert to JSON (`toon.tojson` returns `$str!$toonerr`: `$toolarge` past its output bound) |

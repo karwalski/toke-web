@@ -367,6 +367,52 @@ tree, ooke or the website used one.
 Resolved by stories **127.289** and **127.290** (owner decision 2026-10-01
 §2.18 (a)).
 
+## L. `.sort` takes a three-way `i64` comparator (story 127.557)
+
+`xs.sort(c)` on an `@T` returns a new `@T` in the order the comparator `c`
+gives, and leaves `xs` unchanged. `c` is a function value of type
+`(T;T):i64`, and it is **three-way**: `c(a;b)` is negative when `a` sorts
+before `b`, `0` when they are equal, and positive when `b` sorts first. Only
+the sign is read. For integer elements the comparator is `a-b` (ascending)
+or `b-a` (descending). This is the one canonical comparator form (owner
+decision 2026-11-28; v0.3 §3.1: exactly one canonical syntactic form for
+each construct). v0.3 and §A-§K did not state the comparator's type.
+
+```toke
+m=demo;i=io:std.io;i=j:std.json;i=s:std.str;
+f=cmp(a:i64;b:i64):i64{<a-b};
+f=bylen(a:str;b:str):i64{<s.len(a)-s.len(b)};
+f=main():i64{
+  let xs = @(5; 3; 9; 1);
+  io.println(j.enc(xs.sort(&cmp)));                              (* [1,3,5,9] *)
+  io.println(j.enc(xs.sort(fn(a:i64;b:i64):i64{<b-a})));         (* [9,5,3,1] *)
+  io.println(s.join(",";@("ccc";"a";"bb").sort(&bylen)));        (* a,bb,ccc *)
+  <0
+};
+```
+
+A comparator whose declared return is not `i64` is **E4031** on the
+comparator argument, with no `fix`: `expected` is `(T;T):i64` and `got` the
+value's signature. That includes a `bool` predicate such as
+`f=gt(a:i64;b:i64):bool{<a>b}`: it answers only two ways (`gt(a;b)` is 1 and
+`gt(b;a)` is 0), which is not an order, and until story 127.557 it checked
+clean and silently mis-sorted inputs of more than a few elements. It also
+includes an `f64` return and the other integer widths: they are equivalents
+of the one form, not alternatives to it (an unsigned `a-b` wraps rather
+than going negative). Over `f64` elements, compare and return an `i64`:
+`f=cmpf(a:f64;b:f64):i64{if(a<b){<0-1};if(a>b){<1};<0}`. A comparator
+with a parameter that does not take a `T`, or with other than two
+parameters, is E4031 too (story 127.552). A closure with no declared return
+is not judged. `.sort` takes exactly one argument; `xs.sort()` is **E4026**.
+
+No other receiver combinator takes a comparator: `.min`, `.max` and
+`.sortby` are E4036 (no such receiver method).
+
+Measured before the change: no `.sort` call in the compiler tree, ooke, the
+website or the v0.4 corpus shards passed a comparator that does not return
+`i64`. Pinned by conformance tests C2315 (the diagnostics) and C2316 (the
+23-element input that mis-sorted).
+
 ---
 
 ## Conformance & migration
@@ -411,3 +457,8 @@ Resolved by stories **127.289** and **127.290** (owner decision 2026-10-01
   `lp(let i=e;..)` declares a loop variable. `grammar.ebnf` `LoopStmt` now
   states the init and step clauses the parser accepts, and the one-clause
   form.
+- **2026-11-28 (story 127.557):** §L added — `.sort` takes a three-way
+  `(T;T):i64` comparator, the one canonical form (owner decision
+  2026-11-28). A `bool`, `f64` or other non-`i64` comparator return, which
+  checked clean through 127.552 and could mis-sort, is now E4031 with no
+  `fix`. **Breaking** for any program that passed such a comparator.
