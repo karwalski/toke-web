@@ -94,7 +94,7 @@ build clean, binary dies; **WRONG** = runs, wrong output.
 | reduce | `arr.reduce(a;0;&f)` | **E4027** | – | – | no | REJECTED at check — **WITHDRAWN 136.47** |
 | fold | `a.fold(0;&addf)` | ok | ok | ok | yes | **127.4 closed** — `llvm.c` aliases receiver `fold` to `tk_arr_reduce`; returns 6. Was recorded ABSENT/E9003 here for months after the fix; corrected 136.53 |
 | fold | `arr.fold(a;0;&f)` | **E4027** | – | – | no | REJECTED at check — **WITHDRAWN 136.47** |
-| sort | `a.sort(&cmp)` | ok | ok | ok | yes | canonical (comparator returns `a-b`) |
+| sort | `a.sort(&cmp)` | ok | ok | ok | yes | canonical (comparator `(T;T):i64` returns `a-b`); a `bool`/`f64`/non-`i64` comparator is **E4031** at check (127.557) |
 | sort | `arr.sort(a;&cmp)` | **E4027** | – | – | no | REJECTED at check — **WITHDRAWN 136.47** |
 | each | `a.each(&pr)` | **E4036** | – | – | no | not implemented — REJECTED at check (E4036, 127.151); was E9003 at link (`tk_array_each_w` undefined) |
 | each | `arr.each(a;&pr)` | **E4027** | – | – | no | REJECTED at check — **WITHDRAWN 136.47** |

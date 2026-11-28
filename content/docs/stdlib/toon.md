@@ -52,6 +52,7 @@ A sum type representing TOON operation failures.
 | $parse | $str | The input string is not valid TOON |
 | $type | $str | The value exists but is not the expected type |
 | $missing | $str | The requested field does not exist in the schema |
+| $toolarge | $str | `toon.tojson`: the JSON would exceed the output bound (see below) |
 
 ## Functions
 
@@ -176,19 +177,38 @@ f=demo():i64{
 };
 ```
 
-### toon.tojson(t: $str): $str
+### toon.tojson(t: $str): $str!$toonerr
 
-Converts TOON format back to JSON.
+Converts TOON format back to JSON: an array with one object per non-blank row,
+holding every schema field.
 
 ```toke
 m=app;
 i=toon:std.toon;
 f=demo():i64{
   let t="data[2]{id,name}:\n1|Alice\n2|Bob\n";
-  let j=toon.tojson(t);
+  let j=mt toon.tojson(t) {$ok:s s;$err:e "[]"};
   < 0
 };
 ```
+
+**Output bound.** Every schema field is written for every row, so the JSON
+grows with fields x rows while the TOON grows with fields + rows: a 64 KiB
+document of 10,000 one-letter fields and 22,757 one-byte rows would be 1.6 GB
+of JSON. `toon.tojson` therefore returns `$toonerr.$toolarge` when the JSON
+would be longer than **1 MiB + 64 bytes per byte of input**, and never longer
+than **256 MiB** whatever the input. It returns the error instead of a
+document: never a truncated or partial one, since a cut JSON text would be a
+silent wrong answer. Most inputs that exceed the bound are refused before any
+output is allocated.
+
+The bound is far from ordinary data. Every TOON document in the toke
+repositories converts at about 2.2 bytes of JSON per byte of TOON or less; a
+row of empty values costs one `|` per field in TOON and `"name":""` in JSON,
+so even a fully empty table converts as long as its field names average under
+about 58 bytes; and any document whose JSON is under 1 MiB always converts.
+
+A malformed schema header still converts to `[]`, as before.
 
 ## Usage Examples
 
@@ -204,7 +224,7 @@ f=main():i64{
   let name=mt toon.str(data;"name") {$ok:s s;$err:e "unknown"};
   let id=mt toon.i64(data;"id") {$ok:n n;$err:e 0};
   log.info(name;@());
-  let roundtrip=toon.tojson(compact);
+  let roundtrip=mt toon.tojson(compact) {$ok:s s;$err:e "[]"};
   log.info(roundtrip;@());
   <0
 };

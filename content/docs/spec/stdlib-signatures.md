@@ -167,8 +167,14 @@ f=f64(t:$toonval;key:$str):f64!$toonerr
 f=bool(t:$toonval;key:$str):bool!$toonerr
 f=arr(t:$toonval;key:$str):@$toonval!$toonerr
 f=fromjson(s:$str):$str
-f=tojson(s:$str):$str
+f=tojson(s:$str):$str!$toonerr
 ```
+
+`$toonerr` is `$parse`, `$type`, `$missing` or `$toolarge` (each `$str`).
+`tojson` writes every schema field for every row, so its output grows with
+fields x rows; it returns `$toolarge`, never a truncated document, when the JSON
+would exceed 1 MiB + 64 bytes per input byte or 256 MiB, whichever is smaller
+(127.546; `docs/stdlib/toon.md`).
 
 ### std.yaml
 

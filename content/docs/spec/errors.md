@@ -948,7 +948,10 @@ declared integer type is not a mismatch at all (`let b:u8=5`).
 **A combinator's function value** (story 127.552) is judged against the
 receiver's element type `T`: `.map` takes `(T)`, `.filter` takes `(T)` returning
 `bool` or an integer, `.reduce` / `.fold` take `(A;T):A` with the seed an `A`,
-and `.sort` takes `(T;T)` returning a number or a `bool`. The diagnostic is on
+and `.sort` takes `(T;T)` returning `i64`, a three-way comparator (story
+127.557: a `bool`, `f64` or other non-`i64` return is E4031; a bool is not an
+order, and the others are equivalents of the one canonical form, spec v0.4
+§L). The diagnostic is on
 the function argument (on the seed when the seed is not an `A`), `expected` is
 the signature the combinator calls (e.g. `(i64):R`) and `got` the value's; no
 fix. A value with no known signature, an unknown parameter or return, and a
